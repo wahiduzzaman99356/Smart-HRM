@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
 import type {
   OrgEmployee,
   OrgFilters,
@@ -19,6 +19,15 @@ const GRADE_ORDER: Record<GradeKey, number> = {
 };
 
 const INITIAL_TREE: OrgEmployee = { id: 'root-1', status: 'empty' };
+export const ORG_TREE_STORAGE_KEY = 'hrm_org_tree';
+
+function loadSavedTree(): OrgEmployee {
+  try {
+    const raw = localStorage.getItem(ORG_TREE_STORAGE_KEY);
+    if (raw) return JSON.parse(raw) as OrgEmployee;
+  } catch { /* ignore */ }
+  return INITIAL_TREE;
+}
 
 const DEFAULT_FILTERS: OrgFilters = {
   search: '', department: '', showVacant: true, showSeparation: true, darkMode: false, showGrade: false,
@@ -222,7 +231,12 @@ function buildNodePatch(values: NodeFormValues): Partial<OrgEmployee> {
 // ─── Hook ─────────────────────────────────────────────────────────────────────────────────────
 
 export function useOrganogram() {
-  const [rawTree, setRawTree] = useState<OrgEmployee>(INITIAL_TREE);
+  const [rawTree, setRawTree] = useState<OrgEmployee>(loadSavedTree);
+
+  // Persist tree to localStorage on every change so other pages can read it
+  useEffect(() => {
+    try { localStorage.setItem(ORG_TREE_STORAGE_KEY, JSON.stringify(rawTree)); } catch { /* ignore */ }
+  }, [rawTree]);
   const [filters, setFiltersState] = useState<OrgFilters>(DEFAULT_FILTERS);
   const [formAnchor, setFormAnchor] = useState<NodeFormAnchor | null>(null);
 
