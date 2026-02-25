@@ -82,6 +82,7 @@ function AppShell() {
           <Route path="/training/*"            element={<ComingSoon />} />
           <Route path="/offboarding/*"         element={<ComingSoon />} />
           <Route path="/system-admin/*"        element={<ComingSoon />} />
+          
           <Route path="/analytics/*"           element={<ComingSoon />} />
           <Route path="*"                      element={<ComingSoon />} />
         </Routes>
