@@ -125,8 +125,6 @@ export function AppLayout({ children }: AppLayoutProps) {
         theme="light"
         style={{
           borderRight: '1px solid #f0f0f0',
-          display: 'flex',
-          flexDirection: 'column',
           overflow: 'hidden',
           height: '100vh',
           position: 'sticky',
@@ -136,6 +134,9 @@ export function AppLayout({ children }: AppLayoutProps) {
           background: '#fff',
         }}
       >
+        {/* Inner flex column — Ant Design renders an extra .ant-layout-sider-children
+            wrapper, so we need our own flex container to get scrolling right. */}
+        <div style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
         {/* Brand / Logo */}
         <div
           style={{
@@ -218,6 +219,7 @@ export function AppLayout({ children }: AppLayoutProps) {
             <span>Collapse</span>
           </div>
         )}
+        </div>
       </Sider>
 
       {/* ── Right side (header + content) ──────────────────────────────────── */}
