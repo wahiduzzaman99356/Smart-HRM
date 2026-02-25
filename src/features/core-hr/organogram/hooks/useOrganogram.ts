@@ -20,12 +20,16 @@ const GRADE_ORDER: Record<GradeKey, number> = {
 
 const INITIAL_TREE: OrgEmployee = { id: 'root-1', status: 'empty' };
 export const ORG_TREE_STORAGE_KEY = 'hrm_org_tree';
+const ORG_TREE_STORAGE_VERSION = 2;
+
+interface OrgTreeStoragePayload {
+  version: number;
+  tree: OrgEmployee;
+}
 
 function loadSavedTree(): OrgEmployee {
-  try {
-    const raw = localStorage.getItem(ORG_TREE_STORAGE_KEY);
-    if (raw) return JSON.parse(raw) as OrgEmployee;
-  } catch { /* ignore */ }
+  // Always start from a clean root node on page load.
+  // This prevents stale persisted trees from auto-populating the organogram.
   return INITIAL_TREE;
 }
 
@@ -235,7 +239,12 @@ export function useOrganogram() {
 
   // Persist tree to localStorage on every change so other pages can read it
   useEffect(() => {
-    try { localStorage.setItem(ORG_TREE_STORAGE_KEY, JSON.stringify(rawTree)); } catch { /* ignore */ }
+    try {
+      localStorage.setItem(
+        ORG_TREE_STORAGE_KEY,
+        JSON.stringify({ version: ORG_TREE_STORAGE_VERSION, tree: rawTree }),
+      );
+    } catch { /* ignore */ }
   }, [rawTree]);
   const [filters, setFiltersState] = useState<OrgFilters>(DEFAULT_FILTERS);
   const [formAnchor, setFormAnchor] = useState<NodeFormAnchor | null>(null);

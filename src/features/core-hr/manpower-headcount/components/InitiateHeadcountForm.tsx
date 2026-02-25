@@ -38,7 +38,7 @@ interface Props {
   /** Action mode: approve with (optionally) updated rows */
   onApprove?: (id: string, updatedRows: HCOrgLevelRow[]) => void;
   /** Action mode: reject with reason label + optional note */
-  onReject?: (id: string, reasonLabel: string, note: string) => void;
+  onReject?: (id: string, updatedRows: HCOrgLevelRow[], reasonLabel: string, note: string) => void;
 }
 
 // ─── Component ────────────────────────────────────────────────────────────────
@@ -126,7 +126,7 @@ export function InitiateHeadcountForm({
     }
     const reasonLabel = REJECT_REASONS.find(r => r.value === rejectReason)?.label ?? rejectReason;
     const noteText = rejectReason === 'others' ? rejectNote.trim() : '';
-    onReject?.(existingRequest!.id, reasonLabel, noteText);
+    onReject?.(existingRequest!.id, rows, reasonLabel, noteText);
   };
 
   // ── Table columns ─────────────────────────────────────────────────────────────
@@ -174,9 +174,12 @@ export function InitiateHeadcountForm({
       key: 'budgetRange',
       width: 180,
       render: (_, r) => (
-        isAction
-          ? <span style={{ fontSize: 13, color: '#374151' }}>{r.budgetRange || '—'}</span>
-          : <Input value={r.budgetRange} onChange={e => updateRow(r.id, 'budgetRange', e.target.value)} placeholder="Budget Range" style={{ borderRadius: 7 }} />
+        <Input
+          value={r.budgetRange}
+          onChange={e => updateRow(r.id, 'budgetRange', e.target.value)}
+          placeholder="Budget Range"
+          style={{ borderRadius: 7 }}
+        />
       ),
     },
     {
