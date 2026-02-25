@@ -20,11 +20,39 @@ const GRADE_ORDER: Record<GradeKey, number> = {
 
 const INITIAL_TREE: OrgEmployee = { id: 'root-1', status: 'empty' };
 export const ORG_TREE_STORAGE_KEY = 'hrm_org_tree';
+const ORG_TREE_STORAGE_VERSION = 2;
+
+interface OrgTreeStoragePayload {
+  version: number;
+  tree: OrgEmployee;
+}
+
+function isOrgEmployee(value: unknown): value is OrgEmployee {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    'id' in value &&
+    'status' in value
+  );
+}
+
+function isOrgTreeStoragePayload(value: unknown): value is OrgTreeStoragePayload {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    'version' in value &&
+    'tree' in value &&
+    (value as { version: number }).version === ORG_TREE_STORAGE_VERSION &&
+    isOrgEmployee((value as { tree: unknown }).tree)
+  );
+}
 
 function loadSavedTree(): OrgEmployee {
   try {
     const raw = localStorage.getItem(ORG_TREE_STORAGE_KEY);
-    if (raw) return JSON.parse(raw) as OrgEmployee;
+    if (!raw) return INITIAL_TREE;
+    const parsed: unknown = JSON.parse(raw);
+    if (isOrgTreeStoragePayload(parsed)) return parsed.tree;
   } catch { /* ignore */ }
   return INITIAL_TREE;
 }
@@ -235,7 +263,12 @@ export function useOrganogram() {
 
   // Persist tree to localStorage on every change so other pages can read it
   useEffect(() => {
-    try { localStorage.setItem(ORG_TREE_STORAGE_KEY, JSON.stringify(rawTree)); } catch { /* ignore */ }
+    try {
+      localStorage.setItem(
+        ORG_TREE_STORAGE_KEY,
+        JSON.stringify({ version: ORG_TREE_STORAGE_VERSION, tree: rawTree }),
+      );
+    } catch { /* ignore */ }
   }, [rawTree]);
   const [filters, setFiltersState] = useState<OrgFilters>(DEFAULT_FILTERS);
   const [formAnchor, setFormAnchor] = useState<NodeFormAnchor | null>(null);

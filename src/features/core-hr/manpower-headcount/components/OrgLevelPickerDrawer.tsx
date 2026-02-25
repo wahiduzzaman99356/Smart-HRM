@@ -39,6 +39,33 @@ interface PickerNode extends DataNode {
   children?: PickerNode[];
 }
 
+const ORG_TREE_STORAGE_VERSION = 2;
+
+interface OrgTreeStoragePayload {
+  version: number;
+  tree: OrgEmployee;
+}
+
+function isOrgEmployee(value: unknown): value is OrgEmployee {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    'id' in value &&
+    'status' in value
+  );
+}
+
+function isOrgTreeStoragePayload(value: unknown): value is OrgTreeStoragePayload {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    'version' in value &&
+    'tree' in value &&
+    (value as { version: number }).version === ORG_TREE_STORAGE_VERSION &&
+    isOrgEmployee((value as { tree: unknown }).tree)
+  );
+}
+
 // ─── Build tree from live organogram (localStorage) ──────────────────────────
 function buildFromOrgTree(
   node: OrgEmployee,
@@ -151,8 +178,11 @@ export function OrgLevelPickerDrawer({ open, onClose, onSelect }: Props) {
     try {
       const raw = localStorage.getItem(ORG_TREE_STORAGE_KEY);
       if (raw) {
-        const tree: OrgEmployee = JSON.parse(raw);
-        const nodes = buildFromOrgTree(tree, '');
+        const parsed: unknown = JSON.parse(raw);
+        if (!isOrgTreeStoragePayload(parsed)) {
+          return { treeData: buildFallbackTree(), isConfigured: false };
+        }
+        const nodes = buildFromOrgTree(parsed.tree, '');
         if (nodes.length > 0) return { treeData: nodes, isConfigured: true };
       }
     } catch { /* ignore */ }
