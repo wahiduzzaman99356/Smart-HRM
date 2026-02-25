@@ -27,33 +27,9 @@ interface OrgTreeStoragePayload {
   tree: OrgEmployee;
 }
 
-function isOrgEmployee(value: unknown): value is OrgEmployee {
-  return (
-    typeof value === 'object' &&
-    value !== null &&
-    'id' in value &&
-    'status' in value
-  );
-}
-
-function isOrgTreeStoragePayload(value: unknown): value is OrgTreeStoragePayload {
-  return (
-    typeof value === 'object' &&
-    value !== null &&
-    'version' in value &&
-    'tree' in value &&
-    (value as { version: number }).version === ORG_TREE_STORAGE_VERSION &&
-    isOrgEmployee((value as { tree: unknown }).tree)
-  );
-}
-
 function loadSavedTree(): OrgEmployee {
-  try {
-    const raw = localStorage.getItem(ORG_TREE_STORAGE_KEY);
-    if (!raw) return INITIAL_TREE;
-    const parsed: unknown = JSON.parse(raw);
-    if (isOrgTreeStoragePayload(parsed)) return parsed.tree;
-  } catch { /* ignore */ }
+  // Always start from a clean root node on page load.
+  // This prevents stale persisted trees from auto-populating the organogram.
   return INITIAL_TREE;
 }
 
