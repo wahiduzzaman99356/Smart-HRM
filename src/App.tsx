@@ -100,7 +100,7 @@ function App() {
           token: {
             colorPrimary: '#3b82f6',
             borderRadius: 8,
-            fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+            fontFamily: "'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif",
           },
           components: {
             Menu: {

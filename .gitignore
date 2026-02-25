@@ -26,3 +26,5 @@ npm-debug.log*
 # Claude Code temp files
 tmpclaude-*
 tmp_write.js
+.claude
+/.claude/

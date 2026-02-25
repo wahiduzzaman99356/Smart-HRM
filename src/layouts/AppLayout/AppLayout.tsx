@@ -42,14 +42,46 @@ function buildMenuItems(): MenuProps['items'] {
 }
 
 // ─── Derive breadcrumb from pathname ──────────────────────────────────────────
-function useBreadcrumb(pathname: string): { module: string; page: string } | null {
+function useBreadcrumb(pathname: string, search: string): {
+  module: string;
+  modulePath: string;
+  page: string;
+  pagePath: string;
+} | null {
   return useMemo(() => {
+    if (pathname === '/core-hr/manpower-headcount') {
+      const mode = new URLSearchParams(search).get('mode');
+      if (mode === 'create') {
+        return {
+          module: 'Core HR & Employee',
+          modulePath: '/core-hr/organogram',
+          page: 'Initiate Headcount Request',
+          pagePath: '/core-hr/manpower-headcount?mode=create',
+        };
+      }
+      if (mode === 'action') {
+        return {
+          module: 'Core HR & Employee',
+          modulePath: '/core-hr/organogram',
+          page: 'Approve / Reject Request',
+          pagePath: '/core-hr/manpower-headcount?mode=action',
+        };
+      }
+    }
+
     for (const mod of NAV_MODULES) {
       const sub = mod.children.find(c => c.key === pathname);
-      if (sub) return { module: mod.label, page: sub.label };
+      if (sub) {
+        return {
+          module: mod.label,
+          modulePath: mod.children[0]?.key ?? pathname,
+          page: sub.label,
+          pagePath: sub.key,
+        };
+      }
     }
     return null;
-  }, [pathname]);
+  }, [pathname, search]);
 }
 
 // ─── Component ────────────────────────────────────────────────────────────────
@@ -63,7 +95,7 @@ export function AppLayout({ children }: AppLayoutProps) {
   const location = useLocation();
 
   const selectedKey = location.pathname;
-  const breadcrumb = useBreadcrumb(selectedKey);
+  const breadcrumb = useBreadcrumb(selectedKey, location.search);
 
   // Keep the active module's submenu open; collapse others on init
   const defaultOpenKeys = useMemo(
@@ -93,15 +125,18 @@ export function AppLayout({ children }: AppLayoutProps) {
         theme="light"
         style={{
           borderRight: '1px solid #f0f0f0',
-          display: 'flex',
-          flexDirection: 'column',
           overflow: 'hidden',
           height: '100vh',
           position: 'sticky',
           top: 0,
           left: 0,
+          zIndex: 20,
+          background: '#fff',
         }}
       >
+        {/* Inner flex column — Ant Design renders an extra .ant-layout-sider-children
+            wrapper, so we need our own flex container to get scrolling right. */}
+        <div style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
         {/* Brand / Logo */}
         <div
           style={{
@@ -184,10 +219,11 @@ export function AppLayout({ children }: AppLayoutProps) {
             <span>Collapse</span>
           </div>
         )}
+        </div>
       </Sider>
 
       {/* ── Right side (header + content) ──────────────────────────────────── */}
-      <Layout style={{ overflow: 'hidden' }}>
+      <Layout style={{ overflow: 'hidden', minWidth: 0 }}>
         {/* Header */}
         <Header
           style={{
@@ -215,8 +251,26 @@ export function AppLayout({ children }: AppLayoutProps) {
             {breadcrumb && (
               <Breadcrumb
                 items={[
-                  { title: <span style={{ cursor: 'default', color: '#9ca3af', fontSize: 13 }}>{breadcrumb.module}</span> },
-                  { title: <span style={{ fontWeight: 600, fontSize: 13, color: '#111827' }}>{breadcrumb.page}</span> },
+                  {
+                    title: (
+                      <span
+                        style={{ cursor: 'pointer', color: '#6b7280', fontSize: 13 }}
+                        onClick={() => navigate(breadcrumb.modulePath)}
+                      >
+                        {breadcrumb.module}
+                      </span>
+                    ),
+                  },
+                  {
+                    title: (
+                      <span
+                        style={{ cursor: 'pointer', fontWeight: 600, fontSize: 13, color: '#111827' }}
+                        onClick={() => navigate(breadcrumb.pagePath)}
+                      >
+                        {breadcrumb.page}
+                      </span>
+                    ),
+                  },
                 ]}
                 separator="›"
               />

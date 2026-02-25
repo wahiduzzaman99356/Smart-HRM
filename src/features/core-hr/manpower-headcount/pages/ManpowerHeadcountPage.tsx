@@ -5,6 +5,7 @@
 
 import { useState } from 'react';
 import { message } from 'antd';
+import { useSearchParams } from 'react-router-dom';
 import type { HCRequest, HCOrgLevelRow } from '../types/headcount.types';
 import { INITIAL_REQUESTS } from '../types/headcount.types';
 import { HeadcountListView }    from '../components/HeadcountListView';
@@ -30,7 +31,9 @@ function nowTs(): string {
 
 // ─── Component ────────────────────────────────────────────────────────────────
 export default function ManpowerHeadcountPage() {
-  const [view,          setView]          = useState<View>('list');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const initialMode = searchParams.get('mode');
+  const [view,          setView]          = useState<View>(initialMode === 'create' ? 'create' : 'list');
   const [requests,      setRequests]      = useState<HCRequest[]>(INITIAL_REQUESTS);
   const [actionRequest, setActionRequest] = useState<HCRequest | null>(null);
 
@@ -54,6 +57,7 @@ export default function ManpowerHeadcountPage() {
     };
     setRequests(prev => [newReq, ...prev]);
     setView('list');
+    setSearchParams({});
     message.success(`Request ${newReq.id} created successfully.`);
   };
 
@@ -84,14 +88,18 @@ export default function ManpowerHeadcountPage() {
     }));
     setView('list');
     setActionRequest(null);
+    setSearchParams({});
     message.success(`Request ${id} approved.`);
   };
 
   // ── Reject ──────────────────────────────────────────────────────────────────
-  const handleReject = (id: string, reasonLabel: string, note: string) => {
+  const handleReject = (id: string, updatedRows: HCOrgLevelRow[], reasonLabel: string, note: string) => {
+    const totalReqHC = updatedRows.reduce((s, r) => s + (parseInt(r.requiredHC, 10) || 0), 0);
     setRequests(prev => prev.map(r => r.id !== id ? r : {
       ...r,
       status: 'Rejected',
+      rows: updatedRows,
+      totalReqHC,
       approvalWorkflow: r.approvalWorkflow.map((step, i) =>
         i === r.approvalWorkflow.findIndex(s => s.action === 'Pending')
           ? {
@@ -107,6 +115,7 @@ export default function ManpowerHeadcountPage() {
     }));
     setView('list');
     setActionRequest(null);
+    setSearchParams({});
     message.success(`Request ${id} rejected.`);
   };
 
@@ -114,6 +123,18 @@ export default function ManpowerHeadcountPage() {
   const openActionView = (req: HCRequest) => {
     setActionRequest(req);
     setView('action');
+    setSearchParams({ mode: 'action' });
+  };
+
+  const openCreateView = () => {
+    setView('create');
+    setSearchParams({ mode: 'create' });
+  };
+
+  const backToList = () => {
+    setView('list');
+    setActionRequest(null);
+    setSearchParams({});
   };
 
   // ─── Render ──────────────────────────────────────────────────────────────────
@@ -122,7 +143,7 @@ export default function ManpowerHeadcountPage() {
       {view === 'list' && (
         <HeadcountListView
           requests={requests}
-          onCreate={() => setView('create')}
+          onCreate={openCreateView}
           onViewRequest={setViewReq}
           onTakeAction={openActionView}
           onViewWorkflow={setWorkflowReq}
@@ -134,7 +155,7 @@ export default function ManpowerHeadcountPage() {
       {view === 'create' && (
         <InitiateHeadcountForm
           mode="create"
-          onBack={() => setView('list')}
+          onBack={backToList}
           onSubmit={handleCreate}
         />
       )}
@@ -143,7 +164,7 @@ export default function ManpowerHeadcountPage() {
         <InitiateHeadcountForm
           mode="action"
           existingRequest={actionRequest}
-          onBack={() => { setView('list'); setActionRequest(null); }}
+          onBack={backToList}
           onApprove={handleApprove}
           onReject={handleReject}
         />
