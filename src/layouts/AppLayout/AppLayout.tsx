@@ -24,6 +24,7 @@ import {
 } from '@ant-design/icons';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { NAV_MODULES } from './navConfig';
+import { GlobalSearch } from './GlobalSearch';
 
 const { Sider, Header, Content } = Layout;
 
@@ -222,8 +223,9 @@ export function AppLayout({ children }: AppLayoutProps) {
             )}
           </div>
 
-          {/* Right: help, notifications, avatar */}
+          {/* Right: search + help + notifications + avatar */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <GlobalSearch />
             <Tooltip title="Help">
               <Button
                 type="text"
