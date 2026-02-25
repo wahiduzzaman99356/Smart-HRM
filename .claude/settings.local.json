@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git -C /f/HRIS status --short)"
+    ]
+  }
+}
