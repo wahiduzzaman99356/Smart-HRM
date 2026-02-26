@@ -4,8 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build",
+    "sync:api-specs": "node scripts/sync-api-specs.mjs",
+    "dev": "npm run sync:api-specs && vite",
+    "build": "npm run sync:api-specs && tsc && vite build",
     "preview": "vite preview"
   },
   "dependencies": {

@@ -23,6 +23,9 @@ const OrganogramPage = lazy(
 const ManpowerHeadcountPage = lazy(
   () => import('@/features/core-hr/manpower-headcount/pages/ManpowerHeadcountPage'),
 );
+const ManpowerRequisitionPage = lazy(
+  () => import('@/features/core-hr/manpower-requisition/pages/ManpowerRequisitionPage'),
+);
 
 // ── Global providers ──────────────────────────────────────────────────────────
 const queryClient = new QueryClient({
@@ -69,6 +72,7 @@ function AppShell() {
           {/* ── Implemented ─────────────────── */}
           <Route path="/core-hr/organogram"          element={<OrganogramPage />} />
           <Route path="/core-hr/manpower-headcount"  element={<ManpowerHeadcountPage />} />
+          <Route path="/core-hr/requisition"         element={<ManpowerRequisitionPage />} />
 
           {/* ── Placeholders for every module ── */}
           <Route path="/core-hr/*"             element={<ComingSoon />} />

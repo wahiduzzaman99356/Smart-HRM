@@ -142,14 +142,14 @@ export function HeadcountListView({ requests, onCreate, onViewRequest, onTakeAct
           menu={{
             style: { borderRadius: 8, minWidth: 160 },
             items: [
+              { key: 'view', label: 'View Details', onClick: () => onViewRequest(r) },
               {
                 key: 'submit',
                 label: 'Submit Request',
                 disabled: r.status !== 'Draft',
                 onClick: () => onSubmit(r.id),
               },
-              { key: 'take-action', label: 'Approve / Reject', onClick: () => onTakeAction(r) },
-              { type: 'divider' },
+              { key: 'take-action', label: 'Approve/Reject', onClick: () => onTakeAction(r) },
               { key: 'workflow', label: 'Approval Workflow', onClick: () => onViewWorkflow(r) },
               { key: 'history',  label: 'Action History',   onClick: () => onViewHistory(r) },
             ],
@@ -185,7 +185,7 @@ export function HeadcountListView({ requests, onCreate, onViewRequest, onTakeAct
       {/* ── Page header ───────────────────────────────────────────────────── */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 }}>
         <div>
-          <h1 style={{ fontSize: 22, fontWeight: 800, color: '#111827', margin: 0 }}>
+          <h1 style={{ fontSize: 16, fontWeight: 700, color: '#111827', margin: 0 }}>
             Headcount Management
           </h1>
           <p style={{ fontSize: 13, color: '#6b7280', margin: '4px 0 0' }}>

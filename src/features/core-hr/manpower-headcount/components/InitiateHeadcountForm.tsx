@@ -7,12 +7,14 @@
 
 import { useState } from 'react';
 import {
-  Button, Select, Input, Table, Popconfirm, message, Space, Alert,
+  Button, Modal, Popconfirm, Select, Input, Table, Tooltip, Upload, message, Space,
 } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
+import type { UploadFile } from 'antd';
 import {
   LeftOutlined, DeleteOutlined, ApartmentOutlined,
   CheckCircleOutlined, CloseCircleOutlined,
+  UploadOutlined, EyeOutlined, FileOutlined, CloseOutlined,
 } from '@ant-design/icons';
 import type { HCOrgLevelRow, HCRequest } from '../types/headcount.types';
 import { PLAN_YEAR_OPTIONS } from '../types/headcount.types';
@@ -62,6 +64,19 @@ export function InitiateHeadcountForm({
   const [rejectPanelOpen, setRejectPanelOpen] = useState(false);
   const [rejectReason,    setRejectReason]    = useState('');
   const [rejectNote,      setRejectNote]      = useState('');
+
+  // ── Attachment state ──────────────────────────────────────────────────────────
+  const [fileList,    setFileList]    = useState<UploadFile[]>([]);
+  const [viewingFile, setViewingFile] = useState<UploadFile | null>(null);
+
+  const handleBeforeUpload = (file: File) => {
+    const uid = `${file.name}-${Date.now()}`;
+    setFileList(prev => [...prev, { uid, name: file.name, status: 'done', size: file.size, type: file.type, originFileObj: file } as UploadFile]);
+    message.success(`${file.name} attached.`);
+    return false;
+  };
+
+  const handleRemoveFile = (uid: string) => setFileList(prev => prev.filter(f => f.uid !== uid));
 
   // ── Row helpers (create mode only) ───────────────────────────────────────────
   const handleAdd = () => {
@@ -220,7 +235,7 @@ export function InitiateHeadcountForm({
       {/* ── Header ───────────────────────────────────────────────────────── */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
         <div>
-          <h1 style={{ fontSize: 22, fontWeight: 800, color: '#111827', margin: 0 }}>
+          <h1 style={{ fontSize: 16, fontWeight: 700, color: '#111827', margin: 0 }}>
             {isAction ? `Review Request — ${existingRequest?.id}` : 'Initiate Headcount Request'}
           </h1>
           {isAction && (
@@ -358,15 +373,71 @@ export function InitiateHeadcountForm({
         </div>
       )}
 
+      {/* ── Attachments (both modes) ──────────────────────────────────────── */}
+      <div style={{ marginBottom: 20 }}>
+        <div style={{ fontSize: 10, fontWeight: 700, color: '#3b82f6', letterSpacing: '0.06em', marginBottom: 8 }}>
+          ATTACHMENTS (OPTIONAL)
+        </div>
+        <Upload multiple beforeUpload={handleBeforeUpload} showUploadList={false}>
+          <Button
+            icon={<UploadOutlined />}
+            style={{ borderRadius: 7, background: '#eff6ff', borderColor: '#bfdbfe', color: '#2563eb', fontWeight: 600, height: 34 }}
+          >
+            Click to Attach Files
+          </Button>
+        </Upload>
+        {fileList.length > 0 && (
+          <div style={{ marginTop: 10, display: 'flex', flexDirection: 'column', gap: 6 }}>
+            {fileList.map(file => (
+              <div
+                key={file.uid}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 10,
+                  background: '#f8fafc', border: '1px solid #e2e8f0',
+                  borderRadius: 7, padding: '6px 12px', fontSize: 13, color: '#374151',
+                }}
+              >
+                <UploadOutlined style={{ color: '#3b82f6', fontSize: 14, flexShrink: 0 }} />
+                <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {file.name}
+                </span>
+                <span style={{ fontSize: 11, color: '#9ca3af', flexShrink: 0 }}>
+                  {file.size ? `${(file.size / 1024).toFixed(1)} KB` : ''}
+                </span>
+                <Tooltip title="View file">
+                  <Button
+                    type="text" size="small" icon={<EyeOutlined />}
+                    onClick={() => setViewingFile(file)}
+                    style={{ color: '#3b82f6', padding: '0 4px', height: 24, flexShrink: 0 }}
+                  />
+                </Tooltip>
+                <Popconfirm
+                  title="Remove attachment"
+                  description="Are you sure you want to remove this file?"
+                  onConfirm={() => handleRemoveFile(file.uid)}
+                  okText="Remove"
+                  cancelText="Cancel"
+                  okButtonProps={{ danger: true }}
+                >
+                  <Tooltip title="Remove">
+                    <Button
+                      type="text" size="small" icon={<DeleteOutlined />}
+                      style={{ color: '#ef4444', padding: '0 4px', height: 24, flexShrink: 0 }}
+                    />
+                  </Tooltip>
+                </Popconfirm>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
       {/* ── Action buttons ────────────────────────────────────────────────── */}
       <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
         <Space size={8}>
           {isAction ? (
             <>
-              <Button
-                onClick={handleReset}
-                style={{ borderRadius: 7, fontWeight: 600 }}
-              >
+              <Button onClick={handleReset} style={{ borderRadius: 7, fontWeight: 600 }}>
                 Reset
               </Button>
               {!rejectPanelOpen && (
@@ -389,33 +460,60 @@ export function InitiateHeadcountForm({
           ) : (
             <>
               <Button
-                onClick={() => handleCreateAction('Rejected')}
-                style={{ background: '#ef4444', borderColor: '#ef4444', color: '#fff', fontWeight: 700, borderRadius: 7, minWidth: 90 }}
-              >
-                REJECT
-              </Button>
-              <Button
-                onClick={() => handleCreateAction('Approved')}
-                style={{ background: '#22c55e', borderColor: '#22c55e', color: '#fff', fontWeight: 700, borderRadius: 7, minWidth: 90 }}
-              >
-                APPROVE
-              </Button>
-              <Button
                 onClick={handleReset}
-                style={{ background: '#f59e0b', borderColor: '#f59e0b', color: '#fff', fontWeight: 700, borderRadius: 7, minWidth: 90 }}
+                style={{ borderRadius: 7, fontWeight: 600, minWidth: 90 }}
               >
-                RESET
+                Reset
               </Button>
               <Button
                 onClick={() => handleCreateAction('Draft')}
-                style={{ background: '#3b82f6', borderColor: '#3b82f6', color: '#fff', fontWeight: 700, borderRadius: 7, minWidth: 90 }}
+                style={{ background: '#f59e0b', borderColor: '#f59e0b', color: '#fff', fontWeight: 700, borderRadius: 7, minWidth: 110 }}
               >
-                SUBMIT
+                Save Draft
+              </Button>
+              <Button
+                onClick={() => handleCreateAction('Pending')}
+                style={{ background: '#3b82f6', borderColor: '#3b82f6', color: '#fff', fontWeight: 700, borderRadius: 7, minWidth: 110 }}
+              >
+                Submit Request
               </Button>
             </>
           )}
         </Space>
       </div>
+
+      {/* ── File Viewer Modal ─────────────────────────────────────────────── */}
+      <Modal
+        open={!!viewingFile}
+        onCancel={() => setViewingFile(null)}
+        footer={null}
+        centered
+        width={760}
+        title={
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <FileOutlined style={{ color: '#3b82f6' }} />
+            <span style={{ fontWeight: 700, fontSize: 14, color: '#111827' }}>{viewingFile?.name}</span>
+          </div>
+        }
+        closeIcon={<CloseOutlined />}
+      >
+        {viewingFile && (() => {
+          const origin = viewingFile.originFileObj as File | undefined;
+          const url = origin ? URL.createObjectURL(origin) : undefined;
+          const isImage = viewingFile.type?.startsWith('image/');
+          const isPdf   = viewingFile.type === 'application/pdf';
+          if (!url) return <div style={{ textAlign: 'center', color: '#9ca3af', padding: '40px 0' }}>Preview not available.</div>;
+          if (isImage) return <img src={url} alt={viewingFile.name} style={{ width: '100%', borderRadius: 8 }} />;
+          if (isPdf)   return <iframe src={url} title={viewingFile.name} style={{ width: '100%', height: 500, border: 'none', borderRadius: 8 }} />;
+          return (
+            <div style={{ textAlign: 'center', padding: '40px 0' }}>
+              <FileOutlined style={{ fontSize: 48, color: '#3b82f6', marginBottom: 12 }} />
+              <div style={{ fontSize: 14, color: '#374151', marginBottom: 16 }}>{viewingFile.name}</div>
+              <Button type="primary" href={url} target="_blank" rel="noopener noreferrer">Open File</Button>
+            </div>
+          );
+        })()}
+      </Modal>
 
       {/* ── Org Level Picker Drawer ───────────────────────────────────────── */}
       {!isAction && (
