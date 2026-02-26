@@ -38,3 +38,9 @@ body,
   display: flex;
   flex-direction: column;
 }
+
+.app-sider-submenu-popup .ant-menu {
+  min-width: 280px;
+  max-height: 72vh;
+  overflow-y: auto;
+}

@@ -38,6 +38,13 @@ export interface ActionHistoryEntry {
   actionType: 'Created' | 'Submitted' | 'Approved' | 'Rejected' | 'Updated';
 }
 
+export interface HCAttachment {
+  uid: string;
+  name: string;
+  size?: number;
+  objectUrl?: string;
+}
+
 /** Full headcount request record. */
 export interface HCRequest {
   id: string;
@@ -49,6 +56,7 @@ export interface HCRequest {
   totalApprHC: number | null;
   approvalWorkflow: ApprovalStep[];
   actionHistory: ActionHistoryEntry[];
+  attachments?: HCAttachment[];
 }
 
 // ─── Seed data ────────────────────────────────────────────────────────────────
