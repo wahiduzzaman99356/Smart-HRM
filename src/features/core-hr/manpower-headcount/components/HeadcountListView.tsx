@@ -8,7 +8,7 @@ import {
   Button, Table, Select, Input, Dropdown, DatePicker, Space,
 } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
-import { PlusOutlined, DownOutlined } from '@ant-design/icons';
+import { PlusOutlined, MoreOutlined } from '@ant-design/icons';
 import type { RangePickerProps } from 'antd/es/date-picker';
 import type { HCRequest, HCStatus } from '../types/headcount.types';
 import { PLAN_YEAR_OPTIONS } from '../types/headcount.types';
@@ -132,15 +132,15 @@ export function HeadcountListView({ requests, onCreate, onViewRequest, onTakeAct
       render: (_, r) => <StatusBadge status={r.status} />,
     },
     {
-      title: <span style={{ fontSize: 11, color: '#9ca3af', fontWeight: 600, letterSpacing: '0.04em' }}>ACTIONS</span>,
+      title: <span style={{ fontSize: 11, color: '#9ca3af', fontWeight: 600, letterSpacing: '0.04em' }}>ACTION</span>,
       key: 'actions',
-      align: 'right',
-      width: 110,
+      align: 'center',
+      width: 48,
       render: (_, r) => (
         <Dropdown
           trigger={['click']}
           menu={{
-            style: { borderRadius: 8, minWidth: 160 },
+            style: { borderRadius: 8, minWidth: 168 },
             items: [
               { key: 'view', label: 'View Details', onClick: () => onViewRequest(r) },
               {
@@ -149,30 +149,28 @@ export function HeadcountListView({ requests, onCreate, onViewRequest, onTakeAct
                 disabled: r.status !== 'Draft',
                 onClick: () => onSubmit(r.id),
               },
-              { key: 'take-action', label: 'Approve/Reject', onClick: () => onTakeAction(r) },
+              { key: 'take-action', label: 'Approve / Reject', onClick: () => onTakeAction(r) },
               { key: 'workflow', label: 'Approval Workflow', onClick: () => onViewWorkflow(r) },
               { key: 'history',  label: 'Action History',   onClick: () => onViewHistory(r) },
             ],
           }}
+          placement="bottomRight"
         >
           <Button
+            type="text"
             size="small"
+            icon={<MoreOutlined style={{ fontSize: 18 }} />}
             style={{
-              background: '#1e293b',
-              color: '#fff',
-              border: 'none',
+              color: '#9ca3af',
               borderRadius: 6,
-              fontWeight: 600,
-              fontSize: 12,
-              height: 30,
-              padding: '0 12px',
+              width: 32,
+              height: 32,
               display: 'flex',
               alignItems: 'center',
-              gap: 6,
+              justifyContent: 'center',
+              padding: 0,
             }}
-          >
-            ACTION <DownOutlined style={{ fontSize: 10 }} />
-          </Button>
+          />
         </Dropdown>
       ),
     },
