@@ -3,6 +3,8 @@ node_modules/
 
 # Build output
 dist/
+dist-ssr/
+*.tsbuildinfo
 
 # Environment variables
 .env
@@ -23,8 +25,10 @@ Thumbs.db
 *.log
 npm-debug.log*
 
+# Testing
+coverage/
+
 # Claude Code temp files
 tmpclaude-*
 tmp_write.js
-.claude
 /.claude/
