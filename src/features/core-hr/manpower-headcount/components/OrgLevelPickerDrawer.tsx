@@ -187,6 +187,7 @@ export function OrgLevelPickerDrawer({ open, onClose, onSelect }: Props) {
       }
     } catch { /* ignore */ }
     return { treeData: buildFallbackTree(), isConfigured: false };
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- [open] intentionally triggers re-read from localStorage
   }, [open]); // re-derive whenever drawer opens
 
   const filteredData = useMemo(
