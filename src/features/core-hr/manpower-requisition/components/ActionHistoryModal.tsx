@@ -1,49 +1,67 @@
+/**
+ * ActionHistoryModal
+ * Audit log for a requisition request.
+ */
+
 import { Modal, Table } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { CloseOutlined } from '@ant-design/icons';
 import type { ActionHistoryEntry, RequisitionRequest } from '../types/requisition.types';
 
-const ACTION_COLORS: Record<ActionHistoryEntry['actionType'], string> = {
-  Created: '#2563eb',
-  Submitted: '#f59e0b',
-  Approved: '#10b981',
-  Rejected: '#f43f5e',
-  Updated: '#8b5cf6',
-  'Draft Saved': '#64748b',
+// ─── Action type badge config ──────────────────────────────────────────────────
+const ACTION_CONFIG: Record<ActionHistoryEntry['actionType'], { color: string; bg: string }> = {
+  Created:      { color: '#2563eb', bg: '#eff6ff' },
+  Submitted:    { color: '#d97706', bg: '#fffbeb' },
+  Approved:     { color: '#059669', bg: '#f0fdf4' },
+  Rejected:     { color: '#dc2626', bg: '#fef2f2' },
+  Updated:      { color: '#7c3aed', bg: '#f5f3ff' },
+  'Draft Saved': { color: '#6b7280', bg: '#f3f4f6' },
 };
 
+// ─── Table columns ─────────────────────────────────────────────────────────────
 const columns: ColumnsType<ActionHistoryEntry> = [
   {
-    title: <span style={{ fontSize: 11, color: '#cbd5e1', fontWeight: 700, letterSpacing: '0.08em' }}>INITIATED BY</span>,
+    title: 'Initiated By',
     dataIndex: 'initiatedBy',
     key: 'initiatedBy',
-    render: v => <span style={{ fontSize: 14, fontWeight: 700, color: '#0f172a' }}>{v}</span>,
+    render: v => (
+      <span style={{ fontSize: 13, fontWeight: 600, color: '#111827' }}>{v}</span>
+    ),
   },
   {
-    title: <span style={{ fontSize: 11, color: '#cbd5e1', fontWeight: 700, letterSpacing: '0.08em' }}>EVENT TIMESTAMP</span>,
+    title: 'Timestamp',
     dataIndex: 'timestamp',
     key: 'timestamp',
-    render: v => <span style={{ fontSize: 13, color: '#94a3b8' }}>{v}</span>,
+    render: v => (
+      <span style={{ fontSize: 12, color: '#9ca3af' }}>{v}</span>
+    ),
   },
   {
-    title: <span style={{ fontSize: 11, color: '#cbd5e1', fontWeight: 700, letterSpacing: '0.08em' }}>ACTION TYPE</span>,
+    title: 'Action',
     dataIndex: 'actionType',
     key: 'actionType',
     align: 'right',
-    render: (v: ActionHistoryEntry['actionType']) => (
-      <span style={{
-        fontSize: 14,
-        fontWeight: 700,
-        color: ACTION_COLORS[v],
-        textDecoration: 'underline',
-        textDecorationColor: ACTION_COLORS[v],
-      }}>
-        {v}
-      </span>
-    ),
+    render: (v: ActionHistoryEntry['actionType']) => {
+      const cfg = ACTION_CONFIG[v] ?? { color: '#6b7280', bg: '#f9fafb' };
+      return (
+        <span style={{
+          display: 'inline-block',
+          background: cfg.bg,
+          color: cfg.color,
+          fontSize: 11,
+          fontWeight: 600,
+          borderRadius: 5,
+          padding: '2px 9px',
+          letterSpacing: '0.02em',
+        }}>
+          {v}
+        </span>
+      );
+    },
   },
 ];
 
+// ─── Component ────────────────────────────────────────────────────────────────
 interface Props {
   request: RequisitionRequest | null;
   onClose: () => void;
@@ -52,72 +70,63 @@ interface Props {
 export function ActionHistoryModal({ request, onClose }: Props) {
   if (!request) return null;
 
+  const count = request.actionHistory.length;
+
   return (
     <Modal
       open
       onCancel={onClose}
       footer={null}
+      width={520}
       centered
-      width={860}
-      closeIcon={false}
+      closeIcon={
+        <div style={{
+          width: 28, height: 28, borderRadius: '50%',
+          background: '#f3f4f6',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+        }}>
+          <CloseOutlined style={{ color: '#6b7280', fontSize: 11 }} />
+        </div>
+      }
       styles={{
-        content: { borderRadius: 24, padding: 0, overflow: 'hidden' },
-        header: { display: 'none' },
+        content: { borderRadius: 14, padding: '28px 30px' },
+        header: { borderBottom: 'none', paddingBottom: 0 },
       }}
     >
-      <div style={{
-        background: '#0f172a',
-        padding: '20px 26px',
-        display: 'flex',
-        alignItems: 'center',
-        gap: 14,
-      }}>
-        <div style={{
-          border: '2px solid #334155',
-          borderRadius: 8,
-          minWidth: 220,
-          height: 44,
-          color: '#fff',
-          fontWeight: 700,
-          display: 'flex',
-          alignItems: 'center',
-          paddingInline: 14,
-        }}>
-          {request.id}
+      {/* Header */}
+      <div style={{ marginBottom: 20 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 3 }}>
+          <span style={{ fontSize: 15, fontWeight: 700, color: '#111827' }}>
+            Action History
+          </span>
+          <span style={{
+            background: '#f3f4f6',
+            border: '1px solid #e5e7eb',
+            borderRadius: 5,
+            padding: '1px 8px',
+            fontSize: 11,
+            fontWeight: 600,
+            color: '#6b7280',
+            fontFamily: 'monospace',
+            letterSpacing: '0.02em',
+          }}>
+            {request.id}
+          </span>
         </div>
-
-        <span style={{ color: '#fff', fontSize: 18, fontWeight: 800, letterSpacing: '0.06em' }}>
-          ACTION HISTORY
-        </span>
-
-        <div
-          onClick={onClose}
-          style={{
-            marginLeft: 'auto',
-            width: 42,
-            height: 42,
-            borderRadius: '50%',
-            background: '#94a3b8',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            cursor: 'pointer',
-          }}
-        >
-          <CloseOutlined style={{ color: '#0f172a', fontSize: 18 }} />
+        <div style={{ fontSize: 12, color: '#9ca3af' }}>
+          {count} event{count !== 1 ? 's' : ''}
         </div>
       </div>
 
-      <div style={{ padding: '12px 20px 28px', background: '#fff' }}>
-        <Table
-          dataSource={request.actionHistory}
-          columns={columns}
-          rowKey="timestamp"
-          pagination={false}
-          rowClassName={() => 'mr-history-row'}
-          style={{ fontSize: 14 }}
-        />
-      </div>
+      {/* Table */}
+      <Table
+        dataSource={request.actionHistory}
+        columns={columns}
+        rowKey="timestamp"
+        pagination={false}
+        size="small"
+        style={{ borderRadius: 8, overflow: 'hidden' }}
+      />
     </Modal>
   );
 }
