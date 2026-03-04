@@ -38,18 +38,106 @@ All breadcrumb levels are clickable.
 ## Data Types (`requisition.types.ts`)
 
 ```ts
-RequisitionStatus    = 'Draft' | 'Pending' | 'Approved' | 'Rejected'
-RequisitionFormData  = { dateTime, selectedLevel, refNo, typeOfRequisition: string[], vacancyNumber,
-                         employee, employmentType, inputInDays, workLocation, gender, etaDate,
-                         experienceMode, yearsOfExperience, preferableDesired,
-                         ageMode, ageMinimum, ageMaximum, ageFrom, ageTo,
-                         educationQualification, educationField, educationCourse, educationNote,
-                         skillsRequired, jobResponsibility, trainingSpecialization,
-                         otherRequirements, justification }
-RequisitionRequest   = { id, refNo, initiateDate, requested, approved, status, department,
-                         designation, formData, approvalWorkflow, actionHistory, attachments? }
-RequisitionAttachment = { uid, name, size?, objectUrl? }
+RequisitionStatus = 'Draft' | 'Pending' | 'Approved' | 'Rejected'
+
+EducationRequirement = {
+  qualification: string   // SSC | HSC | Diploma | Bachelor | Masters | PhD
+  title: string
+  major: string
+  cgpa: string
+}
+
+RequisitionFormData = {
+  dateTime: string
+  selectedLevel: string
+  refNo: string
+  typeOfRequisition: string[]       // Both "New Recruitment" and "Replacement" can be selected
+  vacancyNumber: string
+  employee: string[]
+  employmentType: string            // 'Full Time' | 'Contractual' | 'Intern'
+  inputInDays: string               // only shown when Contractual
+  workLocation: string
+  gender: string
+  etaDate: string
+  experienceMode: 'Fresher' | 'Experienced'
+  yearsOfExperience: string
+  preferableDesired: string
+  ageMode: 'Minimum' | 'Maximum' | 'Range'
+  ageMinimum: string
+  ageMaximum: string
+  ageFrom: string
+  ageTo: string
+  educationQualification: string    // legacy single-row (kept for backward compat)
+  educationField: string
+  educationCourse: string
+  educationNote: string
+  educationRequirements: EducationRequirement[]  // multi-row education entries
+  skillsRequired: string[]
+  jobResponsibility: string
+  trainingSpecialization: string
+  otherRequirements: string
+  justification: string
+}
+
+RequisitionRequest = {
+  id: string
+  refNo: string
+  initiateDate: string
+  requested: number
+  approved: number
+  status: RequisitionStatus
+  department: string
+  designation: string
+  formData: RequisitionFormData
+  approvalWorkflow: ApprovalStep[]
+  actionHistory: ActionHistoryEntry[]
+  attachments?: RequisitionAttachment[]
+}
+
+ApprovalStep = {
+  approverName: string
+  approverId?: string
+  action: 'Approved' | 'Rejected' | 'Pending'
+  timestamp?: string
+  reason?: string
+  note?: string
+}
+
+ActionHistoryEntry = {
+  initiatedBy: string
+  timestamp: string
+  actionType: 'Created' | 'Submitted' | 'Approved' | 'Rejected' | 'Updated' | 'Draft Saved'
+}
+
+RequisitionAttachment = { uid: string; name: string; size?: number; objectUrl?: string }
+
+RequisitionFilters = {
+  dateRange: [string, string] | null
+  mrfNo: string
+  refNo: string
+  typeOfRequisition: string
+  employee: string
+  employmentType: string
+  vacancyNumber: string
+  department: string
+  designation: string
+  gender: string
+  status: string
+  workLocation: string
+  etaDate: string
+  experience: string
+  ageGroup: string
+  education: string
+}
 ```
+
+## Constants (`requisition.types.ts`)
+
+| Constant | Description |
+|----------|-------------|
+| `EMPTY_FILTERS` | Zero-value `RequisitionFilters` object used to reset filter state |
+| `DEFAULT_FORM_DATA` | Default `RequisitionFormData` used when opening a new MRF form |
+| `INITIAL_REQUISITIONS` | Seed data — two example `RequisitionRequest` records for development/demo |
 
 ## Form Sections
 
