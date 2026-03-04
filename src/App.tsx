@@ -103,18 +103,48 @@ function App() {
           token: {
             colorPrimary: '#3b82f6',
             borderRadius: 8,
-            fontFamily: "'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif",
+            fontFamily: "'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif",
+            fontSize: 13,
+            lineHeight: 1.5,
+            colorBgBase: '#ffffff',
+            colorBgLayout: '#f9fafb',
+            colorBorder: '#e5e7eb',
+            colorText: '#111827',
+            colorTextSecondary: '#6b7280',
           },
           components: {
+            Table: {
+              cellPaddingBlock: 8,
+              cellPaddingInline: 12,
+              headerBg: '#f9fafb',
+              headerColor: '#374151',
+              headerSortActiveBg: '#f3f4f6',
+              rowHoverBg: '#f9fafb',
+              fontSize: 13,
+            },
             Menu: {
+              itemHeight: 34,
               itemSelectedBg: '#eff6ff',
               itemSelectedColor: '#2563eb',
               itemHoverBg: '#f9fafb',
               subMenuItemBg: '#ffffff',
+              fontSize: 13,
             },
             Layout: {
               siderBg: '#ffffff',
               headerBg: '#ffffff',
+            },
+            Form: {
+              labelFontSize: 12,
+              labelColor: '#374151',
+              labelRequiredMarkColor: '#dc2626',
+            },
+            Modal: {
+              titleFontSize: 15,
+              titleLineHeight: 1.4,
+            },
+            Card: {
+              paddingLG: 16,
             },
           },
         }}
