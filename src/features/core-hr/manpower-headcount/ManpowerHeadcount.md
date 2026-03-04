@@ -42,12 +42,55 @@ All breadcrumb levels are clickable.
 
 ```ts
 HCStatus    = 'Draft' | 'Pending' | 'Approved' | 'Rejected'
-HCRequest   = { id, planYear, initiationDate, rows, status, totalReqHC, totalApprHC, approvalWorkflow, actionHistory, attachments? }
-HCOrgLevelRow = { id, orgLevelPath, department, designation, currentHC, requiredHC, budgetRange, justification }
-HCAttachment  = { uid, name, size?, objectUrl? }
-ApprovalStep  = { approverName, approverId, action, timestamp?, reason?, note? }
-ActionHistoryEntry = { initiatedBy, timestamp, actionType }
+
+HCRequest   = {
+  id: string
+  planYear: string
+  initiationDate: string
+  rows: HCOrgLevelRow[]
+  status: HCStatus
+  totalReqHC: number
+  totalApprHC: number | null
+  approvalWorkflow: ApprovalStep[]
+  actionHistory: ActionHistoryEntry[]
+  attachments?: HCAttachment[]
+}
+
+HCOrgLevelRow = {
+  id: string
+  orgLevelPath: string   // e.g. "Flight Operations > Director Flight Operations"
+  department: string
+  designation: string
+  currentHC: number
+  requiredHC: string
+  budgetRange: string
+  justification: string
+}
+
+HCAttachment = { uid: string; name: string; size?: number; objectUrl?: string }
+
+ApprovalStep = {
+  approverName: string
+  approverId: string
+  action: 'Approved' | 'Rejected' | 'Pending'
+  timestamp?: string
+  reason?: string
+  note?: string
+}
+
+ActionHistoryEntry = {
+  initiatedBy: string
+  timestamp: string
+  actionType: 'Created' | 'Submitted' | 'Approved' | 'Rejected' | 'Updated'
+}
 ```
+
+## Constants (`headcount.types.ts`)
+
+| Constant | Description |
+|----------|-------------|
+| `PLAN_YEAR_OPTIONS` | Selectable fiscal years (FY 2023–2026) used by the plan year picker |
+| `INITIAL_REQUESTS` | Seed data — two example `HCRequest` records for development/demo |
 
 ## Form — Create Mode
 - Select Plan Year
