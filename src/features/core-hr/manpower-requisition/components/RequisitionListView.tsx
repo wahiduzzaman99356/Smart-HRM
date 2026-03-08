@@ -24,7 +24,7 @@ type DateRange = RangePickerProps['value'];
 
 // ─── Drawer label style ───────────────────────────────────────────────────────
 const DL: React.CSSProperties = {
-  fontSize: 10, fontWeight: 700, color: '#3b82f6', letterSpacing: '0.06em', marginBottom: 6,
+  fontSize: 10, fontWeight: 700, color: '#0d9488', letterSpacing: '0.06em', marginBottom: 6,
 };
 
 // ─── Status badge ─────────────────────────────────────────────────────────────
@@ -141,7 +141,7 @@ export function RequisitionListView({
         <div>
           <div
             onClick={() => onViewRequest(r)}
-            style={{ fontWeight: 700, fontSize: 13, color: '#3b82f6', textDecoration: 'underline', textDecorationStyle: 'dotted', cursor: 'pointer', display: 'inline-block' }}
+            style={{ fontWeight: 700, fontSize: 13, color: '#0d9488', textDecoration: 'underline', textDecorationStyle: 'dotted', cursor: 'pointer', display: 'inline-block' }}
           >
             {r.id}
           </div>
@@ -180,7 +180,7 @@ export function RequisitionListView({
       width: 80,
       render: (_, r) => (
         r.approved > 0
-          ? <span style={{ fontSize: 14, fontWeight: 700, color: '#3b82f6' }}>{r.approved}</span>
+          ? <span style={{ fontSize: 14, fontWeight: 700, color: '#0d9488' }}>{r.approved}</span>
           : <span style={{ color: '#d1d5db', fontWeight: 600 }}>--</span>
       ),
     },
@@ -274,7 +274,7 @@ export function RequisitionListView({
       }}>
         {/* Date range */}
         <div>
-          <div style={{ fontSize: 10, fontWeight: 700, color: '#3b82f6', letterSpacing: '0.06em', marginBottom: 5 }}>
+          <div style={{ fontSize: 10, fontWeight: 700, color: '#0d9488', letterSpacing: '0.06em', marginBottom: 5 }}>
             DATE RANGE
           </div>
           <RangePicker
@@ -288,7 +288,7 @@ export function RequisitionListView({
 
         {/* Status filter */}
         <div>
-          <div style={{ fontSize: 10, fontWeight: 700, color: '#3b82f6', letterSpacing: '0.06em', marginBottom: 5 }}>
+          <div style={{ fontSize: 10, fontWeight: 700, color: '#0d9488', letterSpacing: '0.06em', marginBottom: 5 }}>
             STATUS FILTER
           </div>
           <Select
@@ -308,7 +308,7 @@ export function RequisitionListView({
 
         {/* MRF / Ref search */}
         <div>
-          <div style={{ fontSize: 10, fontWeight: 700, color: '#3b82f6', letterSpacing: '0.06em', marginBottom: 5 }}>
+          <div style={{ fontSize: 10, fontWeight: 700, color: '#0d9488', letterSpacing: '0.06em', marginBottom: 5 }}>
             MRF NO / REF. ID
           </div>
           <Input
@@ -503,3 +503,4 @@ export function RequisitionListView({
     </div>
   );
 }
+

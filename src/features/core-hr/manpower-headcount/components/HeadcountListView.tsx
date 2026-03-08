@@ -94,7 +94,7 @@ export function HeadcountListView({ requests, onCreate, onViewRequest, onTakeAct
           onClick={() => onViewRequest(r)}
           style={{ cursor: 'pointer' }}
         >
-          <div style={{ fontWeight: 700, fontSize: 13, color: '#3b82f6', textDecoration: 'underline', textDecorationStyle: 'dotted' }}>{r.id}</div>
+          <div style={{ fontWeight: 700, fontSize: 13, color: '#0d9488', textDecoration: 'underline', textDecorationStyle: 'dotted' }}>{r.id}</div>
           <div style={{ fontSize: 12, color: '#6b7280', marginTop: 2 }}>
             HC Initiation &bull; {r.initiationDate}
           </div>
@@ -120,7 +120,7 @@ export function HeadcountListView({ requests, onCreate, onViewRequest, onTakeAct
       width: 90,
       render: (_, r) => (
         r.totalApprHC !== null
-          ? <span style={{ fontSize: 14, fontWeight: 700, color: '#3b82f6' }}>{r.totalApprHC}</span>
+          ? <span style={{ fontSize: 14, fontWeight: 700, color: '#0d9488' }}>{r.totalApprHC}</span>
           : <span style={{ color: '#d1d5db', fontWeight: 600 }}>--</span>
       ),
     },
@@ -214,7 +214,7 @@ export function HeadcountListView({ requests, onCreate, onViewRequest, onTakeAct
       }}>
         {/* Date range */}
         <div>
-          <div style={{ fontSize: 10, fontWeight: 700, color: '#3b82f6', letterSpacing: '0.06em', marginBottom: 5 }}>
+          <div style={{ fontSize: 10, fontWeight: 700, color: '#0d9488', letterSpacing: '0.06em', marginBottom: 5 }}>
             DATE RANGE
           </div>
           <RangePicker
@@ -228,7 +228,7 @@ export function HeadcountListView({ requests, onCreate, onViewRequest, onTakeAct
 
         {/* Plan year */}
         <div>
-          <div style={{ fontSize: 10, fontWeight: 700, color: '#3b82f6', letterSpacing: '0.06em', marginBottom: 5 }}>
+          <div style={{ fontSize: 10, fontWeight: 700, color: '#0d9488', letterSpacing: '0.06em', marginBottom: 5 }}>
             PLAN YEAR
           </div>
           <Select
@@ -243,7 +243,7 @@ export function HeadcountListView({ requests, onCreate, onViewRequest, onTakeAct
 
         {/* Status */}
         <div>
-          <div style={{ fontSize: 10, fontWeight: 700, color: '#3b82f6', letterSpacing: '0.06em', marginBottom: 5 }}>
+          <div style={{ fontSize: 10, fontWeight: 700, color: '#0d9488', letterSpacing: '0.06em', marginBottom: 5 }}>
             STATUS FILTER
           </div>
           <Select
@@ -263,7 +263,7 @@ export function HeadcountListView({ requests, onCreate, onViewRequest, onTakeAct
 
         {/* Ref search */}
         <div>
-          <div style={{ fontSize: 10, fontWeight: 700, color: '#3b82f6', letterSpacing: '0.06em', marginBottom: 5 }}>
+          <div style={{ fontSize: 10, fontWeight: 700, color: '#0d9488', letterSpacing: '0.06em', marginBottom: 5 }}>
             REF. NO / ID
           </div>
           <Input
@@ -307,3 +307,4 @@ export function HeadcountListView({ requests, onCreate, onViewRequest, onTakeAct
     </div>
   );
 }
+

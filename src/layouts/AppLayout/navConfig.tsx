@@ -162,6 +162,7 @@ export const NAV_MODULES: NavModule[] = [
     children: [
       { key: '/assets/it-equipment', label: 'IT Equipment' },
       { key: '/assets/stationery',   label: 'Stationery' },
+      { key: '/assets/assign-asset', label: 'Assign Asset' },
     ],
   },
 

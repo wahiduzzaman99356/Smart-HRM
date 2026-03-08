@@ -48,7 +48,7 @@ export function EditNodeForm({
   const isEdit = anchor.mode === 'edit';
 
   const theme       = dept ? DEPT_THEME[dept] : null;
-  const accentColor = theme?.border ?? '#4f46e5';
+  const accentColor = theme?.border ?? '#0d9488';
 
   const designationOpts  = useMemo(() => getDesignationOptions(dept ?? ''), [dept, getDesignationOptions]);
   const designationEmps  = useMemo(

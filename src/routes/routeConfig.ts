@@ -109,6 +109,7 @@ export const ROUTES = {
     ROOT:         'assets',
     IT_EQUIPMENT: '/assets/it-equipment',
     STATIONERY:   '/assets/stationery',
+    ASSIGN_ASSET: '/assets/assign-asset',
   },
 
   // ── MODULE 8: Performance Management ─────────────────────────────────────

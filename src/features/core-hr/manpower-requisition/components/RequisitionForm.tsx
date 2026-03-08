@@ -40,7 +40,7 @@ import type { OrgLevelSelection } from '../../manpower-headcount/components/OrgL
 
 // ─── Style constants ──────────────────────────────────────────────────────────
 const LABEL: React.CSSProperties = {
-  fontSize: 10, fontWeight: 700, color: '#3b82f6',
+  fontSize: 10, fontWeight: 700, color: '#0d9488',
   marginBottom: 6, letterSpacing: '0.04em',
 };
 const SUBLABEL: React.CSSProperties = {
@@ -180,7 +180,7 @@ function RichTextEditor({
   return (
     <div
       style={{
-        border: `1px solid ${focused ? '#3b82f6' : '#d9d9d9'}`,
+        border: `1px solid ${focused ? '#0d9488' : '#d9d9d9'}`,
         borderRadius: 8,
         overflow: 'hidden',
         transition: 'border-color 0.2s',
@@ -386,7 +386,7 @@ export function RequisitionForm({
           type="link"
           icon={<LeftOutlined style={{ fontSize: 12 }} />}
           onClick={onBack}
-          style={{ color: '#3b82f6', fontWeight: 600, padding: 0, fontSize: 13 }}
+          style={{ color: '#0d9488', fontWeight: 600, padding: 0, fontSize: 13 }}
         >
           Back to List
         </Button>
@@ -415,7 +415,7 @@ export function RequisitionForm({
                 onClick={() => setPickerOpen(true)}
                 style={{
                   height: 36, borderRadius: 7, fontWeight: 600,
-                  color: '#1d4ed8', borderColor: '#bfdbfe', background: '#eff6ff',
+                  color: '#0f766e', borderColor: '#bfdbfe', background: '#eff6ff',
                   fontSize: 12, flexShrink: 0,
                 }}
               >
@@ -506,7 +506,7 @@ export function RequisitionForm({
             <div style={SUMMARY_ROW}>In This Position: <strong style={{ color: '#111827' }}>5</strong></div>
             <div style={{ ...SUMMARY_ROW, color: '#059669' }}>Remaining HC: <strong>7</strong></div>
             <div style={{ ...SUMMARY_ROW, color: '#059669' }}>Separation: <strong>8</strong></div>
-            <div style={{ fontSize: 14, color: '#2563eb', fontWeight: 800, marginTop: 3 }}>
+            <div style={{ fontSize: 14, color: '#0f766e', fontWeight: 800, marginTop: 3 }}>
               Required: {requiredVacancy}
             </div>
           </div>
@@ -840,7 +840,7 @@ export function RequisitionForm({
               icon={<UploadOutlined />}
               style={{
                 borderRadius: 7, background: '#eff6ff',
-                borderColor: '#bfdbfe', color: '#2563eb', fontWeight: 600, height: 34,
+                borderColor: '#bfdbfe', color: '#0f766e', fontWeight: 600, height: 34,
               }}
             >
               Click to Attach Files
@@ -858,7 +858,7 @@ export function RequisitionForm({
                     borderRadius: 7, padding: '6px 12px', fontSize: 13, color: '#374151',
                   }}
                 >
-                  <UploadOutlined style={{ color: '#3b82f6', fontSize: 14, flexShrink: 0 }} />
+                  <UploadOutlined style={{ color: '#0d9488', fontSize: 14, flexShrink: 0 }} />
                   <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     {file.name}
                   </span>
@@ -869,7 +869,7 @@ export function RequisitionForm({
                     <Button
                       type="text" size="small" icon={<EyeOutlined />}
                       onClick={() => handleViewFile(file)}
-                      style={{ color: '#3b82f6', padding: '0 4px', height: 24, flexShrink: 0 }}
+                      style={{ color: '#0d9488', padding: '0 4px', height: 24, flexShrink: 0 }}
                     />
                   </Tooltip>
                   <Popconfirm
@@ -958,7 +958,7 @@ export function RequisitionForm({
         width={760}
         title={
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <FileOutlined style={{ color: '#3b82f6' }} />
+            <FileOutlined style={{ color: '#0d9488' }} />
             <span style={{ fontWeight: 700, fontSize: 14, color: '#111827' }}>
               {viewingFile?.name}
             </span>
@@ -999,7 +999,7 @@ export function RequisitionForm({
           }
           return (
             <div style={{ textAlign: 'center', padding: '40px 0' }}>
-              <FileOutlined style={{ fontSize: 48, color: '#3b82f6', marginBottom: 12 }} />
+              <FileOutlined style={{ fontSize: 48, color: '#0d9488', marginBottom: 12 }} />
               <div style={{ fontSize: 14, color: '#374151', marginBottom: 16 }}>{viewingFile.name}</div>
               <Button type="primary" href={url} target="_blank" rel="noopener noreferrer">
                 Open File
@@ -1011,3 +1011,4 @@ export function RequisitionForm({
     </div>
   );
 }
+

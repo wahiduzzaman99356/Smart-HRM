@@ -94,7 +94,7 @@ export function ViewRequisitionModal({ request, onClose }: Props) {
         items={[
           { key: 'date',  label: 'INITIATED ON',    children: request.initiateDate },
           { key: 'req',   label: 'REQUESTED',        children: <strong style={{ color: '#111827' }}>{request.requested}</strong> },
-          { key: 'appr',  label: 'APPROVED',         children: request.approved > 0 ? <strong style={{ color: '#3b82f6' }}>{request.approved}</strong> : <span style={{ color: '#d1d5db' }}>—</span> },
+          { key: 'appr',  label: 'APPROVED',         children: request.approved > 0 ? <strong style={{ color: '#0d9488' }}>{request.approved}</strong> : <span style={{ color: '#d1d5db' }}>—</span> },
           { key: 'dept',  label: 'DEPARTMENT',       children: request.department },
           { key: 'desig', label: 'DESIGNATION',      children: request.designation },
           { key: 'level', label: 'ORG LEVEL',        children: <span style={{ fontSize: 12 }}>{fd.selectedLevel || '—'}</span> },
@@ -104,7 +104,7 @@ export function ViewRequisitionModal({ request, onClose }: Props) {
       />
 
       <div style={{ border: '1px solid #f0f0f0', borderRadius: 8, padding: '14px 16px', marginBottom: 16 }}>
-        <div style={{ fontSize: 11, fontWeight: 700, color: '#3b82f6', letterSpacing: '0.06em', marginBottom: 10 }}>
+        <div style={{ fontSize: 11, fontWeight: 700, color: '#0d9488', letterSpacing: '0.06em', marginBottom: 10 }}>
           CANDIDATE REQUIREMENTS
         </div>
         <Descriptions
@@ -152,7 +152,7 @@ export function ViewRequisitionModal({ request, onClose }: Props) {
             { label: 'OTHER REQUIREMENTS',       html: fd.otherRequirements },
           ].map(({ label, html }) => html ? (
             <div key={label} style={{ border: '1px solid #f0f0f0', borderRadius: 8, padding: 10 }}>
-              <div style={{ fontSize: 11, fontWeight: 700, color: '#3b82f6', letterSpacing: '0.06em', marginBottom: 6 }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: '#0d9488', letterSpacing: '0.06em', marginBottom: 6 }}>
                 {label}
               </div>
               <div
@@ -166,7 +166,7 @@ export function ViewRequisitionModal({ request, onClose }: Props) {
 
       {fd.justification && (
         <div style={{ border: '1px solid #f0f0f0', borderRadius: 8, padding: 10, marginBottom: 16 }}>
-          <div style={{ fontSize: 11, fontWeight: 700, color: '#3b82f6', letterSpacing: '0.06em', marginBottom: 6 }}>
+          <div style={{ fontSize: 11, fontWeight: 700, color: '#0d9488', letterSpacing: '0.06em', marginBottom: 6 }}>
             JUSTIFICATION
           </div>
           <div style={{ fontSize: 13, color: '#374151' }}>{fd.justification}</div>
@@ -175,7 +175,7 @@ export function ViewRequisitionModal({ request, onClose }: Props) {
 
       {/* ── Attachments ───────────────────────────────────────────────────── */}
       <div style={{ border: '1px solid #f0f0f0', borderRadius: 8, padding: 10 }}>
-        <div style={{ fontSize: 11, fontWeight: 700, color: '#3b82f6', letterSpacing: '0.06em', marginBottom: 8 }}>
+        <div style={{ fontSize: 11, fontWeight: 700, color: '#0d9488', letterSpacing: '0.06em', marginBottom: 8 }}>
           ATTACHMENTS
         </div>
         {hasAttachments ? (
@@ -189,7 +189,7 @@ export function ViewRequisitionModal({ request, onClose }: Props) {
                   borderRadius: 7, padding: '6px 12px',
                 }}
               >
-                <PaperClipOutlined style={{ color: '#3b82f6', flexShrink: 0 }} />
+                <PaperClipOutlined style={{ color: '#0d9488', flexShrink: 0 }} />
                 <span style={{ flex: 1, fontSize: 13, color: '#374151', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                   {att.name}
                 </span>
@@ -203,7 +203,7 @@ export function ViewRequisitionModal({ request, onClose }: Props) {
                     href={att.objectUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    style={{ fontSize: 12, color: '#3b82f6', fontWeight: 600, flexShrink: 0 }}
+                    style={{ fontSize: 12, color: '#0d9488', fontWeight: 600, flexShrink: 0 }}
                   >
                     View
                   </a>
@@ -218,3 +218,4 @@ export function ViewRequisitionModal({ request, onClose }: Props) {
     </Modal>
   );
 }
+

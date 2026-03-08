@@ -248,7 +248,7 @@ export function InitiateHeadcountForm({
           type="link"
           icon={<LeftOutlined style={{ fontSize: 12 }} />}
           onClick={onBack}
-          style={{ color: '#3b82f6', fontWeight: 600, padding: 0, fontSize: 13 }}
+          style={{ color: '#0d9488', fontWeight: 600, padding: 0, fontSize: 13 }}
         >
           Back to List
         </Button>
@@ -284,7 +284,7 @@ export function InitiateHeadcountForm({
               <Button
                 icon={<ApartmentOutlined />}
                 onClick={() => setPickerOpen(true)}
-                style={{ background: '#eff6ff', borderColor: '#bfdbfe', color: '#1d4ed8', fontWeight: 600, fontSize: 12, borderRadius: 7, flexShrink: 0, height: 32 }}
+                style={{ background: '#eff6ff', borderColor: '#bfdbfe', color: '#0f766e', fontWeight: 600, fontSize: 12, borderRadius: 7, flexShrink: 0, height: 32 }}
               >
                 SELECT LEVEL
               </Button>
@@ -375,13 +375,13 @@ export function InitiateHeadcountForm({
 
       {/* ── Attachments (both modes) ──────────────────────────────────────── */}
       <div style={{ marginBottom: 20 }}>
-        <div style={{ fontSize: 10, fontWeight: 700, color: '#3b82f6', letterSpacing: '0.06em', marginBottom: 8 }}>
+        <div style={{ fontSize: 10, fontWeight: 700, color: '#0d9488', letterSpacing: '0.06em', marginBottom: 8 }}>
           ATTACHMENTS (OPTIONAL)
         </div>
         <Upload multiple beforeUpload={handleBeforeUpload} showUploadList={false}>
           <Button
             icon={<UploadOutlined />}
-            style={{ borderRadius: 7, background: '#eff6ff', borderColor: '#bfdbfe', color: '#2563eb', fontWeight: 600, height: 34 }}
+            style={{ borderRadius: 7, background: '#eff6ff', borderColor: '#bfdbfe', color: '#0f766e', fontWeight: 600, height: 34 }}
           >
             Click to Attach Files
           </Button>
@@ -397,7 +397,7 @@ export function InitiateHeadcountForm({
                   borderRadius: 7, padding: '6px 12px', fontSize: 13, color: '#374151',
                 }}
               >
-                <UploadOutlined style={{ color: '#3b82f6', fontSize: 14, flexShrink: 0 }} />
+                <UploadOutlined style={{ color: '#0d9488', fontSize: 14, flexShrink: 0 }} />
                 <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                   {file.name}
                 </span>
@@ -408,7 +408,7 @@ export function InitiateHeadcountForm({
                   <Button
                     type="text" size="small" icon={<EyeOutlined />}
                     onClick={() => setViewingFile(file)}
-                    style={{ color: '#3b82f6', padding: '0 4px', height: 24, flexShrink: 0 }}
+                    style={{ color: '#0d9488', padding: '0 4px', height: 24, flexShrink: 0 }}
                   />
                 </Tooltip>
                 <Popconfirm
@@ -473,7 +473,7 @@ export function InitiateHeadcountForm({
               </Button>
               <Button
                 onClick={() => handleCreateAction('Pending')}
-                style={{ background: '#3b82f6', borderColor: '#3b82f6', color: '#fff', fontWeight: 700, borderRadius: 7, minWidth: 110 }}
+                style={{ background: '#0d9488', borderColor: '#0d9488', color: '#fff', fontWeight: 700, borderRadius: 7, minWidth: 110 }}
               >
                 Submit Request
               </Button>
@@ -491,7 +491,7 @@ export function InitiateHeadcountForm({
         width={760}
         title={
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <FileOutlined style={{ color: '#3b82f6' }} />
+            <FileOutlined style={{ color: '#0d9488' }} />
             <span style={{ fontWeight: 700, fontSize: 14, color: '#111827' }}>{viewingFile?.name}</span>
           </div>
         }
@@ -507,7 +507,7 @@ export function InitiateHeadcountForm({
           if (isPdf)   return <iframe src={url} title={viewingFile.name} style={{ width: '100%', height: 500, border: 'none', borderRadius: 8 }} />;
           return (
             <div style={{ textAlign: 'center', padding: '40px 0' }}>
-              <FileOutlined style={{ fontSize: 48, color: '#3b82f6', marginBottom: 12 }} />
+              <FileOutlined style={{ fontSize: 48, color: '#0d9488', marginBottom: 12 }} />
               <div style={{ fontSize: 14, color: '#374151', marginBottom: 16 }}>{viewingFile.name}</div>
               <Button type="primary" href={url} target="_blank" rel="noopener noreferrer">Open File</Button>
             </div>
@@ -526,3 +526,4 @@ export function InitiateHeadcountForm({
     </div>
   );
 }
+
