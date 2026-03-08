@@ -146,6 +146,23 @@ export const ROUTES = {
     SYSTEM_LOGS:     '/analytics/system-logs',
     EMPLOYEE_MASTER: '/analytics/employee-master',
   },
+
+  // ── MODULE 13: Employee Self Service (ESS) ────────────────────────────────
+  ESS: {
+    ROOT:               'ess',
+    DASHBOARD:          '/ess/dashboard',
+    ATTENDANCE:         '/ess/attendance',
+    LEAVE:              '/ess/leave',
+    APPLY_FOR_DOCUMENT: '/ess/apply-for-document',
+    REACH_HR:           '/ess/reach-hr',
+    LOAN_MANAGEMENT:    '/ess/loan-management',
+    FOC:                '/ess/foc',
+    PF:                 '/ess/pf',
+    GF:                 '/ess/gf',
+    OUTSTATION:         '/ess/outstation',
+    MY_SHIFT:           '/ess/my-shift',
+    DEMAND:             '/ess/demand',
+  },
 } as const;
 
 // ── Helper: build a detail URL from a pattern + id ───────────────────────────

@@ -19,6 +19,7 @@ import {
   UserDeleteOutlined,
   SettingOutlined,
   BarChartOutlined,
+  IdcardOutlined,
 } from '@ant-design/icons';
 
 export interface NavSubItem {
@@ -81,7 +82,28 @@ export const NAV_MODULES: NavModule[] = [
     ],
   },
 
-  // ── 4. Employee Relationship ──────────────────────────────────────────────────
+  // ── 4. Employee Self Service (ESS) ────────────────────────────────────────────
+  {
+    key: 'ess',
+    label: 'ESS',
+    icon: <IdcardOutlined />,
+    children: [
+      { key: '/ess/dashboard',          label: 'Dashboard' },
+      { key: '/ess/attendance',         label: 'Attendance' },
+      { key: '/ess/leave',              label: 'Leave' },
+      { key: '/ess/apply-for-document', label: 'Apply for Document' },
+      { key: '/ess/reach-hr',           label: 'Reach HR' },
+      { key: '/ess/loan-management',    label: 'Loan Management' },
+      { key: '/ess/foc',                label: 'FOC' },
+      { key: '/ess/pf',                 label: 'PF' },
+      { key: '/ess/gf',                 label: 'GF' },
+      { key: '/ess/outstation',         label: 'Out Station' },
+      { key: '/ess/my-shift',           label: 'My Shift' },
+      { key: '/ess/demand',             label: 'Demand' },
+    ],
+  },
+
+  // ── 5. Employee Relationship ──────────────────────────────────────────────────
   {
     key: 'employee-relations',
     label: 'Employee Relationship',
@@ -198,4 +220,5 @@ export const NAV_MODULES: NavModule[] = [
       { key: '/analytics/employee-master', label: 'Employee Master Data' },
     ],
   },
+
 ];
