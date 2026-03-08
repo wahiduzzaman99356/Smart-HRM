@@ -16,7 +16,7 @@ interface OrgSidebarProps {
 export function OrgSidebar({ employeeCount, vacantCount, filters, departments, onFiltersChange, onReset }: OrgSidebarProps) {
   const activeDept    = filters.department;
   const deptTheme     = activeDept && DEPT_THEME[activeDept as keyof typeof DEPT_THEME];
-  const highlightColor = deptTheme ? deptTheme.border : '#3b82f6';
+  const _highlightColor = deptTheme ? deptTheme.border : '#3b82f6';
 
   const deptOptions = [{ value: '', label: 'All Departments' }, ...departments];
 
@@ -103,7 +103,7 @@ export function OrgSidebar({ employeeCount, vacantCount, filters, departments, o
   );
 }
 
-function StatCard({ icon, value, label, color }: { icon: ReactNode; value: number; label: string; color: string }) {
+function StatCard({ icon: _icon, value, label, color }: { icon: ReactNode; value: number; label: string; color: string }) {
   return (
     <div style={{ flex:1, border:'1px solid #f0f0f0', borderRadius:10, padding:'8px 10px', textAlign:'center' }}>
       <div style={{ fontSize:20, fontWeight:700, color }}>{value}</div>

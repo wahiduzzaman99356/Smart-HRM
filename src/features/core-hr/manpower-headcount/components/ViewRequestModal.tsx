@@ -5,6 +5,7 @@
  */
 
 import { Modal, Table, Descriptions } from 'antd';
+import { PaperClipOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import type { HCRequest, HCOrgLevelRow, HCStatus } from '../types/headcount.types';
 
@@ -108,7 +109,7 @@ export function ViewRequestModal({ request, onClose }: Props) {
       />
 
       {/* Org levels table */}
-      <div style={{ border: '1px solid #e5e7eb', borderRadius: 8, overflow: 'hidden' }}>
+      <div style={{ border: '1px solid #e5e7eb', borderRadius: 8, overflow: 'hidden', marginBottom: 16 }}>
         <Table
           dataSource={request.rows}
           columns={columns}
@@ -117,6 +118,49 @@ export function ViewRequestModal({ request, onClose }: Props) {
           size="small"
           locale={{ emptyText: <span style={{ color: '#9ca3af' }}>No org levels on this request.</span> }}
         />
+      </div>
+
+      {/* Attachments */}
+      <div style={{ border: '1px solid #f0f0f0', borderRadius: 8, padding: 10 }}>
+        <div style={{ fontSize: 11, fontWeight: 700, color: '#3b82f6', letterSpacing: '0.06em', marginBottom: 8 }}>
+          ATTACHMENTS
+        </div>
+        {(request.attachments?.length ?? 0) > 0 ? (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+            {request.attachments!.map(att => (
+              <div
+                key={att.uid}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 10,
+                  background: '#f8fafc', border: '1px solid #e2e8f0',
+                  borderRadius: 7, padding: '6px 12px',
+                }}
+              >
+                <PaperClipOutlined style={{ color: '#3b82f6', flexShrink: 0 }} />
+                <span style={{ flex: 1, fontSize: 13, color: '#374151', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {att.name}
+                </span>
+                {att.size && (
+                  <span style={{ fontSize: 11, color: '#9ca3af', flexShrink: 0 }}>
+                    {(att.size / 1024).toFixed(1)} KB
+                  </span>
+                )}
+                {att.objectUrl && (
+                  <a
+                    href={att.objectUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ fontSize: 12, color: '#3b82f6', fontWeight: 600, flexShrink: 0 }}
+                  >
+                    View
+                  </a>
+                )}
+              </div>
+            ))}
+          </div>
+        ) : (
+          <span style={{ fontSize: 13, color: '#9ca3af' }}>No attachments.</span>
+        )}
       </div>
     </Modal>
   );

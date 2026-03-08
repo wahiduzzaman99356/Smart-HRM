@@ -1,20 +1,21 @@
 /**
  * ActionHistoryModal
- * Audit log for a headcount request.
+ * Audit log for a requisition request.
  */
 
 import { Modal, Table } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { CloseOutlined } from '@ant-design/icons';
-import type { HCRequest, ActionHistoryEntry } from '../types/headcount.types';
+import type { ActionHistoryEntry, RequisitionRequest } from '../types/requisition.types';
 
 // ─── Action type badge config ──────────────────────────────────────────────────
 const ACTION_CONFIG: Record<ActionHistoryEntry['actionType'], { color: string; bg: string }> = {
-  Created:   { color: '#2563eb', bg: '#eff6ff' },
-  Submitted: { color: '#d97706', bg: '#fffbeb' },
-  Approved:  { color: '#059669', bg: '#f0fdf4' },
-  Rejected:  { color: '#dc2626', bg: '#fef2f2' },
-  Updated:   { color: '#7c3aed', bg: '#f5f3ff' },
+  Created:      { color: '#2563eb', bg: '#eff6ff' },
+  Submitted:    { color: '#d97706', bg: '#fffbeb' },
+  Approved:     { color: '#059669', bg: '#f0fdf4' },
+  Rejected:     { color: '#dc2626', bg: '#fef2f2' },
+  Updated:      { color: '#7c3aed', bg: '#f5f3ff' },
+  'Draft Saved': { color: '#6b7280', bg: '#f3f4f6' },
 };
 
 // ─── Table columns ─────────────────────────────────────────────────────────────
@@ -62,7 +63,7 @@ const columns: ColumnsType<ActionHistoryEntry> = [
 
 // ─── Component ────────────────────────────────────────────────────────────────
 interface Props {
-  request: HCRequest | null;
+  request: RequisitionRequest | null;
   onClose: () => void;
 }
 

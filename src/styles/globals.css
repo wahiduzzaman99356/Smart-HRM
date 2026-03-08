@@ -1,3 +1,7 @@
+/* ============================================================
+   Smart-HRM Design System — CSS Custom Properties
+   ============================================================ */
+
 /* Base reset */
 *,
 *::before,
@@ -5,21 +9,122 @@
   box-sizing: border-box;
 }
 
+/* ============================================================
+   Design Tokens
+   ============================================================ */
+
+:root {
+  /* --- Typography --- */
+  --font-family-base: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+
+  --text-xs:   11px; /* metadata, timestamps, secondary labels */
+  --text-sm:   12px; /* table cell text, captions */
+  --text-base: 13px; /* body, form fields, default Ant Design */
+  --text-md:   14px; /* section headings, emphasized body */
+  --text-lg:   16px; /* page titles */
+  --text-xl:   20px; /* dashboard KPI numbers */
+  --text-2xl:  24px; /* modal / section hero headings */
+
+  --font-regular:  400;
+  --font-medium:   500;
+  --font-semibold: 600;
+  --font-bold:     700;
+
+  --leading-tight:   1.2;
+  --leading-normal:  1.5;
+  --leading-relaxed: 1.6;
+
+  --tracking-tight:  -0.01em;
+  --tracking-normal: 0em;
+  --tracking-wide:   0.04em; /* uppercase labels */
+  --tracking-wider:  0.06em;
+
+  /* --- Brand Colors --- */
+  --color-primary:       #3b82f6; /* blue-500 */
+  --color-primary-dark:  #2563eb; /* blue-600 */
+  --color-primary-light: #eff6ff; /* blue-50 */
+  --color-secondary:     #6366f1; /* indigo-500 */
+  --color-accent:        #8b5cf6; /* purple-500 */
+
+  /* --- Neutral Colors --- */
+  --color-bg-base:        #f9fafb;
+  --color-bg-surface:     #ffffff;
+  --color-bg-subtle:      #f3f4f6;
+  --color-border:         #e5e7eb;
+  --color-border-strong:  #d1d5db;
+  --color-text-primary:   #111827;
+  --color-text-secondary: #374151;
+  --color-text-tertiary:  #6b7280;
+  --color-text-disabled:  #9ca3af;
+
+  /* --- Status Colors --- */
+  --color-status-pending:  #d97706;
+  --color-status-approved: #059669;
+  --color-status-rejected: #dc2626;
+  --color-status-draft:    #6b7280;
+  --color-status-info:     #0ea5e9;
+
+  /* --- Status Backgrounds --- */
+  --color-status-pending-bg:  #fffbeb;
+  --color-status-approved-bg: #f0fdf4;
+  --color-status-rejected-bg: #fef2f2;
+  --color-status-draft-bg:    #f9fafb;
+  --color-status-info-bg:     #f0f9ff;
+
+  /* --- Spacing Scale --- */
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-5:  20px;
+  --space-6:  24px;
+  --space-8:  32px;
+  --space-10: 40px;
+  --space-12: 48px;
+
+  /* --- Border Radius --- */
+  --radius-sm:   4px;
+  --radius-md:   8px;
+  --radius-lg:   12px;
+  --radius-xl:   16px;
+  --radius-full: 9999px;
+
+  /* --- Shadows --- */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 4px 6px rgba(0, 0, 0, 0.07), 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* ============================================================
+   Base Styles
+   ============================================================ */
+
 body {
   margin: 0;
   padding: 0;
-  font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+  font-family: var(--font-family-base);
+  font-size: var(--text-base);
+  line-height: var(--leading-normal);
+  color: var(--color-text-primary);
+  background: var(--color-bg-base);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: #f9fafb;
 }
 
 html,
 body,
 #root {
-  font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+  font-family: var(--font-family-base);
 }
 
+#root {
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Ensure Ant Design components inherit the font */
 .ant-layout,
 .ant-menu,
 .ant-breadcrumb,
@@ -32,9 +137,103 @@ body,
   font-family: inherit;
 }
 
-#root {
-  height: 100vh;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
+/* Collapsed sidebar submenu popup */
+.app-sider-submenu-popup .ant-menu {
+  min-width: 280px;
+  max-height: 72vh;
+  overflow-y: auto;
+}
+
+/* ============================================================
+   Typography Utilities
+   ============================================================ */
+
+.text-xs   { font-size: var(--text-xs); }
+.text-sm   { font-size: var(--text-sm); }
+.text-base { font-size: var(--text-base); }
+.text-md   { font-size: var(--text-md); }
+.text-lg   { font-size: var(--text-lg); }
+.text-xl   { font-size: var(--text-xl); }
+.text-2xl  { font-size: var(--text-2xl); }
+
+.font-regular  { font-weight: var(--font-regular); }
+.font-medium   { font-weight: var(--font-medium); }
+.font-semibold { font-weight: var(--font-semibold); }
+.font-bold     { font-weight: var(--font-bold); }
+
+.text-primary   { color: var(--color-text-primary); }
+.text-secondary { color: var(--color-text-secondary); }
+.text-tertiary  { color: var(--color-text-tertiary); }
+.text-disabled  { color: var(--color-text-disabled); }
+
+/* Uppercase label style — used for column headers, section labels */
+.label {
+  font-size: var(--text-xs);
+  font-weight: var(--font-semibold);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wider);
+  color: var(--color-text-tertiary);
+}
+
+/* ============================================================
+   Page Layout Utilities
+   ============================================================ */
+
+.page-header {
+  margin-bottom: var(--space-5);
+}
+
+.page-title {
+  font-size: var(--text-lg);
+  font-weight: var(--font-semibold);
+  color: var(--color-text-primary);
+  letter-spacing: var(--tracking-tight);
+  line-height: var(--leading-tight);
+  margin: 0;
+}
+
+.page-subtitle {
+  font-size: var(--text-sm);
+  color: var(--color-text-tertiary);
+  margin: var(--space-1) 0 0;
+}
+
+/* ============================================================
+   Surface / Card Utilities
+   ============================================================ */
+
+.surface {
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+}
+
+/* ============================================================
+   Status Badge Utilities
+   ============================================================ */
+
+.badge-pending {
+  background: var(--color-status-pending-bg);
+  color: var(--color-status-pending);
+}
+
+.badge-approved {
+  background: var(--color-status-approved-bg);
+  color: var(--color-status-approved);
+}
+
+.badge-rejected {
+  background: var(--color-status-rejected-bg);
+  color: var(--color-status-rejected);
+}
+
+.badge-draft {
+  background: var(--color-status-draft-bg);
+  color: var(--color-status-draft);
+}
+
+.badge-info {
+  background: var(--color-status-info-bg);
+  color: var(--color-status-info);
 }

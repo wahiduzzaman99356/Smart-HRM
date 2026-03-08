@@ -11,6 +11,7 @@ import { ROUTES } from './routeConfig';
 
 const OrganogramPage = lazy(() => import('@/features/core-hr/organogram/pages/OrganogramPage'));
 const ManpowerHeadcountPage = lazy(() => import('@/features/core-hr/manpower-headcount/pages/ManpowerHeadcountPage'));
+const ManpowerRequisitionPage = lazy(() => import('@/features/core-hr/manpower-requisition/pages/ManpowerRequisitionPage'));
 
 function PageLoader() {
   return (
@@ -45,6 +46,7 @@ const SuspensedOutlet = () => (
   </Suspense>
 );
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const router = createBrowserRouter([
   {
     path: '/',
@@ -57,6 +59,7 @@ export const router = createBrowserRouter([
       { index: true, element: <Navigate to={ROUTES.CORE_HR.ORGANOGRAM} replace /> },
       { path: ROUTES.CORE_HR.ORGANOGRAM, element: <OrganogramPage /> },
       { path: ROUTES.CORE_HR.MANPOWER_HEADCOUNT, element: <ManpowerHeadcountPage /> },
+      { path: ROUTES.CORE_HR.REQUISITION, element: <ManpowerRequisitionPage /> },
 
       { path: '/core-hr/*', element: <ComingSoon /> },
       { path: '/recruitment/*', element: <ComingSoon /> },

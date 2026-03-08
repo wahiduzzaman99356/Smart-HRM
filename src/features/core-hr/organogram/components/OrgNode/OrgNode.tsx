@@ -40,7 +40,7 @@ export function OrgNode({
   const empty  = data.status === 'empty';
   const vacant = data.status === 'vacant';
   const sep    = data.status === 'separation';
-  const active = data.status === 'active';
+  const _active = data.status === 'active';
 
   const isHighlighted = !!highlightDept && data.department === highlightDept;
   const isDimmed      = !!highlightDept && !!data.department && !isHighlighted;

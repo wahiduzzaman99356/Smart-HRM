@@ -10,7 +10,7 @@
  *  └──────────────────────────────────┴───────────────────────────────────┘
  */
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import type { ReactNode } from 'react';
 import { Layout, Menu, Button, Avatar, Badge, Tooltip, Breadcrumb } from 'antd';
 import type { MenuProps } from 'antd';
@@ -34,6 +34,8 @@ function buildMenuItems(): MenuProps['items'] {
     key: mod.key,
     label: mod.label,
     icon: mod.icon,
+    popupClassName: 'app-sider-submenu-popup',
+    popupOffset: [8, 0],
     children: mod.children.map(sub => ({
       key: sub.key,
       label: sub.label,
@@ -41,43 +43,40 @@ function buildMenuItems(): MenuProps['items'] {
   }));
 }
 
-// ─── Derive breadcrumb from pathname ──────────────────────────────────────────
-function useBreadcrumb(pathname: string, search: string): {
-  module: string;
-  modulePath: string;
-  page: string;
-  pagePath: string;
-} | null {
+// ─── Derive breadcrumb items from pathname + search params ────────────────────
+type BreadcrumbItem = { label: string; path: string };
+
+function useBreadcrumb(pathname: string, search: string): BreadcrumbItem[] | null {
   return useMemo(() => {
-    if (pathname === '/core-hr/manpower-headcount') {
-      const mode = new URLSearchParams(search).get('mode');
-      if (mode === 'create') {
-        return {
-          module: 'Core HR & Employee',
-          modulePath: '/core-hr/organogram',
-          page: 'Initiate Headcount Request',
-          pagePath: '/core-hr/manpower-headcount?mode=create',
-        };
-      }
-      if (mode === 'action') {
-        return {
-          module: 'Core HR & Employee',
-          modulePath: '/core-hr/organogram',
-          page: 'Approve / Reject Request',
-          pagePath: '/core-hr/manpower-headcount?mode=action',
-        };
-      }
+    const mode = new URLSearchParams(search).get('mode');
+
+    // Headcount form views (3-level)
+    if (pathname === '/core-hr/manpower-headcount' && mode) {
+      const pageLabel = mode === 'create' ? 'Initiate Headcount Request' : 'Approve / Reject Request';
+      return [
+        { label: 'Core HR & Employee', path: '/core-hr/organogram' },
+        { label: 'Manpower Headcount', path: '/core-hr/manpower-headcount' },
+        { label: pageLabel,            path: `/core-hr/manpower-headcount?mode=${mode}` },
+      ];
     }
 
+    // Requisition form views (3-level)
+    if (pathname === '/core-hr/requisition' && (mode === 'create' || mode === 'action')) {
+      return [
+        { label: 'Core HR & Employee',       path: '/core-hr/organogram' },
+        { label: 'Manpower Requisition',     path: '/core-hr/requisition' },
+        { label: 'Manpower Requisition Form', path: `/core-hr/requisition?mode=${mode}` },
+      ];
+    }
+
+    // Default: find the sub-menu item (2-level)
     for (const mod of NAV_MODULES) {
       const sub = mod.children.find(c => c.key === pathname);
       if (sub) {
-        return {
-          module: mod.label,
-          modulePath: mod.children[0]?.key ?? pathname,
-          page: sub.label,
-          pagePath: sub.key,
-        };
+        return [
+          { label: mod.label, path: mod.children[0]?.key ?? pathname },
+          { label: sub.label, path: sub.key },
+        ];
       }
     }
     return null;
@@ -94,21 +93,46 @@ export function AppLayout({ children }: AppLayoutProps) {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const selectedKey = location.pathname;
-  const breadcrumb = useBreadcrumb(selectedKey, location.search);
+  const selectedKey = useMemo(() => {
+    for (const mod of NAV_MODULES) {
+      const match = mod.children.find(c =>
+        location.pathname === c.key || location.pathname.startsWith(`${c.key}/`),
+      );
+      if (match) return match.key;
+    }
+    return location.pathname;
+  }, [location.pathname]);
 
-  // Keep the active module's submenu open; collapse others on init
-  const defaultOpenKeys = useMemo(
-    () =>
-      NAV_MODULES.filter(mod =>
-        mod.children.some(c => selectedKey.startsWith(c.key)),
-      ).map(mod => mod.key),
-    // Only compute once on mount
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [],
+  const breadcrumb = useBreadcrumb(location.pathname, location.search);
+
+  // Active module key from route
+  const routeOpenKeys = useMemo(
+    () => NAV_MODULES.filter(mod => mod.children.some(c => c.key === selectedKey)).map(mod => mod.key),
+    [selectedKey],
   );
 
+  const [openKeys, setOpenKeys] = useState<string[]>(routeOpenKeys);
+
+  useEffect(() => {
+    if (collapsed) {
+      setOpenKeys([]);
+      return;
+    }
+
+    setOpenKeys(prev => {
+      const merged = new Set([...prev, ...routeOpenKeys]);
+      return Array.from(merged);
+    });
+  }, [collapsed, routeOpenKeys]);
+
   const menuItems = useMemo(() => buildMenuItems(), []);
+
+  const controlledMenuStateProps: Pick<MenuProps, 'openKeys' | 'onOpenChange'> = collapsed
+    ? {}
+    : {
+        openKeys,
+        onOpenChange: keys => setOpenKeys(keys as string[]),
+      };
 
   const handleMenuClick: MenuProps['onClick'] = ({ key }) => {
     navigate(key);
@@ -187,7 +211,7 @@ export function AppLayout({ children }: AppLayoutProps) {
           <Menu
             mode="inline"
             selectedKeys={[selectedKey]}
-            defaultOpenKeys={defaultOpenKeys}
+            {...controlledMenuStateProps}
             onClick={handleMenuClick}
             items={menuItems}
             style={{
@@ -250,28 +274,21 @@ export function AppLayout({ children }: AppLayoutProps) {
             />
             {breadcrumb && (
               <Breadcrumb
-                items={[
-                  {
-                    title: (
-                      <span
-                        style={{ cursor: 'pointer', color: '#6b7280', fontSize: 13 }}
-                        onClick={() => navigate(breadcrumb.modulePath)}
-                      >
-                        {breadcrumb.module}
-                      </span>
-                    ),
-                  },
-                  {
-                    title: (
-                      <span
-                        style={{ cursor: 'pointer', fontWeight: 600, fontSize: 13, color: '#111827' }}
-                        onClick={() => navigate(breadcrumb.pagePath)}
-                      >
-                        {breadcrumb.page}
-                      </span>
-                    ),
-                  },
-                ]}
+                items={breadcrumb.map((item, idx) => ({
+                  title: (
+                    <span
+                      style={{
+                        cursor: 'pointer',
+                        fontSize: 13,
+                        color: idx === breadcrumb.length - 1 ? '#111827' : '#6b7280',
+                        fontWeight: idx === breadcrumb.length - 1 ? 600 : 400,
+                      }}
+                      onClick={() => navigate(item.path)}
+                    >
+                      {item.label}
+                    </span>
+                  ),
+                }))}
                 separator="›"
               />
             )}

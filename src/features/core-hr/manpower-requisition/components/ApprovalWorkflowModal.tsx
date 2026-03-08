@@ -1,11 +1,11 @@
 /**
  * ApprovalWorkflowModal
- * Shows a vertical step-by-step approval workflow for a headcount request.
+ * Shows a vertical step-by-step approval workflow for a requisition request.
  */
 
 import { Modal } from 'antd';
 import { CheckOutlined, CloseOutlined } from '@ant-design/icons';
-import type { HCRequest, ApprovalStep } from '../types/headcount.types';
+import type { ApprovalStep, RequisitionRequest } from '../types/requisition.types';
 
 // ─── Connector line between steps ─────────────────────────────────────────────
 function ConnectorLine({ prevAction }: { prevAction: ApprovalStep['action'] }) {
@@ -143,7 +143,7 @@ function StepRow({ step, stepNumber, isLast }: { step: ApprovalStep; stepNumber:
 
 // ─── Component ────────────────────────────────────────────────────────────────
 interface Props {
-  request: HCRequest | null;
+  request: RequisitionRequest | null;
   onClose: () => void;
 }
 

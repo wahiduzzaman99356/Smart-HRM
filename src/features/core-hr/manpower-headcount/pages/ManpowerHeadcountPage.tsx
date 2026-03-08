@@ -3,7 +3,7 @@
  * Orchestrates list ↔ create ↔ action views and all modal dialogs.
  */
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { message } from 'antd';
 import { useSearchParams } from 'react-router-dom';
 import type { HCRequest, HCOrgLevelRow } from '../types/headcount.types';
@@ -32,8 +32,8 @@ function nowTs(): string {
 // ─── Component ────────────────────────────────────────────────────────────────
 export default function ManpowerHeadcountPage() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const initialMode = searchParams.get('mode');
-  const [view,          setView]          = useState<View>(initialMode === 'create' ? 'create' : 'list');
+  const mode = searchParams.get('mode');
+  const [view,          setView]          = useState<View>(mode === 'create' ? 'create' : 'list');
   const [requests,      setRequests]      = useState<HCRequest[]>(INITIAL_REQUESTS);
   const [actionRequest, setActionRequest] = useState<HCRequest | null>(null);
 
@@ -41,6 +41,24 @@ export default function ManpowerHeadcountPage() {
   const [workflowReq, setWorkflowReq] = useState<HCRequest | null>(null);
   const [historyReq,  setHistoryReq]  = useState<HCRequest | null>(null);
   const [viewReq,     setViewReq]     = useState<HCRequest | null>(null);
+
+  useEffect(() => {
+    if (mode === 'create') {
+      setView('create');
+      setActionRequest(null);
+      return;
+    }
+
+    if (mode === 'action' && actionRequest) {
+      setView('action');
+      return;
+    }
+
+    setView('list');
+    if (mode !== 'action') {
+      setActionRequest(null);
+    }
+  }, [mode, actionRequest]);
 
   // ── Create ──────────────────────────────────────────────────────────────────
   const handleCreate = (
