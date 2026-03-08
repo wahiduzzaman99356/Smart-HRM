@@ -109,7 +109,7 @@ function buildFromOrgTree(
           bordered={false}
           style={{
             marginLeft: 6, fontSize: 10, padding: '0 5px',
-            background: '#eff6ff', color: '#3b82f6',
+            background: '#eff6ff', color: '#0d9488',
           }}
         >
           {deptLabel}
@@ -216,7 +216,7 @@ export function OrgLevelPickerDrawer({ open, onClose, onSelect }: Props) {
     <Drawer
       title={
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <ApartmentOutlined style={{ color: '#3b82f6' }} />
+          <ApartmentOutlined style={{ color: '#0d9488' }} />
           <span style={{ fontWeight: 700, fontSize: 14, color: '#111827' }}>
             Select Organization Level
           </span>
@@ -267,3 +267,4 @@ export function OrgLevelPickerDrawer({ open, onClose, onSelect }: Props) {
     </Drawer>
   );
 }
+

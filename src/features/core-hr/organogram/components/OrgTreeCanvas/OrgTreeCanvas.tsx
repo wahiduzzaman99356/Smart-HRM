@@ -243,7 +243,7 @@ export function OrgTreeCanvas({ tree, darkMode, highlightDept, showGrade, canAdd
   );
 
   // ── Styles ───────────────────────────────────────────────────────────────────
-  const canvasBg = darkMode ? '#111827' : '#f9fafb';
+  const canvasBg = darkMode ? '#111827' : '#eef4f5';
 
   return (
     <div

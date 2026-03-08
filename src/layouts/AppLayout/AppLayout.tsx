@@ -142,20 +142,21 @@ export function AppLayout({ children }: AppLayoutProps) {
     <Layout style={{ height: '100vh', overflow: 'hidden' }}>
       {/* ── Sidebar ────────────────────────────────────────────────────────── */}
       <Sider
+        className="app-sider-shell"
         collapsed={collapsed}
         onCollapse={setCollapsed}
         width={260}
         collapsedWidth={64}
         theme="light"
         style={{
-          borderRight: '1px solid #f0f0f0',
+          borderRight: '1px solid #dcebe8',
           overflow: 'hidden',
           height: '100vh',
           position: 'sticky',
           top: 0,
           left: 0,
           zIndex: 20,
-          background: '#fff',
+          background: '#f3faf8',
         }}
       >
         {/* Inner flex column — Ant Design renders an extra .ant-layout-sider-children
@@ -169,10 +170,10 @@ export function AppLayout({ children }: AppLayoutProps) {
             alignItems: 'center',
             justifyContent: collapsed ? 'center' : 'flex-start',
             padding: collapsed ? '0' : '0 20px',
-            borderBottom: '1px solid #f0f0f0',
+            borderBottom: '1px solid #dcebe8',
             flexShrink: 0,
             gap: 10,
-            background: '#fff',
+            background: 'transparent',
           }}
         >
           <div
@@ -180,7 +181,7 @@ export function AppLayout({ children }: AppLayoutProps) {
               width: 30,
               height: 30,
               borderRadius: 8,
-              background: 'linear-gradient(135deg, #3b82f6 0%, #6366f1 100%)',
+              background: 'linear-gradient(135deg, #0d9488 0%, #0f766e 100%)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -191,7 +192,7 @@ export function AppLayout({ children }: AppLayoutProps) {
           </div>
           {!collapsed && (
             <span style={{ fontWeight: 700, fontSize: 16, lineHeight: 1, whiteSpace: 'nowrap' }}>
-              <span style={{ color: '#3b82f6' }}>Smart</span>
+              <span style={{ color: '#0d9488' }}>Smart</span>
               <span style={{ color: '#111827' }}> HRM</span>
             </span>
           )}
@@ -203,12 +204,14 @@ export function AppLayout({ children }: AppLayoutProps) {
             flex: 1,
             overflowY: 'auto',
             overflowX: 'hidden',
+            background: 'transparent',
             // Custom thin scrollbar
             scrollbarWidth: 'thin',
             scrollbarColor: '#e5e7eb transparent',
           }}
         >
           <Menu
+            className="app-sider-menu"
             mode="inline"
             selectedKeys={[selectedKey]}
             {...controlledMenuStateProps}
@@ -219,6 +222,7 @@ export function AppLayout({ children }: AppLayoutProps) {
               paddingTop: 6,
               paddingBottom: 16,
               fontSize: 13,
+              background: 'transparent',
             }}
           />
         </div>
@@ -228,14 +232,15 @@ export function AppLayout({ children }: AppLayoutProps) {
           <div
             style={{
               padding: '12px 16px',
-              borderTop: '1px solid #f0f0f0',
+              borderTop: '1px solid #dcebe8',
               display: 'flex',
               alignItems: 'center',
               gap: 8,
-              color: '#9ca3af',
+              color: '#64748b',
               fontSize: 12,
               cursor: 'pointer',
               flexShrink: 0,
+              background: 'transparent',
             }}
             onClick={() => setCollapsed(true)}
           >
@@ -250,12 +255,13 @@ export function AppLayout({ children }: AppLayoutProps) {
       <Layout style={{ overflow: 'hidden', minWidth: 0 }}>
         {/* Header */}
         <Header
+          className="app-topbar-shell"
           style={{
             height: 56,
             lineHeight: '56px',
             padding: '0 20px',
-            background: '#fff',
-            borderBottom: '1px solid #f0f0f0',
+            background: 'linear-gradient(180deg, #2d7d77 0%, #286f6a 100%)',
+            borderBottom: '1px solid #3f9089',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
@@ -270,7 +276,7 @@ export function AppLayout({ children }: AppLayoutProps) {
               size="small"
               icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
               onClick={() => setCollapsed(c => !c)}
-              style={{ color: '#6b7280' }}
+              style={{ color: '#d6eeeb' }}
             />
             {breadcrumb && (
               <Breadcrumb
@@ -280,7 +286,7 @@ export function AppLayout({ children }: AppLayoutProps) {
                       style={{
                         cursor: 'pointer',
                         fontSize: 13,
-                        color: idx === breadcrumb.length - 1 ? '#111827' : '#6b7280',
+                        color: idx === breadcrumb.length - 1 ? '#ffffff' : '#d6eeeb',
                         fontWeight: idx === breadcrumb.length - 1 ? 600 : 400,
                       }}
                       onClick={() => navigate(item.path)}
@@ -301,7 +307,7 @@ export function AppLayout({ children }: AppLayoutProps) {
               <Button
                 type="text"
                 size="small"
-                icon={<QuestionCircleOutlined style={{ fontSize: 17, color: '#9ca3af' }} />}
+                icon={<QuestionCircleOutlined style={{ fontSize: 17, color: '#d6eeeb' }} />}
               />
             </Tooltip>
 
@@ -310,7 +316,7 @@ export function AppLayout({ children }: AppLayoutProps) {
                 <Button
                   type="text"
                   size="small"
-                  icon={<BellOutlined style={{ fontSize: 17, color: '#6b7280' }} />}
+                  icon={<BellOutlined style={{ fontSize: 17, color: '#d6eeeb' }} />}
                 />
               </Badge>
             </Tooltip>
@@ -330,13 +336,13 @@ export function AppLayout({ children }: AppLayoutProps) {
                 size={30}
                 icon={<UserOutlined />}
                 style={{
-                  background: 'linear-gradient(135deg, #3b82f6 0%, #6366f1 100%)',
+                  background: 'linear-gradient(135deg, #0d9488 0%, #0f766e 100%)',
                   flexShrink: 0,
                 }}
               />
               <div style={{ lineHeight: 1.3 }}>
-                <div style={{ fontSize: 12, fontWeight: 600, color: '#111827' }}>Admin User</div>
-                <div style={{ fontSize: 11, color: '#9ca3af' }}>HR Manager</div>
+                <div style={{ fontSize: 12, fontWeight: 600, color: '#ffffff' }}>Admin User</div>
+                <div style={{ fontSize: 11, color: '#d6eeeb' }}>HR Manager</div>
               </div>
             </div>
           </div>
@@ -347,7 +353,7 @@ export function AppLayout({ children }: AppLayoutProps) {
           style={{
             flex: 1,
             overflow: 'hidden',
-            background: '#f9fafb',
+            background: '#eef4f5',
             position: 'relative',
           }}
         >

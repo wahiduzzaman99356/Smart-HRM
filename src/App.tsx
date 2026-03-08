@@ -26,6 +26,15 @@ const ManpowerHeadcountPage = lazy(
 const ManpowerRequisitionPage = lazy(
   () => import('@/features/core-hr/manpower-requisition/pages/ManpowerRequisitionPage'),
 );
+const MyShiftPage = lazy(
+  () => import('@/features/ess/my-shift/pages/MyShiftPage'),
+);
+const DemandPage = lazy(
+  () => import('@/features/ess/demand/pages/DemandPage'),
+);
+const AssignAssetPage = lazy(
+  () => import('@/features/assets/assign-asset/pages/AssignAssetPage'),
+);
 
 // ── Global providers ──────────────────────────────────────────────────────────
 const queryClient = new QueryClient({
@@ -73,6 +82,9 @@ function AppShell() {
           <Route path="/core-hr/organogram"          element={<OrganogramPage />} />
           <Route path="/core-hr/manpower-headcount"  element={<ManpowerHeadcountPage />} />
           <Route path="/core-hr/requisition"         element={<ManpowerRequisitionPage />} />
+          <Route path="/ess/my-shift"                element={<MyShiftPage />} />
+          <Route path="/ess/demand"                  element={<DemandPage />} />
+          <Route path="/assets/assign-asset"         element={<AssignAssetPage />} />
 
           {/* ── Placeholders for every module ── */}
           <Route path="/core-hr/*"             element={<ComingSoon />} />
@@ -87,6 +99,7 @@ function AppShell() {
           <Route path="/offboarding/*"         element={<ComingSoon />} />
           <Route path="/system-admin/*"        element={<ComingSoon />} />
           <Route path="/analytics/*"           element={<ComingSoon />} />
+          <Route path="/ess/*"                 element={<ComingSoon />} />
           <Route path="*"                      element={<ComingSoon />} />
         </Routes>
       </Suspense>
@@ -101,14 +114,14 @@ function App() {
       <ConfigProvider
         theme={{
           token: {
-            colorPrimary: '#3b82f6',
+            colorPrimary: '#0d9488',
             borderRadius: 8,
             fontFamily: "'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif",
             fontSize: 13,
             lineHeight: 1.5,
             colorBgBase: '#ffffff',
-            colorBgLayout: '#f9fafb',
-            colorBorder: '#e5e7eb',
+            colorBgLayout: '#eef4f5',
+            colorBorder: '#cce8e5',
             colorText: '#111827',
             colorTextSecondary: '#6b7280',
           },
@@ -116,23 +129,27 @@ function App() {
             Table: {
               cellPaddingBlock: 8,
               cellPaddingInline: 12,
-              headerBg: '#f9fafb',
+              headerBg: '#f0fdfa',
               headerColor: '#374151',
-              headerSortActiveBg: '#f3f4f6',
-              rowHoverBg: '#f9fafb',
+              headerSortActiveBg: '#ccfbf1',
+              rowHoverBg: '#f0fdfa',
               fontSize: 13,
             },
             Menu: {
               itemHeight: 34,
-              itemSelectedBg: '#eff6ff',
-              itemSelectedColor: '#2563eb',
-              itemHoverBg: '#f9fafb',
-              subMenuItemBg: '#ffffff',
+              itemBg: 'transparent',
+              itemColor: '#334155',
+              itemHoverColor: '#0f766e',
+              itemSelectedBg: '#dff4f1',
+              itemSelectedColor: '#0f766e',
+              itemHoverBg: '#eaf7f5',
+              subMenuItemBg: '#f6fbfa',
+              groupTitleColor: '#64748b',
               fontSize: 13,
             },
             Layout: {
-              siderBg: '#ffffff',
-              headerBg: '#ffffff',
+              siderBg: '#f6fbfa',
+              headerBg: '#1B3D3E',
             },
             Form: {
               labelFontSize: 12,

@@ -40,14 +40,14 @@
   --tracking-wider:  0.06em;
 
   /* --- Brand Colors --- */
-  --color-primary:       #3b82f6; /* blue-500 */
-  --color-primary-dark:  #2563eb; /* blue-600 */
-  --color-primary-light: #eff6ff; /* blue-50 */
-  --color-secondary:     #6366f1; /* indigo-500 */
-  --color-accent:        #8b5cf6; /* purple-500 */
+  --color-primary:       #0d9488; /* teal-600 */
+  --color-primary-dark:  #0f766e; /* teal-700 */
+  --color-primary-light: #f0fdfa; /* teal-50 */
+  --color-secondary:     #14b8a6; /* teal-500 */
+  --color-accent:        #2dd4bf; /* teal-400 */
 
   /* --- Neutral Colors --- */
-  --color-bg-base:        #f9fafb;
+  --color-bg-base:        #eef4f5;
   --color-bg-surface:     #ffffff;
   --color-bg-subtle:      #f3f4f6;
   --color-border:         #e5e7eb;
@@ -142,6 +142,51 @@ body,
   min-width: 280px;
   max-height: 72vh;
   overflow-y: auto;
+  background: #f6fbfa;
+  border: 1px solid #dcebe8;
+}
+
+.app-sider-submenu-popup .ant-menu-item {
+  color: #334155;
+}
+
+.app-sider-submenu-popup .ant-menu-item:hover {
+  color: #0f766e;
+  background: #eaf7f5;
+}
+
+.app-sider-submenu-popup .ant-menu-item-selected {
+  color: #0f766e;
+  background: #dff4f1;
+}
+
+.app-sider-menu .ant-menu-submenu-title,
+.app-sider-menu .ant-menu-item {
+  color: #334155;
+}
+
+.app-sider-menu .ant-menu-item:hover,
+.app-sider-menu .ant-menu-submenu-title:hover {
+  color: #0f766e;
+  background: #eaf7f5;
+}
+
+.app-sider-menu .ant-menu-item-selected {
+  color: #0f766e;
+  background: #dff4f1;
+}
+
+/* Shared nav texture system for sidebar and topbar */
+.app-sider-shell {
+  background-color: #f3faf8;
+  background-image:
+    radial-gradient(circle at 1px 1px, rgba(15, 118, 110, 0.07) 1px, transparent 0),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.64) 0%, rgba(243, 250, 248, 0.84) 100%);
+  background-size: 16px 16px, 100% 100%;
+}
+
+.app-topbar-shell {
+  background-image: none;
 }
 
 /* ============================================================

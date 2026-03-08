@@ -52,7 +52,7 @@ const columns: ColumnsType<HCOrgLevelRow> = [
     key: 'requiredHC',
     align: 'center',
     width: 110,
-    render: v => <span style={{ fontSize: 14, fontWeight: 700, color: '#3b82f6' }}>{v || '—'}</span>,
+    render: v => <span style={{ fontSize: 14, fontWeight: 700, color: '#0d9488' }}>{v || '—'}</span>,
   },
   {
     title: <span style={{ fontSize: 10, fontWeight: 700, color: '#9ca3af', letterSpacing: '0.05em' }}>BUDGET RANGE</span>,
@@ -104,7 +104,7 @@ export function ViewRequestModal({ request, onClose }: Props) {
           { key: 'plan',    label: 'PLAN YEAR',       children: request.planYear },
           { key: 'date',    label: 'INITIATED ON',    children: request.initiationDate },
           { key: 'reqHC',   label: 'TOTAL REQ. HC',   children: <strong style={{ color: '#111827' }}>{request.totalReqHC}</strong> },
-          { key: 'apprHC',  label: 'TOTAL APPR. HC',  children: request.totalApprHC !== null ? <strong style={{ color: '#3b82f6' }}>{request.totalApprHC}</strong> : <span style={{ color: '#d1d5db' }}>—</span> },
+          { key: 'apprHC',  label: 'TOTAL APPR. HC',  children: request.totalApprHC !== null ? <strong style={{ color: '#0d9488' }}>{request.totalApprHC}</strong> : <span style={{ color: '#d1d5db' }}>—</span> },
         ]}
       />
 
@@ -122,7 +122,7 @@ export function ViewRequestModal({ request, onClose }: Props) {
 
       {/* Attachments */}
       <div style={{ border: '1px solid #f0f0f0', borderRadius: 8, padding: 10 }}>
-        <div style={{ fontSize: 11, fontWeight: 700, color: '#3b82f6', letterSpacing: '0.06em', marginBottom: 8 }}>
+        <div style={{ fontSize: 11, fontWeight: 700, color: '#0d9488', letterSpacing: '0.06em', marginBottom: 8 }}>
           ATTACHMENTS
         </div>
         {(request.attachments?.length ?? 0) > 0 ? (
@@ -136,7 +136,7 @@ export function ViewRequestModal({ request, onClose }: Props) {
                   borderRadius: 7, padding: '6px 12px',
                 }}
               >
-                <PaperClipOutlined style={{ color: '#3b82f6', flexShrink: 0 }} />
+                <PaperClipOutlined style={{ color: '#0d9488', flexShrink: 0 }} />
                 <span style={{ flex: 1, fontSize: 13, color: '#374151', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                   {att.name}
                 </span>
@@ -150,7 +150,7 @@ export function ViewRequestModal({ request, onClose }: Props) {
                     href={att.objectUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    style={{ fontSize: 12, color: '#3b82f6', fontWeight: 600, flexShrink: 0 }}
+                    style={{ fontSize: 12, color: '#0d9488', fontWeight: 600, flexShrink: 0 }}
                   >
                     View
                   </a>
@@ -165,3 +165,4 @@ export function ViewRequestModal({ request, onClose }: Props) {
     </Modal>
   );
 }
+

@@ -318,18 +318,18 @@ export function OrgNode({
               e.currentTarget.style.background = `${btnColor}28`;
             }}
             onMouseLeave={e => {
-              e.currentTarget.style.background = empty ? '#eff6ff' : `${btnColor}10`;
+              e.currentTarget.style.background = empty ? '#f0fdfa' : `${btnColor}10`;
             }}
             style={{
               border: 'none',
-              background: empty ? '#eff6ff' : `${btnColor}10`,
+              background: empty ? '#f0fdfa' : `${btnColor}10`,
               borderRadius: 7,
               cursor: 'pointer',
               padding: '3px 8px',
               display: 'flex',
               alignItems: 'center',
               gap: 4,
-              color: empty ? '#3b82f6' : btnColor,
+              color: empty ? '#0d9488' : btnColor,
               fontSize: 11,
               fontWeight: 600,
               transition: 'background 0.15s',

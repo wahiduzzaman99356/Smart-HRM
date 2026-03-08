@@ -10,7 +10,7 @@ import type { HCRequest, ActionHistoryEntry } from '../types/headcount.types';
 
 // ─── Action type badge config ──────────────────────────────────────────────────
 const ACTION_CONFIG: Record<ActionHistoryEntry['actionType'], { color: string; bg: string }> = {
-  Created:   { color: '#2563eb', bg: '#eff6ff' },
+  Created:   { color: '#0f766e', bg: '#eff6ff' },
   Submitted: { color: '#d97706', bg: '#fffbeb' },
   Approved:  { color: '#059669', bg: '#f0fdf4' },
   Rejected:  { color: '#dc2626', bg: '#fef2f2' },
@@ -129,3 +129,4 @@ export function ActionHistoryModal({ request, onClose }: Props) {
     </Modal>
   );
 }
+
