@@ -32,6 +32,9 @@ const MyShiftPage = lazy(
 const DemandPage = lazy(
   () => import('@/features/ess/demand/pages/DemandPage'),
 );
+const ProvidentFundPage = lazy(
+  () => import('@/features/ess/provident-fund/pages/ProvidentFundPage'),
+);
 const AssignAssetPage = lazy(
   () => import('@/features/assets/assign-asset/pages/AssignAssetPage'),
 );
@@ -84,6 +87,7 @@ function AppShell() {
           <Route path="/core-hr/requisition"         element={<ManpowerRequisitionPage />} />
           <Route path="/ess/my-shift"                element={<MyShiftPage />} />
           <Route path="/ess/demand"                  element={<DemandPage />} />
+          <Route path="/ess/pf"                      element={<ProvidentFundPage />} />
           <Route path="/assets/assign-asset"         element={<AssignAssetPage />} />
 
           {/* ── Placeholders for every module ── */}

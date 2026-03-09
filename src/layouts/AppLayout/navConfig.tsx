@@ -95,7 +95,7 @@ export const NAV_MODULES: NavModule[] = [
       { key: '/ess/reach-hr',           label: 'Reach HR' },
       { key: '/ess/loan-management',    label: 'Loan Management' },
       { key: '/ess/foc',                label: 'FOC' },
-      { key: '/ess/pf',                 label: 'PF' },
+      { key: '/ess/pf',                 label: 'Provident Fund' },
       { key: '/ess/gf',                 label: 'GF' },
       { key: '/ess/outstation',         label: 'Out Station' },
       { key: '/ess/my-shift',           label: 'My Shift' },
