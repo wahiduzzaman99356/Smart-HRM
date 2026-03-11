@@ -156,7 +156,7 @@ export function PFApprovalsListView({ requests, onApproveReject, onBulkApprove, 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
           {rec.status === 'To Approve' ? (
             <button className="action-link" onClick={() => onApproveReject(rec)}>
-              Approve/Reject
+              <CheckCircleOutlined style={{ fontSize: 12 }} /> Approve/Reject
             </button>
           ) : (
             <button className="action-link" style={{ color: '#6b7280' }} onClick={() => onApproveReject(rec)}>

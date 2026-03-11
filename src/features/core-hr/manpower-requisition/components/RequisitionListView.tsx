@@ -9,7 +9,16 @@ import {
   Button, Table, Select, Input, Dropdown, DatePicker, Space, Drawer, Radio,
 } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
-import { PlusOutlined, MoreOutlined, FilterOutlined } from '@ant-design/icons';
+import {
+  PlusOutlined,
+  MoreOutlined,
+  FilterOutlined,
+  EyeOutlined,
+  SendOutlined,
+  CheckCircleOutlined,
+  ApartmentOutlined,
+  HistoryOutlined,
+} from '@ant-design/icons';
 import type { RangePickerProps } from 'antd/es/date-picker';
 import dayjs from 'dayjs';
 import type {
@@ -202,16 +211,17 @@ export function RequisitionListView({
           menu={{
             style: { borderRadius: 8, minWidth: 168 },
             items: [
-              { key: 'view',     label: 'View Details',    onClick: () => onViewRequest(r) },
+              { key: 'view', icon: <EyeOutlined />, label: 'View Details', onClick: () => onViewRequest(r) },
               {
                 key: 'submit',
+                icon: <SendOutlined />,
                 label: 'Submit Request',
                 disabled: r.status !== 'Draft',
                 onClick: () => onSubmitRequest(r.id),
               },
-              { key: 'take-action', label: 'Approve / Reject', onClick: () => onTakeAction(r) },
-              { key: 'workflow', label: 'Approval Workflow', onClick: () => onViewWorkflow(r) },
-              { key: 'history',  label: 'Action History',   onClick: () => onViewHistory(r) },
+              { key: 'take-action', icon: <CheckCircleOutlined />, label: 'Approve / Reject', onClick: () => onTakeAction(r) },
+              { key: 'workflow', icon: <ApartmentOutlined />, label: 'Approval Workflow', onClick: () => onViewWorkflow(r) },
+              { key: 'history', icon: <HistoryOutlined />, label: 'Action History', onClick: () => onViewHistory(r) },
             ],
           }}
           placement="bottomRight"

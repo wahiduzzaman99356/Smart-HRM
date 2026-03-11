@@ -38,6 +38,9 @@ const ProvidentFundPage = lazy(
 const AssignAssetPage = lazy(
   () => import('@/features/assets/assign-asset/pages/AssignAssetPage'),
 );
+const QuestionBankPage = lazy(
+  () => import('@/features/core-hr/question-bank/pages/QuestionBankPage'),
+);
 
 // ── Global providers ──────────────────────────────────────────────────────────
 const queryClient = new QueryClient({
@@ -89,6 +92,7 @@ function AppShell() {
           <Route path="/ess/demand"                  element={<DemandPage />} />
           <Route path="/ess/pf"                      element={<ProvidentFundPage />} />
           <Route path="/assets/assign-asset"         element={<AssignAssetPage />} />
+          <Route path="/core-hr/question-bank"       element={<QuestionBankPage />} />
 
           {/* ── Placeholders for every module ── */}
           <Route path="/core-hr/*"             element={<ComingSoon />} />
