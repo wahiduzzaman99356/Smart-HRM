@@ -157,6 +157,16 @@ body,
 
 .app-sider-submenu-popup .ant-menu-item {
   color: #334155;
+  height: auto !important;
+  line-height: 1.4 !important;
+  white-space: normal !important;
+  padding-top: 8px !important;
+  padding-bottom: 8px !important;
+}
+
+.app-sider-submenu-popup .ant-menu-title-content {
+  white-space: normal;
+  word-break: break-word;
 }
 
 .app-sider-submenu-popup .ant-menu-item:hover {
@@ -172,6 +182,21 @@ body,
 .app-sider-menu .ant-menu-submenu-title,
 .app-sider-menu .ant-menu-item {
   color: #334155;
+}
+
+/* Only wrap text when the menu is fully expanded (not collapsed) */
+.app-sider-menu:not(.ant-menu-inline-collapsed) .ant-menu-submenu-title,
+.app-sider-menu:not(.ant-menu-inline-collapsed) .ant-menu-item {
+  height: auto !important;
+  line-height: 1.4 !important;
+  white-space: normal !important;
+  padding-top: 8px !important;
+  padding-bottom: 8px !important;
+}
+
+.app-sider-menu:not(.ant-menu-inline-collapsed) .ant-menu-title-content {
+  white-space: normal;
+  word-break: break-word;
 }
 
 .app-sider-menu .ant-menu-item:hover,
