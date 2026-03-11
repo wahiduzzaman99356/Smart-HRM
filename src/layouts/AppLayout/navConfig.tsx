@@ -23,9 +23,11 @@ import {
 } from '@ant-design/icons';
 
 export interface NavSubItem {
-  /** Used as both the menu `key` and the navigation target path. */
+  /** Used as both the menu `key` and the navigation target path (leaf) or sub-menu identifier (parent). */
   key: string;
   label: string;
+  /** If present, this item renders as a collapsible sub-menu rather than a leaf route. */
+  children?: NavSubItem[];
 }
 
 export interface NavModule {
@@ -43,7 +45,7 @@ export const NAV_MODULES: NavModule[] = [
     icon: <TeamOutlined />,
     children: [
       { key: '/core-hr/organogram',          label: 'Organogram' },
-      { key: '/core-hr/employees',           label: 'Employee Management & Life-Cycle' },
+      { key: '/core-hr/employees',           label: 'My Employees' },
       { key: '/core-hr/manpower-headcount',  label: 'Manpower Headcount' },
       { key: '/core-hr/requisition',         label: 'Manpower Requisition' },
       { key: '/core-hr/templates',   label: 'HR Template Creation' },
@@ -85,7 +87,7 @@ export const NAV_MODULES: NavModule[] = [
   // ── 4. Employee Self Service (ESS) ────────────────────────────────────────────
   {
     key: 'ess',
-    label: 'ESS',
+    label: 'Self Service',
     icon: <IdcardOutlined />,
     children: [
       { key: '/ess/dashboard',          label: 'Dashboard' },
@@ -136,21 +138,46 @@ export const NAV_MODULES: NavModule[] = [
     label: 'Payroll & C&B',
     icon: <DollarOutlined />,
     children: [
-      { key: '/payroll/salary-generation',   label: 'Salary Generation' },
-      { key: '/payroll/bonus',               label: 'Bonus Generation' },
-      { key: '/payroll/salary-certificate',  label: 'Salary Certificate' },
-      { key: '/payroll/income-tax',          label: 'Income Tax' },
-      { key: '/payroll/foc',                 label: 'FOC' },
-      { key: '/payroll/provident-fund',      label: 'Provident Fund (PF)' },
-      { key: '/payroll/gratuity-fund',       label: 'Gratuity Fund (GF)' },
-      { key: '/payroll/medical-benefit',     label: 'Medical Benefit' },
-      { key: '/payroll/meals',               label: 'Lunch / Meals' },
-      { key: '/payroll/loans',               label: 'Loan Management' },
-      { key: '/payroll/advances',            label: 'Advance' },
-      { key: '/payroll/salary-settings',     label: 'Salary Settings' },
-      { key: '/payroll/overtime',            label: 'Overtime' },
-      { key: '/payroll/expense-application', label: 'Expense Application' },
-      { key: '/payroll/payment-accounts',    label: 'Payment Account' },
+      {
+        key: 'payroll-generation',
+        label: 'Generation',
+        children: [
+          { key: '/payroll/salary-generation', label: 'Salary Generation' },
+          { key: '/payroll/bonus-generation',  label: 'Bonus Generation' },
+        ],
+      },
+      {
+        key: 'payroll-salary',
+        label: 'Salary',
+        children: [
+          { key: '/payroll/salary/current-approval', label: 'Current Salary Approval' },
+          { key: '/payroll/salary/hold',             label: 'Hold Salary' },
+          { key: '/payroll/salary/separated',        label: 'Separated Salary' },
+          { key: '/payroll/salary/history',          label: 'History' },
+        ],
+      },
+      { key: '/payroll/rate-of-exchange', label: 'Rate of Exchange' },
+      {
+        key: 'payroll-bonus',
+        label: 'Bonus',
+        children: [
+          { key: '/payroll/bonus/current-approval', label: 'Current Bonus Approval' },
+          { key: '/payroll/bonus/hold',             label: 'Hold Bonus' },
+          { key: '/payroll/bonus/separated',        label: 'Separated Bonus' },
+          { key: '/payroll/bonus/history',          label: 'History' },
+        ],
+      },
+      { key: '/payroll/reports', label: 'Reports' },
+      {
+        key: 'payroll-configuration',
+        label: 'Configuration',
+        children: [
+          { key: '/payroll/configuration/salary-structure',        label: 'Salary Structure' },
+          { key: '/payroll/configuration/salary-rules',            label: 'Salary Rules' },
+          { key: '/payroll/configuration/cash-salary-employees',   label: 'Cash Salary Employee List' },
+          { key: '/payroll/configuration/payment-accounts',        label: 'Payment Account' },
+        ],
+      },
     ],
   },
 
