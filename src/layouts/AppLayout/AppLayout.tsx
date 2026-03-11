@@ -4,7 +4,7 @@
  * Persistent shell for all authenticated pages.
  *
  *  ┌─ Sider (260px / 64px collapsed) ─┬─ Layout ──────────────────────────┐
- *  │  [Smart HRM logo]                │  [Header 56px]                    │
+ *  │  [Smart HRIS logo]               │  [Header 56px]                    │
  *  │  ─────────────────               │  ───────────────────────────────  │
  *  │  Scrollable Menu                 │  Content (fills remaining height) │
  *  └──────────────────────────────────┴───────────────────────────────────┘
@@ -19,7 +19,6 @@ import {
   MenuUnfoldOutlined,
   BellOutlined,
   UserOutlined,
-  AppstoreOutlined,
   QuestionCircleOutlined,
 } from '@ant-design/icons';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -72,14 +71,6 @@ function collectAncestorKeys(children: NavSubItem[], targetKey: string, path: st
   return null;
 }
 
-/** Returns true if key exists anywhere in the subtree (leaf or sub-menu). */
-function isKeyInTree(children: NavSubItem[], targetKey: string): boolean {
-  for (const sub of children) {
-    if (sub.key === targetKey) return true;
-    if (sub.children && isKeyInTree(sub.children, targetKey)) return true;
-  }
-  return false;
-}
 
 /** Builds a breadcrumb path array for the given pathname (recursive). */
 function findBreadcrumbPath(
@@ -205,25 +196,7 @@ export function AppLayout({ children }: AppLayoutProps) {
     ? {}
     : {
         openKeys,
-        onOpenChange: (keys) => {
-          const incoming = keys as string[];
-          setOpenKeys(prev => {
-            const prevSet = new Set(prev);
-            const incomingSet = new Set(incoming);
-            const result = new Set(incoming);
-            // Ant Design may omit a module-level parent key from onOpenChange
-            // when only a nested child sub-menu was toggled. Re-add any module
-            // key that was previously open and still has nested keys in the
-            // incoming set (meaning the user didn't explicitly close the module).
-            for (const mod of NAV_MODULES) {
-              if (prevSet.has(mod.key) && !incomingSet.has(mod.key)) {
-                const hasNestedIncoming = incoming.some(k => isKeyInTree(mod.children, k));
-                if (hasNestedIncoming) result.add(mod.key);
-              }
-            }
-            return Array.from(result);
-          });
-        },
+        onOpenChange: (keys) => setOpenKeys(keys as string[]),
       };
 
   const handleMenuClick: MenuProps['onClick'] = ({ key }) => {
@@ -270,25 +243,54 @@ export function AppLayout({ children }: AppLayoutProps) {
             background: 'transparent',
           }}
         >
+          {/* Logo mark */}
           <div
             style={{
-              width: 30,
-              height: 30,
-              borderRadius: 8,
-              background: 'linear-gradient(135deg, #0d9488 0%, #0f766e 100%)',
+              width: 34,
+              height: 34,
+              borderRadius: 10,
+              background: 'linear-gradient(145deg, #0d9488 0%, #0a7c71 50%, #086b62 100%)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               flexShrink: 0,
+              boxShadow: '0 2px 10px rgba(13,148,136,0.38), inset 0 1px 0 rgba(255,255,255,0.15)',
             }}
           >
-            <AppstoreOutlined style={{ color: '#fff', fontSize: 16 }} />
+            {/* Heartbeat / pulse mark — ties into "heart of your workplace" */}
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M1.5 10.5h3.2l1.8-5 3.2 9.5 2.1-6.5 1.7 3.5H18"
+                stroke="white"
+                strokeWidth="1.7"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
           </div>
+
+          {/* Wordmark + tagline */}
           {!collapsed && (
-            <span style={{ fontWeight: 700, fontSize: 16, lineHeight: 1, whiteSpace: 'nowrap' }}>
-              <span style={{ color: '#0d9488' }}>Smart</span>
-              <span style={{ color: '#111827' }}> HRM</span>
-            </span>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: 1, lineHeight: 1.1 }}>
+                <span style={{ fontWeight: 800, fontSize: 15, color: '#0d9488', letterSpacing: '-0.3px' }}>
+                  Smart
+                </span>
+                <span style={{ fontWeight: 700, fontSize: 15, color: '#1e293b', letterSpacing: '-0.3px' }}>
+                  &nbsp;HRIS
+                </span>
+              </div>
+              <span style={{
+                fontSize: 9.5,
+                color: '#94a3b8',
+                fontWeight: 500,
+                whiteSpace: 'nowrap',
+                letterSpacing: '0.04em',
+                textTransform: 'uppercase',
+              }}>
+                The heart of your workplace
+              </span>
+            </div>
           )}
         </div>
 
@@ -354,8 +356,7 @@ export function AppLayout({ children }: AppLayoutProps) {
             height: 56,
             lineHeight: '56px',
             padding: '0 20px',
-            background: 'linear-gradient(180deg, #2d7d77 0%, #286f6a 100%)',
-            borderBottom: '1px solid #3f9089',
+            borderBottom: '1px solid rgba(255, 255, 255, 0.18)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
@@ -370,7 +371,6 @@ export function AppLayout({ children }: AppLayoutProps) {
               size="small"
               icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
               onClick={() => setCollapsed(c => !c)}
-              style={{ color: '#d6eeeb' }}
             />
             {breadcrumb && (
               <Breadcrumb
@@ -380,7 +380,7 @@ export function AppLayout({ children }: AppLayoutProps) {
                       style={{
                         cursor: 'pointer',
                         fontSize: 13,
-                        color: idx === breadcrumb.length - 1 ? '#ffffff' : '#d6eeeb',
+                        color: idx === breadcrumb.length - 1 ? '#ffffff' : 'rgba(255, 255, 255, 0.78)',
                         fontWeight: idx === breadcrumb.length - 1 ? 600 : 400,
                       }}
                       onClick={() => navigate(item.path)}
@@ -401,7 +401,7 @@ export function AppLayout({ children }: AppLayoutProps) {
               <Button
                 type="text"
                 size="small"
-                icon={<QuestionCircleOutlined style={{ fontSize: 17, color: '#d6eeeb' }} />}
+                icon={<QuestionCircleOutlined style={{ fontSize: 17 }} />}
               />
             </Tooltip>
 
@@ -410,12 +410,13 @@ export function AppLayout({ children }: AppLayoutProps) {
                 <Button
                   type="text"
                   size="small"
-                  icon={<BellOutlined style={{ fontSize: 17, color: '#d6eeeb' }} />}
+                  icon={<BellOutlined style={{ fontSize: 17 }} />}
                 />
               </Badge>
             </Tooltip>
 
             <div
+              className="header-profile"
               style={{
                 display: 'flex',
                 alignItems: 'center',
@@ -436,7 +437,7 @@ export function AppLayout({ children }: AppLayoutProps) {
               />
               <div style={{ lineHeight: 1.3 }}>
                 <div style={{ fontSize: 12, fontWeight: 600, color: '#ffffff' }}>Admin User</div>
-                <div style={{ fontSize: 11, color: '#d6eeeb' }}>HR Manager</div>
+                <div style={{ fontSize: 11, color: 'rgba(255, 255, 255, 0.78)' }}>HR Manager</div>
               </div>
             </div>
           </div>

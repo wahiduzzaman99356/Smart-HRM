@@ -24,7 +24,7 @@ type DateRange = RangePickerProps['value'];
 
 // ─── Drawer label style ───────────────────────────────────────────────────────
 const DL: React.CSSProperties = {
-  fontSize: 10, fontWeight: 700, color: '#0d9488', letterSpacing: '0.06em', marginBottom: 6,
+  fontSize: 10, fontWeight: 700, color: '#0f766e', letterSpacing: '0.06em', marginBottom: 6,
 };
 
 // ─── Status badge ─────────────────────────────────────────────────────────────
@@ -180,7 +180,7 @@ export function RequisitionListView({
       width: 80,
       render: (_, r) => (
         r.approved > 0
-          ? <span style={{ fontSize: 14, fontWeight: 700, color: '#0d9488' }}>{r.approved}</span>
+          ? <span style={{ fontSize: 14, fontWeight: 700, color: '#0f766e' }}>{r.approved}</span>
           : <span style={{ color: '#d1d5db', fontWeight: 600 }}>--</span>
       ),
     },
@@ -238,44 +238,24 @@ export function RequisitionListView({
 
   // ─── Render ──────────────────────────────────────────────────────────────────
   return (
-    <div style={{ padding: '24px 28px', height: '100%', overflowY: 'auto', background: '#f9fafb' }}>
+    <div className="page-shell">
 
       {/* ── Page header ───────────────────────────────────────────────────── */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 }}>
+      <div className="page-header-row">
         <div>
-          <h1 style={{ fontSize: 16, fontWeight: 700, color: '#111827', margin: 0 }}>
-            Manpower Requisition
-          </h1>
-          <p style={{ fontSize: 13, color: '#6b7280', margin: '4px 0 0' }}>
-            Manage and track manpower requisition requests
-          </p>
+          <h1>Manpower Requisition</h1>
+          <p>Manage and track manpower requisition requests</p>
         </div>
-        <Button
-          type="primary"
-          icon={<PlusOutlined />}
-          onClick={onAddNew}
-          style={{ height: 36, borderRadius: 8, fontWeight: 600, fontSize: 13, paddingInline: 16 }}
-        >
+        <Button type="primary" icon={<PlusOutlined />} onClick={onAddNew}>
           Create New Request
         </Button>
       </div>
 
       {/* ── Filter bar ────────────────────────────────────────────────────── */}
-      <div style={{
-        background: '#fff',
-        border: '1px solid #e5e7eb',
-        borderRadius: 10,
-        padding: '16px 20px',
-        marginBottom: 20,
-        display: 'flex',
-        flexWrap: 'wrap',
-        gap: 16,
-        alignItems: 'flex-end',
-      }}>
+      <div className="filter-bar">
         {/* Date range */}
         <div>
-          <div style={{ fontSize: 10, fontWeight: 700, color: '#0d9488', letterSpacing: '0.06em', marginBottom: 5 }}>
-            DATE RANGE
+          <div className="filter-label">DATE RANGE
           </div>
           <RangePicker
             value={dateRange}

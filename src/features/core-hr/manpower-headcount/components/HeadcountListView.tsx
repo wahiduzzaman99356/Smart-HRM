@@ -94,7 +94,7 @@ export function HeadcountListView({ requests, onCreate, onViewRequest, onTakeAct
           onClick={() => onViewRequest(r)}
           style={{ cursor: 'pointer' }}
         >
-          <div style={{ fontWeight: 700, fontSize: 13, color: '#0d9488', textDecoration: 'underline', textDecorationStyle: 'dotted' }}>{r.id}</div>
+          <div style={{ fontWeight: 700, fontSize: 13, color: '#0f766e', textDecoration: 'underline', textDecorationStyle: 'dotted' }}>{r.id}</div>
           <div style={{ fontSize: 12, color: '#6b7280', marginTop: 2 }}>
             HC Initiation &bull; {r.initiationDate}
           </div>
@@ -120,7 +120,7 @@ export function HeadcountListView({ requests, onCreate, onViewRequest, onTakeAct
       width: 90,
       render: (_, r) => (
         r.totalApprHC !== null
-          ? <span style={{ fontSize: 14, fontWeight: 700, color: '#0d9488' }}>{r.totalApprHC}</span>
+          ? <span style={{ fontSize: 14, fontWeight: 700, color: '#0f766e' }}>{r.totalApprHC}</span>
           : <span style={{ color: '#d1d5db', fontWeight: 600 }}>--</span>
       ),
     },
@@ -178,44 +178,24 @@ export function HeadcountListView({ requests, onCreate, onViewRequest, onTakeAct
 
   // ─── Render ──────────────────────────────────────────────────────────────────
   return (
-    <div style={{ padding: '24px 28px', height: '100%', overflowY: 'auto', background: '#f9fafb' }}>
+    <div className="page-shell">
 
       {/* ── Page header ───────────────────────────────────────────────────── */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 }}>
+      <div className="page-header-row">
         <div>
-          <h1 style={{ fontSize: 16, fontWeight: 700, color: '#111827', margin: 0 }}>
-            Headcount Management
-          </h1>
-          <p style={{ fontSize: 13, color: '#6b7280', margin: '4px 0 0' }}>
-            Strategic workforce planning &amp; organogram approvals
-          </p>
+          <h1>Headcount Management</h1>
+          <p>Strategic workforce planning &amp; organogram approvals</p>
         </div>
-        <Button
-          type="primary"
-          icon={<PlusOutlined />}
-          onClick={onCreate}
-          style={{ height: 36, borderRadius: 8, fontWeight: 600, fontSize: 13, paddingInline: 16 }}
-        >
+        <Button type="primary" icon={<PlusOutlined />} onClick={onCreate}>
           Create New Request
         </Button>
       </div>
 
       {/* ── Filter bar ────────────────────────────────────────────────────── */}
-      <div style={{
-        background: '#fff',
-        border: '1px solid #e5e7eb',
-        borderRadius: 10,
-        padding: '16px 20px',
-        marginBottom: 20,
-        display: 'flex',
-        flexWrap: 'wrap',
-        gap: 16,
-        alignItems: 'flex-end',
-      }}>
+      <div className="filter-bar">
         {/* Date range */}
         <div>
-          <div style={{ fontSize: 10, fontWeight: 700, color: '#0d9488', letterSpacing: '0.06em', marginBottom: 5 }}>
-            DATE RANGE
+          <div className="filter-label">DATE RANGE
           </div>
           <RangePicker
             value={dateRange}
@@ -228,8 +208,7 @@ export function HeadcountListView({ requests, onCreate, onViewRequest, onTakeAct
 
         {/* Plan year */}
         <div>
-          <div style={{ fontSize: 10, fontWeight: 700, color: '#0d9488', letterSpacing: '0.06em', marginBottom: 5 }}>
-            PLAN YEAR
+          <div className="filter-label">PLAN YEAR
           </div>
           <Select
             value={filterPlan || undefined}
@@ -243,8 +222,7 @@ export function HeadcountListView({ requests, onCreate, onViewRequest, onTakeAct
 
         {/* Status */}
         <div>
-          <div style={{ fontSize: 10, fontWeight: 700, color: '#0d9488', letterSpacing: '0.06em', marginBottom: 5 }}>
-            STATUS FILTER
+          <div className="filter-label">STATUS FILTER
           </div>
           <Select
             value={filterStatus || undefined}
@@ -263,8 +241,7 @@ export function HeadcountListView({ requests, onCreate, onViewRequest, onTakeAct
 
         {/* Ref search */}
         <div>
-          <div style={{ fontSize: 10, fontWeight: 700, color: '#0d9488', letterSpacing: '0.06em', marginBottom: 5 }}>
-            REF. NO / ID
+          <div className="filter-label">REF. NO / ID
           </div>
           <Input
             value={filterRef}
@@ -275,26 +252,13 @@ export function HeadcountListView({ requests, onCreate, onViewRequest, onTakeAct
         </div>
 
         <Space>
-          <Button
-            type="primary"
-            onClick={handleApply}
-            style={{ borderRadius: 7, fontWeight: 600 }}
-          >
-            Apply
-          </Button>
-          <Button onClick={handleReset} style={{ borderRadius: 7 }}>
-            Reset
-          </Button>
+          <Button type="primary" onClick={handleApply}>Apply</Button>
+          <Button onClick={handleReset}>Reset</Button>
         </Space>
       </div>
 
       {/* ── Table ─────────────────────────────────────────────────────────── */}
-      <div style={{
-        background: '#fff',
-        borderRadius: 10,
-        border: '1px solid #e5e7eb',
-        overflow: 'hidden',
-      }}>
+      <div className="list-surface">
         <Table
           dataSource={data}
           columns={columns}
