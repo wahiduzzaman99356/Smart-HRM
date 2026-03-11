@@ -9,7 +9,7 @@ import {
   ThunderboltFilled, InboxOutlined, FileTextOutlined,
   DatabaseFilled, CheckCircleFilled, CodeFilled, DeleteFilled,
   LeftOutlined, RightOutlined, ReloadOutlined, ClockCircleOutlined, CloseOutlined,
-  BoldOutlined, ItalicOutlined, UnderlineOutlined, OrderedListOutlined, LinkOutlined, PictureOutlined,
+  BoldOutlined, ItalicOutlined, UnderlineOutlined, OrderedListOutlined, LinkOutlined, PictureOutlined, SettingOutlined,
 } from '@ant-design/icons';
 import type { TableColumnsType } from 'antd';
 import type { Question, QuestionStatus, QuestionType, DifficultyLevel } from '../types/questionBank.types';
@@ -188,6 +188,16 @@ const TYPE_CONFIG: Record<QuestionType, { color: string; bg: string }> = {
   FILE_UPLOAD: { color: '#374151', bg: '#f1f5f9' },
 };
 
+const QUESTION_TYPE_LABELS: Record<QuestionType, string> = {
+  MCQ: 'Single Choice (MCQ)',
+  MULTISELECT: 'Multiple Choice (Checkbox)',
+  DESCRIPTIVE: 'Descriptive',
+  TRUE_FALSE: 'True-False',
+  SHORT_QUESTION: 'Descriptive (Short Question)',
+  LONG_QUESTION: 'Descriptive (Long Question)',
+  FILE_UPLOAD: 'File Upload',
+};
+
 const DIFFICULTY_COLOR: Record<DifficultyLevel, string> = {
   Easy: '#6ee7b7',
   Medium: '#fcd34d',
@@ -333,6 +343,18 @@ interface CreateQuestionForm {
 const SECTIONS = ['Frontend', 'Backend', 'DevOps', 'QA', 'Design', 'Product'];
 const TIMER_OPTIONS = ['60s', '90s', '120s', '180s', '300s', 'Custom'];
 
+interface QuestionBankConfiguration {
+  maxRepeatCount: number;
+  cooldownValue: number;
+  cooldownUnit: 'days' | 'months';
+}
+
+const INITIAL_CONFIGURATION: QuestionBankConfiguration = {
+  maxRepeatCount: 3,
+  cooldownValue: 30,
+  cooldownUnit: 'days',
+};
+
 const INITIAL_CREATE_FORM: CreateQuestionForm = {
   questionType: 'MCQ',
   questionInputMode: 'TEXT',
@@ -387,9 +409,12 @@ export default function QuestionBankPage() {
   const [filterDifficulty, setFilterDifficulty] = useState<string>('');
   const [currentPage, setCurrentPage] = useState(1);
   const [createOpen, setCreateOpen] = useState(false);
+  const [configurationOpen, setConfigurationOpen] = useState(false);
   const [modalMode, setModalMode] = useState<'create' | 'edit'>('create');
   const [editingQuestionId, setEditingQuestionId] = useState<string | null>(null);
   const [createForm, setCreateForm] = useState<CreateQuestionForm>(INITIAL_CREATE_FORM);
+  const [configuration, setConfiguration] = useState<QuestionBankConfiguration>(INITIAL_CONFIGURATION);
+  const [tagInputValue, setTagInputValue] = useState('');
   const [currentDateTime, setCurrentDateTime] = useState(() => new Date());
   const [statusModal, setStatusModal] = useState<{ open: boolean; question: Question | null; pending: QuestionStatus }>({
     open: false, question: null, pending: 'active',
@@ -437,6 +462,7 @@ export default function QuestionBankPage() {
 
   function resetCreateForm() {
     setCreateForm(INITIAL_CREATE_FORM);
+    setTagInputValue('');
   }
 
   function setQuestionImage(file: File) {
@@ -527,6 +553,7 @@ export default function QuestionBankPage() {
     setModalMode('edit');
     setEditingQuestionId(question.id);
     setCreateForm(mapQuestionToForm(question));
+    setTagInputValue('');
     setCreateOpen(true);
   }
 
@@ -555,6 +582,21 @@ export default function QuestionBankPage() {
 
   function saveDraft() {
     message.success(modalMode === 'edit' ? 'Question draft updated successfully.' : 'Question saved as draft.');
+  }
+
+  function saveConfiguration() {
+    if (configuration.maxRepeatCount < 1) {
+      message.error('Repeat count must be at least 1.');
+      return;
+    }
+
+    if (configuration.cooldownValue < 1) {
+      message.error('Cooldown value must be at least 1.');
+      return;
+    }
+
+    message.success('Question Bank configuration saved successfully.');
+    setConfigurationOpen(false);
   }
 
   const columns: TableColumnsType<Question> = [
@@ -603,7 +645,7 @@ export default function QuestionBankPage() {
               display: 'inline-block',
             }}
           >
-            {record.type}
+            {QUESTION_TYPE_LABELS[record.type]}
           </Tag>
           <div style={{ fontSize: 12, color: '#64748b' }}>{record.topic}</div>
         </div>
@@ -806,6 +848,9 @@ export default function QuestionBankPage() {
               style={showFilters ? { borderColor: '#94a3b8', color: '#334155' } : {}}
             >
               Filters
+            </Button>
+            <Button icon={<SettingOutlined />} onClick={() => setConfigurationOpen(true)}>
+              Configuration
             </Button>
             <Button icon={<UploadOutlined style={{ color: '#22c55e' }} />}>Import</Button>
             <Button icon={<DownloadOutlined style={{ color: '#22c55e' }} />}>Export</Button>
@@ -1273,12 +1318,12 @@ export default function QuestionBankPage() {
                     onChange={handleQuestionTypeChange}
                     style={{ width: '100%' }}
                     options={[
-                      { value: 'MCQ', label: 'Single Choice (MCQ)' },
-                      { value: 'MULTISELECT', label: 'Multiple Choice (Checkbox)' },
-                      { value: 'TRUE_FALSE', label: 'True-False' },
-                      { value: 'SHORT_QUESTION', label: 'Short Question' },
-                      { value: 'LONG_QUESTION', label: 'Long Question' },
-                      { value: 'FILE_UPLOAD', label: 'File Upload' },
+                      { value: 'MCQ', label: QUESTION_TYPE_LABELS.MCQ },
+                      { value: 'MULTISELECT', label: QUESTION_TYPE_LABELS.MULTISELECT },
+                      { value: 'TRUE_FALSE', label: QUESTION_TYPE_LABELS.TRUE_FALSE },
+                      { value: 'SHORT_QUESTION', label: QUESTION_TYPE_LABELS.SHORT_QUESTION },
+                      { value: 'LONG_QUESTION', label: QUESTION_TYPE_LABELS.LONG_QUESTION },
+                      { value: 'FILE_UPLOAD', label: QUESTION_TYPE_LABELS.FILE_UPLOAD },
                     ]}
                   />
                 </div>
@@ -1318,7 +1363,7 @@ export default function QuestionBankPage() {
                       />
                     </div>
                     <div>
-                      <div style={{ fontSize: 9, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', marginBottom: 4 }}>Section</div>
+                      <div style={{ fontSize: 9, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', marginBottom: 4 }}>Target Section</div>
                       <Select
                         value={createForm.section}
                         onChange={v => setCreateForm(s => ({ ...s, section: v }))}
@@ -1358,12 +1403,14 @@ export default function QuestionBankPage() {
                     </div>
                     <Input
                       bordered={false}
+                      value={tagInputValue}
+                      onChange={e => setTagInputValue(e.target.value)}
                       placeholder="Type tag and press Enter"
-                      onPressEnter={e => {
-                        const tag = (e.target as HTMLInputElement).value.trim();
+                      onPressEnter={() => {
+                        const tag = tagInputValue.trim();
                         if (tag) {
                           addTag(tag);
-                          (e.target as HTMLInputElement).value = '';
+                          setTagInputValue('');
                         }
                       }}
                       style={{ background: 'transparent', padding: 4, fontSize: 12 }}
@@ -1424,6 +1471,91 @@ export default function QuestionBankPage() {
               </div>
             </Col>
           </Row>
+        </div>
+      </Modal>
+
+      <Modal
+        open={configurationOpen}
+        title="Question Bank Configuration"
+        okText="Save Configuration"
+        cancelText="Cancel"
+        onOk={saveConfiguration}
+        onCancel={() => setConfigurationOpen(false)}
+        width={680}
+      >
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 18, paddingTop: 8 }}>
+          <div style={{ border: '1px solid #e5e7eb', borderRadius: 12, padding: 16, background: '#f8fafc' }}>
+            <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: '0.06em', color: '#475569', textTransform: 'uppercase', marginBottom: 8 }}>
+              Repeat Rule
+            </div>
+            <div style={{ fontSize: 13, color: '#475569', marginBottom: 12 }}>
+              Control how many times a question can be reused. Once the maximum repeat count is reached, the question moves to archived status automatically.
+            </div>
+            <div>
+              <div style={{ fontSize: 11, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', marginBottom: 6 }}>
+                Max Repeat Count
+              </div>
+              <Input
+                type="number"
+                min={1}
+                value={configuration.maxRepeatCount}
+                onChange={e => setConfiguration(prev => ({
+                  ...prev,
+                  maxRepeatCount: e.target.value ? parseInt(e.target.value, 10) : 1,
+                }))}
+                placeholder="Enter maximum repeat count"
+              />
+            </div>
+          </div>
+
+          <div style={{ border: '1px solid #e5e7eb', borderRadius: 12, padding: 16, background: '#ffffff' }}>
+            <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: '0.06em', color: '#475569', textTransform: 'uppercase', marginBottom: 8 }}>
+              Cooldown Rule
+            </div>
+            <div style={{ fontSize: 13, color: '#475569', marginBottom: 12 }}>
+              After the cooldown period ends, the archived question will resurface and become active again automatically.
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 180px', gap: 12 }}>
+              <div>
+                <div style={{ fontSize: 11, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', marginBottom: 6 }}>
+                  Cooldown Duration
+                </div>
+                <Input
+                  type="number"
+                  min={1}
+                  value={configuration.cooldownValue}
+                  onChange={e => setConfiguration(prev => ({
+                    ...prev,
+                    cooldownValue: e.target.value ? parseInt(e.target.value, 10) : 1,
+                  }))}
+                  placeholder="Enter value"
+                />
+              </div>
+              <div>
+                <div style={{ fontSize: 11, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', marginBottom: 6 }}>
+                  Unit
+                </div>
+                <Select
+                  value={configuration.cooldownUnit}
+                  onChange={value => setConfiguration(prev => ({ ...prev, cooldownUnit: value }))}
+                  options={[
+                    { value: 'days', label: 'Days' },
+                    { value: 'months', label: 'Months' },
+                  ]}
+                  style={{ width: '100%' }}
+                />
+              </div>
+            </div>
+          </div>
+
+          <div style={{ borderRadius: 12, padding: 16, background: '#eff6ff', border: '1px solid #bfdbfe' }}>
+            <div style={{ fontSize: 12, fontWeight: 700, color: '#1d4ed8', marginBottom: 6 }}>
+              Current Behavior Summary
+            </div>
+            <div style={{ fontSize: 13, color: '#334155', lineHeight: 1.6 }}>
+              A question can repeat up to <strong>{configuration.maxRepeatCount}</strong> time{configuration.maxRepeatCount > 1 ? 's' : ''}. After that it will move to <strong>Archived</strong>. It will return to <strong>Active</strong> after <strong>{configuration.cooldownValue}</strong> {configuration.cooldownUnit}.
+            </div>
+          </div>
         </div>
       </Modal>
 
