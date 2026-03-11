@@ -51,7 +51,6 @@ export const NAV_MODULES: NavModule[] = [
       { key: '/core-hr/templates',   label: 'HR Template Creation' },
       { key: '/core-hr/policies',    label: 'Policy Management' },
       { key: '/core-hr/notices',          label: 'Notice & Announcement' },
-      { key: '/core-hr/question-bank',    label: 'Question Bank Management' },
     ],
   },
 
@@ -70,6 +69,7 @@ export const NAV_MODULES: NavModule[] = [
       { key: '/recruitment/assessment',           label: 'Assessment & Interview' },
       { key: '/recruitment/evaluation',           label: 'Evaluation' },
       { key: '/recruitment/offers',               label: 'Offer Management & Hiring' },
+      { key: '/core-hr/question-bank',            label: 'Question Bank Management' },
     ],
   },
 

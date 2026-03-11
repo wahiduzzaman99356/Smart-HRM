@@ -19,7 +19,6 @@ import {
   DeleteOutlined,
   ReloadOutlined,
   SearchOutlined,
-  ToolOutlined,
   PlusOutlined,
 } from '@ant-design/icons';
 import type { AssetAssignment, AssignTargetType } from '../types/assignAsset.types';
@@ -445,15 +444,10 @@ export default function AssignAssetPage() {
 
   return (
     <div style={{ height: '100%', overflowY: 'auto', padding: 24, background: 'var(--color-bg-base)' }}>
-      <div style={heroStyle}>
+      <div className="page-header-row">
         <div>
-          <h1 style={{ margin: 0, fontSize: 24, color: '#0f172a' }}>Asset Assign</h1>
-          <p style={{ margin: '6px 0 0', color: '#475569' }}>
-            Assign, exchange, remove, and reassign asset items for employees and departments.
-          </p>
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#0f766e', fontWeight: 600 }}>
-          <ToolOutlined /> Asset Management
+          <h1>Asset Assignment</h1>
+          <p>Assign, exchange, remove, and reassign asset items for employees and departments</p>
         </div>
       </div>
 
@@ -763,18 +757,6 @@ export default function AssignAssetPage() {
     </div>
   );
 }
-
-const heroStyle: React.CSSProperties = {
-  background: 'linear-gradient(130deg, #ecfeff 0%, #eff6ff 48%, #fef9c3 100%)',
-  border: '1px solid #bfdbfe',
-  borderRadius: 16,
-  padding: '20px 22px',
-  marginBottom: 16,
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'space-between',
-  gap: 12,
-};
 
 const panelStyle: React.CSSProperties = {
   marginBottom: 16,
