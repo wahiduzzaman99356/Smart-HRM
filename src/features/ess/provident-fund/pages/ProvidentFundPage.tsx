@@ -10,7 +10,6 @@
 
 import { useState, useMemo } from 'react';
 import { message } from 'antd';
-import { BankOutlined } from '@ant-design/icons';
 
 import { PFMyRequestListView } from '../components/PFMyRequestListView';
 import { PFLoanRequestForm }   from '../components/PFLoanRequestForm';
@@ -123,14 +122,9 @@ export default function ProvidentFundPage() {
           }}
         >
           {/* Left: Module Title */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <div style={{ width: 32, height: 32, borderRadius: 8, background: 'linear-gradient(135deg, #0f766e 0%, #115e59 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <BankOutlined style={{ color: '#fff', fontSize: 16 }} />
-            </div>
-            <div>
-              <div style={{ fontSize: 15, fontWeight: 700, color: '#111827', lineHeight: 1.2 }}>Provident Fund</div>
-              <div style={{ fontSize: 11, color: '#6b7280' }}>PF Loan Request Management</div>
-            </div>
+          <div>
+            <h1 style={{ margin: 0, fontSize: 16, fontWeight: 700, color: 'var(--color-text-primary)', lineHeight: 1.2 }}>Provident Fund</h1>
+            <p style={{ margin: '4px 0 0', fontSize: 13, color: 'var(--color-text-tertiary)' }}>PF loan request management</p>
           </div>
 
           {/* Right: Tab Buttons */}

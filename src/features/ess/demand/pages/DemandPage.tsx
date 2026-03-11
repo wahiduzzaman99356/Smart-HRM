@@ -535,13 +535,13 @@ export default function DemandPage() {
   const createAssignedAssetRows = getEmployeeAssets(targetEmployeeForCreate.id);
 
   return (
-    <div style={{ height: '100%', overflow: 'hidden', background: '#f3f6f9' }}>
+    <div style={{ height: '100%', overflow: 'hidden', background: '#F8FAFC' }}>
       {view === 'list' && (
         <div style={{ height: '100%', overflowY: 'auto' }}>
-          <div style={heroWrap}>
+          <div className="page-header-row" style={{ padding: '20px 24px 0' }}>
             <div>
-              <div style={{ fontSize: 24, fontWeight: 800, color: '#0f172a' }}>Demand Management</div>
-              <div style={{ color: '#475569', marginTop: 4 }}>Create demand, review approvals, and assign assets with exchange controls.</div>
+              <h1>Demand Management</h1>
+              <p>Create demand, review approvals, and assign assets with exchange controls</p>
             </div>
             <div style={{ display: 'flex', gap: 10 }}>
               <button style={tabButton(activeTab === 'my-demand')} onClick={() => setActiveTab('my-demand')}>My Demand</button>
@@ -1060,18 +1060,6 @@ const textButton: React.CSSProperties = {
   cursor: 'pointer',
   textDecoration: 'underline',
   fontWeight: 600,
-};
-
-const heroWrap: React.CSSProperties = {
-  margin: 24,
-  padding: '20px 24px',
-  borderRadius: 16,
-  border: '1px solid #dbeafe',
-  background: 'linear-gradient(120deg, #eff6ff 0%, #ecfeff 45%, #fefce8 100%)',
-  display: 'flex',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  gap: 16,
 };
 
 const listPanel: React.CSSProperties = {

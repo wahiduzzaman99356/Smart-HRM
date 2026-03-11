@@ -11,7 +11,6 @@
 
 import { useState, useMemo } from 'react';
 import { message } from 'antd';
-import { ClockCircleOutlined } from '@ant-design/icons';
 
 import { MyShiftTab }          from '../components/MyShiftTab';
 import { ShiftChangeListView } from '../components/ShiftChangeListView';
@@ -111,14 +110,9 @@ export default function MyShiftPage() {
           }}
         >
           {/* Left: Module Title */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <div style={{ width: 32, height: 32, borderRadius: 8, background: 'linear-gradient(135deg, #0f766e 0%, #115e59 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <ClockCircleOutlined style={{ color: '#fff', fontSize: 16 }} />
-            </div>
-            <div>
-              <div style={{ fontSize: 15, fontWeight: 700, color: '#111827', lineHeight: 1.2 }}>My Shift</div>
-              <div style={{ fontSize: 11, color: '#6b7280' }}>Shift Change &amp; Exchange Management</div>
-            </div>
+          <div>
+            <h1 style={{ margin: 0, fontSize: 16, fontWeight: 700, color: 'var(--color-text-primary)', lineHeight: 1.2 }}>My Shift</h1>
+            <p style={{ margin: '4px 0 0', fontSize: 13, color: 'var(--color-text-tertiary)' }}>Shift change &amp; exchange management</p>
           </div>
 
           {/* Right: Tab Buttons */}
@@ -174,7 +168,7 @@ export default function MyShiftPage() {
       )}
 
       {/* ── Content ────────────────────────────────────────────────────────── */}
-      <div style={{ flex: 1, overflow: 'hidden', background: activeTab === 'my-shift' ? '#eef4f5' : '#eef4f5' }}>
+      <div style={{ flex: 1, overflow: 'hidden', background: '#F8FAFC' }}>
         {/* MY SHIFT TAB */}
         {activeTab === 'my-shift' && <MyShiftTab />}
 

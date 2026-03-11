@@ -50,7 +50,7 @@
   --color-highlight:     #f59e0b;
 
   /* --- Neutral Colors --- */
-  --color-bg-base:        #eaf2f2;
+  --color-bg-base:        #F8FAFC;
   --color-bg-surface:     #ffffff;
   --color-bg-subtle:      #f6f8f8;
   --color-border:         #d8e7e5;
@@ -182,16 +182,26 @@ body,
 .app-sider-menu .ant-menu-submenu-title,
 .app-sider-menu .ant-menu-item {
   color: #334155;
+  transition: height 0.15s ease, padding 0.15s ease, white-space 0.15s ease;
 }
 
 /* Only wrap text when the menu is fully expanded (not collapsed) */
 .app-sider-menu:not(.ant-menu-inline-collapsed) .ant-menu-submenu-title,
 .app-sider-menu:not(.ant-menu-inline-collapsed) .ant-menu-item {
-  height: auto !important;
-  line-height: 1.4 !important;
-  white-space: normal !important;
-  padding-top: 8px !important;
-  padding-bottom: 8px !important;
+  height: auto;
+  line-height: 1.4;
+  white-space: normal;
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+/* Ensure collapsed state renders normally without overflow */
+.app-sider-menu.ant-menu-inline-collapsed .ant-menu-submenu-title,
+.app-sider-menu.ant-menu-inline-collapsed .ant-menu-item {
+  height: 40px;
+  padding-top: 0;
+  padding-bottom: 0;
+  white-space: nowrap;
 }
 
 .app-sider-menu:not(.ant-menu-inline-collapsed) .ant-menu-title-content {
@@ -221,7 +231,16 @@ body,
 
 .app-topbar-shell {
   background:
+    radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.07) 1px, transparent 0),
+    repeating-linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.025) 0px,
+      rgba(255, 255, 255, 0.025) 1px,
+      transparent 1px,
+      transparent 10px
+    ),
     linear-gradient(110deg, #145a56 0%, #0f766e 45%, #0d9488 100%);
+  background-size: 18px 18px, 100% 100%, 100% 100%;
 }
 
 .app-topbar-shell .ant-breadcrumb-separator {
@@ -304,7 +323,17 @@ body,
 .ant-btn-primary:active,
 .ant-btn-primary[disabled] {
   border: none !important;
-  background: linear-gradient(135deg, #0f766e 0%, #0d9488 100%) !important;
+  background-image:
+    radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.10) 1px, transparent 0),
+    repeating-linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.04) 0px,
+      rgba(255, 255, 255, 0.04) 1px,
+      transparent 1px,
+      transparent 8px
+    ),
+    linear-gradient(135deg, #0f766e 0%, #0d9488 100%) !important;
+  background-size: 12px 12px, 100% 100%, 100% 100% !important;
 }
 
 .ant-btn-primary {
@@ -356,6 +385,12 @@ body,
   border-radius: var(--radius-lg);
   border: 1px solid var(--color-border);
   box-shadow: var(--shadow-lg);
+}
+
+/* Keep close button inside the rounded modal boundary */
+.ant-modal .ant-modal-close {
+  top: 12px;
+  inset-inline-end: 14px;
 }
 
 .ant-modal .ant-modal-header,

@@ -760,6 +760,14 @@ export default function QuestionBankPage() {
   return (
     <div style={{ padding: 24, background: '#F8FAFC', minHeight: '100%' }}>
 
+      {/* ── Page Header ─────────────────────────────────────────────────────── */}
+      <div className="page-header-row">
+        <div>
+          <h1>Question Bank Management</h1>
+          <p>Manage assessment questions by topic, type, and difficulty</p>
+        </div>
+      </div>
+
       {/* ── Stat Cards ─────────────────────────────────────────────────────── */}
       <Row gutter={[16, 16]} style={{ marginBottom: 20 }}>
         <Col xs={24} sm={12} xl={6}>
