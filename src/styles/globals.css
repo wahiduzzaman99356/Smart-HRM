@@ -1,5 +1,7 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Nunito+Sans:wght@400;600;700&display=swap');
+
 /* ============================================================
-   Smart-HRM Design System — CSS Custom Properties
+   Smart-HRM Design System - CSS Custom Properties
    ============================================================ */
 
 /* Base reset */
@@ -15,7 +17,7 @@
 
 :root {
   /* --- Typography --- */
-  --font-family-base: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --font-family-base: 'Manrope', 'Nunito Sans', 'Segoe UI', sans-serif;
 
   --text-xs:   11px; /* metadata, timestamps, secondary labels */
   --text-sm:   12px; /* table cell text, captions */
@@ -40,18 +42,19 @@
   --tracking-wider:  0.06em;
 
   /* --- Brand Colors --- */
-  --color-primary:       #0d9488; /* teal-600 */
-  --color-primary-dark:  #0f766e; /* teal-700 */
-  --color-primary-light: #f0fdfa; /* teal-50 */
-  --color-secondary:     #14b8a6; /* teal-500 */
-  --color-accent:        #2dd4bf; /* teal-400 */
+  --color-primary:       #0f766e;
+  --color-primary-dark:  #115e59;
+  --color-primary-light: #f0fdfa;
+  --color-secondary:     #0d9488;
+  --color-accent:        #14b8a6;
+  --color-highlight:     #f59e0b;
 
   /* --- Neutral Colors --- */
-  --color-bg-base:        #eef4f5;
+  --color-bg-base:        #eaf2f2;
   --color-bg-surface:     #ffffff;
-  --color-bg-subtle:      #f3f4f6;
-  --color-border:         #e5e7eb;
-  --color-border-strong:  #d1d5db;
+  --color-bg-subtle:      #f6f8f8;
+  --color-border:         #d8e7e5;
+  --color-border-strong:  #bdd6d2;
   --color-text-primary:   #111827;
   --color-text-secondary: #374151;
   --color-text-tertiary:  #6b7280;
@@ -90,9 +93,9 @@
   --radius-full: 9999px;
 
   /* --- Shadows --- */
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
-  --shadow-lg: 0 4px 6px rgba(0, 0, 0, 0.07), 0 2px 4px rgba(0, 0, 0, 0.05);
+  --shadow-sm: 0 1px 2px rgba(17, 24, 39, 0.06);
+  --shadow-md: 0 6px 18px rgba(15, 40, 38, 0.08);
+  --shadow-lg: 0 18px 40px rgba(15, 40, 38, 0.12);
 }
 
 /* ============================================================
@@ -106,7 +109,10 @@ body {
   font-size: var(--text-base);
   line-height: var(--leading-normal);
   color: var(--color-text-primary);
-  background: var(--color-bg-base);
+  background:
+    radial-gradient(circle at 85% 0%, rgba(20, 184, 166, 0.08) 0, rgba(20, 184, 166, 0) 44%),
+    radial-gradient(circle at 10% 20%, rgba(245, 158, 11, 0.08) 0, rgba(245, 158, 11, 0) 38%),
+    var(--color-bg-base);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -142,8 +148,11 @@ body,
   min-width: 280px;
   max-height: 72vh;
   overflow-y: auto;
-  background: #f6fbfa;
-  border: 1px solid #dcebe8;
+  background: #f3f8f7;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  padding: 6px;
 }
 
 .app-sider-submenu-popup .ant-menu-item {
@@ -151,13 +160,13 @@ body,
 }
 
 .app-sider-submenu-popup .ant-menu-item:hover {
-  color: #0f766e;
-  background: #eaf7f5;
+  color: var(--color-primary-dark);
+  background: #e2f5f2;
 }
 
 .app-sider-submenu-popup .ant-menu-item-selected {
-  color: #0f766e;
-  background: #dff4f1;
+  color: var(--color-primary-dark);
+  background: #d4efeb;
 }
 
 .app-sider-menu .ant-menu-submenu-title,
@@ -167,26 +176,202 @@ body,
 
 .app-sider-menu .ant-menu-item:hover,
 .app-sider-menu .ant-menu-submenu-title:hover {
-  color: #0f766e;
-  background: #eaf7f5;
+  color: var(--color-primary-dark);
+  background: #e2f5f2;
 }
 
 .app-sider-menu .ant-menu-item-selected {
-  color: #0f766e;
-  background: #dff4f1;
+  color: var(--color-primary-dark);
+  background: #d4efeb;
 }
 
 /* Shared nav texture system for sidebar and topbar */
 .app-sider-shell {
-  background-color: #f3faf8;
+  background-color: #eff8f6;
   background-image:
-    radial-gradient(circle at 1px 1px, rgba(15, 118, 110, 0.07) 1px, transparent 0),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.64) 0%, rgba(243, 250, 248, 0.84) 100%);
+    radial-gradient(circle at 1px 1px, rgba(15, 118, 110, 0.08) 1px, transparent 0),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.7) 0%, rgba(239, 248, 246, 0.92) 100%);
   background-size: 16px 16px, 100% 100%;
 }
 
 .app-topbar-shell {
-  background-image: none;
+  background:
+    linear-gradient(110deg, #145a56 0%, #0f766e 45%, #0d9488 100%);
+}
+
+.app-topbar-shell .ant-breadcrumb-separator {
+  color: rgba(255, 255, 255, 0.56);
+}
+
+.app-topbar-shell .ant-btn-text {
+  color: #d8f3ee;
+}
+
+.app-topbar-shell .ant-btn-text:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.app-topbar-shell .header-profile:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.app-global-search .ant-input-affix-wrapper {
+  border-radius: var(--radius-lg);
+  border-color: #b7d3cf;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+.app-global-search .ant-input-affix-wrapper:hover,
+.app-global-search .ant-input-affix-wrapper-focused {
+  border-color: var(--color-accent);
+}
+
+.app-global-search .ant-input {
+  font-weight: 500;
+  font-size: 13px;
+}
+
+.app-global-search .ant-select-dropdown {
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-lg);
+  padding: 6px;
+}
+
+/* ── Button base ───────────────────────────────────────────────────────────
+   IMPORTANT: 'background' is intentionally NOT in this transition list.
+   Gradient-to-gradient cannot be interpolated by browsers — including it
+   causes the flicker. Visual hover feedback is handled by filter/transform. */
+.ant-btn {
+  font-weight: var(--font-semibold);
+  border-radius: 10px;
+  height: 34px;
+  padding-inline: 14px;
+  box-shadow: none;
+  transition:
+    color        0.18s ease,
+    border-color 0.18s ease,
+    box-shadow   0.18s ease,
+    filter       0.18s ease,
+    transform    0.18s ease,
+    opacity      0.18s ease !important;
+}
+
+.ant-btn.ant-btn-sm {
+  height: 30px;
+  padding-inline: 12px;
+}
+
+.ant-btn.ant-btn-lg {
+  height: 40px;
+  padding-inline: 18px;
+}
+
+/* ── Primary button ────────────────────────────────────────────────────────
+   The gradient is pinned to the SAME value on every pseudo-state with
+   !important so AntD's CSS-in-JS hover override becomes a no-op.
+   Only filter + transform + box-shadow ever change — all animatable. */
+.ant-btn-primary,
+.ant-btn-primary:hover,
+.ant-btn-primary:focus,
+.ant-btn-primary:active,
+.ant-btn-primary[disabled] {
+  border: none !important;
+  background: linear-gradient(135deg, #0f766e 0%, #0d9488 100%) !important;
+}
+
+.ant-btn-primary {
+  box-shadow: 0 2px 8px rgba(15, 118, 110, 0.20);
+}
+
+.ant-btn-primary:not(:disabled):hover {
+  filter: brightness(0.86);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(15, 118, 110, 0.28);
+}
+
+.ant-btn-primary:not(:disabled):active {
+  filter: brightness(0.78);
+  transform: translateY(0);
+  box-shadow: 0 1px 4px rgba(15, 118, 110, 0.16);
+}
+
+/* ── Default button ────────────────────────────────────────────────────────
+   Solid colour → solid colour transitions are interpolatable, so background
+   is safe here. We still skip it from the base .ant-btn transition to keep
+   the rule minimal; AntD's own transition handles it fine for solid colours. */
+.ant-btn-default {
+  border-color: var(--color-border-strong);
+  background: #ffffff;
+}
+
+.ant-btn-default:not(:disabled):hover {
+  color: var(--color-primary) !important;
+  border-color: var(--color-primary) !important;
+  background: #f0fdfa !important;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(15, 118, 110, 0.10);
+}
+
+.ant-btn-default:not(:disabled):active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+/* Popup consistency: modal, drawer, popover, dropdown */
+.ant-modal .ant-modal-content,
+.ant-drawer .ant-drawer-content,
+.ant-popover .ant-popover-inner,
+.ant-dropdown .ant-dropdown-menu,
+.ant-select-dropdown,
+.ant-picker-dropdown .ant-picker-panel-container,
+.ant-tooltip .ant-tooltip-inner {
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-lg);
+}
+
+.ant-modal .ant-modal-header,
+.ant-drawer .ant-drawer-header {
+  border-bottom: 1px solid var(--color-border);
+  background:
+    linear-gradient(180deg, #f8fcfc 0%, #f2fbfa 100%);
+}
+
+.ant-modal .ant-modal-title,
+.ant-drawer .ant-drawer-title {
+  font-size: 15px;
+  font-weight: var(--font-bold);
+  color: var(--color-text-primary);
+}
+
+.ant-table-wrapper,
+.ant-card {
+  border-radius: var(--radius-lg);
+}
+
+@keyframes modalEnter {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.ant-modal .ant-modal-content,
+.ant-drawer .ant-drawer-content {
+  animation: modalEnter 0.22s ease-out;
+}
+
+@media (max-width: 992px) {
+  .app-global-search {
+    width: clamp(180px, 38vw, 260px) !important;
+  }
 }
 
 /* ============================================================
@@ -241,6 +426,159 @@ body,
   font-size: var(--text-sm);
   color: var(--color-text-tertiary);
   margin: var(--space-1) 0 0;
+}
+
+/* ── Page shell: standard scrollable page wrapper ───── */
+.page-shell {
+  padding: 24px 28px;
+  height: 100%;
+  overflow-y: auto;
+  background: var(--color-bg-base);
+}
+
+/* ── Module header bar (white bar at top of tabbed pages) */
+.module-header-bar {
+  background: #ffffff;
+  border-bottom: 1px solid var(--color-border);
+  padding: 14px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+
+/* ── Module icon box (gradient square in module headers) */
+.module-icon-box {
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+  background: linear-gradient(135deg, #0f766e 0%, #115e59 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* ── Tab pill buttons */
+.tab-pill-group {
+  display: flex;
+  gap: 6px;
+}
+
+.tab-pill {
+  padding: 6px 18px;
+  border-radius: 10px;
+  border: 1.5px solid var(--color-border-strong);
+  background: #ffffff;
+  color: var(--color-text-secondary);
+  font-size: 13px;
+  font-family: var(--font-family-base);
+  font-weight: 500;
+  cursor: pointer;
+  position: relative;
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
+}
+
+.tab-pill:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary-dark);
+}
+
+.tab-pill.active {
+  border-color: var(--color-primary);
+  background: var(--color-primary-light);
+  color: var(--color-primary-dark);
+  font-weight: 600;
+}
+
+/* ── Filter bar surface */
+.filter-bar {
+  background: #ffffff;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 16px 20px;
+  margin-bottom: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: flex-end;
+}
+
+/* ── List / table wrapper surface */
+.list-surface {
+  background: #ffffff;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+/* ── Card surface (forms, detail blocks) */
+.card-surface {
+  background: #ffffff;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+/* ── Filter field labels */
+.filter-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--color-primary);
+  letter-spacing: 0.06em;
+  margin-bottom: 5px;
+}
+
+/* ── Inline text action links in tables */
+.action-link {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-size: 13px;
+  font-family: var(--font-family-base);
+  color: var(--color-primary);
+  font-weight: 500;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: color 0.15s;
+}
+
+.action-link:hover {
+  color: var(--color-primary-dark);
+}
+
+.action-link.danger {
+  color: var(--color-status-rejected);
+}
+
+.action-link.danger:hover {
+  color: #b91c1c;
+}
+
+/* ── Page header row (title + CTA button) */
+.page-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+
+.page-header-row h1 {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin: 0;
+  line-height: 1.2;
+}
+
+.page-header-row p {
+  font-size: 13px;
+  color: var(--color-text-tertiary);
+  margin: 4px 0 0;
 }
 
 /* ============================================================

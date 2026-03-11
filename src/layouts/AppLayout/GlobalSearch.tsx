@@ -76,6 +76,7 @@ export function GlobalSearch() {
 
   return (
     <AutoComplete
+      className="app-global-search"
       value={query}
       onChange={setQuery}
       onSelect={handleSelect}
@@ -95,13 +96,10 @@ export function GlobalSearch() {
       }}
     >
       <Input
-        prefix={<SearchOutlined style={{ color: '#9ca3af', fontSize: 14 }} />}
-        placeholder="Search pages or modules…"
+        prefix={<SearchOutlined style={{ color: '#6b7280', fontSize: 14 }} />}
+        placeholder="Search pages or modules..."
         allowClear
         style={{
-          borderRadius: 8,
-          background: '#f9fafb',
-          borderColor: '#e5e7eb',
           fontSize: 13,
           height: 34,
         }}

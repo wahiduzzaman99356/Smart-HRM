@@ -444,7 +444,7 @@ export default function AssignAssetPage() {
     .map(emp => ({ value: emp.name, label: `${emp.name} (${emp.id})` }));
 
   return (
-    <div style={{ height: '100%', overflowY: 'auto', padding: 24, background: '#eef4f5' }}>
+    <div style={{ height: '100%', overflowY: 'auto', padding: 24, background: 'var(--color-bg-base)' }}>
       <div style={heroStyle}>
         <div>
           <h1 style={{ margin: 0, fontSize: 24, color: '#0f172a' }}>Asset Assign</h1>

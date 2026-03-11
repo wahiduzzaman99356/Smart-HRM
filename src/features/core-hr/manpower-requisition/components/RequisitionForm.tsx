@@ -40,7 +40,7 @@ import type { OrgLevelSelection } from '../../manpower-headcount/components/OrgL
 
 // ─── Style constants ──────────────────────────────────────────────────────────
 const LABEL: React.CSSProperties = {
-  fontSize: 10, fontWeight: 700, color: '#0d9488',
+  fontSize: 10, fontWeight: 700, color: 'var(--color-primary)',
   marginBottom: 6, letterSpacing: '0.04em',
 };
 const SUBLABEL: React.CSSProperties = {
@@ -180,7 +180,7 @@ function RichTextEditor({
   return (
     <div
       style={{
-        border: `1px solid ${focused ? '#0d9488' : '#d9d9d9'}`,
+        border: `1px solid ${focused ? '#0f766e' : '#d9d9d9'}`,
         borderRadius: 8,
         overflow: 'hidden',
         transition: 'border-color 0.2s',
@@ -368,7 +368,7 @@ export function RequisitionForm({
 
   // ─── Render ──────────────────────────────────────────────────────────────────
   return (
-    <div style={{ padding: '24px 28px', height: '100%', overflowY: 'auto', background: '#f9fafb' }}>
+    <div style={{ padding: '24px 28px', height: '100%', overflowY: 'auto', background: 'var(--color-bg-base)' }}>
 
       {/* ── Header ────────────────────────────────────────────────────────── */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
@@ -386,13 +386,13 @@ export function RequisitionForm({
           type="link"
           icon={<LeftOutlined style={{ fontSize: 12 }} />}
           onClick={onBack}
-          style={{ color: '#0d9488', fontWeight: 600, padding: 0, fontSize: 13 }}
+          style={{ color: '#0f766e', fontWeight: 600, padding: 0, fontSize: 13 }}
         >
           Back to List
         </Button>
       </div>
 
-      <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 10, padding: '20px 24px' }}>
+      <div style={{ background: '#fff', border: '1px solid var(--color-border)', borderRadius: 10, padding: '20px 24px' }}>
 
         {/* ── 1. Date / Org Level / Ref No ──────────────────────────────── */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.6fr 1fr', gap: 12, marginBottom: 14 }}>
@@ -422,7 +422,7 @@ export function RequisitionForm({
                 SELECT LEVEL
               </Button>
               <div style={{
-                flex: 1, border: '1px solid #e5e7eb', borderRadius: 7,
+                flex: 1, border: '1px solid var(--color-border)', borderRadius: 7,
                 padding: '0 12px', fontSize: 13, height: 36,
                 display: 'flex', alignItems: 'center',
                 color: data.selectedLevel ? '#111827' : '#9ca3af',
@@ -448,7 +448,7 @@ export function RequisitionForm({
         {/* ── 2. Requisition Type (Checkboxes — both selectable) ─────────── */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr auto', gap: 12, marginBottom: 14 }}>
 
-          <div style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: 12 }}>
+          <div style={{ border: '1px solid var(--color-border)', borderRadius: 8, padding: 12 }}>
             <Space direction="vertical" size={8} style={{ width: '100%' }}>
               <Checkbox
                 checked={data.typeOfRequisition.includes('New Recruitment')}
@@ -469,7 +469,7 @@ export function RequisitionForm({
             </Space>
           </div>
 
-          <div style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: 12 }}>
+          <div style={{ border: '1px solid var(--color-border)', borderRadius: 8, padding: 12 }}>
             <Space direction="vertical" size={8} style={{ width: '100%' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <Checkbox
@@ -499,7 +499,7 @@ export function RequisitionForm({
           <div style={{
             minWidth: 184, display: 'flex', flexDirection: 'column',
             justifyContent: 'center', gap: 5,
-            background: '#f8fafc', border: '1px solid #e5e7eb',
+            background: '#f8fafc', border: '1px solid var(--color-border)',
             borderRadius: 8, padding: '12px 14px',
           }}>
             <div style={SUMMARY_ROW}>Total in Dept: <strong style={{ color: '#111827' }}>34</strong></div>
@@ -575,7 +575,7 @@ export function RequisitionForm({
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 14 }}>
 
           {/* Experience */}
-          <div style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: 12 }}>
+          <div style={{ border: '1px solid var(--color-border)', borderRadius: 8, padding: 12 }}>
             <div style={LABEL}>EXPERIENCE*</div>
             <Radio.Group
               value={data.experienceMode}
@@ -609,7 +609,7 @@ export function RequisitionForm({
           </div>
 
           {/* Age */}
-          <div style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: 12 }}>
+          <div style={{ border: '1px solid var(--color-border)', borderRadius: 8, padding: 12 }}>
             <div style={LABEL}>AGE</div>
             <Space direction="vertical" size={10} style={{ width: '100%' }}>
               <div style={{ display: 'grid', gridTemplateColumns: '120px 1fr', gap: 8, alignItems: 'center' }}>
@@ -662,7 +662,7 @@ export function RequisitionForm({
         </div>
 
         {/* ── 5. Educational Requirements ────────────────────────────────── */}
-        <div style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: 12, marginBottom: 14 }}>
+        <div style={{ border: '1px solid var(--color-border)', borderRadius: 8, padding: 12, marginBottom: 14 }}>
           <div style={LABEL}>EDUCATIONAL REQUIREMENTS*</div>
 
           {data.educationRequirements.map((row, idx) => {
@@ -858,7 +858,7 @@ export function RequisitionForm({
                     borderRadius: 7, padding: '6px 12px', fontSize: 13, color: '#374151',
                   }}
                 >
-                  <UploadOutlined style={{ color: '#0d9488', fontSize: 14, flexShrink: 0 }} />
+                  <UploadOutlined style={{ color: 'var(--color-primary)', fontSize: 14, flexShrink: 0 }} />
                   <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     {file.name}
                   </span>
@@ -869,7 +869,7 @@ export function RequisitionForm({
                     <Button
                       type="text" size="small" icon={<EyeOutlined />}
                       onClick={() => handleViewFile(file)}
-                      style={{ color: '#0d9488', padding: '0 4px', height: 24, flexShrink: 0 }}
+                      style={{ color: 'var(--color-primary)', padding: '0 4px', height: 24, flexShrink: 0 }}
                     />
                   </Tooltip>
                   <Popconfirm
@@ -958,7 +958,7 @@ export function RequisitionForm({
         width={760}
         title={
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <FileOutlined style={{ color: '#0d9488' }} />
+            <FileOutlined style={{ color: '#0f766e' }} />
             <span style={{ fontWeight: 700, fontSize: 14, color: '#111827' }}>
               {viewingFile?.name}
             </span>
@@ -999,7 +999,7 @@ export function RequisitionForm({
           }
           return (
             <div style={{ textAlign: 'center', padding: '40px 0' }}>
-              <FileOutlined style={{ fontSize: 48, color: '#0d9488', marginBottom: 12 }} />
+              <FileOutlined style={{ fontSize: 48, color: '#0f766e', marginBottom: 12 }} />
               <div style={{ fontSize: 14, color: '#374151', marginBottom: 16 }}>{viewingFile.name}</div>
               <Button type="primary" href={url} target="_blank" rel="noopener noreferrer">
                 Open File

@@ -86,10 +86,10 @@ export function ShiftChangeListView({ requests, onCreateNew, onView, onCancel }:
           <span
             style={{
               display: 'inline-block',
-              padding: '3px 10px',
-              borderRadius: 6,
+              padding: '3px 12px',
+              borderRadius: 20,
               fontSize: 12,
-              fontWeight: 500,
+              fontWeight: 600,
               color: st.color,
               background: st.bg,
               border: `1px solid ${st.border}`,
@@ -106,10 +106,7 @@ export function ShiftChangeListView({ requests, onCreateNew, onView, onCancel }:
       width: 160,
       render: (_, rec) => (
         <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-          <button
-            onClick={() => onView(rec)}
-            style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', fontSize: 13, color: '#0d9488', fontWeight: 500, textDecoration: 'underline', display: 'flex', alignItems: 'center', gap: 4 }}
-          >
+          <button className="action-link" onClick={() => onView(rec)}>
             <EyeOutlined style={{ fontSize: 13 }} /> View
           </button>
           {rec.status === 'To Approve' && (
@@ -121,9 +118,7 @@ export function ShiftChangeListView({ requests, onCreateNew, onView, onCancel }:
               okButtonProps={{ danger: true }}
               onConfirm={() => { onCancel(rec.id); message.success('Request cancelled.'); }}
             >
-              <button
-                style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', fontSize: 13, color: '#dc2626', fontWeight: 500, textDecoration: 'underline', display: 'flex', alignItems: 'center', gap: 4 }}
-              >
+              <button className="action-link danger">
                 <StopOutlined style={{ fontSize: 12 }} /> Cancel Request
               </button>
             </Popconfirm>
@@ -134,23 +129,20 @@ export function ShiftChangeListView({ requests, onCreateNew, onView, onCancel }:
   ];
 
   return (
-    <div style={{ padding: '24px 28px', height: '100%', overflowY: 'auto' }}>
+    <div className="page-shell">
       {/* Page Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 }}>
+      <div className="page-header-row">
         <div>
-          <h1 style={{ fontSize: 16, fontWeight: 700, color: '#111827', margin: 0 }}>Request List</h1>
-          <p style={{ fontSize: 13, color: '#6b7280', margin: '4px 0 0' }}>
-            View and manage your shift change / exchange requests
-          </p>
+          <h1>Request List</h1>
+          <p>View and manage your shift change / exchange requests</p>
         </div>
-        <Button type="primary" icon={<PlusOutlined />} onClick={onCreateNew}
-          style={{ background: '#0d9488', borderColor: '#0d9488' }}>
+        <Button type="primary" icon={<PlusOutlined />} onClick={onCreateNew}>
           Create
         </Button>
       </div>
 
       {/* Filter Bar */}
-      <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 10, padding: '14px 18px', marginBottom: 18 }}>
+      <div className="filter-bar" style={{ padding: '14px 18px' }}>
         <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'center' }}>
           <Select
             placeholder="From Shift"
@@ -181,7 +173,7 @@ export function ShiftChangeListView({ requests, onCreateNew, onView, onCancel }:
               { value: 'Cancelled',  label: 'Cancelled' },
             ]}
           />
-          <Button type="primary" onClick={handleSearch} style={{ background: '#0d9488', borderColor: '#0d9488' }}>Search</Button>
+          <Button type="primary" onClick={handleSearch}>Search</Button>
           <Button onClick={handleReset}>Reset</Button>
           <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 8 }}>
             <span style={{ fontSize: 12, color: '#6b7280' }}>Sort by</span>
@@ -191,7 +183,7 @@ export function ShiftChangeListView({ requests, onCreateNew, onView, onCancel }:
       </div>
 
       {/* Table */}
-      <div style={{ background: '#fff', borderRadius: 10, border: '1px solid #e5e7eb', overflow: 'hidden' }}>
+      <div className="list-surface">
         <Table
           rowKey="id"
           dataSource={filtered}

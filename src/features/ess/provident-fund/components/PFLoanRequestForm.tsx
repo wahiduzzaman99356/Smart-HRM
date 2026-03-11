@@ -93,13 +93,13 @@ export function PFLoanRequestForm({ mode, request, onBack, onSubmit, onApprove, 
 
   // ─── Render ───────────────────────────────────────────────────────────────────
   return (
-    <div style={{ height: '100%', overflowY: 'auto', background: '#eef4f5' }}>
+    <div style={{ height: '100%', overflowY: 'auto', background: 'var(--color-bg-base)' }}>
       <div style={{ padding: '24px 28px' }}>
         {/* Back + Title */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
           <button
             onClick={onBack}
-            style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#0d9488', display: 'flex', alignItems: 'center', gap: 4, fontSize: 13, fontWeight: 500 }}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', gap: 4, fontSize: 13, fontWeight: 500 }}
           >
             <ArrowLeftOutlined /> Back
           </button>
@@ -115,7 +115,7 @@ export function PFLoanRequestForm({ mode, request, onBack, onSubmit, onApprove, 
           {/* ── Left Panel ─────────────────────────────────────────────────── */}
           <div style={{ flex: 1 }}>
             {/* Balance Card */}
-            <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 10, padding: '18px 22px', marginBottom: 20 }}>
+            <div style={{ background: '#fff', border: '1px solid var(--color-border)', borderRadius: 10, padding: '18px 22px', marginBottom: 20 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 28 }}>
                 <div>
                   <div style={{ fontSize: 12, color: '#6b7280', marginBottom: 2 }}>Current Balance</div>
@@ -144,7 +144,7 @@ export function PFLoanRequestForm({ mode, request, onBack, onSubmit, onApprove, 
             </div>
 
             {/* Form Fields */}
-            <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 10, padding: '22px 24px' }}>
+            <div style={{ background: '#fff', border: '1px solid var(--color-border)', borderRadius: 10, padding: '22px 24px' }}>
               <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap', marginBottom: 18 }}>
                 {/* Loan Amount */}
                 <div style={{ flex: '0 0 220px' }}>

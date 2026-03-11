@@ -160,7 +160,7 @@ export function ApprovalsListView({ requests, onApproveReject, onBulkApprove, on
       render: (s: ShiftRequestStatus) => {
         const st = STATUS_STYLE[s];
         return (
-          <span style={{ display: 'inline-block', padding: '3px 10px', borderRadius: 6, fontSize: 12, fontWeight: 500, color: st.color, background: st.bg, border: `1px solid ${st.border}` }}>
+          <span style={{ display: 'inline-block', padding: '3px 12px', borderRadius: 20, fontSize: 12, fontWeight: 600, color: st.color, background: st.bg, border: `1px solid ${st.border}` }}>
             {s}
           </span>
         );
@@ -173,17 +173,11 @@ export function ApprovalsListView({ requests, onApproveReject, onBulkApprove, on
       render: (_, rec) => (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
           {rec.status === 'To Approve' ? (
-            <button
-              onClick={() => onApproveReject(rec)}
-              style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', fontSize: 13, color: '#0d9488', fontWeight: 600, textDecoration: 'underline', textAlign: 'left' }}
-            >
+            <button className="action-link" onClick={() => onApproveReject(rec)}>
               Approve/Reject
             </button>
           ) : (
-            <button
-              onClick={() => onApproveReject(rec)}
-              style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', fontSize: 13, color: '#6b7280', fontWeight: 500, textDecoration: 'underline', textAlign: 'left', display: 'flex', alignItems: 'center', gap: 4 }}
-            >
+            <button className="action-link" style={{ color: '#6b7280' }} onClick={() => onApproveReject(rec)}>
               <EyeOutlined style={{ fontSize: 12 }} /> View
             </button>
           )}
@@ -193,9 +187,9 @@ export function ApprovalsListView({ requests, onApproveReject, onBulkApprove, on
   ];
 
   return (
-    <div style={{ padding: '24px 28px', height: '100%', overflowY: 'auto' }}>
+    <div className="page-shell">
       {/* Filter Bar */}
-      <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 10, padding: '16px 18px', marginBottom: 18 }}>
+      <div className="filter-bar" style={{ padding: '16px 18px' }}>
         <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'center', marginBottom: 10 }}>
           <Input
             prefix={<SearchOutlined style={{ color: '#9ca3af' }} />}
@@ -223,7 +217,7 @@ export function ApprovalsListView({ requests, onApproveReject, onBulkApprove, on
               { value: 'Cancelled',  label: 'Cancelled' },
             ]}
           />
-          <Button type="primary" onClick={handleSearch} style={{ background: '#0d9488', borderColor: '#0d9488' }}>Search</Button>
+          <Button type="primary" onClick={handleSearch}>Search</Button>
           <Button onClick={handleReset}>Reset</Button>
 
           <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -244,7 +238,7 @@ export function ApprovalsListView({ requests, onApproveReject, onBulkApprove, on
         </div>
       </div>
 
-      <div style={{ background: '#fff', borderRadius: 10, border: '1px solid #e5e7eb', overflow: 'hidden' }}>
+      <div className="list-surface">
         <Table
           rowKey="id"
           dataSource={filtered}

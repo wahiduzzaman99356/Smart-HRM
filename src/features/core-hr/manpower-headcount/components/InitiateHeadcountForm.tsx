@@ -230,7 +230,7 @@ export function InitiateHeadcountForm({
 
   // ─── Render ──────────────────────────────────────────────────────────────────
   return (
-    <div style={{ padding: '24px 32px', height: '100%', overflowY: 'auto', background: '#f9fafb' }}>
+    <div style={{ padding: '24px 32px', height: '100%', overflowY: 'auto', background: 'var(--color-bg-base)' }}>
 
       {/* ── Header ───────────────────────────────────────────────────────── */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
@@ -248,7 +248,7 @@ export function InitiateHeadcountForm({
           type="link"
           icon={<LeftOutlined style={{ fontSize: 12 }} />}
           onClick={onBack}
-          style={{ color: '#0d9488', fontWeight: 600, padding: 0, fontSize: 13 }}
+          style={{ color: '#0f766e', fontWeight: 600, padding: 0, fontSize: 13 }}
         >
           Back to List
         </Button>
@@ -256,7 +256,7 @@ export function InitiateHeadcountForm({
 
       {/* ── Controls card ────────────────────────────────────────────────── */}
       <div style={{
-        background: '#fff', border: '1px solid #e5e7eb', borderRadius: 10,
+        background: '#fff', border: '1px solid var(--color-border)', borderRadius: 10,
         padding: '20px', marginBottom: 16,
         display: 'flex', gap: 24, alignItems: 'flex-end', flexWrap: 'wrap',
       }}>
@@ -308,7 +308,7 @@ export function InitiateHeadcountForm({
       </div>
 
       {/* ── Rows table ───────────────────────────────────────────────────── */}
-      <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 10, overflow: 'hidden', marginBottom: 20 }}>
+      <div style={{ background: '#fff', border: '1px solid var(--color-border)', borderRadius: 10, overflow: 'hidden', marginBottom: 20 }}>
         <Table
           dataSource={rows}
           columns={columns}
@@ -375,7 +375,7 @@ export function InitiateHeadcountForm({
 
       {/* ── Attachments (both modes) ──────────────────────────────────────── */}
       <div style={{ marginBottom: 20 }}>
-        <div style={{ fontSize: 10, fontWeight: 700, color: '#0d9488', letterSpacing: '0.06em', marginBottom: 8 }}>
+        <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--color-primary)', letterSpacing: '0.06em', marginBottom: 8 }}>
           ATTACHMENTS (OPTIONAL)
         </div>
         <Upload multiple beforeUpload={handleBeforeUpload} showUploadList={false}>
@@ -397,7 +397,7 @@ export function InitiateHeadcountForm({
                   borderRadius: 7, padding: '6px 12px', fontSize: 13, color: '#374151',
                 }}
               >
-                <UploadOutlined style={{ color: '#0d9488', fontSize: 14, flexShrink: 0 }} />
+                <UploadOutlined style={{ color: 'var(--color-primary)', fontSize: 14, flexShrink: 0 }} />
                 <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                   {file.name}
                 </span>
@@ -408,7 +408,7 @@ export function InitiateHeadcountForm({
                   <Button
                     type="text" size="small" icon={<EyeOutlined />}
                     onClick={() => setViewingFile(file)}
-                    style={{ color: '#0d9488', padding: '0 4px', height: 24, flexShrink: 0 }}
+                    style={{ color: 'var(--color-primary)', padding: '0 4px', height: 24, flexShrink: 0 }}
                   />
                 </Tooltip>
                 <Popconfirm

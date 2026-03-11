@@ -41,7 +41,7 @@ export const NAV_MODULES: NavModule[] = [
   // ── 1. Core HR & Employee Data Management ───────────────────────────────────
   {
     key: 'core-hr',
-    label: 'Core HR & Employee',
+    label: 'Core HR Functions',
     icon: <TeamOutlined />,
     children: [
       { key: '/core-hr/organogram',          label: 'Organogram' },
@@ -50,7 +50,8 @@ export const NAV_MODULES: NavModule[] = [
       { key: '/core-hr/requisition',         label: 'Manpower Requisition' },
       { key: '/core-hr/templates',   label: 'HR Template Creation' },
       { key: '/core-hr/policies',    label: 'Policy Management' },
-      { key: '/core-hr/notices',     label: 'Notice & Announcement' },
+      { key: '/core-hr/notices',          label: 'Notice & Announcement' },
+      { key: '/core-hr/question-bank',    label: 'Question Bank Management' },
     ],
   },
 
@@ -135,7 +136,7 @@ export const NAV_MODULES: NavModule[] = [
   // ── 6. Payroll & Compensation & Benefits ──────────────────────────────────────
   {
     key: 'payroll',
-    label: 'Payroll & C&B',
+    label: 'Payroll',
     icon: <DollarOutlined />,
     children: [
       {

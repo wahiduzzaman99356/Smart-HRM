@@ -108,13 +108,13 @@ export default function ProvidentFundPage() {
 
   // ─── Render ───────────────────────────────────────────────────────────────────
   return (
-    <div style={{ height: '100%', display: 'flex', flexDirection: 'column', background: '#eef4f5' }}>
+    <div style={{ height: '100%', display: 'flex', flexDirection: 'column', background: 'var(--color-bg-base)' }}>
       {/* ── Page Header with Tab Switcher ──────────────────────────────────── */}
       {!isFormView && (
         <div
           style={{
             background: '#fff',
-            borderBottom: '1px solid #e5e7eb',
+            borderBottom: '1px solid var(--color-border)',
             padding: '14px 28px',
             display: 'flex',
             alignItems: 'center',
@@ -124,7 +124,7 @@ export default function ProvidentFundPage() {
         >
           {/* Left: Module Title */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <div style={{ width: 32, height: 32, borderRadius: 8, background: 'linear-gradient(135deg, #0d9488 0%, #0f766e 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ width: 32, height: 32, borderRadius: 8, background: 'linear-gradient(135deg, #0f766e 0%, #115e59 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <BankOutlined style={{ color: '#fff', fontSize: 16 }} />
             </div>
             <div>
@@ -145,8 +145,8 @@ export default function ProvidentFundPage() {
                   style={{
                     padding: '6px 18px',
                     borderRadius: 8,
-                    border: `1.5px solid ${isActive ? '#0d9488' : '#d1d5db'}`,
-                    background: isActive ? '#e0f2f1' : '#fff',
+                    border: `1.5px solid ${isActive ? '#0f766e' : '#bdd6d2'}`,
+                    background: isActive ? '#f0fdfa' : '#fff',
                     color: isActive ? '#0f766e' : '#374151',
                     fontSize: 13,
                     fontWeight: isActive ? 600 : 400,
