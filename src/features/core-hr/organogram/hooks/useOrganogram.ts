@@ -22,12 +22,6 @@ const INITIAL_TREE: OrgEmployee = { id: 'root-1', status: 'empty' };
 export const ORG_TREE_STORAGE_KEY = 'hrm_org_tree';
 const ORG_TREE_STORAGE_VERSION = 2;
 
-function loadSavedTree(): OrgEmployee {
-  // Always start from a clean root node on page load.
-  // This prevents stale persisted trees from auto-populating the organogram.
-  return INITIAL_TREE;
-}
-
 const DEFAULT_FILTERS: OrgFilters = {
   search: '', department: '', showVacant: true, showSeparation: true, darkMode: false, showGrade: false,
 };
@@ -230,7 +224,7 @@ function buildNodePatch(values: NodeFormValues): Partial<OrgEmployee> {
 // ─── Hook ─────────────────────────────────────────────────────────────────────────────────────
 
 export function useOrganogram() {
-  const [rawTree, setRawTree] = useState<OrgEmployee>(loadSavedTree);
+  const [rawTree, setRawTree] = useState<OrgEmployee>(INITIAL_TREE);
 
   // Persist tree to localStorage on every change so other pages can read it
   useEffect(() => {

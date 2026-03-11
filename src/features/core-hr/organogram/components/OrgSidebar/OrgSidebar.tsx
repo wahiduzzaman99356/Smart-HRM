@@ -14,9 +14,8 @@ interface OrgSidebarProps {
 }
 
 export function OrgSidebar({ employeeCount, vacantCount, filters, departments, onFiltersChange, onReset }: OrgSidebarProps) {
-  const activeDept    = filters.department;
-  const deptTheme     = activeDept && DEPT_THEME[activeDept as keyof typeof DEPT_THEME];
-  const _highlightColor = deptTheme ? deptTheme.border : '#0d9488';
+  const activeDept = filters.department;
+  const deptTheme   = activeDept && DEPT_THEME[activeDept as keyof typeof DEPT_THEME];
 
   const deptOptions = [{ value: '', label: 'All Departments' }, ...departments];
 

@@ -24,9 +24,82 @@ import {
 } from '@ant-design/icons';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { NAV_MODULES } from './navConfig';
+import type { NavSubItem } from './navConfig';
 import { GlobalSearch } from './GlobalSearch';
 
 const { Sider, Header, Content } = Layout;
+
+// ─── Helpers for nested NavSubItem trees ──────────────────────────────────────
+function buildSubItems(children: NavSubItem[]): MenuProps['items'] {
+  return children.map(sub => ({
+    key: sub.key,
+    label: sub.label,
+    ...(sub.children ? { children: buildSubItems(sub.children) } : {}),
+  }));
+}
+
+/** Returns the route key of the first leaf in a subtree. */
+function getFirstLeafKey(children: NavSubItem[]): string {
+  const first = children[0];
+  if (!first) return '';
+  if (first.children) return getFirstLeafKey(first.children);
+  return first.key;
+}
+
+/** Finds the leaf route key matching pathname (recursive). */
+function findLeafKey(children: NavSubItem[], pathname: string): string | null {
+  for (const sub of children) {
+    if (sub.children) {
+      const found = findLeafKey(sub.children, pathname);
+      if (found) return found;
+    } else if (sub.key === pathname || pathname.startsWith(`${sub.key}/`)) {
+      return sub.key;
+    }
+  }
+  return null;
+}
+
+/** Collects the keys of all ancestor sub-menu nodes on the path to targetKey. */
+function collectAncestorKeys(children: NavSubItem[], targetKey: string, path: string[]): string[] | null {
+  for (const sub of children) {
+    if (sub.children) {
+      const result = collectAncestorKeys(sub.children, targetKey, [...path, sub.key]);
+      if (result) return result;
+    } else if (sub.key === targetKey) {
+      return path;
+    }
+  }
+  return null;
+}
+
+/** Returns true if key exists anywhere in the subtree (leaf or sub-menu). */
+function isKeyInTree(children: NavSubItem[], targetKey: string): boolean {
+  for (const sub of children) {
+    if (sub.key === targetKey) return true;
+    if (sub.children && isKeyInTree(sub.children, targetKey)) return true;
+  }
+  return false;
+}
+
+/** Builds a breadcrumb path array for the given pathname (recursive). */
+function findBreadcrumbPath(
+  children: NavSubItem[],
+  pathname: string,
+  ancestors: BreadcrumbItem[],
+): BreadcrumbItem[] | null {
+  for (const sub of children) {
+    if (sub.children) {
+      const result = findBreadcrumbPath(sub.children, pathname, [
+        ...ancestors,
+        { label: sub.label, path: getFirstLeafKey(sub.children) },
+      ]);
+      if (result) return result;
+    } else if (sub.key === pathname) {
+      return [...ancestors, { label: sub.label, path: sub.key }];
+    }
+  }
+  return null;
+}
 
 // ─── Convert NAV_MODULES → Ant Design MenuItem format ─────────────────────────
 function buildMenuItems(): MenuProps['items'] {
@@ -36,10 +109,7 @@ function buildMenuItems(): MenuProps['items'] {
     icon: mod.icon,
     popupClassName: 'app-sider-submenu-popup',
     popupOffset: [8, 0],
-    children: mod.children.map(sub => ({
-      key: sub.key,
-      label: sub.label,
-    })),
+    children: buildSubItems(mod.children),
   }));
 }
 
@@ -69,15 +139,13 @@ function useBreadcrumb(pathname: string, search: string): BreadcrumbItem[] | nul
       ];
     }
 
-    // Default: find the sub-menu item (2-level)
+    // Default: recursive lookup (handles nested sub-menus)
     for (const mod of NAV_MODULES) {
-      const sub = mod.children.find(c => c.key === pathname);
-      if (sub) {
-        return [
-          { label: mod.label, path: mod.children[0]?.key ?? pathname },
-          { label: sub.label, path: sub.key },
-        ];
-      }
+      const firstModLeaf = getFirstLeafKey(mod.children);
+      const path = findBreadcrumbPath(mod.children, pathname, [
+        { label: mod.label, path: firstModLeaf },
+      ]);
+      if (path) return path;
     }
     return null;
   }, [pathname, search]);
@@ -95,21 +163,27 @@ export function AppLayout({ children }: AppLayoutProps) {
 
   const selectedKey = useMemo(() => {
     for (const mod of NAV_MODULES) {
-      const match = mod.children.find(c =>
-        location.pathname === c.key || location.pathname.startsWith(`${c.key}/`),
-      );
-      if (match) return match.key;
+      const key = findLeafKey(mod.children, location.pathname);
+      if (key) return key;
     }
     return location.pathname;
   }, [location.pathname]);
 
   const breadcrumb = useBreadcrumb(location.pathname, location.search);
 
-  // Active module key from route
-  const routeOpenKeys = useMemo(
-    () => NAV_MODULES.filter(mod => mod.children.some(c => c.key === selectedKey)).map(mod => mod.key),
-    [selectedKey],
-  );
+  // Active module key + any intermediate sub-menu keys from route
+  const routeOpenKeys = useMemo(() => {
+    const keys: string[] = [];
+    for (const mod of NAV_MODULES) {
+      if (findLeafKey(mod.children, selectedKey)) {
+        keys.push(mod.key);
+        const ancestors = collectAncestorKeys(mod.children, selectedKey, []);
+        if (ancestors) keys.push(...ancestors);
+        break;
+      }
+    }
+    return keys;
+  }, [selectedKey]);
 
   const [openKeys, setOpenKeys] = useState<string[]>(routeOpenKeys);
 
@@ -131,11 +205,31 @@ export function AppLayout({ children }: AppLayoutProps) {
     ? {}
     : {
         openKeys,
-        onOpenChange: keys => setOpenKeys(keys as string[]),
+        onOpenChange: (keys) => {
+          const incoming = keys as string[];
+          setOpenKeys(prev => {
+            const prevSet = new Set(prev);
+            const incomingSet = new Set(incoming);
+            const result = new Set(incoming);
+            // Ant Design may omit a module-level parent key from onOpenChange
+            // when only a nested child sub-menu was toggled. Re-add any module
+            // key that was previously open and still has nested keys in the
+            // incoming set (meaning the user didn't explicitly close the module).
+            for (const mod of NAV_MODULES) {
+              if (prevSet.has(mod.key) && !incomingSet.has(mod.key)) {
+                const hasNestedIncoming = incoming.some(k => isKeyInTree(mod.children, k));
+                if (hasNestedIncoming) result.add(mod.key);
+              }
+            }
+            return Array.from(result);
+          });
+        },
       };
 
   const handleMenuClick: MenuProps['onClick'] = ({ key }) => {
-    navigate(key);
+    // Only navigate for leaf route paths (start with '/').
+    // Sub-menu parent keys (e.g. 'payroll-generation') must not trigger navigation.
+    if (key.startsWith('/')) navigate(key);
   };
 
   return (
