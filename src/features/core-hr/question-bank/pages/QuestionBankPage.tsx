@@ -220,13 +220,15 @@ const formatOngoingDateTime = (value: Date) => value.toLocaleString('en-GB', {
 interface StatCardProps {
   icon: React.ReactNode;
   iconBg: string;
+  accent: string;
+  tint: string;
   value: number | string;
   label: string;
 }
-function StatCard({ icon, iconBg, value, label }: StatCardProps) {
+function StatCard({ icon, iconBg, accent, tint, value, label }: StatCardProps) {
   return (
     <div style={{
-      background: '#fff',
+      background: `linear-gradient(135deg, ${tint} 0%, #ffffff 36%)`,
       borderRadius: 12,
       border: '1px solid #e8edf3',
       padding: '20px 24px',
@@ -234,12 +236,23 @@ function StatCard({ icon, iconBg, value, label }: StatCardProps) {
       alignItems: 'center',
       gap: 18,
       boxShadow: '0 1px 4px rgba(15,30,60,0.05)',
+      position: 'relative',
+      overflow: 'hidden',
     }}>
+      <div style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        height: 3,
+        background: accent,
+      }} />
       <div style={{
         width: 52,
         height: 52,
         borderRadius: 14,
         background: iconBg,
+        color: accent,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -252,7 +265,7 @@ function StatCard({ icon, iconBg, value, label }: StatCardProps) {
         <div style={{ fontSize: 28, fontWeight: 700, lineHeight: 1.1, color: '#111827' }}>
           {typeof value === 'number' ? value.toLocaleString() : value}
         </div>
-        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.07em', color: '#9ca3af', marginTop: 2, textTransform: 'uppercase' }}>
+        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.07em', color: accent, marginTop: 2, textTransform: 'uppercase' }}>
           {label}
         </div>
       </div>
@@ -766,38 +779,49 @@ export default function QuestionBankPage() {
           <h1>Question Bank Management</h1>
           <p>Manage assessment questions by topic, type, and difficulty</p>
         </div>
+        <Button type="primary" icon={<PlusOutlined />} onClick={openCreateModal}>
+          Add Question
+        </Button>
       </div>
 
       {/* ── Stat Cards ─────────────────────────────────────────────────────── */}
       <Row gutter={[16, 16]} style={{ marginBottom: 20 }}>
         <Col xs={24} sm={12} xl={6}>
           <StatCard
-            icon={<DatabaseFilled style={{ color: '#64748b' }} />}
-            iconBg="#f1f5f9"
+            icon={<DatabaseFilled />}
+            iconBg="#ecfeff"
+            accent="#0f766e"
+            tint="rgba(15, 118, 110, 0.06)"
             value={stats.total}
             label="Total Questions"
           />
         </Col>
         <Col xs={24} sm={12} xl={6}>
           <StatCard
-            icon={<CheckCircleFilled style={{ color: '#64748b' }} />}
-            iconBg="#f1f5f9"
+            icon={<CheckCircleFilled />}
+            iconBg="#ecfdf5"
+            accent="#059669"
+            tint="rgba(5, 150, 105, 0.06)"
             value={stats.active}
             label="Active"
           />
         </Col>
         <Col xs={24} sm={12} xl={6}>
           <StatCard
-            icon={<CodeFilled style={{ color: '#64748b' }} />}
-            iconBg="#f1f5f9"
+            icon={<CodeFilled />}
+            iconBg="#fffbeb"
+            accent="#d97706"
+            tint="rgba(217, 119, 6, 0.06)"
             value={stats.drafts}
             label="Drafts"
           />
         </Col>
         <Col xs={24} sm={12} xl={6}>
           <StatCard
-            icon={<DeleteFilled style={{ color: '#64748b' }} />}
+            icon={<DeleteFilled />}
             iconBg="#f1f5f9"
+            accent="#64748b"
+            tint="rgba(100, 116, 139, 0.06)"
             value={stats.archived}
             label="Archived"
           />
@@ -819,6 +843,8 @@ export default function QuestionBankPage() {
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
+          gap: 12,
+          flexWrap: 'wrap',
           borderBottom: '1px solid #f1f5f9',
         }}>
           {/* Tab buttons */}
@@ -850,6 +876,14 @@ export default function QuestionBankPage() {
 
           {/* Action buttons */}
           <Space size={8}>
+            <Input
+              prefix={<SearchOutlined style={{ color: '#94a3b8' }} />}
+              placeholder="Search by keyword, subject, ID, or role..."
+              value={searchQuery}
+              onChange={e => { setSearchQuery(e.target.value); setCurrentPage(1); }}
+              allowClear
+              style={{ width: 320 }}
+            />
             <Button
               icon={<FilterOutlined />}
               onClick={() => setShowFilters(v => !v)}
@@ -862,22 +896,7 @@ export default function QuestionBankPage() {
             </Button>
             <Button icon={<UploadOutlined style={{ color: '#22c55e' }} />}>Import</Button>
             <Button icon={<DownloadOutlined style={{ color: '#22c55e' }} />}>Export</Button>
-            <Button type="primary" icon={<PlusOutlined />} onClick={openCreateModal}>
-              Add Question
-            </Button>
           </Space>
-        </div>
-
-        {/* Search bar */}
-        <div style={{ padding: '10px 20px', borderBottom: '1px solid #f1f5f9' }}>
-          <Input
-            prefix={<SearchOutlined style={{ color: '#94a3b8' }} />}
-            placeholder="Search by keyword, subject, ID, or role..."
-            value={searchQuery}
-            onChange={e => { setSearchQuery(e.target.value); setCurrentPage(1); }}
-            allowClear
-            style={{ maxWidth: 480 }}
-          />
         </div>
 
         {/* Advanced Filters Panel */}
@@ -957,6 +976,7 @@ export default function QuestionBankPage() {
 
         {/* Table */}
         <Table
+          className="question-bank-table"
           rowKey="id"
           columns={columns}
           dataSource={pagedData}

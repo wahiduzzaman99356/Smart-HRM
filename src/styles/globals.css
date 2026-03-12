@@ -412,6 +412,31 @@ body,
   border-radius: var(--radius-lg);
 }
 
+.question-bank-table .ant-table-tbody > tr.ant-table-row-selected > td {
+  background: #e8f4f2 !important;
+  color: var(--color-text-primary) !important;
+}
+
+.question-bank-table .ant-table-tbody > tr.ant-table-row-selected:hover > td {
+  background: #deefeb !important;
+}
+
+.question-bank-table .ant-table-tbody > tr.ant-table-row-selected > td * {
+  color: inherit;
+}
+
+.question-bank-table .ant-table-tbody > tr.ant-table-row-selected > td .ant-btn,
+.question-bank-table .ant-table-tbody > tr.ant-table-row-selected > td .ant-tag,
+.question-bank-table .ant-table-tbody > tr.ant-table-row-selected > td .ant-avatar,
+.question-bank-table .ant-table-tbody > tr.ant-table-row-selected > td .action-link {
+  color: unset;
+}
+
+.question-bank-table .ant-table-tbody > tr.ant-table-row-selected > td a,
+.question-bank-table .ant-table-tbody > tr.ant-table-row-selected > td button {
+  color: inherit;
+}
+
 @keyframes modalEnter {
   from {
     opacity: 0;
