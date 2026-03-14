@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Button, Tag } from 'antd';
 import {
@@ -14,10 +15,10 @@ import {
   ClockCircleOutlined,
   SolutionOutlined,
   FileTextOutlined,
-  SwapOutlined,
   UsergroupAddOutlined,
 } from '@ant-design/icons';
 import type { JobPosting, JobStatus } from '../types/jobPosting.types';
+import { AssignPipelineModal } from '../components/AssignPipelineModal';
 
 // ─── Status config ────────────────────────────────────────────────────────────
 const STATUS_DOT: Record<JobStatus, string> = {
@@ -96,6 +97,9 @@ export default function JobPostingDetailPage() {
   const location  = useLocation();
   const posting   = location.state?.posting as JobPosting | undefined;
 
+  const [assignModalOpen, setAssignModalOpen] = useState(false);
+  const [assignedPipeline, setAssignedPipeline] = useState<string | null>(posting?.pipeline ?? null);
+
   if (!posting) {
     return (
       <div className="page-shell" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 10, color: '#9ca3af' }}>
@@ -117,19 +121,15 @@ export default function JobPostingDetailPage() {
   return (
     <div className="page-shell">
 
-      {/* ── Breadcrumb + back ──────────────────────────────────────────────── */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 20 }}>
+      <div style={{ marginBottom: 16 }}>
         <Button
           type="text"
           icon={<ArrowLeftOutlined />}
           onClick={() => navigate(-1)}
-          style={{ color: '#6b7280', padding: '0 6px', height: 28 }}
-        />
-        <span style={{ fontSize: 12, color: '#9ca3af' }}>
-          Job Postings
-          <span style={{ margin: '0 6px' }}>›</span>
-          <span style={{ color: '#6b7280' }}>{posting.mrfId}</span>
-        </span>
+          style={{ color: '#6b7280', paddingInline: 6, height: 28, fontSize: 13 }}
+        >
+          Back to list
+        </Button>
       </div>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
@@ -252,46 +252,65 @@ export default function JobPostingDetailPage() {
 
         {/* ── Assigned Pipeline ──────────────────────────────────────────────── */}
         <SectionCard title="Assigned Pipeline" icon={<ApartmentOutlined />}>
-          {posting.pipeline ? (
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
+            {assignedPipeline ? (
               <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                 <div style={{
                   width: 36, height: 36, borderRadius: 9,
-                  background: 'linear-gradient(135deg, #0f766e 0%, #14b8a6 100%)',
+                  background: 'linear-gradient(135deg, #0f766e 0%, #115e59 100%)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                 }}>
                   <ApartmentOutlined style={{ color: '#ffffff', fontSize: 16 }} />
                 </div>
                 <div>
-                  <div style={{ fontWeight: 700, fontSize: 14, color: '#111827' }}>{posting.pipeline}</div>
+                  <div style={{ fontWeight: 700, fontSize: 14, color: '#111827' }}>{assignedPipeline}</div>
                   <div style={{ fontSize: 12, color: '#6b7280' }}>Active pipeline</div>
                 </div>
               </div>
-              <div style={{ display: 'flex', gap: 8 }}>
-                <Button icon={<UsergroupAddOutlined />}>View Candidates</Button>
-                <Button icon={<SwapOutlined />}>Change Pipeline</Button>
-              </div>
-            </div>
-          ) : (
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
+            ) : (
               <div style={{ fontSize: 13, color: '#6b7280' }}>
                 No pipeline assigned yet. Assign a pipeline to start tracking candidates.
               </div>
-              <div style={{ display: 'flex', gap: 8 }}>
-                <Button icon={<UsergroupAddOutlined />}>View Candidates</Button>
+            )}
+            <div style={{ display: 'flex', gap: 8 }}>
+              <Button
+                icon={<UsergroupAddOutlined />}
+                onClick={() => navigate(`/recruitment/pipelines/${posting.mrfId}/candidates`, {
+                  state: { pipelineName: assignedPipeline ?? undefined, position: posting.designation, candidates: posting.applications },
+                })}
+              >
+                Show Candidates
+              </Button>
+              {assignedPipeline ? (
+                <Button
+                  icon={<ApartmentOutlined />}
+                  onClick={() => navigate(`/recruitment/pipelines/${posting.mrfId}`, {
+                    state: { pipelineName: assignedPipeline, position: posting.designation, candidates: posting.applications },
+                  })}
+                >
+                  View Pipeline
+                </Button>
+              ) : (
                 <Button
                   type="primary"
                   icon={<ApartmentOutlined />}
-                  onClick={() => navigate('/recruitment/pipelines', {
-                    state: { from: 'job-postings', jobPostingId: posting.mrfId, jobPostingTitle: posting.designation },
-                  })}
+                  onClick={() => setAssignModalOpen(true)}
                 >
                   Assign Pipeline
                 </Button>
-              </div>
+              )}
             </div>
-          )}
+          </div>
         </SectionCard>
+
+        <AssignPipelineModal
+          open={assignModalOpen}
+          onClose={() => setAssignModalOpen(false)}
+          onAssign={name => setAssignedPipeline(name)}
+          onCreateNew={name => navigate('/recruitment/pipelines/new', {
+            state: { pipelineName: name, position: posting.designation, candidates: 0 },
+          })}
+        />
 
       </div>
     </div>

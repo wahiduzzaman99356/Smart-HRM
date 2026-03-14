@@ -63,7 +63,7 @@ export const NAV_MODULES: NavModule[] = [
       { key: '/recruitment/cv-bank',              label: 'CV Bank' },
       { key: '/recruitment/job-postings',         label: 'Job Posting' },
       { key: '/recruitment/job-portal',           label: 'Job Portal Integration' },
-      { key: '/recruitment/candidates',           label: 'Intelligent Candidate Processing' },
+      { key: '/recruitment/candidates',           label: 'Pipeline' },
       { key: '/recruitment/assessment-configuration', label: 'Assessment Configuration' },
       { key: '/recruitment/talent-tracking',      label: 'Talent Tracking' },
       { key: '/recruitment/evaluation',           label: 'Assessment Evaluation Management' },

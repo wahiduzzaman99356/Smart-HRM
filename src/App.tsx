@@ -56,6 +56,15 @@ const JobPostingDetailPage = lazy(
 const PipelinesPage = lazy(
   () => import('@/features/recruitment/pipelines/pages/PipelinesPage'),
 );
+const PipelineDetailPage = lazy(
+  () => import('@/features/recruitment/pipelines/pages/PipelineDetailPage'),
+);
+const CandidateListPage = lazy(
+  () => import('@/features/recruitment/pipelines/pages/CandidateListPage'),
+);
+const CandidateProfilePage = lazy(
+  () => import('@/features/recruitment/pipelines/pages/CandidateProfilePage'),
+);
 
 // ── Global providers ──────────────────────────────────────────────────────────
 const queryClient = new QueryClient({
@@ -112,7 +121,11 @@ function AppShell() {
           <Route path="/payroll/salary-generation"   element={<SalaryGenerationPage />} />
           <Route path="/recruitment/job-postings"            element={<JobPostingsPage />} />
           <Route path="/recruitment/job-postings/:mrfId"   element={<JobPostingDetailPage />} />
-          <Route path="/recruitment/pipelines"       element={<PipelinesPage />} />
+          <Route path="/recruitment/pipelines"        element={<PipelinesPage />} />
+          <Route path="/recruitment/pipelines/new"            element={<PipelineDetailPage />} />
+          <Route path="/recruitment/pipelines/:id"            element={<PipelineDetailPage />} />
+          <Route path="/recruitment/pipelines/:id/candidates" element={<CandidateListPage />} />
+          <Route path="/recruitment/pipelines/:id/candidates/:candidateId" element={<CandidateProfilePage />} />
 
           {/* ── Placeholders for every module ── */}
           <Route path="/core-hr/*"             element={<ComingSoon />} />
