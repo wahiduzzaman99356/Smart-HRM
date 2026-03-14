@@ -71,7 +71,7 @@ export default function SalaryRulesPage() {
 
   const statusLabel: Record<SalaryRuleStatus, string> = {
     active: 'Active',
-    inactive: 'Archieve',
+    inactive: 'Archived',
   };
 
   function openCreateModal() {
@@ -156,6 +156,7 @@ export default function SalaryRulesPage() {
   function handleReset() {
     setSearchInput('');
     setSearchQuery('');
+    setActiveTab('active');
   }
 
   function confirmStatusChange() {
@@ -245,57 +246,64 @@ export default function SalaryRulesPage() {
   });
 
   return (
-    <div style={{ height: '100%', overflowY: 'auto', padding: 24, background: 'var(--color-bg-base)' }}>
+    <div className="page-shell">
       <div className="page-header-row">
         <div>
           <h1>Salary Rules Type</h1>
           <p>Manage payroll salary rule types and status.</p>
         </div>
+        <Button type="primary" icon={<PlusOutlined />} onClick={openCreateModal}>Create New</Button>
       </div>
 
-      <div
-        className="surface"
-        style={{
-          padding: 0,
-          overflow: 'hidden',
-        }}
-      >
-        <div style={{ padding: '16px 18px 10px', borderBottom: '1px solid var(--color-border)' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap', marginBottom: 14 }}>
-            <Space size={8} wrap>
-              <Input
-                placeholder="Search Salary Rule..."
-                value={searchInput}
-                onChange={(e) => setSearchInput(e.target.value)}
-                style={{ width: 260 }}
-                onPressEnter={handleSearch}
-              />
-              <Button type="primary" icon={<SearchOutlined />} onClick={handleSearch}>Search</Button>
-              <Button icon={<ReloadOutlined />} onClick={handleReset}>Reset</Button>
-            </Space>
+      <div className="filter-bar" style={{ marginBottom: 14 }}>
+        <div>
+          <div className="filter-label">SEARCH</div>
+          <Space size={8} wrap>
+            <Input
+              placeholder="Search Salary Rule..."
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              style={{ width: 260 }}
+              onPressEnter={handleSearch}
+            />
+            <Button type="primary" icon={<SearchOutlined />} onClick={handleSearch}>Search</Button>
+            <Button icon={<ReloadOutlined />} onClick={handleReset}>Reset</Button>
+          </Space>
+        </div>
+      </div>
 
-            <Button type="primary" icon={<PlusOutlined />} onClick={openCreateModal}>Create New</Button>
-          </div>
-
-          <div
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 4,
-              background: '#f1f5f9',
-              border: '1px solid var(--color-border)',
-              borderRadius: 10,
-              padding: 4,
-            }}
-          >
-            <button type="button" style={tabButtonStyle('active')} onClick={() => setActiveTab('active')}>
-              <ThunderboltFilled style={{ fontSize: 12 }} />
-              Active
-            </button>
-            <button type="button" style={tabButtonStyle('inactive')} onClick={() => setActiveTab('inactive')}>
-              <InboxOutlined style={{ fontSize: 12 }} />
-              Archieve
-            </button>
+      <div className="list-surface">
+        <div
+          style={{
+            padding: '12px 18px 10px',
+            borderBottom: '1px solid #f1f5f9',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+          }}
+        >
+          <div>
+            <div className="filter-label" style={{ marginBottom: 6 }}>STATUS</div>
+            <div
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 4,
+                background: '#f1f5f9',
+                border: '1px solid var(--color-border)',
+                borderRadius: 10,
+                padding: 4,
+              }}
+            >
+              <button type="button" style={tabButtonStyle('active')} onClick={() => setActiveTab('active')}>
+                <ThunderboltFilled style={{ fontSize: 12 }} />
+                Active
+              </button>
+              <button type="button" style={tabButtonStyle('inactive')} onClick={() => setActiveTab('inactive')}>
+                <InboxOutlined style={{ fontSize: 12 }} />
+                Archived
+              </button>
+            </div>
           </div>
         </div>
 
@@ -370,7 +378,7 @@ export default function SalaryRulesPage() {
               style={{ display: 'flex', flexDirection: 'column', gap: 10 }}
             >
               <Radio value="active" style={{ fontSize: 13 }}>Active</Radio>
-              <Radio value="inactive" style={{ fontSize: 13 }}>Archieve</Radio>
+              <Radio value="inactive" style={{ fontSize: 13 }}>Archived</Radio>
             </Radio.Group>
           </div>
         )}

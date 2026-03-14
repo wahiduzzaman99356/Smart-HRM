@@ -331,12 +331,7 @@ export function RequisitionListView({
       </div>
 
       {/* ── Table ─────────────────────────────────────────────────────────── */}
-      <div style={{
-        background: '#fff',
-        borderRadius: 10,
-        border: '1px solid #e5e7eb',
-        overflow: 'hidden',
-      }}>
+      <div className="list-surface">
         <Table
           dataSource={data}
           columns={columns}
