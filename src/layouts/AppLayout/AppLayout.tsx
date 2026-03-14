@@ -85,7 +85,7 @@ function findBreadcrumbPath(
         { label: sub.label, path: getFirstLeafKey(sub.children) },
       ]);
       if (result) return result;
-    } else if (sub.key === pathname) {
+    } else if (sub.key === pathname || pathname.startsWith(`${sub.key}/`)) {
       return [...ancestors, { label: sub.label, path: sub.key }];
     }
   }
@@ -107,7 +107,7 @@ function buildMenuItems(): MenuProps['items'] {
 // ─── Derive breadcrumb items from pathname + search params ────────────────────
 type BreadcrumbItem = { label: string; path: string };
 
-function useBreadcrumb(pathname: string, search: string): BreadcrumbItem[] | null {
+function useBreadcrumb(pathname: string, search: string, state: unknown): BreadcrumbItem[] | null {
   return useMemo(() => {
     const mode = new URLSearchParams(search).get('mode');
 
@@ -130,6 +130,16 @@ function useBreadcrumb(pathname: string, search: string): BreadcrumbItem[] | nul
       ];
     }
 
+    // Job Posting detail (3-level)
+    if (/^\/recruitment\/job-postings\/.+/.test(pathname)) {
+      const title = (state as { posting?: { designation?: string } })?.posting?.designation ?? 'Job Detail';
+      return [
+        { label: 'Recruitment & ATS', path: '/recruitment/job-postings' },
+        { label: 'Job Posting',       path: '/recruitment/job-postings' },
+        { label: title,               path: pathname },
+      ];
+    }
+
     // Default: recursive lookup (handles nested sub-menus)
     for (const mod of NAV_MODULES) {
       const firstModLeaf = getFirstLeafKey(mod.children);
@@ -139,7 +149,7 @@ function useBreadcrumb(pathname: string, search: string): BreadcrumbItem[] | nul
       if (path) return path;
     }
     return null;
-  }, [pathname, search]);
+  }, [pathname, search, state]);
 }
 
 // ─── Component ────────────────────────────────────────────────────────────────
@@ -160,7 +170,7 @@ export function AppLayout({ children }: AppLayoutProps) {
     return location.pathname;
   }, [location.pathname]);
 
-  const breadcrumb = useBreadcrumb(location.pathname, location.search);
+  const breadcrumb = useBreadcrumb(location.pathname, location.search, location.state);
 
   // Active module key + any intermediate sub-menu keys from route
   const routeOpenKeys = useMemo(() => {

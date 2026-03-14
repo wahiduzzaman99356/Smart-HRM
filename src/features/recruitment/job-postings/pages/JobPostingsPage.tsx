@@ -28,6 +28,7 @@ import {
   ClockCircleOutlined,
 } from '@ant-design/icons';
 import type { JobPosting, JobStatus } from '../types/jobPosting.types';
+import { AssignPipelineModal } from '../components/AssignPipelineModal';
 
 type DateRange = RangePickerProps['value'];
 const { RangePicker } = DatePicker;
@@ -186,10 +187,12 @@ const EMPTY_FILTERS: Filters = {
 
 export default function JobPostingsPage() {
   const navigate = useNavigate();
-  const [draft,       setDraft]       = useState<Filters>(EMPTY_FILTERS);
-  const [applied,     setApplied]     = useState<Filters>(EMPTY_FILTERS);
-  const [activeTab,   setActiveTab]   = useState<TabKey>('all');
-  const [showFilters, setShowFilters] = useState(false);
+  const [draft,           setDraft]           = useState<Filters>(EMPTY_FILTERS);
+  const [applied,         setApplied]         = useState<Filters>(EMPTY_FILTERS);
+  const [activeTab,       setActiveTab]       = useState<TabKey>('all');
+  const [showFilters,     setShowFilters]     = useState(false);
+  const [assignTarget,    setAssignTarget]    = useState<string | null>(null);   // mrfId of the row being assigned
+  const [pipelineMap,     setPipelineMap]     = useState<Record<string, string>>({}); // mrfId → pipeline name overrides
 
   const handleApply = () => setApplied(draft);
 
@@ -355,9 +358,13 @@ export default function JobPostingsPage() {
       title: <span style={{ fontSize: 11, color: '#9ca3af', fontWeight: 700, letterSpacing: '0.04em' }}>PIPELINE</span>,
       key: 'pipeline',
       width: 160,
-      render: (_, r) =>
-        r.pipeline ? (
+      render: (_, r) => {
+        const pipeline = pipelineMap[r.mrfId] ?? r.pipeline;
+        return pipeline ? (
           <Tag
+            onClick={() => navigate(`/recruitment/pipelines/${r.mrfId}`, {
+              state: { pipelineName: pipeline, position: r.designation, candidates: r.applications },
+            })}
             style={{
               borderRadius: 6,
               fontSize: 12,
@@ -366,19 +373,14 @@ export default function JobPostingsPage() {
               color: '#0f766e',
               background: '#f0fdfa',
               borderColor: '#99f6e4',
+              cursor: 'pointer',
             }}
           >
-            {r.pipeline}
+            {pipeline}
           </Tag>
         ) : (
           <button
-            onClick={() => navigate('/recruitment/pipelines', {
-              state: {
-                from:             'job-postings',
-                jobPostingId:     r.mrfId,
-                jobPostingTitle:  r.designation,
-              },
-            })}
+            onClick={() => setAssignTarget(r.mrfId)}
             style={{
               background: 'none',
               border: '1.5px dashed #bdd6d2',
@@ -393,7 +395,8 @@ export default function JobPostingsPage() {
           >
             Assign Pipeline
           </button>
-        ),
+        );
+      },
     },
     {
       title: <span style={{ fontSize: 11, color: '#9ca3af', fontWeight: 700, letterSpacing: '0.04em' }}>APPLICATIONS</span>,
@@ -445,15 +448,28 @@ export default function JobPostingsPage() {
           menu={{
             style: { borderRadius: 8, minWidth: 168 },
             onClick: ({ key }) => {
-              if (key === 'view') navigate(`/recruitment/job-postings/${r.mrfId}`, { state: { posting: r } });
-              if (key === 'pipeline') navigate('/recruitment/pipelines', { state: { from: 'job-postings', jobPostingId: r.mrfId, jobPostingTitle: r.designation } });
+              if (key === 'view')     navigate(`/recruitment/job-postings/${r.mrfId}`, { state: { posting: r } });
+              if (key === 'pipeline') {
+                const pipeline = pipelineMap[r.mrfId] ?? r.pipeline;
+                if (pipeline) {
+                  navigate(`/recruitment/pipelines/${r.mrfId}`, {
+                    state: { pipelineName: pipeline, position: r.designation, candidates: r.applications },
+                  });
+                } else {
+                  setAssignTarget(r.mrfId);
+                }
+              }
             },
             items: [
               { key: 'analytics',      icon: <BarChartOutlined />,    label: 'Analytics' },
               { key: 'edit',           icon: <EditOutlined />,        label: 'Edit Details' },
               { key: 'view',           icon: <EyeOutlined />,         label: 'View Details' },
               { key: 'approve-reject', icon: <CheckCircleOutlined />, label: 'Approve / Reject' },
-              { key: 'pipeline',       icon: <ApartmentOutlined />,   label: 'Assign Pipeline' },
+              {
+                key: 'pipeline',
+                icon: <ApartmentOutlined />,
+                label: (pipelineMap[r.mrfId] ?? r.pipeline) ? 'View Pipeline' : 'Assign Pipeline',
+              },
               { key: 'user-access',    icon: <UserSwitchOutlined />,  label: 'User Access' },
               { key: 'share',          icon: <ShareAltOutlined />,    label: 'Share Job Post' },
               { key: 'change-status',  icon: <SwapOutlined />,        label: 'Change Status' },
@@ -517,6 +533,9 @@ export default function JobPostingsPage() {
           />
         </div>
         <Space style={{ paddingTop: 20 }}>
+          <Button type="primary" icon={<SearchOutlined />} onClick={handleApply}>
+            Apply
+          </Button>
           <Button
             icon={<FilterOutlined />}
             onClick={() => setShowFilters(v => !v)}
@@ -712,6 +731,22 @@ export default function JobPostingsPage() {
           style={{ fontSize: 13 }}
         />
       </div>
+
+      <AssignPipelineModal
+        open={assignTarget !== null}
+        onClose={() => setAssignTarget(null)}
+        onAssign={name => {
+          if (assignTarget) setPipelineMap(prev => ({ ...prev, [assignTarget]: name }));
+          setAssignTarget(null);
+        }}
+        onCreateNew={name => {
+          const job = MOCK_DATA.find(r => r.mrfId === assignTarget);
+          setAssignTarget(null);
+          navigate('/recruitment/pipelines/new', {
+            state: { pipelineName: name, position: job?.designation ?? '', candidates: 0 },
+          });
+        }}
+      />
     </div>
   );
 }
