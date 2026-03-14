@@ -47,6 +47,15 @@ const SalaryRulesPage = lazy(
 const SalaryGenerationPage = lazy(
   () => import('@/features/payroll/salary-generation/pages/SalaryGenerationPage'),
 );
+const JobPostingsPage = lazy(
+  () => import('@/features/recruitment/job-postings/pages/JobPostingsPage'),
+);
+const JobPostingDetailPage = lazy(
+  () => import('@/features/recruitment/job-postings/pages/JobPostingDetailPage'),
+);
+const PipelinesPage = lazy(
+  () => import('@/features/recruitment/pipelines/pages/PipelinesPage'),
+);
 
 // ── Global providers ──────────────────────────────────────────────────────────
 const queryClient = new QueryClient({
@@ -101,6 +110,9 @@ function AppShell() {
           <Route path="/core-hr/question-bank"       element={<QuestionBankPage />} />
           <Route path="/payroll/configuration/salary-rules" element={<SalaryRulesPage />} />
           <Route path="/payroll/salary-generation"   element={<SalaryGenerationPage />} />
+          <Route path="/recruitment/job-postings"            element={<JobPostingsPage />} />
+          <Route path="/recruitment/job-postings/:mrfId"   element={<JobPostingDetailPage />} />
+          <Route path="/recruitment/pipelines"       element={<PipelinesPage />} />
 
           {/* ── Placeholders for every module ── */}
           <Route path="/core-hr/*"             element={<ComingSoon />} />
