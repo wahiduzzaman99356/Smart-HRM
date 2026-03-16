@@ -32,6 +32,12 @@ const MyShiftPage = lazy(
 const DemandPage = lazy(
   () => import('@/features/ess/demand/pages/DemandPage'),
 );
+const OutstationPage = lazy(
+  () => import('@/features/ess/outstation/pages/OutstationPage'),
+);
+const LoanManagementPage = lazy(
+  () => import('@/features/ess/loan-management/pages/LoanManagementPage'),
+);
 const ProvidentFundPage = lazy(
   () => import('@/features/ess/provident-fund/pages/ProvidentFundPage'),
 );
@@ -114,6 +120,8 @@ function AppShell() {
           <Route path="/core-hr/requisition"         element={<ManpowerRequisitionPage />} />
           <Route path="/ess/my-shift"                element={<MyShiftPage />} />
           <Route path="/ess/demand"                  element={<DemandPage />} />
+          <Route path="/ess/outstation"              element={<OutstationPage />} />
+          <Route path="/ess/loan-management"         element={<LoanManagementPage />} />
           <Route path="/ess/pf"                      element={<ProvidentFundPage />} />
           <Route path="/assets/assign-asset"         element={<AssignAssetPage />} />
           <Route path="/core-hr/question-bank"       element={<QuestionBankPage />} />
