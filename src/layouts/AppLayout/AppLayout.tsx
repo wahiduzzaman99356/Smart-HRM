@@ -1,15 +1,3 @@
-/**
- * AppLayout.tsx
- * ─────────────────────────────────────────────────────────────────────────────
- * Persistent shell for all authenticated pages.
- *
- *  ┌─ Sider (260px / 64px collapsed) ─┬─ Layout ──────────────────────────┐
- *  │  [Smart HRIS logo]               │  [Header 56px]                    │
- *  │  ─────────────────               │  ───────────────────────────────  │
- *  │  Scrollable Menu                 │  Content (fills remaining height) │
- *  └──────────────────────────────────┴───────────────────────────────────┘
- */
-
 import { useState, useMemo, useEffect } from 'react';
 import type { ReactNode } from 'react';
 import { Layout, Menu, Button, Avatar, Badge, Tooltip, Breadcrumb } from 'antd';
@@ -28,11 +16,11 @@ import { GlobalSearch } from './GlobalSearch';
 
 const { Sider, Header, Content } = Layout;
 
-// ─── Helpers for nested NavSubItem trees ──────────────────────────────────────
 function buildSubItems(children: NavSubItem[]): MenuProps['items'] {
   return children.map(sub => ({
     key: sub.key,
     label: sub.label,
+    icon: sub.icon,
     ...(sub.children ? { children: buildSubItems(sub.children) } : {}),
   }));
 }
@@ -92,7 +80,6 @@ function findBreadcrumbPath(
   return null;
 }
 
-// ─── Convert NAV_MODULES → Ant Design MenuItem format ─────────────────────────
 function buildMenuItems(): MenuProps['items'] {
   return NAV_MODULES.map(mod => ({
     key: mod.key,
@@ -104,7 +91,6 @@ function buildMenuItems(): MenuProps['items'] {
   }));
 }
 
-// ─── Derive breadcrumb items from pathname + search params ────────────────────
 type BreadcrumbItem = { label: string; path: string };
 
 function useBreadcrumb(pathname: string, search: string, state: unknown): BreadcrumbItem[] | null {
@@ -152,7 +138,8 @@ function useBreadcrumb(pathname: string, search: string, state: unknown): Breadc
   }, [pathname, search, state]);
 }
 
-// ─── Component ────────────────────────────────────────────────────────────────
+const MENU_ITEMS = buildMenuItems();
+
 interface AppLayoutProps {
   children: ReactNode;
 }
@@ -199,8 +186,6 @@ export function AppLayout({ children }: AppLayoutProps) {
       return Array.from(merged);
     });
   }, [collapsed, routeOpenKeys]);
-
-  const menuItems = useMemo(() => buildMenuItems(), []);
 
   const controlledMenuStateProps: Pick<MenuProps, 'openKeys' | 'onOpenChange'> = collapsed
     ? {}
@@ -256,49 +241,64 @@ export function AppLayout({ children }: AppLayoutProps) {
           {/* Logo mark */}
           <div
             style={{
-              width: 34,
-              height: 34,
+              width: 36,
+              height: 36,
               borderRadius: 10,
-              background: 'linear-gradient(145deg, #0d9488 0%, #0a7c71 50%, #086b62 100%)',
+              background: 'linear-gradient(135deg, #0f766e 0%, #0d9488 100%)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               flexShrink: 0,
-              boxShadow: '0 2px 10px rgba(13,148,136,0.38), inset 0 1px 0 rgba(255,255,255,0.15)',
+              boxShadow: '0 4px 14px rgba(13,148,136,0.50), inset 0 1px 0 rgba(255,255,255,0.22)',
             }}
           >
-            {/* Heartbeat / pulse mark — ties into "heart of your workplace" */}
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path
-                d="M1.5 10.5h3.2l1.8-5 3.2 9.5 2.1-6.5 1.7 3.5H18"
+              {/* Area fill under the line */}
+              <path d="M3,14 L7,8 L11,11 L16,5 L16,17 L3,17 Z" fill="rgba(255,255,255,0.15)" />
+              {/* Line */}
+              <polyline
+                points="3,14 7,8 11,11 16,5"
                 stroke="white"
-                strokeWidth="1.7"
+                strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
               />
+              {/* Data points — solid, peak slightly larger */}
+              <circle cx="3"  cy="14" r="1.8" fill="white" />
+              <circle cx="7"  cy="8"  r="1.8" fill="white" />
+              <circle cx="11" cy="11" r="1.8" fill="white" />
+              <circle cx="16" cy="5"  r="2.2" fill="white" />
             </svg>
           </div>
 
           {/* Wordmark + tagline */}
           {!collapsed && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-              <div style={{ display: 'flex', alignItems: 'baseline', gap: 1, lineHeight: 1.1 }}>
-                <span style={{ fontWeight: 800, fontSize: 15, color: '#0d9488', letterSpacing: '-0.3px' }}>
-                  Smart
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+              <div style={{ display: 'flex', alignItems: 'flex-end', gap: 0, lineHeight: 1 }}>
+                <span style={{
+                  fontWeight: 900,
+                  fontSize: 18,
+                  letterSpacing: '-0.5px',
+                  background: 'linear-gradient(135deg, #0f766e 0%, #14b8a6 100%)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  backgroundClip: 'text',
+                }}>
+                  Zyrova
                 </span>
-                <span style={{ fontWeight: 700, fontSize: 15, color: '#1e293b', letterSpacing: '-0.3px' }}>
-                  &nbsp;HRIS
+                <span style={{ fontWeight: 600, fontSize: 17, color: '#1e293b', letterSpacing: '-0.3px', marginLeft: 4 }}>
+                  HR
                 </span>
               </div>
               <span style={{
                 fontSize: 9.5,
                 color: '#94a3b8',
-                fontWeight: 500,
+                fontWeight: 400,
+                letterSpacing: '0.02em',
+                lineHeight: 1.35,
                 whiteSpace: 'nowrap',
-                letterSpacing: '0.04em',
-                textTransform: 'uppercase',
               }}>
-                The heart of your workplace
+                People. Process. Performance. In Sync.
               </span>
             </div>
           )}
@@ -322,7 +322,7 @@ export function AppLayout({ children }: AppLayoutProps) {
             selectedKeys={[selectedKey]}
             {...controlledMenuStateProps}
             onClick={handleMenuClick}
-            items={menuItems}
+            items={MENU_ITEMS}
             style={{
               border: 'none',
               paddingTop: 6,

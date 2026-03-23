@@ -7,6 +7,7 @@
 
 import type { ReactElement } from 'react';
 import {
+  // ── Module-level icons ───────────────────────────────────────────────────
   TeamOutlined,
   SolutionOutlined,
   UserAddOutlined,
@@ -20,12 +21,78 @@ import {
   SettingOutlined,
   BarChartOutlined,
   IdcardOutlined,
+  // ── Sub-item icons ───────────────────────────────────────────────────────
+  ApartmentOutlined,
+  UserOutlined,
+  FileAddOutlined,
+  FileTextOutlined,
+  SafetyOutlined,
+  NotificationOutlined,
+  FolderOpenOutlined,
+  FileSearchOutlined,
+  GlobalOutlined,
+  NodeIndexOutlined,
+  ControlOutlined,
+  EyeOutlined,
+  CheckSquareOutlined,
+  PieChartOutlined,
+  TrophyOutlined,
+  QuestionCircleOutlined,
+  SwapOutlined,
+  FormOutlined,
+  CheckCircleOutlined,
+  DashboardOutlined,
+  FieldTimeOutlined,
+  CalendarOutlined,
+  FileProtectOutlined,
+  MessageOutlined,
+  BankOutlined,
+  GiftOutlined,
+  SafetyCertificateOutlined,
+  WalletOutlined,
+  CompassOutlined,
+  ScheduleOutlined,
+  InboxOutlined,
+  ReconciliationOutlined,
+  AuditOutlined,
+  StarOutlined,
+  AlertOutlined,
+  TagsOutlined,
+  SlidersOutlined,
+  UsergroupAddOutlined,
+  SunOutlined,
+  EditOutlined,
+  ThunderboltOutlined,
+  DollarCircleOutlined,
+  PauseCircleOutlined,
+  MinusCircleOutlined,
+  HistoryOutlined,
+  AccountBookOutlined,
+  AreaChartOutlined,
+  ToolOutlined,
+  PartitionOutlined,
+  OrderedListOutlined,
+  UnorderedListOutlined,
+  CreditCardOutlined,
+  LaptopOutlined,
+  PaperClipOutlined,
+  LinkOutlined,
+  AimOutlined,
+  FundOutlined,
+  BookOutlined,
+  CheckOutlined,
+  ExportOutlined,
+  MobileOutlined,
+  CarOutlined,
+  BranchesOutlined,
+  DatabaseOutlined,
 } from '@ant-design/icons';
 
 export interface NavSubItem {
   /** Used as both the menu `key` and the navigation target path (leaf) or sub-menu identifier (parent). */
   key: string;
   label: string;
+  icon?: ReactElement;
   /** If present, this item renders as a collapsible sub-menu rather than a leaf route. */
   children?: NavSubItem[];
 }
@@ -44,13 +111,13 @@ export const NAV_MODULES: NavModule[] = [
     label: 'Core HR Functions',
     icon: <TeamOutlined />,
     children: [
-      { key: '/core-hr/organogram',          label: 'Organogram' },
-      { key: '/core-hr/employees',           label: 'My Employees' },
-      { key: '/core-hr/manpower-headcount',  label: 'Manpower Headcount' },
-      { key: '/core-hr/requisition',         label: 'Manpower Requisition' },
-      { key: '/core-hr/templates',   label: 'HR Template Creation' },
-      { key: '/core-hr/policies',    label: 'Policy Management' },
-      { key: '/core-hr/notices',          label: 'Notice & Announcement' },
+      { key: '/core-hr/organogram',         icon: <ApartmentOutlined />,       label: 'Organogram' },
+      { key: '/core-hr/employees',          icon: <UserOutlined />,            label: 'My Employees' },
+      { key: '/core-hr/manpower-headcount', icon: <BarChartOutlined />,        label: 'Manpower Headcount' },
+      { key: '/core-hr/requisition',        icon: <FileAddOutlined />,         label: 'Manpower Requisition' },
+      { key: '/core-hr/templates',          icon: <FileTextOutlined />,        label: 'HR Template Creation' },
+      { key: '/core-hr/policies',           icon: <SafetyOutlined />,          label: 'Policy Management' },
+      { key: '/core-hr/notices',            icon: <NotificationOutlined />,    label: 'Notice & Announcement' },
     ],
   },
 
@@ -60,16 +127,16 @@ export const NAV_MODULES: NavModule[] = [
     label: 'Recruitment & ATS',
     icon: <SolutionOutlined />,
     children: [
-      { key: '/recruitment/cv-bank',              label: 'CV Bank' },
-      { key: '/recruitment/job-postings',         label: 'Job Posting' },
-      { key: '/recruitment/job-portal',           label: 'Job Portal Integration' },
-      { key: '/recruitment/candidates',           label: 'Pipeline' },
-      { key: '/recruitment/assessment-configuration', label: 'Assessment Configuration' },
-      { key: '/recruitment/talent-tracking',      label: 'Talent Tracking' },
-      { key: '/recruitment/evaluation',           label: 'Assessment Evaluation Management' },
-      { key: '/recruitment/assessment-results-overview', label: 'Assessment Results Overview' },
-      { key: '/recruitment/offers',               label: 'Offer Management & Hiring' },
-      { key: '/core-hr/question-bank',            label: 'Question Bank Management' },
+      { key: '/recruitment/cv-bank',                      icon: <FolderOpenOutlined />,       label: 'CV Bank' },
+      { key: '/recruitment/job-postings',                 icon: <FileSearchOutlined />,       label: 'Job Posting' },
+      { key: '/recruitment/job-portal',                   icon: <GlobalOutlined />,           label: 'Job Portal Integration' },
+      { key: '/recruitment/pipelines',                    icon: <NodeIndexOutlined />,        label: 'Pipeline' },
+      { key: '/recruitment/assessment-configuration',     icon: <ControlOutlined />,          label: 'Assessment Configuration' },
+      { key: '/recruitment/talent-tracking',              icon: <EyeOutlined />,              label: 'Talent Tracking' },
+      { key: '/recruitment/evaluation',                   icon: <CheckSquareOutlined />,      label: 'Assessment Evaluation Management' },
+      { key: '/recruitment/assessment-results-overview',  icon: <PieChartOutlined />,         label: 'Assessment Results Overview' },
+      { key: '/recruitment/offers',                       icon: <TrophyOutlined />,           label: 'Offer Management & Hiring' },
+      { key: '/core-hr/question-bank',                    icon: <QuestionCircleOutlined />,   label: 'Question Bank Management' },
     ],
   },
 
@@ -79,9 +146,9 @@ export const NAV_MODULES: NavModule[] = [
     label: 'Onboarding',
     icon: <UserAddOutlined />,
     children: [
-      { key: '/onboarding/candidate-to-employee', label: 'Candidate to Employee' },
-      { key: '/onboarding/self-service',          label: 'Self-Service Pre-Work' },
-      { key: '/onboarding/confirmation',          label: 'Confirmation' },
+      { key: '/onboarding/candidate-to-employee', icon: <SwapOutlined />,        label: 'Candidate to Employee' },
+      { key: '/onboarding/self-service',          icon: <FormOutlined />,        label: 'Self-Service Pre-Work' },
+      { key: '/onboarding/confirmation',          icon: <CheckCircleOutlined />, label: 'Confirmation' },
     ],
   },
 
@@ -91,18 +158,18 @@ export const NAV_MODULES: NavModule[] = [
     label: 'Self Service',
     icon: <IdcardOutlined />,
     children: [
-      { key: '/ess/dashboard',          label: 'ESS Dashboard' },
-      { key: '/ess/attendance',         label: 'Attendance' },
-      { key: '/ess/leave',              label: 'Leave' },
-      { key: '/ess/apply-for-document', label: 'Apply for Document' },
-      { key: '/ess/reach-hr',           label: 'Reach HR' },
-      { key: '/ess/loan-management',    label: 'Loan Management' },
-      { key: '/ess/foc',                label: 'FOC' },
-      { key: '/ess/pf',                 label: 'Provident Fund' },
-      { key: '/ess/gf',                 label: 'GF' },
-      { key: '/ess/outstation',         label: 'Out Station' },
-      { key: '/ess/my-shift',           label: 'My Shift' },
-      { key: '/ess/demand',             label: 'Demand' },
+      { key: '/ess/dashboard',          icon: <DashboardOutlined />,         label: 'ESS Dashboard' },
+      { key: '/ess/attendance',         icon: <FieldTimeOutlined />,         label: 'Attendance' },
+      { key: '/ess/leave',              icon: <CalendarOutlined />,          label: 'Leave' },
+      { key: '/ess/apply-for-document', icon: <FileProtectOutlined />,       label: 'Apply for Document' },
+      { key: '/ess/reach-hr',           icon: <MessageOutlined />,           label: 'Reach HR' },
+      { key: '/ess/loan-management',    icon: <BankOutlined />,              label: 'Loan Management' },
+      { key: '/ess/foc',                icon: <GiftOutlined />,              label: 'FOC' },
+      { key: '/ess/pf',                 icon: <SafetyCertificateOutlined />, label: 'Provident Fund' },
+      { key: '/ess/gf',                 icon: <WalletOutlined />,            label: 'GF' },
+      { key: '/ess/outstation',         icon: <CompassOutlined />,           label: 'Out Station' },
+      { key: '/ess/my-shift',           icon: <ScheduleOutlined />,          label: 'My Shift' },
+      { key: '/ess/demand',             icon: <InboxOutlined />,             label: 'Demand' },
     ],
   },
 
@@ -112,44 +179,53 @@ export const NAV_MODULES: NavModule[] = [
     label: 'Employee Relationship',
     icon: <HeartOutlined />,
     children: [
-      { key: '/employee-relations/compliance',    label: 'Compliance' },
-      { key: '/employee-relations/investigation', label: 'Investigation' },
-      { key: '/employee-relations/surveys',       label: 'Surveys' },
-      { key: '/employee-relations/recognition',   label: 'Recognition & Rewards' },
+      {
+        key: 'employee-relations-disciplinary',
+        icon: <AlertOutlined />,
+        label: 'Disciplinary Actions',
+        children: [
+          { key: '/employee-relations/disciplinary/conflict-resolution', icon: <ReconciliationOutlined />, label: 'Conflict Resolution Tracker' },
+          { key: '/employee-relations/disciplinary/compliance-tracker',  icon: <AuditOutlined />,          label: 'Compliance' },
+        ],
+      },
+      { key: '/employee-relations/surveys',     icon: <FormOutlined />,  label: 'Surveys' },
+      { key: '/employee-relations/recognition', icon: <StarOutlined />,  label: 'Recognition & Rewards' },
     ],
   },
 
-  // ── 5. Attendance, Adjustment & Leave ────────────────────────────────────────
+  // ── 6. Attendance, Adjustment & Leave ────────────────────────────────────────
   {
     key: 'attendance',
     label: 'Attendance & Leave',
     icon: <ClockCircleOutlined />,
     children: [
-      { key: '/attendance/time-capture', label: 'Time Capture & Validation' },
-      { key: '/attendance/outstation',   label: 'Outstation / Movement' },
+      { key: '/attendance/time-capture', icon: <FieldTimeOutlined />, label: 'Time Capture & Validation' },
+      { key: '/attendance/outstation',   icon: <CompassOutlined />,   label: 'Outstation / Movement' },
       {
         key: 'attendance-leave-management',
+        icon: <CalendarOutlined />,
         label: 'Leave Management',
         children: [
-          { key: '/attendance/leave/leave-types',                 label: 'Leave Types' },
-          { key: '/attendance/leave/leave-policy-configuration',  label: 'Leave Policy Configuration' },
-          { key: '/attendance/leave/holiday-group',               label: 'Holiday Group' },
-          { key: '/attendance/leave/assign-holiday-group',        label: 'Assign Holiday Group' },
+          { key: '/attendance/leave/leave-types',                label: 'Leave Types',                icon: <TagsOutlined /> },
+          { key: '/attendance/leave/leave-policy-configuration', label: 'Leave Policy Configuration', icon: <SlidersOutlined /> },
+          { key: '/attendance/leave/holiday-group',              label: 'Holiday Group',              icon: <SunOutlined /> },
+          { key: '/attendance/leave/assign-holiday-group',       label: 'Assign Holiday Group',       icon: <UsergroupAddOutlined /> },
         ],
       },
       {
         key: 'attendance-master-shift-engine',
+        icon: <ClockCircleOutlined />,
         label: 'Master Shift Engine',
         children: [
-          { key: '/attendance/master-shift-engine/shift-configuration', label: 'Shift Configuration' },
-          { key: '/attendance/master-shift-engine/assign-shift',        label: 'Assign Shift' },
+          { key: '/attendance/master-shift-engine/shift-configuration', label: 'Shift Configuration', icon: <SettingOutlined /> },
+          { key: '/attendance/master-shift-engine/assign-shift',        label: 'Assign Shift',        icon: <ScheduleOutlined /> },
         ],
       },
-      { key: '/attendance/adjustments',  label: 'Adjustment' },
+      { key: '/attendance/adjustments', icon: <EditOutlined />, label: 'Adjustment' },
     ],
   },
 
-  // ── 6. Payroll & Compensation & Benefits ──────────────────────────────────────
+  // ── 7. Payroll & Compensation & Benefits ──────────────────────────────────────
   {
     key: 'payroll',
     label: 'Payroll',
@@ -157,112 +233,116 @@ export const NAV_MODULES: NavModule[] = [
     children: [
       {
         key: 'payroll-generation',
+        icon: <ThunderboltOutlined />,
         label: 'Generation',
         children: [
-          { key: '/payroll/salary-generation', label: 'Salary Generation' },
-          { key: '/payroll/bonus-generation',  label: 'Bonus Generation' },
+          { key: '/payroll/salary-generation', icon: <DollarCircleOutlined />, label: 'Salary Generation' },
+          { key: '/payroll/bonus-generation',  icon: <GiftOutlined />,         label: 'Bonus Generation' },
         ],
       },
       {
         key: 'payroll-salary',
+        icon: <AccountBookOutlined />,
         label: 'Salary',
         children: [
-          { key: '/payroll/salary/current-approval', label: 'Current Salary Approval' },
-          { key: '/payroll/salary/hold',             label: 'Hold Salary' },
-          { key: '/payroll/salary/separated',        label: 'Separated Salary' },
-          { key: '/payroll/salary/history',          label: 'History' },
+          { key: '/payroll/salary/current-approval', icon: <CheckCircleOutlined />,  label: 'Current Salary Approval' },
+          { key: '/payroll/salary/hold',             icon: <PauseCircleOutlined />,  label: 'Hold Salary' },
+          { key: '/payroll/salary/separated',        icon: <MinusCircleOutlined />,  label: 'Separated Salary' },
+          { key: '/payroll/salary/history',          icon: <HistoryOutlined />,      label: 'History' },
         ],
       },
-      { key: '/payroll/rate-of-exchange', label: 'Rate of Exchange' },
+      { key: '/payroll/rate-of-exchange', icon: <SwapOutlined />, label: 'Rate of Exchange' },
       {
         key: 'payroll-bonus',
+        icon: <StarOutlined />,
         label: 'Bonus',
         children: [
-          { key: '/payroll/bonus/current-approval', label: 'Current Bonus Approval' },
-          { key: '/payroll/bonus/hold',             label: 'Hold Bonus' },
-          { key: '/payroll/bonus/separated',        label: 'Separated Bonus' },
-          { key: '/payroll/bonus/history',          label: 'History' },
+          { key: '/payroll/bonus/current-approval', icon: <CheckCircleOutlined />, label: 'Current Bonus Approval' },
+          { key: '/payroll/bonus/hold',             icon: <PauseCircleOutlined />, label: 'Hold Bonus' },
+          { key: '/payroll/bonus/separated',        icon: <MinusCircleOutlined />, label: 'Separated Bonus' },
+          { key: '/payroll/bonus/history',          icon: <HistoryOutlined />,     label: 'History' },
         ],
       },
-      { key: '/payroll/reports', label: 'Reports' },
+      { key: '/payroll/reports', icon: <AreaChartOutlined />, label: 'Reports' },
       {
         key: 'payroll-configuration',
+        icon: <ToolOutlined />,
         label: 'Configuration',
         children: [
-          { key: '/payroll/configuration/salary-structure',        label: 'Salary Structure' },
-          { key: '/payroll/configuration/salary-rules',            label: 'Salary Rules' },
-          { key: '/payroll/configuration/cash-salary-employees',   label: 'Cash Salary Employee List' },
-          { key: '/payroll/configuration/payment-accounts',        label: 'Payment Account' },
+          { key: '/payroll/configuration/salary-structure',      icon: <PartitionOutlined />,    label: 'Salary Structure' },
+          { key: '/payroll/configuration/salary-rules',          icon: <OrderedListOutlined />,  label: 'Salary Rules' },
+          { key: '/payroll/configuration/cash-salary-employees', icon: <UnorderedListOutlined />,label: 'Cash Salary Employee List' },
+          { key: '/payroll/configuration/payment-accounts',      icon: <CreditCardOutlined />,   label: 'Payment Account' },
         ],
       },
     ],
   },
 
-  // ── 7. Asset Management ───────────────────────────────────────────────────────
+  // ── 8. Asset Management ───────────────────────────────────────────────────────
   {
     key: 'assets',
     label: 'Asset Management',
     icon: <DesktopOutlined />,
     children: [
-      { key: '/assets/it-equipment', label: 'IT Equipment' },
-      { key: '/assets/stationery',   label: 'Stationery' },
-      { key: '/assets/assign-asset', label: 'Assign Asset' },
+      { key: '/assets/it-equipment', icon: <LaptopOutlined />,     label: 'IT Equipment' },
+      { key: '/assets/stationery',   icon: <PaperClipOutlined />,  label: 'Stationery' },
+      { key: '/assets/assign-asset', icon: <LinkOutlined />,       label: 'Assign Asset' },
     ],
   },
 
-  // ── 8. Performance Management ─────────────────────────────────────────────────
+  // ── 9. Performance Management ─────────────────────────────────────────────────
   {
     key: 'performance',
     label: 'Performance Management',
     icon: <RiseOutlined />,
     children: [
-      { key: '/performance/goals-okr', label: 'Goals & Alignment (OKRs)' },
-      { key: '/performance/kpi',       label: 'KPI' },
+      { key: '/performance/goals-okr', icon: <AimOutlined />,  label: 'Goals & Alignment (OKRs)' },
+      { key: '/performance/kpi',       icon: <FundOutlined />, label: 'KPI' },
     ],
   },
 
-  // ── 9. Training & L&D ─────────────────────────────────────────────────────────
+  // ── 10. Training & L&D ─────────────────────────────────────────────────────────
   {
     key: 'training',
     label: 'Training & L&D',
     icon: <ReadOutlined />,
     children: [
-      { key: '/training/requisitions', label: 'Training Requisition' },
-      { key: '/training/programs',     label: 'Program Creation' },
-      { key: '/training/approval',     label: 'Approval' },
+      { key: '/training/requisitions', icon: <FileAddOutlined />, label: 'Training Requisition' },
+      { key: '/training/programs',     icon: <BookOutlined />,    label: 'Program Creation' },
+      { key: '/training/approval',     icon: <CheckOutlined />,   label: 'Approval' },
     ],
   },
 
-  // ── 10. Employee Separation / Offboarding ─────────────────────────────────────
+  // ── 11. Employee Separation / Offboarding ─────────────────────────────────────
   {
     key: 'offboarding',
     label: 'Offboarding',
     icon: <UserDeleteOutlined />,
     children: [
-      { key: '/offboarding/separation', label: 'Separation' },
+      { key: '/offboarding/separation', icon: <ExportOutlined />, label: 'Separation' },
     ],
   },
 
-  // ── 11. System Administration ─────────────────────────────────────────────────
+  // ── 12. System Administration ─────────────────────────────────────────────────
   {
     key: 'system-admin',
     label: 'System Administration',
     icon: <SettingOutlined />,
     children: [
-      { key: '/system-admin/device-setup', label: 'Mobile / Device Setup' },
-      { key: '/system-admin/fleet',        label: 'Fleet' },
-      { key: '/system-admin/workflows',    label: 'Workflow & Approval Layer' },
+      { key: '/system-admin/device-setup', icon: <MobileOutlined />,   label: 'Mobile / Device Setup' },
+      { key: '/system-admin/fleet',        icon: <CarOutlined />,       label: 'Fleet' },
+      { key: '/system-admin/workflows',    icon: <BranchesOutlined />,  label: 'Workflow & Approval Layer' },
     ],
   },
 
-  // ── 12. Analytics & Reporting ─────────────────────────────────────────────────
+  // ── 13. Analytics & Reporting ─────────────────────────────────────────────────
   {
     key: 'analytics',
     label: 'Analytics & Reporting',
     icon: <BarChartOutlined />,
     children: [
-      { key: '/analytics/system-logs',     label: 'System Log' },
-      { key: '/analytics/employee-master', label: 'Employee Master Data' },
+      { key: '/analytics/system-logs',     icon: <FileSearchOutlined />, label: 'System Log' },
+      { key: '/analytics/employee-master', icon: <DatabaseOutlined />,   label: 'Employee Master Data' },
     ],
   },
 
