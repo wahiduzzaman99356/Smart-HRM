@@ -74,6 +74,12 @@ const CandidateProfilePage = lazy(
 const ConflictResolutionPage = lazy(
   () => import('@/features/employee-relations/conflict-resolution/pages/ConflictResolutionPage'),
 );
+const MyComplaintsPage = lazy(
+  () => import('@/features/ess/my-cases/pages/MyComplaintsPage'),
+);
+const CompliancePage = lazy(
+  () => import('@/features/employee-relations/compliance/pages/CompliancePage'),
+);
 
 // ── Global providers ──────────────────────────────────────────────────────────
 const queryClient = new QueryClient({
@@ -138,6 +144,8 @@ function AppShell() {
           <Route path="/recruitment/pipelines/:id/candidates" element={<CandidateListPage />} />
           <Route path="/recruitment/pipelines/:id/candidates/:candidateId" element={<CandidateProfilePage />} />
           <Route path="/employee-relations/disciplinary/conflict-resolution" element={<ConflictResolutionPage />} />
+          <Route path="/employee-relations/disciplinary/compliance-tracker" element={<CompliancePage />} />
+          <Route path="/ess/my-cases" element={<MyComplaintsPage />} />
 
           {/* ── Placeholders for every module ── */}
           <Route path="/core-hr/*"             element={<ComingSoon />} />
@@ -167,6 +175,9 @@ function App() {
       <ConfigProvider
         theme={{
           token: {
+            motionDurationFast: '50ms',
+            motionDurationMid:  '50ms',
+            motionDurationSlow: '100ms',
             colorPrimary: '#0f766e',
             colorSuccess: '#059669',
             colorWarning: '#d97706',

@@ -33,103 +33,75 @@ import { AssignPipelineModal } from '../components/AssignPipelineModal';
 type DateRange = RangePickerProps['value'];
 const { RangePicker } = DatePicker;
 
-// ─── Mock data (all fields sourced from MRF) ──────────────────────────────────
-const MOCK_DATA: JobPosting[] = [
+const INITIAL_JOB_POSTINGS: JobPosting[] = [
   {
-    mrfId: 'MRF200126-01', mrfRef: 'TSL-1042',
-    designation: 'Senior Software Engineer', department: 'Engineering',
-    employmentType: 'Full Time', workLocation: 'Head Office',
-    vacancyNumber: '3', initiateDate: '2026-01-15', etaDate: '2026-03-15',
-    typeOfRequisition: 'New Recruitment', gender: 'Any',
-    experienceMode: 'Experienced', yearsOfExperience: '5',
+    mrfId: 'MRF200126-01',
+    mrfRef: 'TSL-1042',
+    designation: 'Software Engineer',
+    department: 'Engineering',
+    initiateDate: '2026-03-05',
+    employmentType: 'Full Time',
+    workLocation: 'Head Office',
+    vacancyNumber: '3',
+    etaDate: '2026-04-20',
+    typeOfRequisition: 'New Recruitment',
+    gender: 'Any',
+    experienceMode: 'Experienced',
+    yearsOfExperience: '3',
     educationQualification: 'Bachelor',
-    skillsRequired: ['React', 'Node.js', 'TypeScript', 'AWS'],
-    jobResponsibility: 'Lead backend & frontend development, mentor junior developers, architect scalable solutions.',
-    pipeline: 'Executive Search', applications: 42, matched: 38, shortListed: 12, status: 'Published',
+    skillsRequired: ['React', 'TypeScript', 'Node.js'],
+    jobResponsibility: 'Build and maintain HR platform modules with cross-team collaboration.',
+    pipeline: 'Engineering Fast Track',
+    applications: 42,
+    matched: 19,
+    shortListed: 7,
+    status: 'Published',
   },
   {
-    mrfId: 'MRF200126-02', mrfRef: 'TSL-1044',
-    designation: 'Product Designer', department: 'Design',
-    employmentType: 'Full Time', workLocation: 'Head Office',
-    vacancyNumber: '2', initiateDate: '2026-01-20', etaDate: '2026-03-01',
-    typeOfRequisition: 'New Recruitment', gender: 'Female',
-    experienceMode: 'Experienced', yearsOfExperience: '3',
+    mrfId: 'MRF200126-05',
+    mrfRef: 'TSL-1049',
+    designation: 'Data Analyst',
+    department: 'Engineering',
+    initiateDate: '2026-03-09',
+    employmentType: 'Contractual',
+    workLocation: 'Field Office',
+    vacancyNumber: '2',
+    etaDate: '2026-04-30',
+    typeOfRequisition: 'Replacement',
+    gender: 'Any',
+    experienceMode: 'Experienced',
+    yearsOfExperience: '2',
     educationQualification: 'Bachelor',
-    skillsRequired: ['Figma', 'UI/UX', 'Prototyping'],
-    jobResponsibility: 'Design intuitive user interfaces, conduct user research, and maintain the design system.',
-    pipeline: 'Executive Search', applications: 89, matched: 22, shortListed: 8, status: 'Published',
+    skillsRequired: ['SQL', 'Power BI', 'Python'],
+    jobResponsibility: 'Analyze operational data and publish dashboards for department leads.',
+    pipeline: null,
+    applications: 18,
+    matched: 6,
+    shortListed: 2,
+    status: 'On-Going',
   },
   {
-    mrfId: 'MRF200126-03', mrfRef: 'TSL-1047',
-    designation: 'DevOps Engineer', department: 'Engineering',
-    employmentType: 'Full Time', workLocation: 'Airport Office',
-    vacancyNumber: '1', initiateDate: '2026-02-01', etaDate: '2026-04-01',
-    typeOfRequisition: 'Replacement', gender: 'Male',
-    experienceMode: 'Experienced', yearsOfExperience: '4',
+    mrfId: 'MRF200126-07',
+    mrfRef: 'TSL-1052',
+    designation: 'HR Coordinator',
+    department: 'HR',
+    initiateDate: '2026-03-01',
+    employmentType: 'Part Time',
+    workLocation: 'Airport Office',
+    vacancyNumber: '1',
+    etaDate: '2026-04-05',
+    typeOfRequisition: 'New Recruitment',
+    gender: 'Female',
+    experienceMode: 'Fresher',
+    yearsOfExperience: '',
     educationQualification: 'Bachelor',
-    skillsRequired: ['Docker', 'Kubernetes', 'CI/CD', 'Terraform'],
-    jobResponsibility: 'Manage CI/CD pipelines, cloud infrastructure, and ensure system reliability.',
-    pipeline: 'Executive Search', applications: 0, matched: 0, shortListed: 0, status: 'Draft',
-  },
-  {
-    mrfId: 'MRF200126-04', mrfRef: 'TSL-1038',
-    designation: 'Marketing Manager', department: 'Marketing',
-    employmentType: 'Full Time', workLocation: 'Head Office',
-    vacancyNumber: '1', initiateDate: '2025-12-01', etaDate: '2026-02-28',
-    typeOfRequisition: 'New Recruitment', gender: 'Any',
-    experienceMode: 'Experienced', yearsOfExperience: '6',
-    educationQualification: 'Masters',
-    skillsRequired: ['Brand Strategy', 'Digital Marketing', 'SEO', 'Analytics'],
-    jobResponsibility: 'Plan and execute marketing campaigns, manage brand presence, lead the marketing team.',
-    pipeline: null, applications: 56, matched: 15, shortListed: 5, status: 'On-Going',
-  },
-  {
-    mrfId: 'MRF200126-05', mrfRef: 'TSL-1049',
-    designation: 'Data Analyst', department: 'Engineering',
-    employmentType: 'Contractual', workLocation: 'Field Office',
-    vacancyNumber: '2', initiateDate: '2026-01-05', etaDate: '2026-04-01',
-    typeOfRequisition: 'New Recruitment', gender: 'Any',
-    experienceMode: 'Experienced', yearsOfExperience: '2',
-    educationQualification: 'Bachelor',
-    skillsRequired: ['Python', 'SQL', 'Power BI', 'Excel'],
-    jobResponsibility: 'Analyze datasets, build dashboards, and provide data-driven insights to business stakeholders.',
-    pipeline: null, applications: 120, matched: 45, shortListed: 18, status: 'On-Going',
-  },
-  {
-    mrfId: 'MRF200126-06', mrfRef: 'TSL-1031',
-    designation: 'Sales Executive', department: 'Sales',
-    employmentType: 'Full Time', workLocation: 'Field Office',
-    vacancyNumber: '4', initiateDate: '2025-10-15', etaDate: '2025-12-31',
-    typeOfRequisition: 'New Recruitment', gender: 'Male',
-    experienceMode: 'Fresher', yearsOfExperience: '',
-    educationQualification: 'HSC',
-    skillsRequired: ['Communication', 'Negotiation', 'CRM'],
-    jobResponsibility: 'Drive sales targets, manage client relationships, and identify new business opportunities.',
-    pipeline: null, applications: 78, matched: 30, shortListed: 10, status: 'Closed',
-  },
-  {
-    mrfId: 'MRF200126-07', mrfRef: 'TSL-1052',
-    designation: 'HR Coordinator', department: 'HR',
-    employmentType: 'Part Time', workLocation: 'Airport Office',
-    vacancyNumber: '1', initiateDate: '2026-01-10', etaDate: '2026-02-28',
-    typeOfRequisition: 'Replacement', gender: 'Female',
-    experienceMode: 'Fresher', yearsOfExperience: '',
-    educationQualification: 'Bachelor',
-    skillsRequired: ['HR Policies', 'MS Office', 'Communication'],
-    jobResponsibility: 'Support HR operations, maintain employee records, and assist in recruitment activities.',
-    pipeline: null, applications: 34, matched: 8, shortListed: 2, status: 'Rejected',
-  },
-  {
-    mrfId: 'MRF200126-08', mrfRef: 'TSL-1055',
-    designation: 'AI Researcher', department: 'Engineering',
-    employmentType: 'Full Time', workLocation: 'Head Office',
-    vacancyNumber: '1', initiateDate: '2026-01-25', etaDate: '2026-03-31',
-    typeOfRequisition: 'New Recruitment', gender: 'Any',
-    experienceMode: 'Experienced', yearsOfExperience: '7',
-    educationQualification: 'PhD',
-    skillsRequired: ['Machine Learning', 'Python', 'NLP', 'Deep Learning'],
-    jobResponsibility: 'Conduct cutting-edge AI/ML research, publish findings, and integrate models into products.',
-    pipeline: null, applications: 25, matched: 10, shortListed: 3, status: 'Rejected',
+    skillsRequired: ['MS Office', 'Communication'],
+    jobResponsibility: 'Support HR operations and interview coordination.',
+    pipeline: null,
+    applications: 12,
+    matched: 4,
+    shortListed: 1,
+    status: 'Draft',
   },
 ];
 
@@ -204,15 +176,15 @@ export default function JobPostingsPage() {
 
   // Count per tab (on unfiltered data)
   const counts = useMemo(() => {
-    const c: Record<string, number> = { all: MOCK_DATA.length };
-    for (const job of MOCK_DATA) {
+    const c: Record<string, number> = { all: INITIAL_JOB_POSTINGS.length };
+    for (const job of INITIAL_JOB_POSTINGS) {
       c[job.status] = (c[job.status] ?? 0) + 1;
     }
     return c;
   }, []);
 
   const filtered = useMemo(() => {
-    let rows = MOCK_DATA;
+    let rows = INITIAL_JOB_POSTINGS;
     if (activeTab !== 'all')        rows = rows.filter(r => r.status === activeTab);
     if (applied.search) {
       const q = applied.search.toLowerCase();
@@ -694,7 +666,7 @@ export default function JobPostingsPage() {
                 fontSize: 13,
                 fontFamily: 'inherit',
                 cursor: 'pointer',
-                transition: 'all 0.15s',
+                transition: 'border-color 0.15s, background 0.15s, color 0.15s',
               }}
             >
               {tab.label}
@@ -740,7 +712,7 @@ export default function JobPostingsPage() {
           setAssignTarget(null);
         }}
         onCreateNew={name => {
-          const job = MOCK_DATA.find(r => r.mrfId === assignTarget);
+          const job = INITIAL_JOB_POSTINGS.find(r => r.mrfId === assignTarget);
           setAssignTarget(null);
           navigate('/recruitment/pipelines/new', {
             state: { pipelineName: name, position: job?.designation ?? '', candidates: 0 },

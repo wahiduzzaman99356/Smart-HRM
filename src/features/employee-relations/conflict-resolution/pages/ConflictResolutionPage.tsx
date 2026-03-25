@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback, memo } from 'react';
 import {
   Button, Input, Select, DatePicker, Table, Tooltip, Drawer,
   Form, Switch, Upload, Collapse, Modal, Dropdown, Divider,
@@ -8,12 +8,13 @@ import type { RangePickerProps } from 'antd/es/date-picker';
 import type { ColumnsType } from 'antd/es/table';
 import type { UploadFile } from 'antd/es/upload/interface';
 import {
-  PlusOutlined, SearchOutlined, ReloadOutlined, FilterOutlined,
+  SearchOutlined, ReloadOutlined, FilterOutlined,
   EyeOutlined, MessageOutlined, UploadOutlined,
   LockOutlined, UserOutlined, HistoryOutlined,
   ExclamationCircleOutlined, CalendarOutlined, MailOutlined,
   MoreOutlined, CloseCircleOutlined, ArrowRightOutlined,
-  FileOutlined, DeleteOutlined,
+  FileOutlined, DeleteOutlined, InfoCircleOutlined,
+  DownloadOutlined, PaperClipOutlined,
 } from '@ant-design/icons';
 
 type DateRange = RangePickerProps['value'];
@@ -30,6 +31,15 @@ type ConflictType     = 'Interpersonal' | 'Workplace Violence' | 'Harassment' | 
 
 interface Employee { id: string; name: string }
 
+interface TicketAttachment {
+  fileId:   string;
+  fileName: string;
+  fileSize: number;   // bytes
+  mimeType: string;
+  type:     string;
+  url:      string;
+}
+
 interface HRResponse {
   date:                  string;
   conflictType:          ConflictType;
@@ -39,6 +49,7 @@ interface HRResponse {
   preferredDateOfMeeting:string;
   resolutionStrategy:    ResolutionStrategy;
   remarks:               string;
+  attachments?:          TicketAttachment[];
 }
 
 interface ConflictTicket {
@@ -62,6 +73,7 @@ interface ConflictTicket {
   witness:              string;
   descriptionOfIncident:string;
   preferredOutcome:     string;
+  attachments?:         TicketAttachment[];
   responses:            HRResponse[];
 }
 
@@ -86,6 +98,10 @@ const MOCK_TICKETS: ConflictTicket[] = [
     location: 'Conference Room B', witness: 'Md. Rahim',
     descriptionOfIncident: 'A disagreement arose during the sprint planning meeting regarding the deadline for the Q2 feature release. Multiple team members disputed the scope and timeline agreed upon in the previous meeting.',
     preferredOutcome: 'A clear, written agreement on project deadlines and roles.',
+    attachments: [
+      { fileId: 'f001', fileName: 'sprint-chat-screenshot.png', fileSize: 234000, mimeType: 'image/png', type: 'Evidence (Screenshots/Socials)', url: '#' },
+      { fileId: 'f002', fileName: 'q2-project-plan.pdf',        fileSize: 320000, mimeType: 'application/pdf', type: 'Evidence (Documents)', url: '#' },
+    ],
     responses: [
       {
         date: '11-08-2026',
@@ -96,6 +112,9 @@ const MOCK_TICKETS: ConflictTicket[] = [
         preferredDateOfMeeting: '15-08-2026; 10:00 AM',
         resolutionStrategy: 'Negotiation',
         remarks: 'Initial review complete. Scheduling a mediation session with both parties.',
+        attachments: [
+          { fileId: 'f003', fileName: 'mediation-schedule.pdf', fileSize: 120000, mimeType: 'application/pdf', type: 'Report', url: '#' },
+        ],
       },
     ],
   },
@@ -135,6 +154,9 @@ const MOCK_TICKETS: ConflictTicket[] = [
     location: 'Open Workspace Area', witness: 'Rabiul Karim',
     descriptionOfIncident: 'Ongoing tension and verbal disagreements between two senior engineers, affecting team morale and productivity during critical project phase.',
     preferredOutcome: 'Formal counselling and workload redistribution.',
+    attachments: [
+      { fileId: 'f007', fileName: 'email-thread-evidence.pdf', fileSize: 85000, mimeType: 'application/pdf', type: 'Evidence (Email)', url: '#' },
+    ],
     responses: [
       {
         date: '10-08-2024',
@@ -145,6 +167,10 @@ const MOCK_TICKETS: ConflictTicket[] = [
         preferredDateOfMeeting: '12-08-2024; 02:00 PM',
         resolutionStrategy: 'Mediation',
         remarks: 'Situation is escalating. Immediate mediation scheduled.',
+        attachments: [
+          { fileId: 'f008', fileName: 'escalation-memo.docx',  fileSize: 45000, mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', type: 'Statement', url: '#' },
+          { fileId: 'f009', fileName: 'meeting-minutes.pdf',   fileSize: 62000, mimeType: 'application/pdf', type: 'Report', url: '#' },
+        ],
       },
       {
         date: '11-08-2024',
@@ -155,6 +181,9 @@ const MOCK_TICKETS: ConflictTicket[] = [
         preferredDateOfMeeting: '18-08-2024; 10:00 AM',
         resolutionStrategy: 'Negotiation',
         remarks: 'Post-mediation follow-up. Both parties agreed to terms. Monitor progress.',
+        attachments: [
+          { fileId: 'f010', fileName: 'agreement-draft.pdf', fileSize: 78000, mimeType: 'application/pdf', type: 'Evidence (Documents)', url: '#' },
+        ],
       },
     ],
   },
@@ -176,6 +205,9 @@ const MOCK_TICKETS: ConflictTicket[] = [
     location: 'Meeting Room A', witness: 'None',
     descriptionOfIncident: 'Employee failed to follow mandatory HR policy during a team decision-making process, leading to a formal complaint by a colleague.',
     preferredOutcome: 'Written acknowledgement and policy compliance training.',
+    attachments: [
+      { fileId: 'f011', fileName: 'hr-policy-breach-report.pdf', fileSize: 156000, mimeType: 'application/pdf', type: 'Report', url: '#' },
+    ],
     responses: [
       {
         date: '30-05-2026',
@@ -186,6 +218,10 @@ const MOCK_TICKETS: ConflictTicket[] = [
         preferredDateOfMeeting: '30-05-2026; 09:00 AM',
         resolutionStrategy: 'Arbitration',
         remarks: 'Issue resolved. Written warning issued and compliance training scheduled.',
+        attachments: [
+          { fileId: 'f012', fileName: 'written-warning-letter.pdf', fileSize: 92000,  mimeType: 'application/pdf', type: 'Statement', url: '#' },
+          { fileId: 'f013', fileName: 'training-schedule.xlsx',     fileSize: 38000,  mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', type: 'Summary', url: '#' },
+        ],
       },
     ],
   },
@@ -358,6 +394,77 @@ function HistoryPanel({ responses }: { responses: HRResponse[] }) {
 }
 
 // ── Attachment Upload with preview ────────────────────────────────────────────
+const ATTACHMENT_TYPE_OPTIONS = [
+  { value: 'Evidence (Email)',               label: 'Evidence (Email)'               },
+  { value: 'Evidence (Documents)',           label: 'Evidence (Documents)'           },
+  { value: 'Evidence (Screenshots/Socials)', label: 'Evidence (Screenshots/Socials)' },
+  { value: 'Statement',                      label: 'Statement'                      },
+  { value: 'Questionaries',                  label: 'Questionaries'                  },
+  { value: 'Report',                         label: 'Report'                         },
+  { value: 'Summary',                        label: 'Summary'                        },
+  { value: 'Committee',                      label: 'Committee'                      },
+];
+
+const FileRow = memo(function FileRow({
+  file,
+  onRemove,
+  onView,
+}: {
+  file: UploadFile;
+  onRemove: (uid: string) => void;
+  onView: (file: UploadFile) => void;
+}) {
+  const [attachmentType, setAttachmentType] = useState<string | undefined>();
+  return (
+    <div
+      style={{
+        display: 'flex', alignItems: 'center', gap: 8,
+        background: '#f8fafc', border: '1px solid #e5e7eb',
+        borderRadius: 7, padding: '5px 10px', fontSize: 12, color: '#374151',
+      }}
+    >
+      <FileOutlined style={{ color: '#0f766e', flexShrink: 0 }} />
+      <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', minWidth: 0 }}>
+        {file.name}
+      </span>
+      <span style={{ fontSize: 11, color: '#9ca3af', flexShrink: 0 }}>
+        {file.size ? `${(file.size / 1024).toFixed(1)} KB` : ''}
+      </span>
+      <select
+        value={attachmentType ?? ''}
+        onChange={e => setAttachmentType(e.target.value || undefined)}
+        style={{
+          width: 190, flexShrink: 0,
+          height: 24, fontSize: 11,
+          border: '1px solid #d9d9d9', borderRadius: 6,
+          padding: '0 6px', background: '#fff',
+          color: attachmentType ? '#374151' : '#9ca3af',
+          cursor: 'pointer', outline: 'none',
+        }}
+      >
+        <option value="" disabled>Type</option>
+        {ATTACHMENT_TYPE_OPTIONS.map(o => (
+          <option key={o.value} value={o.value}>{o.label}</option>
+        ))}
+      </select>
+      <Tooltip title="View">
+        <Button
+          type="text" size="small" icon={<EyeOutlined />}
+          onClick={() => onView(file)}
+          style={{ color: '#0f766e', padding: '0 4px', height: 22, flexShrink: 0 }}
+        />
+      </Tooltip>
+      <Tooltip title="Remove">
+        <Button
+          type="text" size="small" icon={<DeleteOutlined />}
+          onClick={() => onRemove(file.uid)}
+          style={{ color: '#ef4444', padding: '0 4px', height: 22, flexShrink: 0 }}
+        />
+      </Tooltip>
+    </div>
+  );
+});
+
 function AttachmentUpload({
   value,
   onChange,
@@ -371,6 +478,13 @@ function AttachmentUpload({
 }) {
   const [viewingFile, setViewingFile] = useState<UploadFile | null>(null);
 
+  // Stable references so memo(FileRow) doesn't re-render when AttachmentUpload re-renders
+  const handleRemove = useCallback(
+    (uid: string) => onChange?.((value ?? []).filter(f => f.uid !== uid)),
+    [value, onChange],
+  );
+  const handleView = useCallback((file: UploadFile) => setViewingFile(file), []);
+
   function handleBeforeUpload(file: File) {
     const newFile: UploadFile = {
       uid:           `${file.name}-${Date.now()}`,
@@ -382,14 +496,6 @@ function AttachmentUpload({
     };
     onChange?.([...(value ?? []), newFile]);
     return false;
-  }
-
-  function handleRemove(uid: string) {
-    onChange?.((value ?? []).filter(f => f.uid !== uid));
-  }
-
-  function handleView(file: UploadFile) {
-    setViewingFile(file);
   }
 
   const files = value ?? [];
@@ -406,36 +512,12 @@ function AttachmentUpload({
       {files.length > 0 && (
         <div style={{ marginTop: 8, display: 'flex', flexDirection: 'column', gap: 6 }}>
           {files.map(file => (
-            <div
+            <FileRow
               key={file.uid}
-              style={{
-                display: 'flex', alignItems: 'center', gap: 8,
-                background: '#f8fafc', border: '1px solid #e5e7eb',
-                borderRadius: 7, padding: '5px 10px', fontSize: 12, color: '#374151',
-              }}
-            >
-              <FileOutlined style={{ color: '#0f766e', flexShrink: 0 }} />
-              <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                {file.name}
-              </span>
-              <span style={{ fontSize: 11, color: '#9ca3af', flexShrink: 0 }}>
-                {file.size ? `${(file.size / 1024).toFixed(1)} KB` : ''}
-              </span>
-              <Tooltip title="View">
-                <Button
-                  type="text" size="small" icon={<EyeOutlined />}
-                  onClick={() => handleView(file)}
-                  style={{ color: '#0f766e', padding: '0 4px', height: 22, flexShrink: 0 }}
-                />
-              </Tooltip>
-              <Tooltip title="Remove">
-                <Button
-                  type="text" size="small" icon={<DeleteOutlined />}
-                  onClick={() => handleRemove(file.uid)}
-                  style={{ color: '#ef4444', padding: '0 4px', height: 22, flexShrink: 0 }}
-                />
-              </Tooltip>
-            </div>
+              file={file}
+              onRemove={handleRemove}
+              onView={handleView}
+            />
           ))}
         </div>
       )}
@@ -454,8 +536,9 @@ function AttachmentUpload({
         width={760}
       >
         {viewingFile && (() => {
-          const origin = viewingFile.originFileObj as File | undefined;
-          const url    = origin ? URL.createObjectURL(origin) : undefined;
+          const origin = viewingFile.originFileObj;
+          const safeFile = origin instanceof File ? origin : undefined;
+          const url    = safeFile ? URL.createObjectURL(safeFile) : undefined;
           const isImage = viewingFile.type?.startsWith('image/');
           const isPdf   = viewingFile.type === 'application/pdf';
 
@@ -676,6 +759,212 @@ function ResponseDrawer({
   );
 }
 
+// ── Attachment type colours ────────────────────────────────────────────────────
+const FILE_TYPE_CFG: Record<string, { color: string; bg: string }> = {
+  'Evidence (Email)':               { color: '#2563eb', bg: '#eff6ff' },
+  'Evidence (Documents)':           { color: '#7c3aed', bg: '#f5f3ff' },
+  'Evidence (Screenshots/Socials)': { color: '#db2777', bg: '#fdf2f8' },
+  'Statement':                      { color: '#0f766e', bg: '#f0fdf4' },
+  'Questionaries':                  { color: '#d97706', bg: '#fffbeb' },
+  'Report':                         { color: '#0891b2', bg: '#ecfeff' },
+  'Summary':                        { color: '#4f46e5', bg: '#eef2ff' },
+  'Committee':                      { color: '#6b7280', bg: '#f3f4f6' },
+};
+
+function fmtSize(bytes: number) {
+  return bytes >= 1_048_576
+    ? `${(bytes / 1_048_576).toFixed(1)} MB`
+    : `${(bytes / 1024).toFixed(0)} KB`;
+}
+
+function AttachmentList({ attachments }: { attachments?: TicketAttachment[] }) {
+  if (!attachments || attachments.length === 0) return null;
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+      {attachments.map(f => {
+        const cfg = FILE_TYPE_CFG[f.type] ?? { color: '#6b7280', bg: '#f3f4f6' };
+        return (
+          <div key={f.fileId} style={{
+            display: 'flex', alignItems: 'center', gap: 10,
+            background: '#fff', border: '1px solid #e5e7eb',
+            borderRadius: 8, padding: '7px 10px',
+          }}>
+            <div style={{
+              width: 34, height: 34, borderRadius: 8, flexShrink: 0,
+              background: cfg.bg, border: `1px solid ${cfg.color}25`,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}>
+              <FileOutlined style={{ color: cfg.color, fontSize: 15 }} />
+            </div>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{
+                fontSize: 12, fontWeight: 600, color: '#374151',
+                overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+              }}>{f.fileName}</div>
+              <div style={{ fontSize: 10, color: '#9ca3af', marginTop: 1 }}>{fmtSize(f.fileSize)}</div>
+            </div>
+            <span style={{
+              fontSize: 10, fontWeight: 600, padding: '2px 7px', borderRadius: 20, flexShrink: 0,
+              whiteSpace: 'nowrap', background: cfg.bg, color: cfg.color,
+              border: `1px solid ${cfg.color}25`,
+            }}>{f.type}</span>
+            <Tooltip title="Download">
+              <Button
+                type="text" size="small" icon={<DownloadOutlined />}
+                style={{ color: '#6b7280', padding: '0 4px', height: 24, flexShrink: 0 }}
+              />
+            </Tooltip>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+// ── HR Responses Accordion (View Details) ─────────────────────────────────────
+function HRResponsesCard({ responses }: { responses: HRResponse[] }) {
+  const lastIdx = responses.length - 1;
+  const [openSet, setOpenSet] = useState<Set<number>>(new Set(lastIdx >= 0 ? [lastIdx] : []));
+
+  const toggle = (i: number) =>
+    setOpenSet(prev => {
+      const next = new Set(prev);
+      if (next.has(i)) next.delete(i); else next.add(i);
+      return next;
+    });
+
+  if (responses.length === 0) {
+    return (
+      <div style={{ textAlign: 'center', padding: '32px 20px', color: '#9ca3af' }}>
+        <HistoryOutlined style={{ fontSize: 28, display: 'block', margin: '0 auto 8px' }} />
+        <div style={{ fontSize: 13 }}>No HR responses recorded yet.</div>
+      </div>
+    );
+  }
+
+  const reversed = [...responses].map((r, i) => ({ r, origIdx: i })).reverse();
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+      {reversed.map(({ r, origIdx }) => {
+        const isOpen   = openSet.has(origIdx);
+        const isLatest = origIdx === lastIdx;
+        return (
+          <div key={origIdx} style={{
+            border: `1px solid ${isLatest ? '#d1fae5' : '#e5e7eb'}`,
+            borderRadius: 10, background: '#fff', overflow: 'hidden',
+          }}>
+            <button
+              onClick={() => toggle(origIdx)}
+              style={{
+                width: '100%', display: 'flex', alignItems: 'center', gap: 10,
+                padding: '11px 14px', background: 'transparent', border: 'none',
+                cursor: 'pointer', textAlign: 'left',
+              }}
+            >
+              <div style={{
+                width: 30, height: 30, borderRadius: '50%', flexShrink: 0,
+                background: isLatest ? '#d1fae5' : '#f3f4f6',
+                border: `2px solid ${isLatest ? '#0f766e' : '#d1d5db'}`,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: 11, fontWeight: 700, color: isLatest ? '#065f46' : '#6b7280',
+              }}>
+                {origIdx + 1}
+              </div>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontWeight: 700, fontSize: 12, color: '#111827' }}>
+                  {r.date}
+                </div>
+                <div style={{ fontSize: 11, color: '#6b7280', marginTop: 1 }}>
+                  {r.conflictType} · {r.resolutionStrategy}
+                </div>
+              </div>
+              {(r.attachments?.length ?? 0) > 0 && (
+                <span style={{
+                  display: 'inline-flex', alignItems: 'center', gap: 3,
+                  background: '#f0fdf4', color: '#0f766e', border: '1px solid #bbf7d0',
+                  fontSize: 10, fontWeight: 700, padding: '1px 7px', borderRadius: 20, flexShrink: 0,
+                }}>
+                  <PaperClipOutlined style={{ fontSize: 9 }} />
+                  {r.attachments!.length}
+                </span>
+              )}
+              {isLatest && (
+                <span style={{
+                  background: '#d1fae5', color: '#065f46', fontSize: 10,
+                  fontWeight: 700, padding: '1px 7px', borderRadius: 20, flexShrink: 0,
+                }}>LATEST</span>
+              )}
+              <span style={{ color: '#9ca3af', fontSize: 10, flexShrink: 0 }}>
+                {isOpen ? '▲' : '▼'}
+              </span>
+            </button>
+            {isOpen && (
+              <div style={{ borderTop: '1px solid #f3f4f6' }}>
+                {/* Response fields */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 0, padding: '12px 14px' }}>
+                  {[
+                    { label: 'Conflict Type',             value: r.conflictType },
+                    { label: 'Security Level',            value: r.securityLevel },
+                    { label: 'Assign Personnel',          value: r.assignPersonnel.join(', ') },
+                    { label: 'Preferred Actions',         value: r.preferredActions.join(', ') },
+                    { label: 'Preferred Date of Meeting', value: r.preferredDateOfMeeting },
+                    { label: 'Resolution Strategy',       value: r.resolutionStrategy },
+                  ].map(f => (
+                    <div key={f.label} style={{
+                      display: 'flex', gap: 8, fontSize: 12,
+                      borderBottom: '1px solid #f9fafb', padding: '5px 0',
+                    }}>
+                      <span style={{ width: 155, flexShrink: 0, color: '#6b7280', fontWeight: 600, fontSize: 11 }}>
+                        {f.label}
+                      </span>
+                      <span style={{ color: '#111827' }}>{f.value || '—'}</span>
+                    </div>
+                  ))}
+                  {r.remarks && (
+                    <div style={{ paddingTop: 8 }}>
+                      <div style={{ fontSize: 11, fontWeight: 600, color: '#6b7280', marginBottom: 4 }}>REMARKS</div>
+                      <div style={{
+                        fontSize: 12, color: '#374151', lineHeight: 1.6,
+                        background: '#f8fafc', borderRadius: 7, padding: '8px 10px',
+                        borderLeft: '3px solid #0f766e',
+                      }}>
+                        {r.remarks}
+                      </div>
+                    </div>
+                  )}
+                </div>
+                {/* Attachments */}
+                {(r.attachments?.length ?? 0) > 0 && (
+                  <div style={{
+                    padding: '10px 14px 14px',
+                    borderTop: '1px solid #f3f4f6',
+                    background: '#fafafa',
+                  }}>
+                    <div style={{
+                      display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8,
+                    }}>
+                      <PaperClipOutlined style={{ color: '#0f766e', fontSize: 12 }} />
+                      <span style={{ fontSize: 11, fontWeight: 700, color: '#374151' }}>
+                        Attachments
+                      </span>
+                      <span style={{
+                        background: '#0f766e', color: '#fff',
+                        fontSize: 10, fontWeight: 700, padding: '0 6px', borderRadius: 20,
+                      }}>{r.attachments!.length}</span>
+                    </div>
+                    <AttachmentList attachments={r.attachments} />
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 // ── View Details Drawer ────────────────────────────────────────────────────────
 function ViewDetailsDrawer({
   ticket,
@@ -687,51 +976,302 @@ function ViewDetailsDrawer({
   onClose: () => void;
 }) {
   if (!ticket) return null;
+  const initials = ticket.name.split(' ').map(p => p[0]).join('').slice(0, 2).toUpperCase();
+
   return (
     <Drawer
       title={
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <EyeOutlined style={{ color: '#0f766e' }} />
           <span style={{ fontWeight: 700, color: '#111827' }}>View Details</span>
-          <span style={{ fontSize: 12, color: '#6b7280', fontWeight: 400 }}>— {ticket.ticketId}</span>
+          <span style={{
+            background: '#f3f4f6', color: '#374151', fontSize: 12,
+            fontWeight: 600, padding: '1px 8px', borderRadius: 6,
+          }}>{ticket.ticketId}</span>
+          <div style={{ marginLeft: 'auto', display: 'flex', gap: 6 }}>
+            <StatusBadge status={ticket.ticketStatus} />
+            <SecurityBadge level={ticket.securityLevel} />
+          </div>
         </div>
       }
       open={open}
       onClose={onClose}
-      width={600}
-      styles={{ body: { padding: 24 } }}
+      width="78%"
+      styles={{ body: { padding: 0, display: 'flex', height: '100%', overflow: 'hidden' } }}
     >
-      <SectionLabel>Section — A (Employee Section)</SectionLabel>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 16px' }}>
-        <ReadField label="Ticket ID"              value={ticket.ticketId} />
-        <ReadField label="Name"                   value={ticket.name} />
-        <ReadField label="Employee ID"            value={ticket.employeeId} />
-        <ReadField label="Phone Number"           value={ticket.phoneNumber} />
-        <ReadField label="Department"             value={ticket.department} />
-        <ReadField label="Date of Incident"       value={ticket.dateOfIncident} />
-        <ReadField label="Time of Incident"       value={ticket.timeOfIncident} />
-        <ReadField label="Location"               value={ticket.location} />
-        <ReadField label="Nature of the Conflict" value={ticket.natureOfConflict} />
-        <ReadField label="Witness"                value={ticket.witness} />
-      </div>
-      <ReadField
-        label="Employee Involved"
-        value={ticket.employeesInvolved.map(e => `${e.id} (${e.name})`).join('; ')}
-      />
-      <ReadField label="Description of the Incident" value={ticket.descriptionOfIncident} />
-      <ReadField label="Preferred Outcome"            value={ticket.preferredOutcome} />
-      <ReadField label="Attachments"                  value="No attachments" />
-
-      <Divider style={{ margin: '8px 0 16px' }} />
-
-      <SectionLabel color="hr">Section — B (For HR POC)</SectionLabel>
-      {ticket.responses.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: '24px', color: '#9ca3af', fontSize: 13 }}>
-          No HR responses recorded yet.
+      {/* ── Left: main content ── */}
+      <div style={{ flex: 1, overflowY: 'auto', padding: 24 }}>
+        {/* Metric strip */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10, marginBottom: 20 }}>
+          {([
+            { label: 'Status',        icon: <span style={{ width: 8, height: 8, borderRadius: '50%', background: STATUS_CFG[ticket.ticketStatus].dot, display: 'inline-block', marginRight: 4 }} />, node: <StatusBadge status={ticket.ticketStatus} /> },
+            { label: 'Security',      icon: <LockOutlined style={{ color: '#6b7280', fontSize: 11, marginRight: 4 }} />,                                                                               node: <SecurityBadge level={ticket.securityLevel} /> },
+            { label: 'Nature',        icon: <ExclamationCircleOutlined style={{ color: '#6b7280', fontSize: 11, marginRight: 4 }} />,                                                                  node: <NatureBadge nature={ticket.natureOfConflict} /> },
+            { label: 'Request Date',  icon: <CalendarOutlined style={{ color: '#6b7280', fontSize: 11, marginRight: 4 }} />,                                                                           node: <span style={{ fontSize: 12, color: '#374151', fontWeight: 600 }}>{ticket.requestDate}</span> },
+          ] as const).map(m => (
+            <div key={m.label} style={{
+              background: '#fff', border: '1px solid #e5e7eb',
+              borderRadius: 10, padding: '11px 13px',
+            }}>
+              <div style={{ fontSize: 10, color: '#9ca3af', fontWeight: 700, letterSpacing: '0.06em', marginBottom: 7, textTransform: 'uppercase', display: 'flex', alignItems: 'center' }}>
+                {m.icon}{m.label}
+              </div>
+              {m.node}
+            </div>
+          ))}
         </div>
-      ) : (
-        <HistoryPanel responses={ticket.responses} />
-      )}
+
+        {/* Section A */}
+        <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 12, marginBottom: 16, overflow: 'hidden' }}>
+          <SectionLabel>Section — A (Employee Section)</SectionLabel>
+          <div style={{ padding: '0 16px 16px' }}>
+            {/* Submitter hero */}
+            <div style={{
+              display: 'flex', alignItems: 'center', gap: 14,
+              background: '#f0fdf4', border: '1px solid #bbf7d0',
+              borderRadius: 10, padding: '12px 16px', marginBottom: 16,
+            }}>
+              <div style={{
+                width: 44, height: 44, borderRadius: '50%',
+                background: '#0f766e', color: '#fff',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontWeight: 800, fontSize: 16, flexShrink: 0,
+              }}>{initials}</div>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontWeight: 700, fontSize: 14, color: '#111827' }}>{ticket.name}</div>
+                <div style={{ fontSize: 12, color: '#4b5563', marginTop: 2 }}>
+                  ID: {ticket.employeeId}  ·  {ticket.department}
+                </div>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 4, alignItems: 'flex-end' }}>
+                <span style={{ fontSize: 11, color: '#6b7280' }}>{ticket.phoneNumber || '—'}</span>
+                <span style={{
+                  background: '#dcfce7', color: '#15803d',
+                  fontSize: 10, fontWeight: 700, padding: '2px 7px', borderRadius: 20,
+                }}>Submitter</span>
+              </div>
+            </div>
+
+            {/* Fields grid */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 16px', marginBottom: 12 }}>
+              <ReadField label="Date of Incident"       value={ticket.dateOfIncident} />
+              <ReadField label="Time of Incident"       value={ticket.timeOfIncident} />
+              <ReadField label="Location"               value={ticket.location} />
+              <ReadField label="Witness"                value={ticket.witness} />
+              <ReadField label="Nature of Conflict"     value={ticket.natureOfConflict} />
+              <ReadField label="Last Resolution Date"   value={ticket.lastResolutionDate || '—'} />
+            </div>
+
+            {/* Employees Involved */}
+            <div style={{ marginBottom: 14 }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: '#6b7280', letterSpacing: '0.04em', marginBottom: 8, textTransform: 'uppercase' }}>
+                Employees Involved
+              </div>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                {ticket.employeesInvolved.map(e => {
+                  const ei = e.name.split(' ').map(p => p[0]).join('').slice(0, 2).toUpperCase();
+                  return (
+                    <div key={e.id} style={{
+                      display: 'flex', alignItems: 'center', gap: 7,
+                      background: '#eff6ff', border: '1px solid #bfdbfe',
+                      borderRadius: 8, padding: '5px 10px',
+                    }}>
+                      <div style={{
+                        width: 26, height: 26, borderRadius: '50%',
+                        background: '#3b82f6', color: '#fff',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        fontWeight: 700, fontSize: 10, flexShrink: 0,
+                      }}>{ei}</div>
+                      <div>
+                        <div style={{ fontSize: 12, fontWeight: 600, color: '#1e40af' }}>{e.name}</div>
+                        <div style={{ fontSize: 10, color: '#6b7280' }}>{e.id}</div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Description */}
+            <div style={{ marginBottom: 12 }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: '#6b7280', letterSpacing: '0.04em', marginBottom: 6, textTransform: 'uppercase' }}>
+                Description of Incident
+              </div>
+              <div style={{
+                background: '#f8fafc', border: '1px solid #e5e7eb', borderRadius: 8,
+                padding: '10px 12px', fontSize: 13, color: '#374151', lineHeight: 1.6,
+              }}>
+                {ticket.descriptionOfIncident || '—'}
+              </div>
+            </div>
+
+            {/* Preferred Outcome */}
+            <div style={{ marginBottom: (ticket.attachments?.length ?? 0) > 0 ? 14 : 0 }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: '#6b7280', letterSpacing: '0.04em', marginBottom: 6, textTransform: 'uppercase' }}>
+                Preferred Outcome
+              </div>
+              <div style={{
+                background: '#fefce8', border: '1px solid #fde68a', borderRadius: 8,
+                padding: '10px 12px', fontSize: 13, color: '#374151', lineHeight: 1.6,
+              }}>
+                {ticket.preferredOutcome || '—'}
+              </div>
+            </div>
+
+            {/* Section A Attachments */}
+            {(ticket.attachments?.length ?? 0) > 0 && (
+              <div>
+                <div style={{
+                  display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8,
+                  paddingTop: 4, borderTop: '1px solid #f3f4f6',
+                }}>
+                  <PaperClipOutlined style={{ color: '#3b6eea', fontSize: 13 }} />
+                  <span style={{ fontSize: 11, fontWeight: 700, color: '#374151', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                    Attachments
+                  </span>
+                  <span style={{
+                    background: '#3b6eea', color: '#fff',
+                    fontSize: 10, fontWeight: 700, padding: '0 6px', borderRadius: 20,
+                  }}>{ticket.attachments!.length}</span>
+                </div>
+                <AttachmentList attachments={ticket.attachments} />
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Section B */}
+        <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 12, overflow: 'hidden' }}>
+          <div style={{
+            padding: '8px 14px',
+            background: '#e0f2fe',
+            borderLeft: '3px solid #0ea5e9',
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            marginBottom: 0,
+          }}>
+            <span style={{ fontWeight: 700, fontSize: 12, color: '#0369a1', letterSpacing: '0.02em' }}>
+              Section — B (For HR POC)
+            </span>
+            <span style={{
+              background: '#0ea5e9', color: '#fff',
+              fontSize: 10, fontWeight: 700, padding: '1px 7px', borderRadius: 20,
+            }}>
+              {ticket.responses.length} Response{ticket.responses.length !== 1 ? 's' : ''}
+            </span>
+          </div>
+          <div style={{ padding: '14px 14px 14px' }}>
+            <HRResponsesCard responses={ticket.responses} />
+          </div>
+        </div>
+      </div>
+
+      {/* ── Right: case overview + timeline ── */}
+      <div style={{
+        width: 300, flexShrink: 0,
+        borderLeft: '1px solid #e5e7eb',
+        overflowY: 'auto',
+        background: '#f8fafc',
+      }}>
+        {/* Case summary */}
+        <div style={{ padding: 16, borderBottom: '1px solid #e5e7eb' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 12 }}>
+            <InfoCircleOutlined style={{ color: '#0f766e', fontSize: 14 }} />
+            <span style={{ fontWeight: 700, fontSize: 13, color: '#111827' }}>Case Overview</span>
+          </div>
+          {([
+            { label: 'Ticket ID',    value: ticket.ticketId },
+            { label: 'Reported By',  value: `${ticket.reportedBy.name} (${ticket.reportedBy.id})` },
+            { label: 'Request Date', value: ticket.requestDate },
+            { label: 'Status',       value: ticket.ticketStatus },
+            { label: 'Security',     value: ticket.securityLevel },
+            { label: 'Nature',       value: ticket.natureOfConflict },
+            ...(ticket.lastResolutionDate ? [{ label: 'Resolved On', value: ticket.lastResolutionDate }] : []),
+          ] as { label: string; value: string }[]).map(row => (
+            <div key={row.label} style={{
+              display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start',
+              padding: '5px 0', borderBottom: '1px solid #f0f0f0', gap: 8,
+            }}>
+              <span style={{ fontSize: 11, color: '#9ca3af', fontWeight: 600, flexShrink: 0, width: 90 }}>
+                {row.label}
+              </span>
+              <span style={{ fontSize: 12, color: '#374151', textAlign: 'right', fontWeight: 500 }}>
+                {row.value}
+              </span>
+            </div>
+          ))}
+        </div>
+
+        {/* Response timeline */}
+        <div style={{ padding: 16 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 12 }}>
+            <HistoryOutlined style={{ color: '#0f766e', fontSize: 14 }} />
+            <span style={{ fontWeight: 700, fontSize: 13, color: '#111827' }}>Response History</span>
+            <span style={{
+              marginLeft: 'auto', background: '#0f766e', color: '#fff',
+              borderRadius: 20, padding: '0 7px', fontSize: 11, fontWeight: 700,
+            }}>{ticket.responses.length}</span>
+          </div>
+          {ticket.responses.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '24px 12px', color: '#d1d5db', fontSize: 12 }}>
+              No responses yet
+            </div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              {[...ticket.responses].reverse().map((r, i) => {
+                const attachCount = r.attachments?.length ?? 0;
+                return (
+                  <div key={i} style={{ display: 'flex', gap: 10 }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flexShrink: 0 }}>
+                      <div style={{
+                        width: 28, height: 28, borderRadius: '50%',
+                        background: i === 0 ? '#d1fae5' : '#f3f4f6',
+                        border: `2px solid ${i === 0 ? '#0f766e' : '#d1d5db'}`,
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        fontSize: 11, fontWeight: 700, color: i === 0 ? '#065f46' : '#6b7280',
+                      }}>
+                        {ticket.responses.length - i}
+                      </div>
+                      {i < ticket.responses.length - 1 && (
+                        <div style={{ width: 2, flex: 1, background: '#e5e7eb', minHeight: 20, marginTop: 4 }} />
+                      )}
+                    </div>
+                    <div style={{
+                      flex: 1, background: '#fff',
+                      border: `1px solid ${i === 0 ? '#d1fae5' : '#e5e7eb'}`,
+                      borderRadius: 8, padding: '8px 10px', fontSize: 12, marginBottom: 2,
+                    }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 2 }}>
+                        <span style={{ fontWeight: 700, color: '#374151', flex: 1 }}>{r.date}</span>
+                        {attachCount > 0 && (
+                          <span style={{
+                            display: 'inline-flex', alignItems: 'center', gap: 3,
+                            background: '#f0fdf4', color: '#0f766e', border: '1px solid #bbf7d0',
+                            fontSize: 10, fontWeight: 700, padding: '1px 6px', borderRadius: 20,
+                          }}>
+                            <PaperClipOutlined style={{ fontSize: 9 }} />{attachCount}
+                          </span>
+                        )}
+                      </div>
+                      <div style={{ color: '#6b7280', fontSize: 11, marginBottom: r.remarks ? 6 : 0 }}>
+                        {r.conflictType} · {r.resolutionStrategy}
+                      </div>
+                      {r.remarks && (
+                        <div style={{
+                          fontSize: 11, color: '#374151',
+                          background: '#f8fafc', borderRadius: 6, padding: '5px 8px',
+                          borderLeft: '2px solid #0f766e',
+                        }}>
+                          {r.remarks}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      </div>
     </Drawer>
   );
 }
@@ -939,7 +1479,6 @@ export default function ConflictResolutionPage() {
   const [showFilters,   setShowFilters]  = useState(false);
   const [responseTicket, setResponseTicket] = useState<ConflictTicket | null>(null);
   const [viewTicket,    setViewTicket]   = useState<ConflictTicket | null>(null);
-  const [createOpen,    setCreateOpen]   = useState(false);
 
   const handleApply = () => setApplied(draft);
 
@@ -1135,9 +1674,6 @@ export default function ConflictResolutionPage() {
           <h1>Conflict Resolution Tracker</h1>
           <p>Track, respond to and resolve workplace conflict tickets</p>
         </div>
-        <Button type="primary" icon={<PlusOutlined />} onClick={() => setCreateOpen(true)}>
-          Create Ticket
-        </Button>
       </div>
 
       {/* ── Filter bar ── */}
@@ -1259,7 +1795,7 @@ export default function ConflictResolutionPage() {
                 color: isActive ? '#0f766e' : '#374151',
                 fontWeight: isActive ? 700 : 500,
                 fontSize: 13, fontFamily: 'inherit', cursor: 'pointer',
-                transition: 'all 0.15s',
+                transition: 'border-color 0.15s, background 0.15s, color 0.15s',
               }}
             >
               {tab.label}
@@ -1303,11 +1839,6 @@ export default function ConflictResolutionPage() {
         ticket={viewTicket}
         open={!!viewTicket}
         onClose={() => setViewTicket(null)}
-      />
-      <CreateTicketModal
-        open={createOpen}
-        onClose={() => setCreateOpen(false)}
-        onCreate={(t) => setTickets(prev => [t, ...prev])}
       />
     </div>
   );

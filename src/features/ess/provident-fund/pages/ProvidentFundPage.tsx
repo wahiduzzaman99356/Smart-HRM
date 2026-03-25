@@ -146,7 +146,7 @@ export default function ProvidentFundPage() {
                     fontWeight: isActive ? 600 : 400,
                     cursor: 'pointer',
                     position: 'relative',
-                    transition: 'all 0.15s',
+                    transition: 'border-color 0.15s, background 0.15s, color 0.15s',
                   }}
                 >
                   {labels[tab]}

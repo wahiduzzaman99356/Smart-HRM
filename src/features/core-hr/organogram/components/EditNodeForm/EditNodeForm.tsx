@@ -206,7 +206,7 @@ export function EditNodeForm({
                       alignItems: 'center',
                       justifyContent: 'center',
                       gap: 5,
-                      transition: 'all 0.15s',
+                      transition: 'border-color 0.15s, background 0.15s, color 0.15s',
                     }}
                   >
                     {icon} {label}

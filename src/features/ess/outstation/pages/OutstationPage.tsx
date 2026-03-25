@@ -33,6 +33,7 @@ import {
   DateSelectionMode,
   EMPLOYEES,
   INITIAL_SETUPS,
+  INITIAL_ATTENDANCE,
   LocationDraft,
   MAP_CENTER,
   OutstationAuditLog,
@@ -41,7 +42,6 @@ import {
   PURPOSE_OPTIONS,
   RadiusUnit,
   SHIFT_OPTIONS,
-  MOCK_ATTENDANCE,
 } from '../types/outstation.types';
 import { OutstationHistoryView } from '../components/OutstationHistoryView';
 
@@ -148,7 +148,7 @@ export default function OutstationPage() {
     actor = 'Admin User',
   ): OutstationAuditLog[] => [
     {
-      id: `AL-${Date.now()}`,
+      id: `AL-${setup.id}-${setup.auditLogs.length + 1}`,
       action,
       actor,
       at: new Date().toISOString(),
@@ -918,7 +918,7 @@ export default function OutstationPage() {
         {activeTab === 'configuration' && configView === 'history' && historySetup && (
           <OutstationHistoryView
             setups={setups.filter(s => s.employeeId === historySetup.employeeId)}
-            allAttendance={MOCK_ATTENDANCE}
+            allAttendance={INITIAL_ATTENDANCE}
             onBack={() => { setConfigView('list'); setHistorySetupId(null); }}
           />
         )}
