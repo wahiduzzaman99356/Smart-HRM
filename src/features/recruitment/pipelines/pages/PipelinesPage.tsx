@@ -24,104 +24,51 @@ interface LocationState {
   jobPostingTitle?: string;
 }
 
-// ─── Mock data ────────────────────────────────────────────────────────────────
-const MOCK_PIPELINES: Pipeline[] = [
+const INITIAL_PIPELINES: Pipeline[] = [
   {
     id: 'PL-001',
-    name: 'Tech Hiring',
+    name: 'Engineering Fast Track',
     position: 'Software Engineer',
     stages: [
-      { id: 's1', name: 'Applied',          order: 1 },
-      { id: 's2', name: 'Screening',        order: 2 },
-      { id: 's3', name: 'Technical Test',   order: 3 },
-      { id: 's4', name: 'Interview',        order: 4 },
-      { id: 's5', name: 'Offer',            order: 5 },
-      { id: 's6', name: 'Hired',            order: 6 },
+      { id: 's1', name: 'Applied', order: 1 },
+      { id: 's2', name: 'Screening', order: 2 },
+      { id: 's3', name: 'Interview', order: 3 },
+      { id: 's4', name: 'Offer', order: 4 },
     ],
-    candidates: 6,
-    createdAt: 'Feb 10, 2026',
-    status: 'Draft',
+    candidates: 14,
+    createdAt: 'Mar 08, 2026',
+    status: 'Active',
     jobPostingId: 'MRF200126-01',
-    jobPostingTitle: 'Senior Software Engineer',
+    jobPostingTitle: 'Software Engineer',
   },
   {
     id: 'PL-002',
-    name: 'Data Scientist – Template 01',
-    position: 'Data Scientist',
+    name: 'Data Hiring Batch',
+    position: 'Data Analyst',
     stages: [
-      { id: 's1', name: 'Applied',        order: 1 },
-      { id: 's2', name: 'CV Review',      order: 2 },
-      { id: 's3', name: 'Case Study',     order: 3 },
-      { id: 's4', name: 'Panel Interview',order: 4 },
-      { id: 's5', name: 'Offer',          order: 5 },
-      { id: 's6', name: 'Hired',          order: 6 },
+      { id: 's1', name: 'Applied', order: 1 },
+      { id: 's2', name: 'Case Review', order: 2 },
+      { id: 's3', name: 'Panel Interview', order: 3 },
+      { id: 's4', name: 'Final Decision', order: 4 },
     ],
-    candidates: 3,
-    createdAt: 'Feb 10, 2026',
-    status: 'Active',
+    candidates: 9,
+    createdAt: 'Mar 10, 2026',
+    status: 'Draft',
     jobPostingId: 'MRF200126-05',
     jobPostingTitle: 'Data Analyst',
   },
   {
     id: 'PL-003',
-    name: 'Executive Search',
-    position: 'Senior Management',
-    stages: [
-      { id: 's1', name: 'Sourcing',       order: 1 },
-      { id: 's2', name: 'Outreach',       order: 2 },
-      { id: 's3', name: 'Screening',      order: 3 },
-      { id: 's4', name: 'Interview',      order: 4 },
-      { id: 's5', name: 'Reference Check',order: 5 },
-      { id: 's6', name: 'Offer',          order: 6 },
-      { id: 's7', name: 'Hired',          order: 7 },
-    ],
-    candidates: 11,
-    createdAt: 'Jan 22, 2026',
-    status: 'Active',
-  },
-  {
-    id: 'PL-004',
-    name: 'Design Track',
-    position: 'Product Designer',
-    stages: [
-      { id: 's1', name: 'Applied',         order: 1 },
-      { id: 's2', name: 'Portfolio Review',order: 2 },
-      { id: 's3', name: 'Design Task',     order: 3 },
-      { id: 's4', name: 'Interview',       order: 4 },
-      { id: 's5', name: 'Offer',           order: 5 },
-    ],
-    candidates: 8,
-    createdAt: 'Jan 30, 2026',
-    status: 'Active',
-  },
-  {
-    id: 'PL-005',
-    name: 'Sales Fast-Track',
-    position: 'Sales Executive',
-    stages: [
-      { id: 's1', name: 'Applied',   order: 1 },
-      { id: 's2', name: 'Screening', order: 2 },
-      { id: 's3', name: 'Interview', order: 3 },
-      { id: 's4', name: 'Offer',     order: 4 },
-    ],
-    candidates: 20,
-    createdAt: 'Mar 01, 2026',
-    status: 'Draft',
-  },
-  {
-    id: 'PL-006',
-    name: 'Graduate Programme',
+    name: 'Graduate Program 2026',
     position: 'Management Trainee',
     stages: [
-      { id: 's1', name: 'Applied',         order: 1 },
-      { id: 's2', name: 'Online Assessment',order: 2 },
-      { id: 's3', name: 'Group Discussion',order: 3 },
-      { id: 's4', name: 'HR Interview',    order: 4 },
-      { id: 's5', name: 'Offer',           order: 5 },
-      { id: 's6', name: 'Hired',           order: 6 },
+      { id: 's1', name: 'Applied', order: 1 },
+      { id: 's2', name: 'Assessment', order: 2 },
+      { id: 's3', name: 'Group Discussion', order: 3 },
+      { id: 's4', name: 'HR Interview', order: 4 },
     ],
-    candidates: 45,
-    createdAt: 'Feb 25, 2026',
+    candidates: 26,
+    createdAt: 'Feb 28, 2026',
     status: 'Archived',
   },
 ];
@@ -175,7 +122,7 @@ function PipelineCard({ pipeline }: { pipeline: Pipeline }) {
         overflow: 'hidden',
         position: 'relative',
         cursor: 'pointer',
-        transition: 'box-shadow 0.18s, border-color 0.18s',
+        transition: 'border-color 0.12s',
         boxShadow: hovered ? '0 6px 20px rgba(15,118,110,0.10)' : '0 1px 3px rgba(15,30,60,0.06)',
         borderColor: hovered ? '#99f6e4' : '#e2e8f0',
       }}
@@ -324,13 +271,13 @@ export default function PipelinesPage() {
   const [activeTab, setActiveTab] = useState<TabKey>('all');
 
   const counts = useMemo(() => {
-    const c: Record<string, number> = { all: MOCK_PIPELINES.length };
-    for (const p of MOCK_PIPELINES) c[p.status] = (c[p.status] ?? 0) + 1;
+    const c: Record<string, number> = { all: INITIAL_PIPELINES.length };
+    for (const p of INITIAL_PIPELINES) c[p.status] = (c[p.status] ?? 0) + 1;
     return c;
   }, []);
 
   const filtered = useMemo(() => {
-    let rows = MOCK_PIPELINES;
+    let rows = INITIAL_PIPELINES;
     if (activeTab !== 'all') rows = rows.filter(p => p.status === activeTab);
     if (search.trim()) {
       const q = search.toLowerCase();
@@ -424,7 +371,7 @@ export default function PipelinesPage() {
                 color: isActive ? '#0f766e' : '#374151',
                 fontWeight: isActive ? 700 : 500,
                 fontSize: 13, fontFamily: 'inherit', cursor: 'pointer',
-                transition: 'all 0.15s',
+                transition: 'border-color 0.15s, background 0.15s, color 0.15s',
               }}
             >
               {tab.label}

@@ -469,7 +469,7 @@ function PipelineProgressTab({ c }: { c: CandidateDetail }) {
 
       {/* Progress bar */}
       <div style={{ height: 5, borderRadius: 3, background: '#e2e8f0', overflow: 'hidden', marginBottom: 18 }}>
-        <div style={{ height: '100%', width: `${progress}%`, background: '#0f766e', borderRadius: 3, transition: 'width 0.3s' }} />
+        <div style={{ height: '100%', width: `${progress}%`, background: '#0f766e', borderRadius: 3, transition: 'width 0.15s' }} />
       </div>
 
       {/* Stage rows */}

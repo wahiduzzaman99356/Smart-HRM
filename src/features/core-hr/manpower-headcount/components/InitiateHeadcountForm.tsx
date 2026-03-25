@@ -498,8 +498,9 @@ export function InitiateHeadcountForm({
         closeIcon={<CloseOutlined />}
       >
         {viewingFile && (() => {
-          const origin = viewingFile.originFileObj as File | undefined;
-          const url = origin ? URL.createObjectURL(origin) : undefined;
+          const origin = viewingFile.originFileObj;
+          const safeFile = origin instanceof File ? origin : undefined;
+          const url = safeFile ? URL.createObjectURL(safeFile) : undefined;
           const isImage = viewingFile.type?.startsWith('image/');
           const isPdf   = viewingFile.type === 'application/pdf';
           if (!url) return <div style={{ textAlign: 'center', color: '#9ca3af', padding: '40px 0' }}>Preview not available.</div>;

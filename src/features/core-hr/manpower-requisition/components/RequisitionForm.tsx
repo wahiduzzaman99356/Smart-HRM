@@ -967,8 +967,9 @@ export function RequisitionForm({
         closeIcon={<CloseOutlined />}
       >
         {viewingFile && (() => {
-          const origin = viewingFile.originFileObj as File | undefined;
-          const url = origin ? URL.createObjectURL(origin) : undefined;
+          const origin = viewingFile.originFileObj;
+          const safeFile = origin instanceof File ? origin : undefined;
+          const url = safeFile ? URL.createObjectURL(safeFile) : undefined;
           const isImage = viewingFile.type?.startsWith('image/');
           const isPdf   = viewingFile.type === 'application/pdf';
 

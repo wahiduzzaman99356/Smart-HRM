@@ -170,6 +170,7 @@ export const NAV_MODULES: NavModule[] = [
       { key: '/ess/outstation',         icon: <CompassOutlined />,           label: 'Out Station' },
       { key: '/ess/my-shift',           icon: <ScheduleOutlined />,          label: 'My Shift' },
       { key: '/ess/demand',             icon: <InboxOutlined />,             label: 'Demand' },
+      { key: '/ess/my-cases',           icon: <ReconciliationOutlined />,    label: 'My Complaints' },
     ],
   },
 

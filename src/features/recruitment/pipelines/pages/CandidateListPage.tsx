@@ -40,79 +40,66 @@ interface Candidate {
   hasCV:         boolean;
 }
 
-// ─── Mock data ────────────────────────────────────────────────────────────────
-const MOCK_CANDIDATES: Candidate[] = [
+const INITIAL_CANDIDATES: Candidate[] = [
   {
-    id: '1', name: 'Sarah Jenkins',  initials: 'SJ', avatarColor: '#7c3aed',
-    company: 'ex-Spotify', degree: 'B.Des',
-    matchScore: 95, matchedSkills: ['Figma', 'SaaS'], missingSkills: [],
-    currentStage: 'Initial Screening', experience: 6, appliedAgo: '5d ago',  hasCV: true,
+    id: '1',
+    name: 'Sarah Jenkins',
+    initials: 'SJ',
+    avatarColor: '#7c3aed',
+    company: 'ex-Spotify',
+    degree: 'B.Des',
+    matchScore: 95,
+    matchedSkills: ['Figma', 'React'],
+    missingSkills: [],
+    currentStage: 'Initial Screening',
+    experience: 6,
+    appliedAgo: '2d ago',
+    hasCV: true,
   },
   {
-    id: '2', name: 'Emily Watson',   initials: 'EW', avatarColor: '#0284c7',
-    company: 'Agency', degree: 'B.Des',
-    matchScore: 91, matchedSkills: ['React', 'TypeScript'], missingSkills: [],
-    currentStage: 'Culture Fit',      experience: 4, appliedAgo: '8d ago',  hasCV: true,
+    id: '2',
+    name: 'Aisha Rahman',
+    initials: 'AR',
+    avatarColor: '#0891b2',
+    company: 'TechCorp',
+    degree: 'M.Sc',
+    matchScore: 91,
+    matchedSkills: ['TypeScript', 'Node.js'],
+    missingSkills: ['AWS'],
+    currentStage: 'Culture Fit',
+    experience: 5,
+    appliedAgo: '4d ago',
+    hasCV: true,
   },
   {
-    id: '3', name: 'Priya Sharma',   initials: 'PS', avatarColor: '#0f766e',
-    company: 'Infosys', degree: 'M.Tech',
-    matchScore: 88, matchedSkills: ['Java', 'AWS'], missingSkills: ['React'],
-    currentStage: 'Culture Fit',      experience: 5, appliedAgo: '7d ago',  hasCV: true,
+    id: '3',
+    name: 'James Carter',
+    initials: 'JC',
+    avatarColor: '#4f46e5',
+    company: 'StartupX',
+    degree: 'B.Sc',
+    matchScore: 76,
+    matchedSkills: ['Python', 'SQL'],
+    missingSkills: ['React'],
+    currentStage: 'Code Assessment',
+    experience: 3,
+    appliedAgo: '6d ago',
+    hasCV: false,
   },
   {
-    id: '4', name: 'Marcus Johnson', initials: 'MJ', avatarColor: '#334155',
-    company: 'AWS', degree: 'B.Sc',
-    matchScore: 80, matchedSkills: ['Kubernetes', 'Docker'], missingSkills: ['Frontend'],
-    currentStage: 'Culture Fit',      experience: 7, appliedAgo: '17d ago', hasCV: false,
-  },
-  {
-    id: '5', name: 'Michael Chen',   initials: 'MC', avatarColor: '#059669',
-    company: 'Freelance', degree: 'M.Sc',
-    matchScore: 72, matchedSkills: ['UX Research'], missingSkills: ['Leadership'],
-    currentStage: 'Code Assessment',  experience: 3, appliedAgo: '4d ago',  hasCV: true,
-  },
-  {
-    id: '6', name: 'David Ross',      initials: 'DR', avatarColor: '#b45309',
-    company: 'Graphic Designer', degree: 'B.A.',
-    matchScore: 45, matchedSkills: [], missingSkills: ['UX Strategy'],
-    currentStage: 'Technical Interview', experience: 2, appliedAgo: '6d ago',  hasCV: true,
-  },
-  {
-    id: '7', name: 'Aisha Rahman',    initials: 'AR', avatarColor: '#0891b2',
-    company: 'TechCorp', degree: 'M.Sc',
-    matchScore: 93, matchedSkills: ['React', 'AWS', 'Node.js'], missingSkills: [],
-    currentStage: 'Initial Screening', experience: 5, appliedAgo: '2d ago',  hasCV: true,
-  },
-  {
-    id: '8', name: 'James Carter',    initials: 'JC', avatarColor: '#4f46e5',
-    company: 'StartupX', degree: 'B.Sc',
-    matchScore: 76, matchedSkills: ['Python', 'SQL'], missingSkills: ['React'],
-    currentStage: 'Code Assessment',   experience: 3, appliedAgo: '10d ago', hasCV: false,
-  },
-  {
-    id: '9', name: 'Nadia Hossain',   initials: 'NH', avatarColor: '#be185d',
-    company: 'DataLab', degree: 'PhD',
-    matchScore: 89, matchedSkills: ['ML', 'Python', 'TensorFlow'], missingSkills: [],
-    currentStage: 'Culture Fit',       experience: 8, appliedAgo: '3d ago',  hasCV: true,
-  },
-  {
-    id: '10', name: 'Kevin Park',     initials: 'KP', avatarColor: '#0f766e',
-    company: 'NovaSoft', degree: 'B.Eng',
-    matchScore: 63, matchedSkills: ['Docker', 'Linux'], missingSkills: ['Kubernetes', 'AWS'],
-    currentStage: 'Initial Screening', experience: 2, appliedAgo: '1d ago',  hasCV: true,
-  },
-  {
-    id: '11', name: 'Sofia Lopes',    initials: 'SL', avatarColor: '#9333ea',
-    company: 'CreativeHub', degree: 'B.Des',
-    matchScore: 82, matchedSkills: ['Figma', 'CSS', 'React'], missingSkills: ['TypeScript'],
-    currentStage: 'Culture Fit',       experience: 4, appliedAgo: '9d ago',  hasCV: true,
-  },
-  {
-    id: '12', name: 'Omar Faruk',     initials: 'OF', avatarColor: '#c2410c',
-    company: 'CloudBase', degree: 'M.Tech',
-    matchScore: 58, matchedSkills: ['Azure', 'CI/CD'], missingSkills: ['Terraform'],
-    currentStage: 'Technical Interview', experience: 3, appliedAgo: '12d ago', hasCV: false,
+    id: '4',
+    name: 'Nadia Hossain',
+    initials: 'NH',
+    avatarColor: '#be185d',
+    company: 'DataLab',
+    degree: 'PhD',
+    matchScore: 88,
+    matchedSkills: ['ML', 'TensorFlow'],
+    missingSkills: [],
+    currentStage: 'Technical Interview',
+    experience: 8,
+    appliedAgo: '1d ago',
+    hasCV: true,
   },
 ];
 
@@ -216,7 +203,7 @@ export default function CandidateListPage() {
   const [selectedKeys,  setSelectedKeys]  = useState<string[]>([]);
 
   const filtered = useMemo(() => {
-    let rows = MOCK_CANDIDATES;
+    let rows = INITIAL_CANDIDATES;
     if (search) {
       const q = search.toLowerCase();
       rows = rows.filter(c =>
@@ -233,10 +220,12 @@ export default function CandidateListPage() {
   }, [search, stageFilter, sortBy]);
 
   const stats = useMemo(() => ({
-    total:      MOCK_CANDIDATES.length,
-    topMatch:   MOCK_CANDIDATES.filter(c => c.matchScore >= 90).length,
-    inPipeline: MOCK_CANDIDATES.filter(c => c.currentStage !== 'Rejected').length,
-    avgExp:     (MOCK_CANDIDATES.reduce((s, c) => s + c.experience, 0) / MOCK_CANDIDATES.length).toFixed(1),
+    total:      INITIAL_CANDIDATES.length,
+    topMatch:   INITIAL_CANDIDATES.filter(c => c.matchScore >= 90).length,
+    inPipeline: INITIAL_CANDIDATES.filter(c => c.currentStage !== 'Rejected').length,
+    avgExp:     INITIAL_CANDIDATES.length
+      ? (INITIAL_CANDIDATES.reduce((s, c) => s + c.experience, 0) / INITIAL_CANDIDATES.length).toFixed(1)
+      : '0.0',
   }), []);
 
   function handleReset() {
@@ -385,7 +374,7 @@ export default function CandidateListPage() {
               width: 28, height: 28, border: 'none', cursor: 'pointer',
               borderRadius: 7, background: 'transparent',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              color: '#9ca3af', transition: 'all 0.15s',
+              color: '#9ca3af', transition: 'background 0.15s, color 0.15s',
             }}
             onMouseEnter={e => {
               (e.currentTarget as HTMLElement).style.background = '#f1f5f9';
