@@ -38,6 +38,9 @@ const OutstationPage = lazy(
 const LoanManagementPage = lazy(
   () => import('@/features/ess/loan-management/pages/LoanManagementPage'),
 );
+const FocPoliciesPage = lazy(
+  () => import('@/features/ess/foc-policies/pages/FocPoliciesPage'),
+);
 const ProvidentFundPage = lazy(
   () => import('@/features/ess/provident-fund/pages/ProvidentFundPage'),
 );
@@ -131,6 +134,7 @@ function AppShell() {
           <Route path="/ess/demand"                  element={<DemandPage />} />
           <Route path="/ess/outstation"              element={<OutstationPage />} />
           <Route path="/ess/loan-management"         element={<LoanManagementPage />} />
+          <Route path="/ess/foc-policies"            element={<FocPoliciesPage />} />
           <Route path="/ess/pf"                      element={<ProvidentFundPage />} />
           <Route path="/assets/assign-asset"         element={<AssignAssetPage />} />
           <Route path="/core-hr/question-bank"       element={<QuestionBankPage />} />

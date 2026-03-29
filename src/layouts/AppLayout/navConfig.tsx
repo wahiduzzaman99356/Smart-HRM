@@ -164,7 +164,7 @@ export const NAV_MODULES: NavModule[] = [
       { key: '/ess/apply-for-document', icon: <FileProtectOutlined />,       label: 'Apply for Document' },
       { key: '/ess/reach-hr',           icon: <MessageOutlined />,           label: 'Reach HR' },
       { key: '/ess/loan-management',    icon: <BankOutlined />,              label: 'Loan Management' },
-      { key: '/ess/foc',                icon: <GiftOutlined />,              label: 'FOC' },
+      { key: '/ess/foc-policies',       icon: <GiftOutlined />,              label: 'FOC Policies' },
       { key: '/ess/pf',                 icon: <SafetyCertificateOutlined />, label: 'Provident Fund' },
       { key: '/ess/gf',                 icon: <WalletOutlined />,            label: 'GF' },
       { key: '/ess/outstation',         icon: <CompassOutlined />,           label: 'Out Station' },
