@@ -80,6 +80,25 @@ const MyComplaintsPage = lazy(
 const CompliancePage = lazy(
   () => import('@/features/employee-relations/compliance/pages/CompliancePage'),
 );
+// ── Performance Management pages ──────────────────────────────────────────────
+const PerformanceDashboardPage = lazy(
+  () => import('@/features/performance/dashboard/pages/PerformanceDashboardPage'),
+);
+const MainKPIPage = lazy(
+  () => import('@/features/performance/main-kpi/pages/MainKPIPage'),
+);
+const SubKPIPage = lazy(
+  () => import('@/features/performance/sub-kpi/pages/SubKPIPage'),
+);
+const EmployeeKPIPage = lazy(
+  () => import('@/features/performance/employee-kpi/pages/EmployeeKPIPage'),
+);
+const DesignationMatrixPage = lazy(
+  () => import('@/features/performance/designation-matrix/pages/DesignationMatrixPage'),
+);
+const AchievementLevelPage = lazy(
+  () => import('@/features/performance/achievement-level/pages/AchievementLevelPage'),
+);
 
 // ── Global providers ──────────────────────────────────────────────────────────
 const queryClient = new QueryClient({
@@ -146,6 +165,12 @@ function AppShell() {
           <Route path="/employee-relations/disciplinary/conflict-resolution" element={<ConflictResolutionPage />} />
           <Route path="/employee-relations/disciplinary/compliance-tracker" element={<CompliancePage />} />
           <Route path="/ess/my-cases" element={<MyComplaintsPage />} />
+          <Route path="/performance/dashboard"          element={<PerformanceDashboardPage />} />
+          <Route path="/performance/main-kpi"           element={<MainKPIPage />} />
+          <Route path="/performance/sub-kpi"            element={<SubKPIPage />} />
+          <Route path="/performance/employee-kpi"       element={<EmployeeKPIPage />} />
+          <Route path="/performance/designation-matrix" element={<DesignationMatrixPage />} />
+          <Route path="/performance/achievement-level"  element={<AchievementLevelPage />} />
 
           {/* ── Placeholders for every module ── */}
           <Route path="/core-hr/*"             element={<ComingSoon />} />

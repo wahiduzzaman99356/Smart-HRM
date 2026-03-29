@@ -108,7 +108,7 @@ const MOCK_DATA: EmployeeKPI[] = [
     ],
   },
   {
-    key: '8', employeeName: 'Annanab Zaman', employeeId: 'EMP-1008',
+    key: '8', employeeName: 'Anwarul Zaman', employeeId: 'EMP-1008',
     designation: 'Team Lead', department: 'Product',
     kpisAssigned: 7, kpisAchieved: 7, achievementPct: 95, rating: 5, period: '2024',
     details: [
