@@ -86,6 +86,7 @@ import {
   CarOutlined,
   BranchesOutlined,
   DatabaseOutlined,
+  TableOutlined,
 } from '@ant-design/icons';
 
 export interface NavSubItem {
@@ -297,8 +298,12 @@ export const NAV_MODULES: NavModule[] = [
     label: 'Performance Management',
     icon: <RiseOutlined />,
     children: [
-      { key: '/performance/goals-okr', icon: <AimOutlined />,  label: 'Goals & Alignment (OKRs)' },
-      { key: '/performance/kpi',       icon: <FundOutlined />, label: 'KPI' },
+      { key: '/performance/dashboard',          icon: <DashboardOutlined />, label: 'Dashboard' },
+      { key: '/performance/main-kpi-areas',     icon: <FundOutlined />,      label: 'Main KPI Areas' },
+      { key: '/performance/sub-kpi-setup',      icon: <AimOutlined />,       label: 'Sub KPI Setup' },
+      { key: '/performance/employee-kpi',       icon: <UserOutlined />,      label: 'Employee KPI View' },
+      { key: '/performance/designation-matrix', icon: <TableOutlined />,     label: 'Designation Matrix' },
+      { key: '/performance/achievement-level',  icon: <TrophyOutlined />,    label: 'Achievement Level Setup' },
     ],
   },
 
