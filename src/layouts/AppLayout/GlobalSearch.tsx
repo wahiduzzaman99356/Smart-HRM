@@ -10,15 +10,29 @@ import { AutoComplete, Input } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { NAV_MODULES } from './navConfig';
+import type { NavSubItem } from './navConfig';
 
-// ─── Build a flat list of every searchable page once ──────────────────────────
-const ALL_PAGES = NAV_MODULES.flatMap(mod =>
-  mod.children.map(sub => ({
-    route:  sub.key,
-    label:  sub.label,
-    module: mod.label,
-  })),
-);
+interface SearchPage {
+  route: string;
+  label: string;
+  module: string;
+  group: string;
+}
+
+function flattenSubItems(items: NavSubItem[], module: string, groupTrail: string[] = []): SearchPage[] {
+  return items.flatMap(item => {
+    if (item.children) return flattenSubItems(item.children, module, [...groupTrail, item.label]);
+    if (!item.key.startsWith('/')) return [];
+    return [{
+      route: item.key,
+      label: item.label,
+      module,
+      group: groupTrail.join(' / '),
+    }];
+  });
+}
+
+const ALL_PAGES = NAV_MODULES.flatMap(mod => flattenSubItems(mod.children, mod.label));
 
 // ─── Component ────────────────────────────────────────────────────────────────
 export function GlobalSearch() {
@@ -33,7 +47,8 @@ export function GlobalSearch() {
     const matches = ALL_PAGES.filter(
       p =>
         p.label.toLowerCase().includes(q) ||
-        p.module.toLowerCase().includes(q),
+        p.module.toLowerCase().includes(q) ||
+        p.group.toLowerCase().includes(q),
     );
 
     // Group matches by module name
@@ -60,7 +75,12 @@ export function GlobalSearch() {
       options: items.map(item => ({
         value: item.route,
         label: (
-          <span style={{ fontSize: 13, color: '#111827' }}>{item.label}</span>
+          <span style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <span style={{ fontSize: 13, color: '#111827', fontWeight: 600 }}>{item.label}</span>
+            {item.group && (
+              <span style={{ fontSize: 11, color: '#64748b' }}>{item.group}</span>
+            )}
+          </span>
         ),
       })),
     }));
@@ -88,8 +108,8 @@ export function GlobalSearch() {
           </span>
         ) : null
       }
-      popupMatchSelectWidth={340}
-      style={{ width: 300 }}
+        popupMatchSelectWidth={380}
+        style={{ width: 340 }}
       // Close dropdown when user presses Escape
       onKeyDown={e => {
         if (e.key === 'Escape') setQuery('');
