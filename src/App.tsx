@@ -86,6 +86,9 @@ const MainKPIAreasPage = lazy(
 const SubKPISetupPage = lazy(
   () => import('@/features/performance/pages/SubKPISetupPage'),
 );
+const SeparationRequestsPage = lazy(
+  () => import('@/features/offboarding/separation-requests/pages/SeparationRequestsPage'),
+);
 const EmployeeKPIViewPage = lazy(
   () => import('@/features/performance/pages/EmployeeKPIViewPage'),
 );
@@ -173,6 +176,9 @@ function AppShell() {
           <Route path="/performance/employee-kpi-view"  element={<EmployeeKPIViewPage />} />
           <Route path="/performance/designation-matrix" element={<DesignationMatrixPage />} />
           <Route path="/performance/achievement-level"  element={<AchievementLevelPage />} />
+
+          {/* ── Offboarding ─────────────────────────────────────────────── */}
+          <Route path="/offboarding/separation-requests" element={<SeparationRequestsPage />} />
 
           {/* ── Placeholders for every module ── */}
           <Route path="/core-hr/*"             element={<ComingSoon />} />
