@@ -1,7 +1,7 @@
 import { useState, useMemo, useCallback, memo, useRef, useEffect, type ReactNode } from 'react';
 import {
-  Button, Input, Select, DatePicker, Table, Tooltip, Drawer,
-  Upload, Collapse, Modal, Dropdown, Divider,
+  Button, Input, Select, DatePicker, TimePicker, Table, Tooltip, Drawer,
+  Upload, Collapse, Modal, Dropdown, Divider, Switch,
   Row, Col, Space, Steps, Tabs,
 } from 'antd';
 import type { RangePickerProps } from 'antd/es/date-picker';
@@ -21,6 +21,7 @@ import {
   OrderedListOutlined, UnorderedListOutlined,
   AlignLeftOutlined, AlignCenterOutlined, AlignRightOutlined,
   UndoOutlined, RedoOutlined, PrinterOutlined, CheckCircleOutlined,
+  PaperClipOutlined, ArrowLeftOutlined, MailOutlined,
 } from '@ant-design/icons';
 
 type DateRange = RangePickerProps['value'];
@@ -29,8 +30,19 @@ const { RangePicker } = DatePicker;
 const { Panel } = Collapse;
 
 // ── Types ──────────────────────────────────────────────────────────────────────
-type TicketStatus      = 'Pending' | 'Ongoing' | 'Closed';
-type ComplianceStatus  = 'Under Review' | 'Escalated' | 'In Mediation' | 'Action Pending' | 'Resolved';
+type TicketStatus      = 'Ongoing' | 'Closed' | 'Reopen';
+type InvestigationStage =
+  | 'Show Cause'
+  | 'Explanation Review'
+  | 'Committee Formation'
+  | 'Investigation'
+  | 'Verdict'
+  | 'Report'
+  | 'Summary'
+  | 'Hearing'
+  | 'Authority Review'
+  | 'Conclusion'
+  | 'Re-evaluation';
 type SecurityLevel     = 'Low' | 'Medium' | 'High';
 type NatureOfConflict  = 'Policy Related' | 'Tax Related' | 'Interpersonal' | 'Workplace Harassment' | 'Other';
 type ResolutionStrategy = 'Negotiation' | 'Mediation' | 'Arbitration' | 'Litigation' | 'Collaborative';
@@ -59,7 +71,7 @@ interface ComplianceTicket {
   requestDate:           string;
   ticketStatus:          TicketStatus;
   lastResolutionDate?:   string;
-  currentStatus:         ComplianceStatus;
+  currentStage:          InvestigationStage;
   deadline:              string;
   // Section A — employee-submitted
   name:                  string;
@@ -90,8 +102,8 @@ const MOCK_TICKETS: ComplianceTicket[] = [
     reportedBy: { id: 'T881356', name: 'Ashraful Islam' },
     securityLevel: 'Low',
     requestDate: '29-05-2026; 10:25 PM',
-    ticketStatus: 'Pending',
-    currentStatus: 'Under Review',
+    ticketStatus: 'Reopen',
+    currentStage: 'Show Cause',
     deadline: '15-06-2026',
     name: 'Ashraful Islam', employeeId: 'T881356', phoneNumber: '01712345678',
     department: 'Engineering', dateOfIncident: '28-05-2026', timeOfIncident: '14:30',
@@ -122,8 +134,8 @@ const MOCK_TICKETS: ComplianceTicket[] = [
     reportedBy: { id: 'T881357', name: 'Md. Arifur Islam' },
     securityLevel: 'Medium',
     requestDate: '29-05-2026; 10:25 PM',
-    ticketStatus: 'Pending',
-    currentStatus: 'Action Pending',
+    ticketStatus: 'Ongoing',
+    currentStage: 'Explanation Review',
     deadline: '20-06-2026',
     name: 'Md. Arifur Islam', employeeId: 'T881357', phoneNumber: '01812345679',
     department: 'Finance', dateOfIncident: '27-05-2026', timeOfIncident: '16:00',
@@ -144,7 +156,7 @@ const MOCK_TICKETS: ComplianceTicket[] = [
     securityLevel: 'High',
     requestDate: '29-05-2026; 10:25 PM',
     ticketStatus: 'Ongoing',
-    currentStatus: 'In Mediation',
+    currentStage: 'Investigation',
     deadline: '10-06-2026',
     name: 'Ashraful Islam', employeeId: 'T881356', phoneNumber: '01712345678',
     department: 'Engineering', dateOfIncident: '26-05-2026', timeOfIncident: '11:15',
@@ -187,7 +199,7 @@ const MOCK_TICKETS: ComplianceTicket[] = [
     requestDate: '29-05-2026; 10:25 PM',
     ticketStatus: 'Closed',
     lastResolutionDate: '30-05-2026; 10:25 PM',
-    currentStatus: 'Resolved',
+    currentStage: 'Conclusion',
     deadline: '30-05-2026',
     name: 'Md. Arifur Islam', employeeId: 'T881357', phoneNumber: '01812345679',
     department: 'Operations', dateOfIncident: '25-05-2026', timeOfIncident: '09:00',
@@ -211,17 +223,23 @@ const MOCK_TICKETS: ComplianceTicket[] = [
 
 // ── Colour maps ────────────────────────────────────────────────────────────────
 const STATUS_CFG: Record<TicketStatus, { bg: string; text: string; dot: string }> = {
-  Pending: { bg: '#fffbeb', text: '#d97706', dot: '#f59e0b' },
   Ongoing: { bg: '#eff6ff', text: '#2563eb', dot: '#3b82f6' },
   Closed:  { bg: '#f3f4f6', text: '#6b7280', dot: '#9ca3af' },
+  Reopen:  { bg: '#fff7ed', text: '#c2410c', dot: '#f97316' },
 };
 
-const COMPLIANCE_STATUS_CFG: Record<ComplianceStatus, { bg: string; text: string; dot: string }> = {
-  'Under Review':   { bg: '#fffbeb', text: '#d97706',  dot: '#f59e0b' },
-  'Escalated':      { bg: '#fef2f2', text: '#dc2626',  dot: '#ef4444' },
-  'In Mediation':   { bg: '#eff6ff', text: '#2563eb',  dot: '#3b82f6' },
-  'Action Pending': { bg: '#fff7ed', text: '#ea580c',  dot: '#f97316' },
-  'Resolved':       { bg: '#f0fdf4', text: '#15803d',  dot: '#22c55e' },
+const STAGE_CFG: Record<InvestigationStage, { bg: string; text: string; dot: string }> = {
+  'Show Cause':         { bg: '#fff7ed', text: '#c2410c', dot: '#f97316' },
+  'Explanation Review': { bg: '#eff6ff', text: '#1d4ed8', dot: '#3b82f6' },
+  'Committee Formation': { bg: '#eef2ff', text: '#4338ca', dot: '#6366f1' },
+  'Investigation':      { bg: '#ecfeff', text: '#0e7490', dot: '#06b6d4' },
+  'Verdict':            { bg: '#f5f3ff', text: '#6d28d9', dot: '#8b5cf6' },
+  'Report':             { bg: '#f8fafc', text: '#475569', dot: '#64748b' },
+  'Summary':            { bg: '#fefce8', text: '#a16207', dot: '#eab308' },
+  'Hearing':            { bg: '#EEF2FF', text: '#2952C8', dot: '#3B6EEA' },
+  'Authority Review':   { bg: '#fef2f2', text: '#b91c1c', dot: '#ef4444' },
+  'Conclusion':         { bg: '#f0fdf4', text: '#166534', dot: '#22c55e' },
+  'Re-evaluation':      { bg: '#fff7ed', text: '#9a3412', dot: '#fb923c' },
 };
 
 const SEC_CFG: Record<SecurityLevel, { bg: string; text: string; border: string }> = {
@@ -253,8 +271,8 @@ function StatusBadge({ status }: { status: TicketStatus }) {
   );
 }
 
-function ComplianceStatusBadge({ status }: { status: ComplianceStatus }) {
-  const c = COMPLIANCE_STATUS_CFG[status];
+function StageBadge({ stage }: { stage: InvestigationStage }) {
+  const c = STAGE_CFG[stage];
   return (
     <span style={{
       display: 'inline-flex', alignItems: 'center', gap: 5,
@@ -262,7 +280,7 @@ function ComplianceStatusBadge({ status }: { status: ComplianceStatus }) {
       background: c.bg, color: c.text, fontWeight: 700, fontSize: 11, letterSpacing: '0.04em',
     }}>
       <span style={{ width: 6, height: 6, borderRadius: '50%', background: c.dot, flexShrink: 0 }} />
-      {status}
+      {stage}
     </span>
   );
 }
@@ -394,8 +412,8 @@ function buildTimeline(ticket: ComplianceTicket): TLEvent[] {
     },
     {
       id: 't3', type: 'status', timestamp: ticket.requestDate + ' 10:15',
-      title: 'Status: Under Review', actor: 'HR System', actorRole: 'System',
-      description: 'Ticket moved to Under Review. Assigned to HR POC for initial assessment.',
+      title: 'Status: Ongoing', actor: 'HR System', actorRole: 'System',
+      description: 'Ticket moved to ongoing and assigned to HR POC for initial assessment.',
     },
     ...(ticket.responses.length > 0 ? ticket.responses.map((r, i) => ({
       id: `r${i}`, type: 'action' as TLEventType, timestamp: r.date + ' 11:00',
@@ -442,8 +460,8 @@ function buildTimeline(ticket: ComplianceTicket): TLEvent[] {
     },
     {
       id: 't9', type: 'status', timestamp: ticket.deadline + ' 09:00',
-      title: 'Status: Escalated', actor: 'HR System', actorRole: 'System',
-      description: 'Case escalated to full investigation. Committee hearings scheduled.',
+      title: 'Status: Reopen', actor: 'HR System', actorRole: 'System',
+      description: 'Case reopened for full investigation. Committee hearings scheduled.',
     },
     {
       id: 't10', type: 'stage', timestamp: ticket.deadline + ' 10:00',
@@ -838,6 +856,7 @@ const INVESTIGATE_STAGES = [
   { key: 'verdict',       label: 'Verdict',             shortLabel: 'Verdict' },
   { key: 'report',        label: 'Report',              shortLabel: 'Report' },
   { key: 'summary',       label: 'Summary',             shortLabel: 'Summary' },
+  { key: 'hearing',       label: 'Hearing',             shortLabel: 'Hearing' },
   { key: 'authority',     label: 'Authority Review',    shortLabel: 'Authority Review' },
   { key: 'conclusion',    label: 'Conclusion',          shortLabel: 'Conclusion' },
   { key: 're-evaluation', label: 'Re-evaluation',       shortLabel: 'Re-evaluation' },
@@ -924,60 +943,381 @@ function ShowCausePanel({ ticket }: { ticket: ComplianceTicket }) {
 }
 
 function ExplanationPanel({ ticket }: { ticket: ComplianceTicket }) {
-  const sentLetter = {
-    sentDate: 'Feb 2, 2026',
-    deadline: 'Feb 9, 2026',
-    letterContent: `Dear ${ticket.name},\n\nThis is to inform you that a formal complaint (${ticket.ticketId}) has been filed against you regarding "${ticket.conflictDescription}".\n\nYou are hereby directed to submit your written explanation within 7 days of receiving this letter.\n\nRegards,\nHR Department`,
+  type RoundStatus = 'awaiting' | 'received' | 'rejected' | 'satisfactory';
+  interface ExplanationRound {
+    id: number;
+    sentDate: string;
+    deadline: string;
+    letterContent: string;
+    rejectionReason?: string;
+    submission?: { submittedDate: string; content: string };
+    status: RoundStatus;
+  }
+
+  const mkLetter = (empName: string, roundNum: number) =>
+    `Dear ${empName},\n\nThis is to inform you that a formal complaint (${ticket.ticketId}) has been filed against you regarding "${ticket.conflictDescription}".\n\n${roundNum > 1 ? `Your previous explanation (Round ${roundNum - 1}) was found insufficient. You are hereby requested to provide a more detailed written explanation addressing the specific points raised.\n\n` : ''}You are directed to submit your written explanation within 7 days of receiving this letter. Your response should address the allegations and provide any supporting evidence.\n\nFailure to respond within the deadline will result in the matter being decided based on available information.\n\nRegards,\nHR Department`;
+
+  const ROUND_STATUS_CFG: Record<RoundStatus, { label: string; bg: string; color: string; border: string }> = {
+    awaiting:     { label: 'Awaiting',     bg: '#fffbeb', color: '#d97706', border: '#fde68a' },
+    received:     { label: 'Received',     bg: '#dbeafe', color: '#1d4ed8', border: '#bfdbfe' },
+    rejected:     { label: 'Rejected',     bg: '#fff7ed', color: '#c2410c', border: '#fed7aa' },
+    satisfactory: { label: 'Satisfactory', bg: '#dcfce7', color: '#15803d', border: '#bbf7d0' },
+  };
+
+  /* ── initial mock data — one entry per employee ── */
+  const buildInitialRounds = (): Record<string, ExplanationRound[]> => {
+    const map: Record<string, ExplanationRound[]> = {};
+    ticket.employeesInvolved.forEach((e, idx) => {
+      if (idx === 0) {
+        map[e.id] = [
+          {
+            id: 1, sentDate: 'Feb 2, 2026', deadline: 'Feb 9, 2026',
+            letterContent: mkLetter(e.name, 1),
+            rejectionReason: 'The explanation lacks specific details about the incident timeline and the employee\'s direct role in the miscommunication.',
+            submission: {
+              submittedDate: 'Feb 7, 2026',
+              content: `I acknowledge the complaint filed regarding ${ticket.ticketId}. The situation arose due to unclear project scope and conflicting directives from multiple managers.\n\nI take responsibility for not escalating the ambiguity sooner and acknowledge that this contributed to the issue.`,
+            },
+            status: 'rejected',
+          },
+          {
+            id: 2, sentDate: 'Feb 10, 2026', deadline: 'Feb 17, 2026',
+            letterContent: mkLetter(e.name, 2),
+            submission: {
+              submittedDate: 'Feb 14, 2026',
+              content: `Following the review of my initial response, I would like to provide additional context.\n\nOn the specific day in question, I received two contradictory instructions — one from my direct supervisor and another from the project lead. Rather than escalating this immediately, I attempted to resolve it independently, which led to the miscommunication reported.\n\nI have since implemented a practice of documenting all directives in writing and confirming before acting. I am fully committed to compliance and request a formal meeting to resolve this matter.`,
+            },
+            status: 'received',
+          },
+        ];
+      } else if (idx === 1) {
+        map[e.id] = [
+          {
+            id: 1, sentDate: 'Feb 2, 2026', deadline: 'Feb 9, 2026',
+            letterContent: mkLetter(e.name, 1),
+            submission: {
+              submittedDate: 'Feb 6, 2026',
+              content: `I fully acknowledge my role in the incident and take complete responsibility for the miscommunication. I understand the gravity of the complaint and have already taken corrective steps within my team.\n\nI hereby commit to stricter adherence to all communication protocols going forward and welcome any structured resolution process initiated by HR.`,
+            },
+            status: 'satisfactory',
+          },
+        ];
+      } else {
+        map[e.id] = [
+          {
+            id: 1, sentDate: 'Feb 2, 2026', deadline: 'Feb 9, 2026',
+            letterContent: mkLetter(e.name, 1),
+            status: 'awaiting',
+          },
+        ];
+      }
+    });
+    return map;
+  };
+
+  const [activeEmpId,   setActiveEmpId]   = useState(ticket.employeesInvolved[0]?.id ?? '');
+  const [empRounds,     setEmpRounds]     = useState<Record<string, ExplanationRound[]>>(buildInitialRounds);
+  const [openLetters,   setOpenLetters]   = useState<Record<string, Set<number>>>({});
+  const [resendEmpId,   setResendEmpId]   = useState<string | null>(null);
+  const [resendContent, setResendContent] = useState('');
+  const [resendDeadline,setResendDeadline]= useState<Parameters<typeof DatePicker>[0]['value']>(null);
+  const [resendReason,  setResendReason]  = useState('');
+
+  const activeRounds   = empRounds[activeEmpId] ?? [];
+  const latestRound    = activeRounds[activeRounds.length - 1];
+  const activeEmp      = ticket.employeesInvolved.find(e => e.id === activeEmpId);
+
+  const toggleLetter = (empId: string, roundId: number) =>
+    setOpenLetters(prev => {
+      const s = new Set(prev[empId] ?? []);
+      s.has(roundId) ? s.delete(roundId) : s.add(roundId);
+      return { ...prev, [empId]: s };
+    });
+
+  const isLetterOpen = (empId: string, roundId: number) => openLetters[empId]?.has(roundId) ?? false;
+
+  const openResendForm = () => {
+    setResendContent(mkLetter(activeEmp?.name ?? '', activeRounds.length + 1));
+    setResendReason('');
+    setResendDeadline(null);
+    setResendEmpId(activeEmpId);
+  };
+
+  const handleSendResend = () => {
+    const newRound: ExplanationRound = {
+      id: activeRounds.length + 1,
+      sentDate: 'Today',
+      deadline: resendDeadline ? (resendDeadline as any).format('MMM D, YYYY') : '—',
+      letterContent: resendContent,
+      status: 'awaiting',
+    };
+    setEmpRounds(prev => ({
+      ...prev,
+      [activeEmpId]: [
+        ...prev[activeEmpId].map(r =>
+          r.id === latestRound.id
+            ? { ...r, status: 'rejected' as RoundStatus, rejectionReason: resendReason || 'Explanation was insufficient.' }
+            : r,
+        ),
+        newRound,
+      ],
+    }));
+    setResendEmpId(null);
+  };
+
+  const handleMarkSatisfactory = () =>
+    setEmpRounds(prev => ({
+      ...prev,
+      [activeEmpId]: prev[activeEmpId].map(r =>
+        r.id === latestRound.id ? { ...r, status: 'satisfactory' as RoundStatus } : r,
+      ),
+    }));
+
+  const empOverallStatus = (empId: string): RoundStatus => {
+    const rounds = empRounds[empId] ?? [];
+    return rounds[rounds.length - 1]?.status ?? 'awaiting';
   };
 
   return (
-    <div>
-      {/* Show Cause Letter Sent — read-only */}
-      <div style={{ border: '1px solid #e5e7eb', borderRadius: 10, padding: 20, marginBottom: 20 }}>
-        <div style={{ fontWeight: 700, fontSize: 14, color: '#111827', marginBottom: 14 }}>Show Cause Letter Sent</div>
-        <div style={{
-          background: '#f8fafc', border: '1px solid #e5e7eb', borderRadius: 8,
-          padding: '14px 16px', fontSize: 13, color: '#374151', lineHeight: 1.7,
-          whiteSpace: 'pre-line', marginBottom: 16,
-        }}>
-          {sentLetter.letterContent}
-        </div>
-        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
-          <Button danger>Form an Investigation Committee</Button>
-          <Button type="primary">Mark as Satisfactory</Button>
-        </div>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+
+      {/* ── Employee selector tabs ── */}
+      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+        {ticket.employeesInvolved.map(e => {
+          const status   = empOverallStatus(e.id);
+          const cfg      = ROUND_STATUS_CFG[status];
+          const isActive = e.id === activeEmpId;
+          const rounds   = empRounds[e.id] ?? [];
+          const initials = e.name.split(' ').map(p => p[0]).join('').slice(0, 2).toUpperCase();
+          return (
+            <button
+              key={e.id}
+              onClick={() => { setActiveEmpId(e.id); setResendEmpId(null); }}
+              style={{
+                display: 'inline-flex', alignItems: 'center', gap: 10,
+                padding: '8px 14px', borderRadius: 10, cursor: 'pointer',
+                border: isActive ? '1.5px solid #3B6EEA' : '1.5px solid #e5e7eb',
+                background: isActive ? '#EEF2FF' : '#fff',
+                fontFamily: 'inherit',
+                transition: 'all 0.15s',
+              }}
+            >
+              <div style={{
+                width: 28, height: 28, borderRadius: '50%', flexShrink: 0,
+                background: isActive ? '#3B6EEA' : '#f3f4f6',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: 10, fontWeight: 800, color: isActive ? '#fff' : '#6b7280',
+              }}>
+                {initials}
+              </div>
+              <div style={{ textAlign: 'left' }}>
+                <div style={{ fontSize: 12, fontWeight: 700, color: isActive ? '#2952C8' : '#374151', lineHeight: 1.2 }}>{e.name}</div>
+                <div style={{ fontSize: 10, color: '#9ca3af' }}>{e.id}</div>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 2 }}>
+                <span style={{ fontSize: 10, fontWeight: 700, color: cfg.color, background: cfg.bg, border: `1px solid ${cfg.border}`, borderRadius: 20, padding: '0 7px', whiteSpace: 'nowrap' }}>
+                  {cfg.label}
+                </span>
+                <span style={{ fontSize: 10, color: '#9ca3af' }}>{rounds.length} round{rounds.length !== 1 ? 's' : ''}</span>
+              </div>
+            </button>
+          );
+        })}
       </div>
 
-      {/* Employee Explanation */}
-      <div>
-        <div style={{ fontWeight: 700, fontSize: 13, color: '#111827', marginBottom: 10 }}>Employee Explanation</div>
-        <div style={{
-          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          padding: '12px 16px', border: '1px solid #e5e7eb', borderRadius: 8,
-          background: '#f9fafb',
-        }}>
-          <div>
-            <div style={{ marginBottom: 4 }}>
-              <span style={{ background: '#15803d', color: '#fff', fontSize: 11, fontWeight: 700, padding: '2px 8px', borderRadius: 4 }}>
-                Letter Sent
+      {/* ── Rounds for selected employee ── */}
+      {activeRounds.map((round, idx) => {
+        const isLast   = idx === activeRounds.length - 1;
+        const cfg      = ROUND_STATUS_CFG[round.status];
+        const letOpen  = isLetterOpen(activeEmpId, round.id);
+
+        return (
+          <div key={round.id}>
+            {/* Round heading */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+              <div style={{ width: 22, height: 22, borderRadius: '50%', background: '#3B6EEA', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 800, color: '#fff', flexShrink: 0 }}>
+                {round.id}
+              </div>
+              <span style={{ fontSize: 12, fontWeight: 700, color: '#374151' }}>Round {round.id}</span>
+              <span style={{ fontSize: 11, color: '#9ca3af' }}>Sent {round.sentDate} · Deadline {round.deadline}</span>
+              <span style={{ fontSize: 10, fontWeight: 700, color: cfg.color, background: cfg.bg, border: `1px solid ${cfg.border}`, borderRadius: 20, padding: '1px 8px', marginLeft: 'auto' }}>
+                {cfg.label}
               </span>
             </div>
-            <div style={{ fontSize: 12, color: '#6b7280' }}>Sent on {sentLetter.sentDate}</div>
-            <div style={{ fontSize: 12, color: '#6b7280' }}>Deadline: {sentLetter.deadline}</div>
-          </div>
-          <div style={{ textAlign: 'center', color: '#6b7280' }}>
-            <div style={{ fontSize: 13, display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
-              <ClockCircleOutlined style={{ fontSize: 16 }} />
-              <span>Awaiting employee explanation</span>
+
+            {/* Indented content */}
+            <div style={{ marginLeft: 11, paddingLeft: 20, borderLeft: `2px solid ${isLast ? '#e5e7eb' : '#3B6EEA30'}` }}>
+
+              {/* Show Cause Letter — collapsible */}
+              <div style={{ border: '1px solid #e5e7eb', borderRadius: 10, overflow: 'hidden', marginBottom: 10 }}>
+                <div
+                  onClick={() => toggleLetter(activeEmpId, round.id)}
+                  style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '9px 14px', background: '#f8fafc', cursor: 'pointer', borderBottom: letOpen ? '1px solid #e5e7eb' : 'none' }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <FileOutlined style={{ color: '#3B6EEA', fontSize: 13 }} />
+                    <span style={{ fontSize: 12, fontWeight: 600, color: '#374151' }}>Show Cause Letter</span>
+                    <span style={{ fontSize: 11, color: '#9ca3af' }}>{round.sentDate}</span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <Button size="small" icon={<DownloadOutlined />} style={{ fontSize: 10 }} onClick={e => e.stopPropagation()}>PDF</Button>
+                    <span style={{ fontSize: 10, color: '#9ca3af', transform: letOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s', display: 'inline-block' }}>▼</span>
+                  </div>
+                </div>
+                {letOpen && (
+                  <div style={{ padding: '12px 14px' }}>
+                    <div style={{ display: 'flex', gap: 20, marginBottom: 10, flexWrap: 'wrap' }}>
+                      {[
+                        { l: 'To',       v: `${activeEmp?.name} (${activeEmp?.id})` },
+                        { l: 'Sent',     v: round.sentDate },
+                        { l: 'Deadline', v: round.deadline },
+                      ].map(f => (
+                        <div key={f.l} style={{ display: 'flex', gap: 6, alignItems: 'baseline' }}>
+                          <span style={{ fontSize: 10, fontWeight: 700, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.04em' }}>{f.l}</span>
+                          <span style={{ fontSize: 12, color: '#374151' }}>{f.v}</span>
+                        </div>
+                      ))}
+                    </div>
+                    <div style={{ background: '#f8fafc', border: '1px solid #e5e7eb', borderRadius: 8, padding: '11px 13px', fontSize: 12, color: '#374151', lineHeight: 1.75, whiteSpace: 'pre-line' }}>
+                      {round.letterContent}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Rejection reason banner */}
+              {round.rejectionReason && (
+                <div style={{ display: 'flex', gap: 8, background: '#fff7ed', border: '1px solid #fed7aa', borderRadius: 8, padding: '8px 12px', marginBottom: 10 }}>
+                  <ExclamationCircleOutlined style={{ color: '#d97706', fontSize: 13, marginTop: 1, flexShrink: 0 }} />
+                  <div>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: '#c2410c', marginBottom: 2 }}>Explanation Rejected</div>
+                    <div style={{ fontSize: 12, color: '#92400e', lineHeight: 1.5 }}>{round.rejectionReason}</div>
+                  </div>
+                </div>
+              )}
+
+              {/* Submission — received or awaiting */}
+              {round.submission ? (
+                <div style={{ border: `1px solid ${round.status === 'satisfactory' ? '#bbf7d0' : '#e5e7eb'}`, borderRadius: 10, overflow: 'hidden', marginBottom: 10 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '9px 14px', background: round.status === 'satisfactory' ? '#f0fdf4' : '#fafafa', borderBottom: '1px solid #f3f4f6' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <EditOutlined style={{ color: round.status === 'satisfactory' ? '#059669' : '#6b7280', fontSize: 13 }} />
+                      <span style={{ fontSize: 12, fontWeight: 600, color: '#374151' }}>Employee Explanation</span>
+                      <span style={{ fontSize: 11, color: '#9ca3af' }}>Submitted {round.submission.submittedDate}</span>
+                    </div>
+                    {round.status === 'satisfactory' && (
+                      <span style={{ fontSize: 10, fontWeight: 700, color: '#059669', background: '#dcfce7', border: '1px solid #bbf7d0', borderRadius: 20, padding: '1px 8px', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                        <CheckCircleOutlined style={{ fontSize: 10 }} /> Satisfactory
+                      </span>
+                    )}
+                    {round.status === 'rejected' && (
+                      <span style={{ fontSize: 10, fontWeight: 700, color: '#c2410c', background: '#fff7ed', border: '1px solid #fed7aa', borderRadius: 20, padding: '1px 8px' }}>
+                        Rejected
+                      </span>
+                    )}
+                  </div>
+                  <div style={{ padding: '10px 14px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
+                      <div style={{ width: 30, height: 30, borderRadius: '50%', background: '#EEF2FF', border: '1.5px solid #c7d7fa', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 800, color: '#3B6EEA', flexShrink: 0 }}>
+                        {activeEmp?.name.charAt(0)}
+                      </div>
+                      <div>
+                        <div style={{ fontSize: 12, fontWeight: 600, color: '#111827' }}>{activeEmp?.name}</div>
+                        <div style={{ fontSize: 10, color: '#9ca3af' }}>{activeEmp?.id}</div>
+                      </div>
+                    </div>
+                    <div style={{ background: '#f8fafc', border: '1px solid #f3f4f6', borderRadius: 8, padding: '11px 13px', fontSize: 12, color: '#374151', lineHeight: 1.75, whiteSpace: 'pre-line' }}>
+                      {round.submission.content}
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', border: '1px dashed #e5e7eb', borderRadius: 10, marginBottom: 10, background: '#fafafa' }}>
+                  <ClockCircleOutlined style={{ color: '#d97706', fontSize: 16, flexShrink: 0 }} />
+                  <div>
+                    <div style={{ fontSize: 12, fontWeight: 600, color: '#6b7280' }}>Awaiting employee explanation</div>
+                    <div style={{ fontSize: 11, color: '#f59e0b', display: 'flex', alignItems: 'center', gap: 4, marginTop: 2 }}>
+                      <WarningOutlined style={{ fontSize: 10 }} /> Overdue · Deadline was {round.deadline}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Actions — only on latest round if actionable */}
+              {isLast && (round.status === 'received' || round.status === 'awaiting') && (
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: 2, marginBottom: 10 }}>
+                  <Button
+                    icon={<SendOutlined />}
+                    onClick={openResendForm}
+                    style={{ borderColor: resendEmpId === activeEmpId ? '#f97316' : '#fed7aa', color: '#d97706', background: resendEmpId === activeEmpId ? '#fff7ed' : '#fff', fontWeight: 600 }}
+                  >
+                    Reject &amp; Resend
+                  </Button>
+                  {round.status === 'received' && (
+                    <Space>
+                      <Button onClick={() => Modal.confirm({
+                        title: 'Form Investigation Committee',
+                        icon: <ExclamationCircleOutlined style={{ color: '#d97706' }} />,
+                        content: 'Escalate this case to an investigation committee?',
+                        okText: 'Proceed', cancelText: 'Cancel',
+                      })}>
+                        Form Investigation Committee
+                      </Button>
+                      <Button type="primary" onClick={() => Modal.confirm({
+                        title: 'Mark as Satisfactory',
+                        icon: <CheckCircleOutlined style={{ color: '#059669' }} />,
+                        content: `Mark ${activeEmp?.name}'s explanation as satisfactory?`,
+                        okText: 'Confirm',
+                        okButtonProps: { style: { background: '#059669', borderColor: '#059669' } },
+                        cancelText: 'Cancel',
+                        onOk: handleMarkSatisfactory,
+                      })}>
+                        Mark as Satisfactory
+                      </Button>
+                    </Space>
+                  )}
+                </div>
+              )}
             </div>
-            <div style={{ fontSize: 12, color: '#d97706', display: 'flex', alignItems: 'center', gap: 4 }}>
-              <WarningOutlined />
-              <span>Due: Overdue by 43 days</span>
+
+            {/* Connector to next round */}
+            {!isLast && <div style={{ marginLeft: 20, height: 14, width: 2, background: '#3B6EEA30', marginBottom: 2 }} />}
+          </div>
+        );
+      })}
+
+      {/* ── Reject & Resend Form ── */}
+      {resendEmpId === activeEmpId && (
+        <div style={{ border: '1.5px solid #fed7aa', borderRadius: 10, overflow: 'hidden', background: '#fffbf7' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '11px 16px', background: '#fff7ed', borderBottom: '1px solid #fed7aa' }}>
+            <div style={{ width: 26, height: 26, borderRadius: 7, background: '#fed7aa', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#c2410c', fontSize: 12 }}>
+              <SendOutlined />
+            </div>
+            <span style={{ fontWeight: 700, fontSize: 13, color: '#c2410c' }}>Reject &amp; Resend — Round {activeRounds.length + 1}</span>
+            <span style={{ fontSize: 11, color: '#9ca3af', marginLeft: 4 }}>Sending to {activeEmp?.name}</span>
+          </div>
+          <div style={{ padding: '14px 16px', display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <div>
+              <div style={{ fontSize: 11, fontWeight: 600, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 6 }}>Reason for Rejection</div>
+              <Input.TextArea rows={2} placeholder="Briefly explain why the explanation is insufficient…" value={resendReason} onChange={e => setResendReason(e.target.value)} style={{ fontSize: 13, resize: 'none' }} />
+            </div>
+            <div>
+              <div style={{ fontSize: 11, fontWeight: 600, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 6 }}>Revised Show Cause Letter</div>
+              <Input.TextArea rows={6} value={resendContent} onChange={e => setResendContent(e.target.value)} style={{ fontSize: 13, resize: 'vertical' }} />
+            </div>
+            <div>
+              <div style={{ fontSize: 11, fontWeight: 600, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 6 }}>New Response Deadline</div>
+              <DatePicker value={resendDeadline} onChange={setResendDeadline} style={{ width: 200 }} placeholder="Select deadline" />
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, paddingTop: 4 }}>
+              <Button onClick={() => setResendEmpId(null)}>Cancel</Button>
+              <Button type="primary" icon={<SendOutlined />} onClick={handleSendResend} style={{ background: '#d97706', borderColor: '#d97706' }}>
+                Send to Employee
+              </Button>
             </div>
           </div>
-          <Button type="primary" size="small">View</Button>
         </div>
-      </div>
+      )}
     </div>
   );
 }
@@ -1468,124 +1808,349 @@ function InvestigationTasksPanel() {
 }
 
 // ── Q&A Sessions Panel ─────────────────────────────────────────────────────────
-interface QARecord {
-  id: string; questionBy: string; questionTo: string;
-  question: string; answer: string;
-  createdAt: string; updatedAt: string;
+interface QALine {
+  id: string;
+  questionText: string;
+  requiresAttachment: boolean;
+}
+
+interface QAAnswer {
+  questionId: string;
+  answerText: string;
+  attachments: UploadFile[];
+}
+
+interface QASession {
+  id: string;
+  sentBy: string;
+  sentTo: string;
+  sentAt: string;
+  questions: QALine[];
+  status: 'pending' | 'answered';
+  answers?: QAAnswer[];
+  answeredAt?: string;
 }
 
 const QA_PERSONS = ['Dr. Anwar Hossain', 'Saima Khatun', 'Rezaul Karim', 'Sumon Das', 'Babul Mia'];
 
+const INIT_QA_SESSIONS: QASession[] = [
+  {
+    id: 'qs-1',
+    sentBy: 'Dr. Anwar Hossain',
+    sentTo: 'Sumon Das',
+    sentAt: '29-05-2026; 10:25 PM',
+    questions: [
+      { id: 'q1a', questionText: 'Did you initiate the physical contact with Babul Mia?', requiresAttachment: false },
+      { id: 'q1b', questionText: 'Can you provide any evidence supporting your account of the incident?', requiresAttachment: true },
+    ],
+    status: 'answered',
+    answers: [
+      { questionId: 'q1a', answerText: 'Yes, but I was provoked repeatedly.', attachments: [] },
+      { questionId: 'q1b', answerText: 'I have attached a screenshot of the conversation.', attachments: [{ uid: '-1', name: 'chat_screenshot.png', status: 'done' } as UploadFile] },
+    ],
+    answeredAt: '30-05-2026; 09:10 AM',
+  },
+  {
+    id: 'qs-2',
+    sentBy: 'Rezaul Karim',
+    sentTo: 'Babul Mia',
+    sentAt: '30-05-2026; 02:00 PM',
+    questions: [
+      { id: 'q2a', questionText: 'Were you present during the incident on 26-05-2026?', requiresAttachment: false },
+      { id: 'q2b', questionText: 'Please submit your written statement with supporting documents.', requiresAttachment: true },
+      { id: 'q2c', questionText: 'Do you have any witnesses who can corroborate your account?', requiresAttachment: false },
+    ],
+    status: 'pending',
+  },
+];
+
+function nowTs() {
+  const d = new Date();
+  return `${String(d.getDate()).padStart(2,'0')}-${String(d.getMonth()+1).padStart(2,'0')}-${d.getFullYear()}; ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')} ${d.getHours()<12?'AM':'PM'}`;
+}
+
+function QAStatusBadge({ status }: { status: 'pending' | 'answered' }) {
+  return (
+    <span style={{
+      fontSize: 10, fontWeight: 700, padding: '2px 7px', borderRadius: 4, letterSpacing: '0.03em',
+      background: status === 'answered' ? '#f0fdf4' : '#fffbeb',
+      color:      status === 'answered' ? '#15803d'  : '#d97706',
+      border:     `1px solid ${status === 'answered' ? '#bbf7d0' : '#fde68a'}`,
+    }}>
+      {status === 'answered' ? 'Answered' : 'Pending'}
+    </span>
+  );
+}
+
 function QASessionsPanel() {
-  const [questionBy, setQuestionBy]   = useState<string | undefined>(undefined);
-  const [questionTo, setQuestionTo]   = useState<string | undefined>(undefined);
-  const [question, setQuestion]       = useState('');
-  const [answer, setAnswer]           = useState('');
-  const [editingId, setEditingId]     = useState<string | null>(null);
+  const [sessions, setSessions] = useState<QASession[]>(INIT_QA_SESSIONS);
+  const [view, setView] = useState<'list' | 'create' | 'detail'>('list');
+  const [viewingSession, setViewingSession] = useState<QASession | null>(null);
 
-  const [records, setRecords] = useState<QARecord[]>([
-    {
-      id: '1',
-      questionBy: 'Dr. Anwar Hossain', questionTo: 'Sumon Das',
-      question: 'Did you initiate the physical contact with Babul Mia?',
-      answer: 'Yes, but I was provoked repeatedly.',
-      createdAt: '29-05-2026; 10:25 PM', updatedAt: '29-05-2026; 10:25 PM',
-    },
-  ]);
+  // Create form state
+  const [sentBy, setSentBy]   = useState<string | undefined>(undefined);
+  const [sentTo, setSentTo]   = useState<string | undefined>(undefined);
+  const [lines, setLines]     = useState<QALine[]>([{ id: 'new-1', questionText: '', requiresAttachment: false }]);
 
-  const handleRecord = () => {
-    if (!question.trim() || !answer.trim()) return;
-    const now = new Date();
-    const ts = `${String(now.getDate()).padStart(2,'0')}-${String(now.getMonth()+1).padStart(2,'0')}-${now.getFullYear()}; ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')} ${now.getHours()<12?'AM':'PM'}`;
-    if (editingId) {
-      setRecords(prev => prev.map(r => r.id === editingId ? { ...r, questionBy: questionBy ?? r.questionBy, questionTo: questionTo ?? r.questionTo, question, answer, updatedAt: ts } : r));
-      setEditingId(null);
-    } else {
-      setRecords(prev => [...prev, { id: String(Date.now()), questionBy: questionBy ?? '—', questionTo: questionTo ?? '—', question, answer, createdAt: ts, updatedAt: ts }]);
-    }
-    setQuestionBy(undefined); setQuestionTo(undefined); setQuestion(''); setAnswer('');
+  const addLine = () =>
+    setLines(prev => [...prev, { id: `nl-${Date.now()}`, questionText: '', requiresAttachment: false }]);
+
+  const updateLine = (id: string, patch: Partial<QALine>) =>
+    setLines(prev => prev.map(l => l.id === id ? { ...l, ...patch } : l));
+
+  const removeLine = (id: string) =>
+    setLines(prev => prev.filter(l => l.id !== id));
+
+  const handleSend = () => {
+    if (!sentBy || !sentTo) return;
+    const validLines = lines.filter(l => l.questionText.trim());
+    if (!validLines.length) return;
+    const session: QASession = {
+      id: `qs-${Date.now()}`, sentBy, sentTo, sentAt: nowTs(),
+      questions: validLines, status: 'pending',
+    };
+    setSessions(prev => [session, ...prev]);
+    setSentBy(undefined); setSentTo(undefined);
+    setLines([{ id: 'new-1', questionText: '', requiresAttachment: false }]);
+    setView('list');
   };
 
-  const handleEdit = (r: QARecord) => {
-    setEditingId(r.id); setQuestionBy(r.questionBy); setQuestionTo(r.questionTo);
-    setQuestion(r.question); setAnswer(r.answer);
+  const resetCreate = () => {
+    setSentBy(undefined); setSentTo(undefined);
+    setLines([{ id: 'new-1', questionText: '', requiresAttachment: false }]);
+    setView('list');
   };
 
+  /* ── Create view ── */
+  if (view === 'create') {
+    return (
+      <div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
+          <Button type="text" icon={<ArrowLeftOutlined />} onClick={resetCreate} style={{ padding: '0 4px', color: '#6b7280' }} />
+          <div style={{ fontWeight: 700, fontSize: 13, color: '#111827' }}>Create Q&amp;A Session</div>
+        </div>
+
+        <div style={{ border: '1px solid #e5e7eb', borderRadius: 10, padding: 16, background: '#fafafa' }}>
+          {/* Who / To */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 14 }}>
+            <Select
+              placeholder="Asked By *"
+              value={sentBy}
+              onChange={setSentBy}
+              options={QA_PERSONS.map(p => ({ label: p, value: p }))}
+              style={{ width: '100%' }}
+            />
+            <Select
+              placeholder="Send To (Employee) *"
+              value={sentTo}
+              onChange={setSentTo}
+              options={QA_PERSONS.map(p => ({ label: p, value: p }))}
+              style={{ width: '100%' }}
+            />
+          </div>
+
+          {/* Question lines */}
+          <div style={{ fontSize: 11, fontWeight: 600, color: '#6b7280', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+            Questions
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 10 }}>
+            {lines.map((line, idx) => (
+              <div key={line.id} style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
+                {/* number bubble */}
+                <div style={{
+                  width: 22, height: 22, borderRadius: '50%', background: '#EEF2FF',
+                  color: '#3B6EEA', fontSize: 11, fontWeight: 700,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  flexShrink: 0, marginTop: 5,
+                }}>
+                  {idx + 1}
+                </div>
+                <div style={{ flex: 1 }}>
+                  <Input.TextArea
+                    placeholder={`Question ${idx + 1}...`}
+                    value={line.questionText}
+                    onChange={e => updateLine(line.id, { questionText: e.target.value })}
+                    rows={2}
+                    style={{ fontSize: 13, resize: 'vertical' }}
+                  />
+                  <label style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 5, cursor: 'pointer' }}>
+                    <input
+                      type="checkbox"
+                      checked={line.requiresAttachment}
+                      onChange={e => updateLine(line.id, { requiresAttachment: e.target.checked })}
+                      style={{ cursor: 'pointer' }}
+                    />
+                    <span style={{ fontSize: 12, color: '#6b7280' }}>
+                      <PaperClipOutlined style={{ marginRight: 3 }} />
+                      Requires attachment as answer
+                    </span>
+                  </label>
+                </div>
+                {lines.length > 1 && (
+                  <Button
+                    type="text"
+                    icon={<DeleteOutlined />}
+                    onClick={() => removeLine(line.id)}
+                    size="small"
+                    style={{ color: '#ef4444', marginTop: 4, flexShrink: 0 }}
+                  />
+                )}
+              </div>
+            ))}
+          </div>
+
+          <Button
+            type="dashed"
+            icon={<PlusOutlined />}
+            onClick={addLine}
+            size="small"
+            style={{ fontSize: 12, marginBottom: 16 }}
+          >
+            Add a Line
+          </Button>
+
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, borderTop: '1px solid #e5e7eb', paddingTop: 12 }}>
+            <Button onClick={resetCreate} size="small">Cancel</Button>
+            <Button
+              type="primary"
+              icon={<SendOutlined />}
+              onClick={handleSend}
+              disabled={!sentBy || !sentTo || !lines.some(l => l.questionText.trim())}
+              size="small"
+            >
+              Send Questions
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  /* ── Detail view ── */
+  if (view === 'detail' && viewingSession) {
+    const s = viewingSession;
+    return (
+      <div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
+          <Button type="text" icon={<ArrowLeftOutlined />} onClick={() => setView('list')} style={{ padding: '0 4px', color: '#6b7280' }} />
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontWeight: 700, fontSize: 13, color: '#111827' }}>Q&amp;A Session Detail</div>
+            <div style={{ fontSize: 11, color: '#9ca3af', marginTop: 1 }}>
+              {s.sentBy} → {s.sentTo} · {s.sentAt}
+            </div>
+          </div>
+          <QAStatusBadge status={s.status} />
+        </div>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          {s.questions.map((q, idx) => {
+            const ans = s.answers?.find(a => a.questionId === q.id);
+            return (
+              <div key={q.id} style={{ border: '1px solid #e5e7eb', borderRadius: 8, background: '#fff', overflow: 'hidden' }}>
+                {/* Question */}
+                <div style={{ padding: '10px 14px', background: '#f8fafc', borderBottom: ans ? '1px solid #f3f4f6' : undefined }}>
+                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
+                    <div style={{
+                      width: 20, height: 20, borderRadius: '50%', background: '#EEF2FF',
+                      color: '#3B6EEA', fontSize: 10, fontWeight: 700,
+                      display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1,
+                    }}>
+                      {idx + 1}
+                    </div>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontSize: 13, fontWeight: 600, color: '#111827', lineHeight: 1.5 }}>{q.questionText}</div>
+                      {q.requiresAttachment && (
+                        <div style={{ fontSize: 11, color: '#d97706', marginTop: 3 }}>
+                          <PaperClipOutlined style={{ marginRight: 3 }} />Attachment required
+                        </div>
+                      )}
+                    </div>
+                    {ans
+                      ? <span style={{ fontSize: 10, fontWeight: 600, padding: '2px 6px', borderRadius: 4, background: '#f0fdf4', color: '#15803d', border: '1px solid #bbf7d0', flexShrink: 0 }}>Answered</span>
+                      : <span style={{ fontSize: 10, fontWeight: 600, padding: '2px 6px', borderRadius: 4, background: '#fffbeb', color: '#d97706', border: '1px solid #fde68a', flexShrink: 0 }}>Pending</span>
+                    }
+                  </div>
+                </div>
+                {/* Answer */}
+                {ans && (
+                  <div style={{ padding: '10px 14px' }}>
+                    <div style={{ fontSize: 12, color: '#374151', lineHeight: 1.6 }}>{ans.answerText}</div>
+                    {ans.attachments.length > 0 && (
+                      <div style={{ marginTop: 8, display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                        {ans.attachments.map(f => (
+                          <div key={f.uid} style={{
+                            display: 'flex', alignItems: 'center', gap: 4,
+                            padding: '3px 8px', border: '1px solid #e5e7eb',
+                            borderRadius: 4, fontSize: 11, color: '#3B6EEA', background: '#f8fafc',
+                          }}>
+                            <PaperClipOutlined style={{ fontSize: 10 }} />
+                            {f.name}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+
+        {s.answeredAt && (
+          <div style={{ marginTop: 10, fontSize: 11, color: '#9ca3af', textAlign: 'right' }}>
+            Answered at: {s.answeredAt}
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  /* ── List view ── */
   return (
     <div>
-      <div style={{ fontWeight: 700, fontSize: 13, color: '#111827', marginBottom: 14 }}>Q&amp;A Sessions</div>
-
-      {/* Form */}
-      <div style={{ border: '1px solid #e5e7eb', borderRadius: 10, padding: 16, marginBottom: 16, background: '#fafafa' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 10 }}>
-          <Select
-            placeholder="Question By *"
-            value={questionBy}
-            onChange={setQuestionBy}
-            options={QA_PERSONS.map(p => ({ label: p, value: p }))}
-          />
-          <Select
-            placeholder="Question To *"
-            value={questionTo}
-            onChange={setQuestionTo}
-            options={QA_PERSONS.map(p => ({ label: p, value: p }))}
-          />
-        </div>
-        <Input.TextArea
-          placeholder="Question..."
-          value={question}
-          onChange={e => setQuestion(e.target.value)}
-          rows={3}
-          style={{ marginBottom: 10, fontSize: 13, resize: 'vertical' }}
-        />
-        <Input.TextArea
-          placeholder="Answer..."
-          value={answer}
-          onChange={e => setAnswer(e.target.value)}
-          rows={3}
-          style={{ marginBottom: 10, fontSize: 13, resize: 'vertical' }}
-        />
-        <Button
-          type="link"
-          icon={<PlusOutlined />}
-          onClick={handleRecord}
-          style={{ padding: 0, fontWeight: 600, fontSize: 13 }}
-        >
-          {editingId ? 'Update Q&A' : 'Record Q&A'}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+        <div style={{ fontWeight: 700, fontSize: 13, color: '#111827' }}>Q&amp;A Sessions</div>
+        <Button type="primary" size="small" icon={<PlusOutlined />} onClick={() => setView('create')}>
+          Create Session
         </Button>
       </div>
 
-      {/* Records */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-        {records.map(r => (
-          <div key={r.id} style={{
-            display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between',
-            padding: '12px 14px', border: '1px solid #e5e7eb', borderRadius: 8, background: '#fff', gap: 12,
-          }}>
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ fontWeight: 600, fontSize: 13, color: '#111827', marginBottom: 6 }}>
-                {r.questionBy} — {r.questionTo}
+      {sessions.length === 0 ? (
+        <div style={{ textAlign: 'center', padding: '32px 0', color: '#9ca3af', fontSize: 13 }}>
+          No Q&amp;A sessions yet.
+        </div>
+      ) : (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          {sessions.map(s => (
+            <div key={s.id} style={{
+              display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between',
+              padding: '12px 14px', border: '1px solid #e5e7eb',
+              borderRadius: 8, background: '#fff', gap: 12,
+            }}>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                  <div style={{ fontWeight: 600, fontSize: 13, color: '#111827' }}>{s.sentTo}</div>
+                  <QAStatusBadge status={s.status} />
+                </div>
+                <div style={{ fontSize: 11, color: '#6b7280' }}>
+                  Asked by <strong style={{ color: '#374151' }}>{s.sentBy}</strong> · {s.sentAt}
+                </div>
+                <div style={{ fontSize: 11, color: '#9ca3af', marginTop: 2 }}>
+                  {s.questions.length} question{s.questions.length !== 1 ? 's' : ''}
+                  {s.status === 'answered' && s.answeredAt && ` · Answered ${s.answeredAt}`}
+                </div>
               </div>
-              <div style={{ fontSize: 12, color: '#374151', marginBottom: 3 }}>
-                <span style={{ fontWeight: 600 }}>Q:</span> {r.question}
-              </div>
-              <div style={{ fontSize: 12, color: '#4b5563' }}>
-                <span style={{ fontWeight: 600 }}>A:</span> {r.answer}
-              </div>
-            </div>
-            <div style={{ flexShrink: 0, textAlign: 'right' }}>
-              <div style={{ fontSize: 11, color: '#9ca3af', marginBottom: 2 }}>Creation Date: {r.createdAt}</div>
-              <div style={{ fontSize: 11, color: '#9ca3af', marginBottom: 8 }}>Updated At: {r.updatedAt}</div>
               <Button
-                type="primary"
                 size="small"
-                icon={<EditOutlined />}
-                onClick={() => handleEdit(r)}
-              />
+                icon={<EyeOutlined />}
+                onClick={() => { setViewingSession(s); setView('detail'); }}
+              >
+                View
+              </Button>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
@@ -2145,14 +2710,9 @@ interface SuggestedAction {
   justification: string;
 }
 
-function SummaryPanel({ ticket }: { ticket: ComplianceTicket }) {
+function SummaryPanel({ ticket: _ticket }: { ticket: ComplianceTicket }) {
   const [execSummary, setExecSummary] = useState('');
   const [findings, setFindings]       = useState(['', '']);
-  const [actions, setActions]         = useState<SuggestedAction[]>([
-    { id: '1', employeeId: '', actionType: undefined, duration: '', justification: '' },
-  ]);
-
-  const employeeOptions = ticket.employeesInvolved.map(e => ({ label: `${e.name} (${e.id})`, value: e.id }));
 
   /* findings helpers */
   const addFinding    = () => setFindings(prev => [...prev, '']);
@@ -2161,31 +2721,10 @@ function SummaryPanel({ ticket }: { ticket: ComplianceTicket }) {
   const removeFinding = (idx: number) =>
     setFindings(prev => prev.filter((_, i) => i !== idx));
 
-  /* action helpers */
-  const addAction = () =>
-    setActions(prev => [
-      ...prev,
-      { id: Date.now().toString(), employeeId: '', actionType: undefined, duration: '', justification: '' },
-    ]);
-  const removeAction = (id: string) =>
-    setActions(prev => prev.filter(a => a.id !== id));
-  const updateAction = (id: string, field: keyof Omit<SuggestedAction, 'id'>, value: string | undefined) =>
-    setActions(prev => prev.map(a => (a.id === id ? { ...a, [field]: value } : a)));
-
-  const handleSubmit = () => {
-    Modal.confirm({
-      title: 'Send for Final Approval',
-      content: 'This will submit the summary and suggested actions for final authority approval. Continue?',
-      okText: 'Send for Approval',
-      cancelText: 'Cancel',
-      onOk: () => {},
-    });
-  };
-
   return (
     <div>
       <div style={{ fontWeight: 700, fontSize: 14, color: '#111827', marginBottom: 20 }}>
-        Detailed Summary &amp; Suggested Actions
+        Detailed Summary
       </div>
 
       {/* Executive Summary */}
@@ -2234,116 +2773,9 @@ function SummaryPanel({ ticket }: { ticket: ComplianceTicket }) {
         </Button>
       </div>
 
-      {/* Suggested Actions */}
-      <div style={{ marginBottom: 24 }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
-          <div style={{ fontSize: 13, fontWeight: 700, color: '#111827' }}>Suggested Actions</div>
-          <Button
-            type="dashed"
-            icon={<PlusOutlined />}
-            size="small"
-            onClick={addAction}
-            style={{ fontSize: 12 }}
-          >
-            Add Action
-          </Button>
-        </div>
-
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-          {actions.map((action, idx) => (
-            <div
-              key={action.id}
-              style={{
-                border: '1px solid #e5e7eb',
-                borderRadius: 10,
-                padding: 16,
-                background: '#fafafa',
-                position: 'relative',
-              }}
-            >
-              {/* Card header */}
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
-                <div style={{
-                  fontSize: 12,
-                  fontWeight: 700,
-                  color: '#3B6EEA',
-                  background: '#EEF2FF',
-                  padding: '2px 10px',
-                  borderRadius: 20,
-                }}>
-                  Action {idx + 1}
-                </div>
-                {actions.length > 1 && (
-                  <Button
-                    type="text"
-                    icon={<DeleteOutlined />}
-                    size="small"
-                    onClick={() => removeAction(action.id)}
-                    style={{ color: '#9ca3af', padding: '0 4px' }}
-                  />
-                )}
-              </div>
-
-              {/* Employee selector */}
-              <div style={{ marginBottom: 12 }}>
-                <div style={{ fontSize: 12, fontWeight: 600, color: '#374151', marginBottom: 6 }}>
-                  Employee <span style={{ color: '#ef4444' }}>*</span>
-                </div>
-                <Select
-                  placeholder="Select employee"
-                  value={action.employeeId || undefined}
-                  onChange={val => updateAction(action.id, 'employeeId', val)}
-                  style={{ width: '100%' }}
-                  options={employeeOptions}
-                  showSearch
-                  filterOption={(input, opt) =>
-                    (opt?.label as string)?.toLowerCase().includes(input.toLowerCase())
-                  }
-                />
-              </div>
-
-              {/* Action type + duration — two columns */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 12 }}>
-                <div>
-                  <div style={{ fontSize: 12, fontWeight: 600, color: '#374151', marginBottom: 6 }}>Action Type</div>
-                  <Select
-                    placeholder="Select action type"
-                    value={action.actionType}
-                    onChange={val => updateAction(action.id, 'actionType', val)}
-                    style={{ width: '100%' }}
-                    options={ACTION_TYPES.map(t => ({ label: t, value: t }))}
-                  />
-                </div>
-                <div>
-                  <div style={{ fontSize: 12, fontWeight: 600, color: '#374151', marginBottom: 6 }}>Duration / Details</div>
-                  <Input
-                    placeholder="e.g., 6-month probation"
-                    value={action.duration}
-                    onChange={e => updateAction(action.id, 'duration', e.target.value)}
-                    style={{ fontSize: 13 }}
-                  />
-                </div>
-              </div>
-
-              {/* Justification */}
-              <div>
-                <div style={{ fontSize: 12, fontWeight: 600, color: '#374151', marginBottom: 6 }}>Justification</div>
-                <Input.TextArea
-                  placeholder="Why is this action appropriate for this employee..."
-                  value={action.justification}
-                  onChange={e => updateAction(action.id, 'justification', e.target.value)}
-                  rows={3}
-                  style={{ fontSize: 13, resize: 'vertical' }}
-                />
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
       {/* Footer */}
       <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-        <Button type="primary" onClick={handleSubmit}>Send for Final Approval</Button>
+        <Button type="primary" onClick={() => {}}>Save Summary</Button>
       </div>
     </div>
   );
@@ -2362,6 +2794,395 @@ const CONFIRM_ACTIONS = [
   'Confirm Suggested Action',
   'Modify Action',
 ];
+
+// ── Hearing Panel ──────────────────────────────────────────────────────────────
+const HEARING_VENUES = [
+  'Board Room, Floor 3',
+  'Conference Room A',
+  'Conference Room B',
+  'HR Meeting Room',
+  'Director\'s Office',
+  'Training Hall',
+  'Virtual (Online)',
+  'Other',
+];
+
+function AttachmentField({
+  label,
+  required,
+  value,
+  onChange,
+  files,
+  onFiles,
+  rows = 3,
+  placeholder,
+}: {
+  label: string;
+  required?: boolean;
+  value: string;
+  onChange: (v: string) => void;
+  files: UploadFile[];
+  onFiles: (list: UploadFile[]) => void;
+  rows?: number;
+  placeholder?: string;
+}) {
+  return (
+    <div>
+      <div style={{ fontSize: 12, fontWeight: 600, color: '#374151', marginBottom: 6 }}>
+        {label}{required && <span style={{ color: '#ef4444' }}> *</span>}
+      </div>
+      <Input.TextArea
+        rows={rows}
+        placeholder={placeholder}
+        value={value}
+        onChange={e => onChange(e.target.value)}
+        style={{ fontSize: 13, resize: 'vertical', marginBottom: 8 }}
+      />
+      <Upload
+        fileList={files}
+        beforeUpload={() => false}
+        onChange={({ fileList }) => onFiles(fileList)}
+        multiple
+      >
+        <Button size="small" icon={<PaperClipOutlined />} style={{ fontSize: 12 }}>
+          Attach File
+        </Button>
+      </Upload>
+      {files.length > 0 && (
+        <div style={{ marginTop: 6, display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+          {files.map(f => (
+            <div
+              key={f.uid}
+              style={{
+                display: 'inline-flex', alignItems: 'center', gap: 5,
+                background: '#EEF2FF', border: '1px solid #c7d7fa',
+                borderRadius: 6, padding: '2px 8px', fontSize: 11, color: '#3B6EEA',
+              }}
+            >
+              <FileOutlined style={{ fontSize: 11 }} />
+              {f.name}
+              <span
+                onClick={() => onFiles(files.filter(x => x.uid !== f.uid))}
+                style={{ cursor: 'pointer', color: '#9ca3af', fontSize: 13, lineHeight: 1 }}
+              >×</span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function HearingPanel({ ticket }: { ticket: ComplianceTicket }) {
+  const employeeOptions = ticket.employeesInvolved.map(e => ({ label: `${e.name} (${e.id})`, value: e.id }));
+
+  // 0 = Schedule active, 1 = Record active, 2 = Actions active, 3 = all done
+  const [step, setStep] = useState<0 | 1 | 2 | 3>(0);
+
+  // Schedule fields
+  const [hearingDate, setHearingDate]     = useState<Parameters<typeof DatePicker>[0]['value']>(null);
+  const [hearingTime, setHearingTime]     = useState<Parameters<typeof TimePicker>[0]['value']>(null);
+  const [selectedEmps, setSelectedEmps]   = useState<string[]>([]);
+  const [venue, setVenue]                 = useState<string | undefined>();
+  const [hearingDetails, setHearingDetails] = useState('');
+  const [sendEmail, setSendEmail]         = useState(false);
+
+  // Record fields
+  const [attendees, setAttendees]         = useState('');
+  const [attendeeFiles, setAttendeeFiles] = useState<UploadFile[]>([]);
+  const [minutes, setMinutes]             = useState('');
+  const [minuteFiles, setMinuteFiles]     = useState<UploadFile[]>([]);
+
+  // Suggested Actions
+  const [actions, setActions] = useState<SuggestedAction[]>([
+    { id: '1', employeeId: '', actionType: undefined, duration: '', justification: '' },
+  ]);
+  const addAction = () =>
+    setActions(prev => [...prev, { id: Date.now().toString(), employeeId: '', actionType: undefined, duration: '', justification: '' }]);
+  const removeAction = (id: string) =>
+    setActions(prev => prev.filter(a => a.id !== id));
+  const updateAction = (id: string, field: keyof Omit<SuggestedAction, 'id'>, value: string | undefined) =>
+    setActions(prev => prev.map(a => (a.id === id ? { ...a, [field]: value } : a)));
+
+  const canSaveSchedule = !!hearingDate && !!hearingTime && selectedEmps.length > 0 && !!venue;
+  const canSaveRecord   = attendees.trim().length > 0 && minutes.trim().length > 0;
+
+  // Shared section wrapper
+  const sectionStyle = (active: boolean, done: boolean): React.CSSProperties => ({
+    background: '#fff',
+    border: `1px solid ${done ? '#bbf7d0' : active ? '#c7d7fa' : '#E5E7EB'}`,
+    borderRadius: 10,
+    overflow: 'hidden',
+    opacity: active || done ? 1 : 0.5,
+    pointerEvents: active || done ? 'auto' : 'none',
+  });
+
+  const sectionHeader = (num: number, title: string, done: boolean, active: boolean) => (
+    <div style={{
+      display: 'flex', alignItems: 'center', gap: 10,
+      padding: '12px 18px',
+      background: done ? '#f0fdf4' : active ? '#EEF2FF' : '#f9fafb',
+      borderBottom: active ? '1px solid #e5e7eb' : 'none',
+    }}>
+      <div style={{
+        width: 24, height: 24, borderRadius: '50%', flexShrink: 0,
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        fontSize: 12, fontWeight: 700,
+        background: done ? '#22c55e' : active ? '#3B6EEA' : '#d1d5db',
+        color: '#fff',
+      }}>
+        {done ? <CheckCircleOutlined /> : num}
+      </div>
+      <div style={{ fontWeight: 700, fontSize: 13, color: done ? '#166534' : active ? '#2952C8' : '#6B7280' }}>
+        {title}
+      </div>
+      {done && (
+        <span style={{ marginLeft: 'auto', fontSize: 11, color: '#16a34a', fontWeight: 600 }}>Completed</span>
+      )}
+    </div>
+  );
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+
+      {/* ── 1. Hearing Schedule ── */}
+      <div style={sectionStyle(step === 0, step > 0)}>
+        {sectionHeader(1, 'Hearing Schedule', step > 0, step === 0)}
+        {step === 0 && (
+          <div style={{ padding: '16px 18px' }}>
+            <Row gutter={[12, 14]}>
+              <Col span={12}>
+                <div style={{ fontSize: 12, fontWeight: 600, color: '#374151', marginBottom: 6 }}>
+                  Date <span style={{ color: '#ef4444' }}>*</span>
+                </div>
+                <DatePicker style={{ width: '100%' }} value={hearingDate} onChange={setHearingDate} />
+              </Col>
+              <Col span={12}>
+                <div style={{ fontSize: 12, fontWeight: 600, color: '#374151', marginBottom: 6 }}>
+                  Time <span style={{ color: '#ef4444' }}>*</span>
+                </div>
+                <TimePicker style={{ width: '100%' }} use12Hours format="h:mm A" value={hearingTime} onChange={setHearingTime} />
+              </Col>
+              <Col span={24}>
+                <div style={{ fontSize: 12, fontWeight: 600, color: '#374151', marginBottom: 6 }}>
+                  Employees <span style={{ color: '#ef4444' }}>*</span>
+                </div>
+                <Select
+                  mode="multiple"
+                  placeholder="Select employees to invite"
+                  value={selectedEmps}
+                  onChange={setSelectedEmps}
+                  style={{ width: '100%' }}
+                  options={employeeOptions}
+                  showSearch
+                  filterOption={(input, opt) =>
+                    (opt?.label as string)?.toLowerCase().includes(input.toLowerCase())
+                  }
+                />
+              </Col>
+              <Col span={24}>
+                <div style={{ fontSize: 12, fontWeight: 600, color: '#374151', marginBottom: 6 }}>
+                  Venue <span style={{ color: '#ef4444' }}>*</span>
+                </div>
+                <Select
+                  placeholder="Select venue"
+                  value={venue}
+                  onChange={setVenue}
+                  style={{ width: '100%' }}
+                  options={HEARING_VENUES.map(v => ({ label: v, value: v }))}
+                />
+              </Col>
+              <Col span={24}>
+                <div style={{ fontSize: 12, fontWeight: 600, color: '#374151', marginBottom: 6 }}>
+                  Hearing Details
+                </div>
+                <Input.TextArea
+                  rows={3}
+                  placeholder="Describe the purpose, agenda, or any specific details for this hearing..."
+                  value={hearingDetails}
+                  onChange={e => setHearingDetails(e.target.value)}
+                  style={{ fontSize: 13, resize: 'vertical' }}
+                />
+              </Col>
+              <Col span={24}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: 2 }}>
+                  <div>
+                    <div style={{ fontSize: 12, fontWeight: 600, color: '#374151' }}>
+                      <MailOutlined style={{ marginRight: 6, color: '#6B7280' }} />
+                      Send Email Invitation
+                    </div>
+                    <div style={{ fontSize: 11, color: '#9CA3AF', marginTop: 2 }}>
+                      Notify selected employees via email with hearing details
+                    </div>
+                  </div>
+                  <Switch checked={sendEmail} onChange={setSendEmail} />
+                </div>
+              </Col>
+            </Row>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 16 }}>
+              <Button
+                type="primary"
+                disabled={!canSaveSchedule}
+                onClick={() => setStep(1)}
+              >
+                Save &amp; Continue
+              </Button>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* ── 2. Hearing Record ── */}
+      <div style={sectionStyle(step === 1, step > 1)}>
+        {sectionHeader(2, 'Hearing Record', step > 1, step === 1)}
+        {step === 1 && (
+          <div style={{ padding: '16px 18px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              <AttachmentField
+                label="Attendees"
+                required
+                value={attendees}
+                onChange={setAttendees}
+                files={attendeeFiles}
+                onFiles={setAttendeeFiles}
+                rows={2}
+                placeholder="List names / roles of those present at the hearing..."
+              />
+              <AttachmentField
+                label="Minutes of Hearing"
+                required
+                value={minutes}
+                onChange={setMinutes}
+                files={minuteFiles}
+                onFiles={setMinuteFiles}
+                rows={4}
+                placeholder="Summarise what was discussed, statements made, and agreements reached..."
+              />
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 16 }}>
+              <Button onClick={() => setStep(0)}>Back</Button>
+              <Button
+                type="primary"
+                disabled={!canSaveRecord}
+                onClick={() => setStep(2)}
+              >
+                Save &amp; Continue
+              </Button>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* ── 3. Suggested Actions ── */}
+      <div style={sectionStyle(step === 2, step > 2)}>
+        {sectionHeader(3, 'Suggested Actions', step > 2, step === 2)}
+        {step === 2 && (
+          <div style={{ padding: '16px 18px' }}>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 14 }}>
+              <Button type="dashed" icon={<PlusOutlined />} size="small" onClick={addAction} style={{ fontSize: 12 }}>
+                Add Action
+              </Button>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              {actions.map((action, idx) => (
+                <div
+                  key={action.id}
+                  style={{ border: '1px solid #e5e7eb', borderRadius: 10, padding: 16, background: '#fafafa' }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
+                    <div style={{ fontSize: 12, fontWeight: 700, color: '#3B6EEA', background: '#EEF2FF', padding: '2px 10px', borderRadius: 20 }}>
+                      Action {idx + 1}
+                    </div>
+                    {actions.length > 1 && (
+                      <Button type="text" icon={<DeleteOutlined />} size="small" onClick={() => removeAction(action.id)} style={{ color: '#9ca3af', padding: '0 4px' }} />
+                    )}
+                  </div>
+
+                  <div style={{ marginBottom: 12 }}>
+                    <div style={{ fontSize: 12, fontWeight: 600, color: '#374151', marginBottom: 6 }}>
+                      Employee <span style={{ color: '#ef4444' }}>*</span>
+                    </div>
+                    <Select
+                      placeholder="Select employee"
+                      value={action.employeeId || undefined}
+                      onChange={val => updateAction(action.id, 'employeeId', val)}
+                      style={{ width: '100%' }}
+                      options={employeeOptions}
+                      showSearch
+                      filterOption={(input, opt) =>
+                        (opt?.label as string)?.toLowerCase().includes(input.toLowerCase())
+                      }
+                    />
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 12 }}>
+                    <div>
+                      <div style={{ fontSize: 12, fontWeight: 600, color: '#374151', marginBottom: 6 }}>Action Type</div>
+                      <Select
+                        placeholder="Select action type"
+                        value={action.actionType}
+                        onChange={val => updateAction(action.id, 'actionType', val)}
+                        style={{ width: '100%' }}
+                        options={ACTION_TYPES.map(t => ({ label: t, value: t }))}
+                      />
+                    </div>
+                    <div>
+                      <div style={{ fontSize: 12, fontWeight: 600, color: '#374151', marginBottom: 6 }}>Duration / Details</div>
+                      <Input
+                        placeholder="e.g., 6-month probation"
+                        value={action.duration}
+                        onChange={e => updateAction(action.id, 'duration', e.target.value)}
+                        style={{ fontSize: 13 }}
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <div style={{ fontSize: 12, fontWeight: 600, color: '#374151', marginBottom: 6 }}>Justification</div>
+                    <Input.TextArea
+                      placeholder="Why is this action appropriate for this employee..."
+                      value={action.justification}
+                      onChange={e => updateAction(action.id, 'justification', e.target.value)}
+                      rows={3}
+                      style={{ fontSize: 13, resize: 'vertical' }}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 16 }}>
+              <Button onClick={() => setStep(1)}>Back</Button>
+              <Button
+                type="primary"
+                icon={<CheckCircleFilled />}
+                onClick={() => Modal.confirm({
+                  title: 'Submit Hearing',
+                  content: 'This will finalise the hearing record and suggested actions. Continue?',
+                  okText: 'Confirm',
+                  cancelText: 'Cancel',
+                  onOk: () => setStep(3),
+                })}
+              >
+                Submit Hearing
+              </Button>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* ── All done ── */}
+      {step === 3 && (
+        <div style={{ textAlign: 'center', padding: '24px 0' }}>
+          <CheckCircleFilled style={{ fontSize: 40, color: '#22c55e', marginBottom: 10 }} />
+          <div style={{ fontWeight: 700, fontSize: 15, color: '#111827', marginBottom: 4 }}>Hearing Recorded</div>
+          <div style={{ fontSize: 13, color: '#6B7280' }}>The hearing details and suggested actions have been saved.</div>
+        </div>
+      )}
+    </div>
+  );
+}
 
 const OBJECTION_ACTIONS = [
   'Re-investigation',
@@ -3203,7 +4024,7 @@ function ReEvaluationPanel({ ticket }: { ticket: ComplianceTicket }) {
           <InfoRow icon={<CalendarOutlined />}      label="Date of Incident"    value={ticket.dateOfIncident} />
           <InfoRow icon={<WarningOutlined />}       label="Nature of Conflict"  value={ticket.natureOfConflict} accent="#d97706" />
           <InfoRow icon={<ClockCircleOutlined />}   label="Deadline"            value={ticket.deadline} accent="#ef4444" />
-          <InfoRow icon={<InfoCircleOutlined />}    label="Current Status"      value={ticket.currentStatus} />
+          <InfoRow icon={<InfoCircleOutlined />}    label="Current Stage"       value={ticket.currentStage} />
           <div style={{ gridColumn: '1 / -1' }}>
             <InfoRow icon={<UserOutlined />} label="Employees Involved"
               value={ticket.employeesInvolved.map(e => `${e.name} (${e.id})`).join(' · ')} />
@@ -3425,6 +4246,12 @@ function InvestigateDrawer({
 }) {
   const [currentStage, setCurrentStage] = useState(0);
 
+  useEffect(() => {
+    if (!ticket) return;
+    const idx = INVESTIGATE_STAGES.findIndex(stage => stage.label === ticket.currentStage);
+    setCurrentStage(idx >= 0 ? idx : 0);
+  }, [ticket]);
+
   if (!ticket) return null;
 
   return (
@@ -3526,9 +4353,10 @@ function InvestigateDrawer({
                     : i === 4 ? <VerdictPanel ticket={ticket} />
                     : i === 5 ? <ReportPanel />
                     : i === 6 ? <SummaryPanel ticket={ticket} />
-                    : i === 7 ? <AuthorityReviewPanel ticket={ticket} />
-                    : i === 8 ? <ConclusionPanel ticket={ticket} />
-                    : i === 9 ? <ReEvaluationPanel ticket={ticket} />
+                    : i === 7 ? <HearingPanel ticket={ticket} />
+                    : i === 8 ? <AuthorityReviewPanel ticket={ticket} />
+                    : i === 9 ? <ConclusionPanel ticket={ticket} />
+                    : i === 10 ? <ReEvaluationPanel ticket={ticket} />
                     : <StageComingSoon label={s.label} />
                   }
                 </div>
@@ -3714,12 +4542,9 @@ function ViewDetailsDrawer({
   if (!ticket) return null;
 
   const { label: currentStageLabel, step: currentStep } = (() => {
-    if (ticket.ticketStatus === 'Closed')           return { label: 'Concluded',     step: 9 };
-    if (ticket.currentStatus === 'Resolved')        return { label: 'Conclusion',    step: 8 };
-    if (ticket.currentStatus === 'In Mediation')    return { label: 'Investigation', step: 3 };
-    if (ticket.currentStatus === 'Escalated')       return { label: 'Committee',     step: 2 };
-    if (ticket.responses.length > 0)                return { label: 'Show Cause',    step: 0 };
-    return                                                 { label: 'Pending Review', step: -1 };
+    const stageIndex = INVESTIGATE_STAGES.findIndex(s => s.label === ticket.currentStage);
+    if (stageIndex >= 0) return { label: ticket.currentStage, step: stageIndex };
+    return { label: 'Show Cause', step: 0 };
   })();
 
   /* ── helpers ── */
@@ -3767,7 +4592,7 @@ function ViewDetailsDrawer({
           </div>
           <div style={{ marginLeft: 'auto', display: 'flex', gap: 6, flexWrap: 'wrap' }}>
             <StatusBadge status={ticket.ticketStatus} />
-            <ComplianceStatusBadge status={ticket.currentStatus} />
+            <StageBadge stage={ticket.currentStage} />
             <NatureBadge nature={ticket.natureOfConflict} />
           </div>
         </div>
@@ -3971,9 +4796,9 @@ function ViewDetailsDrawer({
 // ── Status tab config ──────────────────────────────────────────────────────────
 const STATUS_TABS: { key: TicketStatus | 'all'; label: string }[] = [
   { key: 'all',     label: 'All'     },
-  { key: 'Pending', label: 'Pending' },
   { key: 'Ongoing', label: 'Ongoing' },
   { key: 'Closed',  label: 'Closed'  },
+  { key: 'Reopen',  label: 'Reopen'  },
 ];
 
 interface Filters {
@@ -3981,9 +4806,10 @@ interface Filters {
   nature:    string;
   strategy:  string;
   security:  string;
+  stage:     string;
   dateRange: DateRange;
 }
-const EMPTY_FILTERS: Filters = { search: '', nature: '', strategy: '', security: '', dateRange: null };
+const EMPTY_FILTERS: Filters = { search: '', nature: '', strategy: '', security: '', stage: '', dateRange: null };
 
 // ── Main Page ──────────────────────────────────────────────────────────────────
 export default function CompliancePage() {
@@ -4022,6 +4848,7 @@ export default function CompliancePage() {
     }
     if (applied.nature)   rows = rows.filter(t => t.natureOfConflict === applied.nature);
     if (applied.security) rows = rows.filter(t => t.securityLevel    === applied.security);
+    if (applied.stage)    rows = rows.filter(t => t.currentStage     === applied.stage);
     if (applied.strategy) rows = rows.filter(t => t.responses.some(r => r.resolutionStrategy === applied.strategy));
     return rows;
   }, [tickets, activeTab, applied]);
@@ -4030,7 +4857,9 @@ export default function CompliancePage() {
     const now = new Date();
     const pad = (n: number) => String(n).padStart(2, '0');
     const today = `${pad(now.getDate())}-${pad(now.getMonth() + 1)}-${now.getFullYear()}; ${pad(now.getHours())}:${pad(now.getMinutes())} ${now.getHours() < 12 ? 'AM' : 'PM'}`;
-    setTickets(prev => prev.map(t => t.ticketId === ticketId ? { ...t, ticketStatus: 'Closed', lastResolutionDate: today } : t));
+    setTickets(prev => prev.map(t => t.ticketId === ticketId
+      ? { ...t, ticketStatus: 'Closed', currentStage: 'Conclusion', lastResolutionDate: today }
+      : t));
   };
 
   const handleCloseTicket = (ticketId: string) => {
@@ -4114,26 +4943,31 @@ export default function CompliancePage() {
       render: (v: TicketStatus) => <StatusBadge status={v} />,
     },
     {
-      title: colHead('CURRENT STATUS'),
-      dataIndex: 'currentStatus',
+      title: colHead('CURRENT STAGE'),
+      dataIndex: 'currentStage',
       width: 145,
-      render: (v: ComplianceStatus) => <ComplianceStatusBadge status={v} />,
+      render: (v: InvestigationStage) => <StageBadge stage={v} />,
     },
     {
       title: colHead('REMAINING DAYS'),
       dataIndex: 'deadline',
       width: 160,
-      render: (v: string) => {
+      render: (v: string, record: ComplianceTicket) => {
         if (!v) return <span style={{ color: '#d1d5db' }}>—</span>;
         const [d, m, y] = v.split('-').map(Number);
-        const diff = Math.ceil((new Date(y, m - 1, d).getTime() - Date.now()) / 86_400_000);
-        const MAX_DAYS = 30;
-        const pct = diff <= 0 ? 100 : Math.min(100, Math.round((diff / MAX_DAYS) * 100));
+        const deadlineMs = new Date(y, m - 1, d).getTime();
+        const diff = Math.ceil((deadlineMs - Date.now()) / 86_400_000);
+        // Derive start date from requestDate (format: "DD-MM-YYYY; HH:MM AM/PM")
+        const datePart = record.requestDate.split(';')[0].trim();
+        const [sd, sm, sy] = datePart.split('-').map(Number);
+        const startMs = new Date(sy, sm - 1, sd).getTime();
+        const totalDays = Math.max(1, Math.ceil((deadlineMs - startMs) / 86_400_000));
+        const pct = diff <= 0 ? 100 : Math.min(100, Math.round((diff / totalDays) * 100));
         const barColor = diff < 0 ? '#ef4444' : diff === 0 ? '#f59e0b' : diff <= 3 ? '#f97316' : diff <= 7 ? '#3b82f6' : '#22c55e';
         const label = diff < 0
           ? `Overdue ${Math.abs(diff)}d`
           : diff === 0 ? 'Due Today'
-          : `${diff}d remaining`;
+          : `${diff} / ${totalDays} days`;
         const labelColor = diff < 0 ? '#dc2626' : diff === 0 ? '#d97706' : diff <= 3 ? '#ea580c' : diff <= 7 ? '#2563eb' : '#15803d';
         return (
           <div style={{ minWidth: 120 }}>
@@ -4289,6 +5123,21 @@ export default function CompliancePage() {
                 options={['Low', 'Medium', 'High'].map(v => ({ label: v, value: v }))}
               />
             </Col>
+            <Col flex="1 1 180px">
+              <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.06em', color: '#6b7280', marginBottom: 6, textTransform: 'uppercase' }}>Investigation Stage</div>
+              <Select
+                placeholder="All"
+                style={{ width: '100%' }}
+                value={draft.stage || undefined}
+                onChange={v => setDraft(p => ({ ...p, stage: v ?? '' }))}
+                allowClear
+                options={([
+                  'Show Cause', 'Explanation Review', 'Committee Formation',
+                  'Investigation', 'Verdict', 'Report', 'Summary', 'Hearing',
+                  'Authority Review', 'Conclusion', 'Re-evaluation',
+                ] as InvestigationStage[]).map(v => ({ label: v, value: v }))}
+              />
+            </Col>
             <Col flex="2 1 240px">
               <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.06em', color: '#6b7280', marginBottom: 6, textTransform: 'uppercase' }}>Request Date Range</div>
               <RangePicker
@@ -4310,7 +5159,7 @@ export default function CompliancePage() {
       )}
 
       {/* ── Status tabs ── */}
-      <div style={{ display: 'flex', gap: 6, marginBottom: 16, flexWrap: 'wrap' }}>
+      <div style={{ display: 'flex', gap: 6, marginBottom: 16, flexWrap: 'wrap', alignItems: 'center' }}>
         {STATUS_TABS.map(tab => {
           const count = counts[tab.key === 'all' ? 'all' : tab.key] ?? 0;
           const isActive = activeTab === tab.key;
@@ -4321,7 +5170,7 @@ export default function CompliancePage() {
               style={{
                 display: 'inline-flex', alignItems: 'center', gap: 6,
                 padding: '6px 14px', borderRadius: 10,
-                border: isActive ? '1.5px solid #0f766e' : '1.5px solid #d8e7e5',
+                border: isActive ? '1.5px solid #0f766e' : '1.5px solid #E5E7EB',
                 background: isActive ? '#f0fdfa' : '#ffffff',
                 color: isActive ? '#0f766e' : '#374151',
                 fontWeight: isActive ? 700 : 500,
@@ -4342,6 +5191,9 @@ export default function CompliancePage() {
             </button>
           );
         })}
+        <span style={{ marginLeft: 'auto', fontSize: 12, color: '#9ca3af' }}>
+          {filtered.length} result{filtered.length !== 1 ? 's' : ''}
+        </span>
       </div>
 
       {/* ── Table ── */}

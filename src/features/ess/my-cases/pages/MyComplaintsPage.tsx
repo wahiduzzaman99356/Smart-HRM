@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback, memo } from 'react';
+import { useState, useMemo, useCallback, useEffect, memo } from 'react';
 import {
   Button, Input, Select, DatePicker, Table, Tooltip, Drawer,
   Form, Upload, Collapse, Modal, Dropdown, Divider,
@@ -14,6 +14,7 @@ import {
   MoreOutlined, FileOutlined, DeleteOutlined, SendOutlined,
   WarningFilled, CloseOutlined, InfoCircleOutlined,
   FilePdfOutlined, CopyOutlined, AuditOutlined,
+  MessageOutlined, PaperClipOutlined,
 } from '@ant-design/icons';
 
 type DateRange = RangePickerProps['value'];
@@ -22,7 +23,7 @@ const { Panel } = Collapse;
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 type TabKey        = 'all' | 'Pending' | 'Ongoing' | 'Closed';
-type TicketStatus  = 'Pending' | 'Ongoing' | 'Authority Review' | 'Show Cause Issued' | 'Closed';
+type TicketStatus  = 'Pending' | 'Ongoing' | 'Closed';
 type SecurityLevel = 'Low' | 'Medium' | 'High' | 'Critical';
 type NatureType    =
   | 'Anti-Harassment'
@@ -33,6 +34,18 @@ type NatureType    =
   | 'Misconduct';
 
 interface Employee { id: string; name: string }
+
+interface InvQALine {
+  id: string;
+  questionText: string;
+  requiresAttachment: boolean;
+}
+
+interface InvQASession {
+  sentBy: string;
+  sentAt: string;
+  questions: InvQALine[];
+}
 
 interface ShowCauseNotice {
   ref:         string;
@@ -51,6 +64,7 @@ interface ComplaintTicket {
   status:               TicketStatus;
   resolutionDate?:      string;
   showCause?:           ShowCauseNotice;
+  investigationQA?:     InvQASession;
   // Section A
   submitterName:        string;
   submitterId:          string;
@@ -74,7 +88,16 @@ const MOCK_TICKETS: ComplaintTicket[] = [
     reportedBy: { id: 'ANON-001', name: 'Anonymous (via HR)', anonymous: true },
     security: 'High',
     requestDate: '01-02-2026; 06:00 AM',
-    status: 'Authority Review',
+    status: 'Ongoing',
+    investigationQA: {
+      sentBy: 'Dr. Anwar Hossain (Committee Head)',
+      sentAt: '05-02-2026; 11:00 AM',
+      questions: [
+        { id: 'iq-1a', questionText: 'Can you describe in detail what occurred during the morning briefing on 31-01-2026?', requiresAttachment: false },
+        { id: 'iq-1b', questionText: 'Were there any witnesses present at the time of the alleged incident?', requiresAttachment: false },
+        { id: 'iq-1c', questionText: 'Please provide any written records, chat logs, or other evidence supporting your account.', requiresAttachment: true },
+      ],
+    },
     submitterName: 'Kamrul Islam', submitterId: 'T995200',
     phoneNumber: '01712345678', department: 'Production',
     dateOfIncident: '31-01-2026', timeOfIncident: '08:30 AM',
@@ -108,6 +131,16 @@ const MOCK_TICKETS: ComplaintTicket[] = [
     security: 'Critical',
     requestDate: '20-02-2026; 06:00 AM',
     status: 'Ongoing',
+    investigationQA: {
+      sentBy: 'Rezaul Karim (Committee Member)',
+      sentAt: '22-02-2026; 02:00 PM',
+      questions: [
+        { id: 'iq-2a', questionText: 'Did you initiate the physical altercation with your colleague on 19-02-2026?', requiresAttachment: false },
+        { id: 'iq-2b', questionText: 'What was the nature of the task allocation dispute that preceded the incident?', requiresAttachment: false },
+        { id: 'iq-2c', questionText: 'Please submit any medical or HR-related documentation relevant to this case.', requiresAttachment: true },
+        { id: 'iq-2d', questionText: 'Have you had any prior disciplinary issues with this colleague or others?', requiresAttachment: false },
+      ],
+    },
     submitterName: 'Sumon Das', submitterId: 'T991055',
     phoneNumber: '01612345680', department: 'Manufacturing',
     dateOfIncident: '19-02-2026', timeOfIncident: '07:45 AM',
@@ -126,7 +159,7 @@ const MOCK_TICKETS: ComplaintTicket[] = [
     reportedBy: { id: 'T880100', name: 'Security Officer' },
     security: 'Critical',
     requestDate: '10-03-2026; 06:00 AM',
-    status: 'Show Cause Issued',
+    status: 'Ongoing',
     showCause: {
       ref: 'SC-2026-0003',
       description: 'Please provide your written explanation regarding the unauthorized removal of inventory items from the warehouse on 08-03-2026.',
@@ -175,11 +208,9 @@ const MOCK_TICKETS: ComplaintTicket[] = [
 
 // ── Colour maps ────────────────────────────────────────────────────────────────
 const STATUS_CFG: Record<TicketStatus, { bg: string; text: string; dot: string }> = {
-  'Pending':          { bg: '#fffbeb', text: '#d97706', dot: '#f59e0b' },
-  'Ongoing':          { bg: '#eff6ff', text: '#2563eb', dot: '#3b82f6' },
-  'Authority Review': { bg: '#eff6ff', text: '#2563eb', dot: '#3b82f6' },
-  'Show Cause Issued':{ bg: '#fff7ed', text: '#ea580c', dot: '#f97316' },
-  'Closed':           { bg: '#f3f4f6', text: '#6b7280', dot: '#9ca3af' },
+  'Pending': { bg: '#fffbeb', text: '#d97706', dot: '#f59e0b' },
+  'Ongoing': { bg: '#eff6ff', text: '#2563eb', dot: '#3b82f6' },
+  'Closed':  { bg: '#f3f4f6', text: '#6b7280', dot: '#9ca3af' },
 };
 
 const SEC_CFG: Record<SecurityLevel, { bg: string; text: string; border: string }> = {
@@ -632,6 +663,195 @@ function ViewDetailsDrawer({
   );
 }
 
+// ── Investigation Respond Drawer ───────────────────────────────────────────────
+interface InvAnswerState {
+  text: string;
+  files: UploadFile[];
+}
+
+function InvestigationRespondDrawer({
+  ticket, open, onClose, onSubmit,
+}: {
+  ticket: ComplaintTicket | null;
+  open: boolean;
+  onClose: () => void;
+  onSubmit: (ticketId: string) => void;
+}) {
+  const [answers, setAnswers] = useState<Record<string, InvAnswerState>>({});
+
+  // Reset answers each time the drawer opens for a (potentially different) ticket
+  useEffect(() => {
+    if (!open || !ticket?.investigationQA) return;
+    const init: Record<string, InvAnswerState> = {};
+    ticket.investigationQA.questions.forEach(q => { init[q.id] = { text: '', files: [] }; });
+    setAnswers(init);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, ticket?.ticketId]);
+
+  if (!ticket || !ticket.investigationQA) return null;
+
+  const qa = ticket.investigationQA;
+  const allAnswered = qa.questions.every(q => (answers[q.id]?.text ?? '').trim().length > 0);
+
+  const setAnswer = (id: string, patch: Partial<InvAnswerState>) =>
+    setAnswers(prev => ({ ...prev, [id]: { ...prev[id], ...patch } }));
+
+  const handleSubmit = () => {
+    if (!allAnswered) { message.warning('Please answer all questions before submitting.'); return; }
+    onSubmit(ticket.ticketId);
+    onClose();
+    message.success('Your responses have been submitted to the investigation committee.');
+  };
+
+  return (
+    <Drawer
+      title={
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <MessageOutlined style={{ color: '#0f766e' }} />
+          <span style={{ fontWeight: 700, color: '#111827' }}>Investigation Respond</span>
+          <span style={{ fontSize: 12, color: '#6b7280', fontWeight: 400 }}>— {ticket.ticketId}</span>
+          <StatusBadge status={ticket.status} />
+        </div>
+      }
+      open={open}
+      onClose={onClose}
+      width="82%"
+      styles={{ body: { padding: 0, display: 'flex', flexDirection: 'column', height: '100%' } }}
+      footer={
+        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, padding: '10px 0' }}>
+          <Button onClick={onClose}>Cancel</Button>
+          <Button
+            type="primary"
+            icon={<SendOutlined />}
+            onClick={handleSubmit}
+            disabled={!allAnswered}
+          >
+            Submit Responses
+          </Button>
+        </div>
+      }
+    >
+      <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
+
+        {/* ── Left: Q&A response form ── */}
+        <div style={{ flex: 1, overflowY: 'auto', padding: 24 }}>
+
+          {/* Session info banner */}
+          <div style={{
+            marginBottom: 20, padding: '10px 14px',
+            background: '#ecfeff', border: '1px solid #a5f3fc', borderRadius: 8,
+          }}>
+            <div style={{ fontSize: 12, fontWeight: 700, color: '#0e7490', marginBottom: 2 }}>
+              <MessageOutlined style={{ marginRight: 6 }} />
+              Q&amp;A Session — sent by {qa.sentBy}
+            </div>
+            <div style={{ fontSize: 12, color: '#164e63' }}>
+              Received on {qa.sentAt} · Please answer all questions thoroughly and honestly.
+            </div>
+          </div>
+
+          {/* Questions */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            {qa.questions.map((q, idx) => {
+              const ans = answers[q.id] ?? { text: '', files: [] };
+              return (
+                <div key={q.id} style={{
+                  border: '1px solid #e5e7eb', borderRadius: 10, overflow: 'hidden',
+                }}>
+                  {/* Question header */}
+                  <div style={{ padding: '10px 16px', background: '#f8fafc', borderBottom: '1px solid #e5e7eb' }}>
+                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+                      <div style={{
+                        width: 24, height: 24, borderRadius: '50%', background: '#EEF2FF',
+                        color: '#3B6EEA', fontSize: 12, fontWeight: 700,
+                        display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+                      }}>
+                        {idx + 1}
+                      </div>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontSize: 13, fontWeight: 600, color: '#111827', lineHeight: 1.6 }}>
+                          {q.questionText}
+                        </div>
+                        {q.requiresAttachment && (
+                          <div style={{ fontSize: 11, color: '#d97706', marginTop: 4 }}>
+                            <PaperClipOutlined style={{ marginRight: 4 }} />
+                            Attachment required — please upload a supporting document
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Answer area */}
+                  <div style={{ padding: '12px 16px' }}>
+                    <Input.TextArea
+                      placeholder="Type your answer here…"
+                      value={ans.text}
+                      onChange={e => setAnswer(q.id, { text: e.target.value })}
+                      rows={3}
+                      style={{ fontSize: 13, resize: 'vertical', marginBottom: q.requiresAttachment ? 10 : 0 }}
+                    />
+                    {q.requiresAttachment && (
+                      <AttachmentUpload
+                        value={ans.files}
+                        onChange={files => setAnswer(q.id, { files })}
+                        maxCount={3}
+                        buttonSize="small"
+                      />
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* ── Right: ticket info panel ── */}
+        <div style={{
+          width: 280, flexShrink: 0,
+          borderLeft: '1px solid #e5e7eb',
+          overflowY: 'auto', padding: 16,
+          background: '#f8fafc',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
+            <HistoryOutlined style={{ color: '#0f766e' }} />
+            <span style={{ fontWeight: 700, fontSize: 13, color: '#111827' }}>Ticket Info</span>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 20 }}>
+            {[
+              { label: 'Ticket ID',    value: ticket.ticketId },
+              { label: 'Status',       value: ticket.status },
+              { label: 'Security',     value: ticket.security },
+              { label: 'Nature',       value: ticket.nature },
+              { label: 'Request Date', value: ticket.requestDate },
+              { label: 'Department',   value: ticket.department },
+            ].map(f => (
+              <div key={f.label} style={{ fontSize: 12, borderBottom: '1px solid #f0f0f0', paddingBottom: 8 }}>
+                <div style={{ color: '#9ca3af', fontWeight: 600, marginBottom: 2 }}>{f.label}</div>
+                <div style={{ color: '#111827' }}>{f.value}</div>
+              </div>
+            ))}
+          </div>
+
+          <Divider style={{ margin: '0 0 12px' }} />
+          <div style={{ fontSize: 12, fontWeight: 700, color: '#0e7490', marginBottom: 6 }}>
+            Session Summary
+          </div>
+          <div style={{ fontSize: 12, color: '#374151', marginBottom: 4 }}>
+            <span style={{ color: '#6b7280' }}>Sent by:</span> {qa.sentBy}
+          </div>
+          <div style={{ fontSize: 12, color: '#374151', marginBottom: 4 }}>
+            <span style={{ color: '#6b7280' }}>Sent at:</span> {qa.sentAt}
+          </div>
+          <div style={{ fontSize: 12, color: '#374151' }}>
+            <span style={{ color: '#6b7280' }}>Questions:</span> {qa.questions.length}
+          </div>
+        </div>
+      </div>
+    </Drawer>
+  );
+}
+
 // ── Create Complaint Modal ─────────────────────────────────────────────────────
 const SESSION_EMPLOYEE = { id: 'T881356', name: 'Ashraful Islam' };
 
@@ -812,9 +1032,6 @@ const STATUS_TABS: { key: TabKey; label: string }[] = [
   { key: 'Closed',  label: 'Closed'  },
 ];
 
-// "Ongoing" tab includes these statuses
-const ONGOING_STATUSES: TicketStatus[] = ['Ongoing', 'Authority Review', 'Show Cause Issued'];
-
 interface Filters {
   search:    string;
   nature:    string;
@@ -833,6 +1050,7 @@ export default function MyComplaintsPage() {
   const [showInfo,       setShowInfo]       = useState(true);
   const [respondTicket,  setRespondTicket]  = useState<ComplaintTicket | null>(null);
   const [viewTicket,     setViewTicket]     = useState<ComplaintTicket | null>(null);
+  const [invRespondTicket, setInvRespondTicket] = useState<ComplaintTicket | null>(null);
   const [createOpen,     setCreateOpen]     = useState(false);
 
   const handleApply = () => setApplied(draft);
@@ -857,7 +1075,7 @@ export default function MyComplaintsPage() {
   const filtered = useMemo(() => {
     let rows = tickets;
     if (activeTab === 'Pending') rows = rows.filter(t => t.status === 'Pending');
-    if (activeTab === 'Ongoing') rows = rows.filter(t => ONGOING_STATUSES.includes(t.status));
+    if (activeTab === 'Ongoing') rows = rows.filter(t => t.status === 'Ongoing');
     if (activeTab === 'Closed')  rows = rows.filter(t => t.status === 'Closed');
     if (applied.search) {
       const q = applied.search.toLowerCase();
@@ -873,16 +1091,21 @@ export default function MyComplaintsPage() {
     return rows;
   }, [tickets, activeTab, applied]);
 
-  const actionRequired = useMemo(
-    () => tickets.filter(t => t.showCause),
-    [tickets],
-  );
+  const showCauseItems = useMemo(() => tickets.filter(t => t.showCause), [tickets]);
+  const qaItems        = useMemo(() => tickets.filter(t => t.investigationQA), [tickets]);
+  const actionRequired = useMemo(() => showCauseItems.length + qaItems.length, [showCauseItems, qaItems]);
 
   const handleSubmitResponse = (ticketId: string) => {
     setTickets(prev => prev.map(t =>
       t.ticketId === ticketId ? { ...t, status: 'Ongoing', showCause: undefined } : t,
     ));
     message.success('Response submitted successfully.');
+  };
+
+  const handleSubmitInvResponse = (ticketId: string) => {
+    setTickets(prev => prev.map(t =>
+      t.ticketId === ticketId ? { ...t, investigationQA: undefined } : t,
+    ));
   };
 
   const colHead = (label: string) => (
@@ -964,6 +1187,16 @@ export default function MyComplaintsPage() {
               RESPOND REQUIRED
             </span>
           )}
+          {r.investigationQA && (
+            <span style={{
+              display: 'inline-flex', alignItems: 'center', gap: 4,
+              padding: '1px 6px', borderRadius: 4, fontSize: 10, fontWeight: 700,
+              color: '#0e7490', background: '#ecfeff', border: '1px solid #a5f3fc',
+              letterSpacing: '0.04em', width: 'fit-content',
+            }}>
+              <MessageOutlined style={{ fontSize: 9 }} /> Q&amp;A PENDING
+            </span>
+          )}
         </div>
       ),
     },
@@ -988,8 +1221,9 @@ export default function MyComplaintsPage() {
           menu={{
             style: { borderRadius: 8, minWidth: 168 },
             onClick: ({ key }) => {
-              if (key === 'respond') setRespondTicket(record);
-              if (key === 'view')    setViewTicket(record);
+              if (key === 'respond')    setRespondTicket(record);
+              if (key === 'inv-respond') setInvRespondTicket(record);
+              if (key === 'view')       setViewTicket(record);
               if (key === 'copy')    { navigator.clipboard.writeText(record.ticketId); message.success('Case number copied.'); }
               if (key === 'appeal') {
                 Modal.confirm({
@@ -1003,8 +1237,9 @@ export default function MyComplaintsPage() {
               }
             },
             items: [
-              { key: 'respond',  icon: <SendOutlined />,     label: 'Respond',       disabled: !record.showCause },
-              { key: 'view',     icon: <EyeOutlined />,      label: 'View Details' },
+              { key: 'respond',     icon: <SendOutlined />,     label: 'Respond',              disabled: !record.showCause },
+              { key: 'inv-respond', icon: <MessageOutlined />,  label: 'Investigation Respond', disabled: !record.investigationQA },
+              { key: 'view',        icon: <EyeOutlined />,      label: 'View Details' },
               { type: 'divider' as const },
               { key: 'pdf',      icon: <FilePdfOutlined />,  label: 'Export as PDF' },
               { key: 'copy',     icon: <CopyOutlined />,     label: 'Copy Case No.' },
@@ -1206,7 +1441,7 @@ export default function MyComplaintsPage() {
       </div>
 
       {/* ── Action required banner ────────────────────────────────────────── */}
-      {actionRequired.length > 0 && (activeTab === 'all' || activeTab === 'Ongoing') && (
+      {actionRequired > 0 && (activeTab === 'all' || activeTab === 'Ongoing') && (
         <div style={{ border: '1px solid #fed7aa', borderRadius: 10, overflow: 'hidden', marginBottom: 16 }}>
           <div style={{
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
@@ -1215,13 +1450,15 @@ export default function MyComplaintsPage() {
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <WarningFilled style={{ color: '#ea580c', fontSize: 14 }} />
               <span style={{ fontWeight: 700, fontSize: 13, color: '#92400e' }}>
-                ACTION REQUIRED ({actionRequired.length})
+                ACTION REQUIRED ({actionRequired})
               </span>
             </div>
             <span style={{ fontSize: 12, color: '#b45309' }}>Respond before the deadline to avoid delays</span>
           </div>
-          {actionRequired.map(item => (
-            <div key={item.ticketId} style={{ padding: '12px 16px', background: '#fffbf5', borderBottom: '1px solid #fef3c7' }}>
+
+          {/* Show Cause items */}
+          {showCauseItems.map(item => (
+            <div key={`sc-${item.ticketId}`} style={{ padding: '12px 16px', background: '#fffbf5', borderBottom: '1px solid #fef3c7' }}>
               <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
                 <div style={{ display: 'flex', gap: 10, flex: 1 }}>
                   <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#dc2626', display: 'inline-block', marginTop: 4, flexShrink: 0 }} />
@@ -1257,6 +1494,43 @@ export default function MyComplaintsPage() {
               </div>
             </div>
           ))}
+
+          {/* Q&A Session items */}
+          {qaItems.map(item => (
+            <div key={`qa-${item.ticketId}`} style={{ padding: '12px 16px', background: '#f0fdfe', borderBottom: '1px solid #cffafe' }}>
+              <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+                <div style={{ display: 'flex', gap: 10, flex: 1 }}>
+                  <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#0891b2', display: 'inline-block', marginTop: 4, flexShrink: 0 }} />
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: '#111827' }}>
+                      Answer investigation questions — {item.investigationQA!.questions.length} question{item.investigationQA!.questions.length !== 1 ? 's' : ''} pending
+                    </div>
+                    <div style={{ fontSize: 12, color: '#6b7280', marginTop: 2 }}>
+                      Sent by {item.investigationQA!.sentBy} on {item.investigationQA!.sentAt}
+                    </div>
+                    <Button
+                      size="small"
+                      icon={<MessageOutlined />}
+                      style={{ marginTop: 8, fontWeight: 600, fontSize: 12, borderColor: '#06b6d4', color: '#0e7490' }}
+                      onClick={() => setInvRespondTicket(item)}
+                    >
+                      Investigation Respond
+                    </Button>
+                  </div>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0, marginLeft: 16 }}>
+                  <span style={{ fontSize: 12, color: '#9ca3af', fontFamily: 'monospace' }}>#{item.ticketId}</span>
+                  <span style={{
+                    padding: '2px 8px', borderRadius: 4,
+                    fontSize: 11, fontWeight: 700, color: '#0e7490',
+                    background: '#ecfeff', border: '1px solid #a5f3fc', letterSpacing: '0.04em',
+                  }}>
+                    Q&amp;A
+                  </span>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       )}
 
@@ -1284,6 +1558,12 @@ export default function MyComplaintsPage() {
         ticket={viewTicket}
         open={!!viewTicket}
         onClose={() => setViewTicket(null)}
+      />
+      <InvestigationRespondDrawer
+        ticket={invRespondTicket}
+        open={!!invRespondTicket}
+        onClose={() => setInvRespondTicket(null)}
+        onSubmit={handleSubmitInvResponse}
       />
       <CreateComplaintModal
         open={createOpen}

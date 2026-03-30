@@ -1779,7 +1779,7 @@ export default function ConflictResolutionPage() {
       )}
 
       {/* ── Status tabs ── */}
-      <div style={{ display: 'flex', gap: 6, marginBottom: 16, flexWrap: 'wrap' }}>
+      <div style={{ display: 'flex', gap: 6, marginBottom: 16, flexWrap: 'wrap', alignItems: 'center' }}>
         {STATUS_TABS.map(tab => {
           const count = counts[tab.key === 'all' ? 'all' : tab.key] ?? 0;
           const isActive = activeTab === tab.key;
@@ -1811,6 +1811,9 @@ export default function ConflictResolutionPage() {
             </button>
           );
         })}
+        <span style={{ marginLeft: 'auto', fontSize: 12, color: '#9ca3af' }}>
+          {filtered.length} result{filtered.length !== 1 ? 's' : ''}
+        </span>
       </div>
 
       {/* ── Table ── */}
