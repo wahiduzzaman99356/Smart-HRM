@@ -82,6 +82,10 @@ import {
   BookOutlined,
   CheckOutlined,
   ExportOutlined,
+  FileDoneOutlined,
+  ClearOutlined,
+  CommentOutlined,
+  ProfileOutlined,
   MobileOutlined,
   CarOutlined,
   BranchesOutlined,
@@ -324,7 +328,11 @@ export const NAV_MODULES: NavModule[] = [
     label: 'Offboarding',
     icon: <UserDeleteOutlined />,
     children: [
-      { key: '/offboarding/separation', icon: <ExportOutlined />, label: 'Separation' },
+      { key: '/offboarding/separation-requests', icon: <ExportOutlined />,      label: 'Separation Requests' },
+      { key: '/offboarding/clearance',            icon: <ClearOutlined />,       label: 'Clearance Management' },
+      { key: '/offboarding/final-settlement',     icon: <FileDoneOutlined />,    label: 'Final Settlement' },
+      { key: '/offboarding/exit-interview',       icon: <CommentOutlined />,     label: 'Exit Interview' },
+      { key: '/offboarding/separation-policy',    icon: <ProfileOutlined />,     label: 'Separation Policy' },
     ],
   },
 
