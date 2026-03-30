@@ -297,8 +297,12 @@ export const NAV_MODULES: NavModule[] = [
     label: 'Performance Management',
     icon: <RiseOutlined />,
     children: [
-      { key: '/performance/goals-okr', icon: <AimOutlined />,  label: 'Goals & Alignment (OKRs)' },
-      { key: '/performance/kpi',       icon: <FundOutlined />, label: 'KPI' },
+      { key: '/performance/dashboard',          icon: <DashboardOutlined />,      label: 'Dashboard' },
+      { key: '/performance/main-kpi',           icon: <AimOutlined />,            label: 'Main KPI Areas' },
+      { key: '/performance/sub-kpi-setup',      icon: <PartitionOutlined />,      label: 'Sub KPI Setup' },
+      { key: '/performance/employee-kpi-view',  icon: <FundOutlined />,           label: 'Employee KPI View' },
+      { key: '/performance/designation-matrix', icon: <ReconciliationOutlined />, label: 'Designation Matrix' },
+      { key: '/performance/achievement-level',  icon: <TrophyOutlined />,         label: 'Achievement Level Setup' },
     ],
   },
 

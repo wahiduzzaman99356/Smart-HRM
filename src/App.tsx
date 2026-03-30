@@ -80,6 +80,12 @@ const MyComplaintsPage = lazy(
 const CompliancePage = lazy(
   () => import('@/features/employee-relations/compliance/pages/CompliancePage'),
 );
+const MainKPIAreasPage = lazy(
+  () => import('@/features/performance/pages/MainKPIAreasPage'),
+);
+const SubKPISetupPage = lazy(
+  () => import('@/features/performance/pages/SubKPISetupPage'),
+);
 
 // ── Global providers ──────────────────────────────────────────────────────────
 const queryClient = new QueryClient({
@@ -146,6 +152,14 @@ function AppShell() {
           <Route path="/employee-relations/disciplinary/conflict-resolution" element={<ConflictResolutionPage />} />
           <Route path="/employee-relations/disciplinary/compliance-tracker" element={<CompliancePage />} />
           <Route path="/ess/my-cases" element={<MyComplaintsPage />} />
+
+          {/* ── Performance Management (submenu only) ─────────────────────── */}
+          <Route path="/performance/dashboard"          element={<ComingSoon />} />
+          <Route path="/performance/main-kpi"           element={<MainKPIAreasPage />} />
+          <Route path="/performance/sub-kpi-setup"      element={<SubKPISetupPage />} />
+          <Route path="/performance/employee-kpi-view"  element={<ComingSoon />} />
+          <Route path="/performance/designation-matrix" element={<ComingSoon />} />
+          <Route path="/performance/achievement-level"  element={<ComingSoon />} />
 
           {/* ── Placeholders for every module ── */}
           <Route path="/core-hr/*"             element={<ComingSoon />} />
