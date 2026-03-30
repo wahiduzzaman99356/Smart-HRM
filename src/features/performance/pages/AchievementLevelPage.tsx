@@ -1,324 +1,596 @@
 /**
  * AchievementLevelPage.tsx
- * ─────────────────────────────────────────────────────────────────────────────
- * Performance Management → Achievement Level Setup
- * Configure grading levels (Outstanding, Exceeds Expectations, etc.)
- * with score ranges, color coding, and star ratings.
+ * Performance Management → Achievement Level
+ * List + Create/Edit per designation configuration.
  */
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
+import { Input, Select, Button, Tag, Typography, InputNumber, Space } from 'antd';
 import {
-  Table, Button, Modal, Form, Input, InputNumber, Switch, Tag,
-  Space, Typography, Tooltip, Popconfirm, Card, Rate, Row, Col,
-} from 'antd';
-import type { ColumnsType } from 'antd/es/table';
-import {
-  PlusOutlined, EditOutlined, DeleteOutlined, TrophyOutlined,
-  CheckCircleOutlined, StopOutlined,
+  PlusOutlined, EditOutlined, DeleteOutlined, SearchOutlined,
+  ReloadOutlined, SaveOutlined, ArrowLeftOutlined, CloseOutlined,
+  TrophyOutlined,
 } from '@ant-design/icons';
 import {
-  INITIAL_ACHIEVEMENT_LEVELS,
-  type AchievementLevel,
+  DEPT_SECTION_DESIG_MAP,
+  INITIAL_ACHIEVEMENT_LEVEL_CONFIGS,
+  type AchievementLevelRow,
+  type AchievementLevelConfig,
+  type ScoreOperator,
+  type IncrementType,
 } from '../types/performance.types';
 
-const { Title, Text } = Typography;
-const { TextArea } = Input;
+const { Text, Title } = Typography;
+const { Option } = Select;
 
-const PRESET_COLORS = [
-  '#059669', '#0284c7', '#d97706', '#ea580c', '#dc2626',
-  '#7c3aed', '#0891b2', '#65a30d', '#9333ea', '#e11d48',
-];
+// ── Score operator display helpers ────────────────────────────────────────────
+const SCORE_OP_LABELS: Record<ScoreOperator, string> = {
+  more_than: 'More than',
+  less_than: 'Less than',
+  range:     'Range',
+};
 
+const INCREMENT_TYPE_LABELS: Record<IncrementType, string> = {
+  above:        'Above',
+  exact:        'Exact',
+  no_increment: 'No Increment',
+};
+
+// Level badge colours cycle
+const LEVEL_COLORS = ['#059669', '#0284c7', '#f59e0b', '#ea580c', '#dc2626', '#7c3aed', '#0891b2'];
+
+let _idSeq = 1;
+function uid() { return `id_${Date.now()}_${_idSeq++}`; }
+
+function blankLevel(): AchievementLevelRow {
+  return {
+    id: uid(),
+    name: '',
+    scoreOperator: 'more_than',
+    scoreValue: 0,
+    scoreFrom: 0,
+    scoreTo: 0,
+    incrementType: 'above',
+    incrementPercent: 0,
+  };
+}
+
+function scoreLabel(l: AchievementLevelRow): string {
+  if (l.scoreOperator === 'range') return `${l.scoreFrom} – ${l.scoreTo}`;
+  if (l.scoreOperator === 'more_than') return `> ${l.scoreValue}`;
+  return `< ${l.scoreValue}`;
+}
+
+// ── Component ─────────────────────────────────────────────────────────────────
 export default function AchievementLevelPage() {
-  const [levels, setLevels]       = useState<AchievementLevel[]>(INITIAL_ACHIEVEMENT_LEVELS);
-  const [modalOpen, setModalOpen] = useState(false);
-  const [editing, setEditing]     = useState<AchievementLevel | null>(null);
-  const [form] = Form.useForm();
+  const [configs, setConfigs] = useState<AchievementLevelConfig[]>(
+    INITIAL_ACHIEVEMENT_LEVEL_CONFIGS
+  );
+  const [view, setView]       = useState<'list' | 'form'>('list');
+  const [editId, setEditId]   = useState<string | null>(null);
 
-  const openAdd = () => {
-    setEditing(null);
-    form.resetFields();
-    form.setFieldsValue({ isActive: true, rating: 3, color: '#0284c7' });
-    setModalOpen(true);
+  // ── Form fields ──────────────────────────────────────────────────────────
+  const [formDept,    setFormDept]    = useState('');
+  const [formSection, setFormSection] = useState('');
+  const [formDesig,   setFormDesig]   = useState('');
+  const [formLevels,  setFormLevels]  = useState<AchievementLevelRow[]>([blankLevel()]);
+
+  // ── List filters ──────────────────────────────────────────────────────────
+  const [fDept,    setFDept]    = useState('all');
+  const [fSection, setFSection] = useState('all');
+  const [fDesig,   setFDesig]   = useState('all');
+  const [searchQ,  setSearchQ]  = useState('');
+
+  // ── Cascading form dropdown options ───────────────────────────────────────
+  const allDepts = useMemo(
+    () => [...new Set(DEPT_SECTION_DESIG_MAP.map(m => m.department))],
+    []
+  );
+  const sectionsForDept = useMemo(
+    () => DEPT_SECTION_DESIG_MAP.filter(m => m.department === formDept).map(m => m.section),
+    [formDept]
+  );
+  const desigsForSection = useMemo(() => {
+    const entry = DEPT_SECTION_DESIG_MAP.find(
+      m => m.department === formDept && m.section === formSection
+    );
+    return entry?.designations ?? [];
+  }, [formDept, formSection]);
+
+  // ── Navigation helpers ────────────────────────────────────────────────────
+  const openCreate = () => {
+    setEditId(null);
+    setFormDept(''); setFormSection(''); setFormDesig('');
+    setFormLevels([blankLevel()]);
+    setView('form');
   };
 
-  const openEdit = (record: AchievementLevel) => {
-    setEditing(record);
-    form.setFieldsValue(record);
-    setModalOpen(true);
+  const openEdit = (cfg: AchievementLevelConfig) => {
+    setEditId(cfg.id);
+    setFormDept(cfg.department);
+    setFormSection(cfg.section);
+    setFormDesig(cfg.designation);
+    setFormLevels(cfg.levels.map(l => ({ ...l })));
+    setView('form');
   };
 
-  const handleDelete = (id: string) => setLevels(prev => prev.filter(l => l.id !== id));
-  const handleToggle = (id: string) => setLevels(prev => prev.map(l => l.id === id ? { ...l, isActive: !l.isActive } : l));
+  const handleDeleteConfig = (id: string) =>
+    setConfigs(prev => prev.filter(c => c.id !== id));
 
-  const handleSubmit = () => {
-    form.validateFields().then(values => {
-      if (editing) {
-        setLevels(prev => prev.map(l => l.id === editing.id ? { ...l, ...values } : l));
-      } else {
-        setLevels(prev => [
-          ...prev,
-          { ...values, id: `al-${Date.now()}` },
-        ].sort((a, b) => b.minScore - a.minScore));
-      }
-      setModalOpen(false);
+  const handleSave = () => {
+    if (!formDept || !formSection || !formDesig || formLevels.length === 0) return;
+    const cfg: AchievementLevelConfig = {
+      id: editId ?? uid(),
+      department: formDept,
+      section:    formSection,
+      designation: formDesig,
+      levels: formLevels,
+    };
+    setConfigs(prev =>
+      editId ? prev.map(c => c.id === editId ? cfg : c) : [...prev, cfg]
+    );
+    setView('list');
+  };
+
+  // ── Level row mutators ────────────────────────────────────────────────────
+  const updateLevel = (id: string, field: keyof AchievementLevelRow, value: unknown) =>
+    setFormLevels(prev => prev.map(l => l.id === id ? { ...l, [field]: value } : l));
+
+  const addLevel    = () => setFormLevels(prev => [...prev, blankLevel()]);
+  const removeLevel = (id: string) => setFormLevels(prev => prev.filter(l => l.id !== id));
+
+  // ── Filtered list ────────────────────────────────────────────────────────
+  const filteredConfigs = useMemo(() => {
+    return configs.filter(cfg => {
+      if (fDept    !== 'all' && cfg.department  !== fDept)    return false;
+      if (fSection !== 'all' && cfg.section     !== fSection) return false;
+      if (fDesig   !== 'all' && cfg.designation !== fDesig)   return false;
+      const q = searchQ.trim().toLowerCase();
+      if (q && ![cfg.department, cfg.section, cfg.designation].some(s => s.toLowerCase().includes(q)))
+        return false;
+      return true;
     });
-  };
+  }, [configs, fDept, fSection, fDesig, searchQ]);
 
-  // ── Validation: check for overlapping score ranges ────────────────────────
-  const hasOverlap = (l: AchievementLevel[]) => {
-    const sorted = [...l].filter(x => x.isActive).sort((a, b) => a.minScore - b.minScore);
-    for (let i = 0; i < sorted.length - 1; i++) {
-      if (sorted[i].maxScore >= sorted[i + 1].minScore) return true;
-    }
-    return false;
-  };
-  const overlap = hasOverlap(levels);
+  const allDeptList  = [...new Set(configs.map(c => c.department))];
+  const allSecList   = [...new Set(configs.map(c => c.section))];
+  const allDesigList = [...new Set(configs.map(c => c.designation))];
 
-  const sortedLevels = [...levels].sort((a, b) => b.minScore - a.minScore);
+  const canSave =
+    !!formDept && !!formSection && !!formDesig &&
+    formLevels.length > 0 &&
+    formLevels.every(l => l.name.trim() !== '');
 
-  const columns: ColumnsType<AchievementLevel> = [
-    {
-      title: '#',
-      dataIndex: 'rating',
-      width: 50,
-      align: 'center',
-      render: (r: number) => <Text strong style={{ color: '#0f766e' }}>{r}</Text>,
-    },
-    {
-      title: 'Code',
-      dataIndex: 'code',
-      width: 70,
-      render: (v: string, row) => (
-        <Tag
+  // ══════════════════════════════════════════════════════════════════════════
+  // LIST VIEW
+  // ══════════════════════════════════════════════════════════════════════════
+  if (view === 'list') {
+    return (
+      <div style={{ padding: '16px 20px', background: '#f0faf8', minHeight: '100%' }}>
+
+        {/* Header */}
+        <div style={{ marginBottom: 16 }}>
+          <Title level={3} style={{ margin: 0, color: '#0f766e', fontWeight: 700 }}>
+            <TrophyOutlined style={{ marginRight: 8 }} />Achievement Level
+          </Title>
+          <Text style={{ color: '#6b7280', fontSize: 13, fontStyle: 'italic' }}>
+            Configure score-based achievement levels and increment percentages per designation
+          </Text>
+        </div>
+
+        {/* Filter + Create bar */}
+        <div
           style={{
-            background: row.color + '22',
-            color: row.color,
-            border: `1px solid ${row.color}55`,
-            fontWeight: 700,
-            fontSize: 12,
+            display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center',
+            justifyContent: 'space-between', padding: '12px 16px',
+            background: '#fff', borderRadius: 12, marginBottom: 16,
+            boxShadow: '0 1px 4px rgba(0,0,0,0.07)',
           }}
         >
-          {v}
-        </Tag>
-      ),
-    },
-    {
-      title: 'Achievement Level',
-      dataIndex: 'name',
-      render: (name: string, row) => (
-        <Space>
-          <span
-            style={{ display: 'inline-block', width: 12, height: 12, borderRadius: '50%', background: row.color }}
-          />
-          <Text strong style={{ fontSize: 13 }}>{name}</Text>
-        </Space>
-      ),
-    },
-    {
-      title: 'Score Range',
-      width: 160,
-      render: (_: unknown, row) => (
-        <Space size={4}>
-          <Tag color="default" style={{ fontFamily: 'monospace' }}>{row.minScore}%</Tag>
-          <Text type="secondary">—</Text>
-          <Tag color="default" style={{ fontFamily: 'monospace' }}>{row.maxScore}%</Tag>
-        </Space>
-      ),
-    },
-    {
-      title: 'Rating',
-      dataIndex: 'rating',
-      width: 140,
-      render: (r: number, row) => (
-        <Rate disabled defaultValue={r} count={5} style={{ fontSize: 14, color: row.color }} />
-      ),
-    },
-    {
-      title: 'Description',
-      dataIndex: 'description',
-      ellipsis: true,
-      render: (d: string) => <Text type="secondary" style={{ fontSize: 12 }}>{d}</Text>,
-    },
-    {
-      title: 'Status',
-      dataIndex: 'isActive',
-      width: 80,
-      render: (a: boolean) => (
-        <Tag color={a ? 'success' : 'default'} icon={a ? <CheckCircleOutlined /> : <StopOutlined />} style={{ fontSize: 10 }}>
-          {a ? 'Active' : 'Off'}
-        </Tag>
-      ),
-    },
-    {
-      title: '',
-      width: 90,
-      render: (_: unknown, record: AchievementLevel) => (
-        <Space size={4}>
-          <Tooltip title="Edit"><Button size="small" icon={<EditOutlined />} onClick={() => openEdit(record)} /></Tooltip>
-          <Tooltip title={record.isActive ? 'Deactivate' : 'Activate'}>
-            <Button size="small" icon={record.isActive ? <StopOutlined /> : <CheckCircleOutlined />} onClick={() => handleToggle(record.id)} />
-          </Tooltip>
-          <Tooltip title="Delete">
-            <Popconfirm title="Delete this achievement level?" onConfirm={() => handleDelete(record.id)} okType="danger">
-              <Button size="small" danger icon={<DeleteOutlined />} />
-            </Popconfirm>
-          </Tooltip>
-        </Space>
-      ),
-    },
-  ];
-
-  return (
-    <div style={{ padding: '16px 20px', background: '#f0f4f3', minHeight: '100%' }}>
-
-      {/* ── Header ─────────────────────────────────────────────────────────── */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-        <div>
-          <Title level={4} style={{ margin: 0, color: '#0f766e' }}>
-            <TrophyOutlined style={{ marginRight: 8 }} />Achievement Level Setup
-          </Title>
-          <Text type="secondary" style={{ fontSize: 12 }}>
-            Configure performance grading levels with score ranges, ratings, and colour coding
-          </Text>
+          <Space wrap>
+            <Input
+              value={searchQ} onChange={e => setSearchQ(e.target.value)}
+              placeholder="Search..."
+              prefix={<SearchOutlined style={{ color: '#9ca3af' }} />}
+              style={{ width: 200, borderRadius: 8 }}
+            />
+            <Select
+              showSearch value={fDept} onChange={setFDept}
+              style={{ width: 180 }}
+              optionFilterProp="children"
+            >
+              <Option value="all">All Departments</Option>
+              {allDeptList.map(d => <Option key={d} value={d}>{d}</Option>)}
+            </Select>
+            <Select
+              showSearch value={fSection} onChange={setFSection}
+              style={{ width: 160 }}
+              optionFilterProp="children"
+            >
+              <Option value="all">All Sections</Option>
+              {allSecList.map(s => <Option key={s} value={s}>{s}</Option>)}
+            </Select>
+            <Select
+              showSearch value={fDesig} onChange={setFDesig}
+              style={{ width: 160 }}
+              optionFilterProp="children"
+            >
+              <Option value="all">All Designations</Option>
+              {allDesigList.map(d => <Option key={d} value={d}>{d}</Option>)}
+            </Select>
+            <Button
+              icon={<ReloadOutlined />}
+              onClick={() => { setFDept('all'); setFSection('all'); setFDesig('all'); setSearchQ(''); }}
+              style={{ borderRadius: 8 }}
+            >
+              Reset
+            </Button>
+          </Space>
+          <Button
+            type="primary" icon={<PlusOutlined />} onClick={openCreate}
+            style={{ borderRadius: 10, background: '#0f766e', borderColor: '#0f766e', paddingInline: 18 }}
+          >
+            + Create
+          </Button>
         </div>
-        <Button type="primary" icon={<PlusOutlined />} onClick={openAdd}>Add Level</Button>
-      </div>
 
-      {/* ── Validation warning ────────────────────────────────────────────── */}
-      {overlap && (
-        <div style={{ marginBottom: 12, padding: '8px 14px', background: '#fef2f2', borderRadius: 8, border: '1px solid #fecaca' }}>
-          <Text style={{ color: '#991b1b', fontSize: 12 }}>
-            ⚠ Some active achievement levels have overlapping score ranges. Please adjust min/max values.
-          </Text>
-        </div>
-      )}
-
-      {/* ── Visual scale ─────────────────────────────────────────────────── */}
-      <Card bordered={false} size="small" style={{ borderRadius: 10, marginBottom: 12, overflow: 'hidden' }}>
-        <Text style={{ fontSize: 12, color: '#6b7280', marginBottom: 8, display: 'block' }}>Score Scale (0–100%)</Text>
-        <div style={{ display: 'flex', height: 28, borderRadius: 8, overflow: 'hidden', width: '100%' }}>
-          {sortedLevels.filter(l => l.isActive).map(level => {
-            const width = level.maxScore - level.minScore + 1;
-            return (
-              <Tooltip
-                key={level.id}
-                title={`${level.name}: ${level.minScore}%–${level.maxScore}%`}
+        {/* Config cards */}
+        {filteredConfigs.length === 0 ? (
+          <div style={{ textAlign: 'center', padding: '60px 0', color: '#9ca3af', fontSize: 14 }}>
+            No achievement level configurations found.
+          </div>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            {filteredConfigs.map(cfg => (
+              <div
+                key={cfg.id}
+                style={{
+                  background: '#fff', borderRadius: 12, padding: '16px 20px',
+                  boxShadow: '0 1px 4px rgba(0,0,0,0.07)',
+                  border: '1.5px solid #e5e7eb',
+                }}
               >
+                {/* Card header */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 14 }}>
+                  <div>
+                    <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 4 }}>
+                      <Tag style={{ borderRadius: 6, background: '#e6f7f4', borderColor: '#a7e3d9', color: '#0f766e', fontWeight: 700, fontSize: 12 }}>
+                        {cfg.designation}
+                      </Tag>
+                      <Text style={{ fontSize: 12, color: '#6b7280' }}>
+                        {cfg.department} · {cfg.section}
+                      </Text>
+                    </div>
+                    <Text style={{ fontSize: 11, color: '#9ca3af' }}>
+                      {cfg.levels.length} level{cfg.levels.length !== 1 ? 's' : ''} configured
+                    </Text>
+                  </div>
+                  <Space>
+                    <Button
+                      size="small" icon={<EditOutlined />} onClick={() => openEdit(cfg)}
+                      style={{ borderRadius: 8, borderColor: '#a7e3d9', color: '#0f766e', background: '#f0fdf9' }}
+                    >
+                      Edit
+                    </Button>
+                    <Button
+                      size="small" icon={<DeleteOutlined />} onClick={() => handleDeleteConfig(cfg.id)}
+                      style={{ borderRadius: 8, borderColor: '#fecaca', color: '#ef4444', background: '#fff5f5' }}
+                    />
+                  </Space>
+                </div>
+
+                {/* Level pills row */}
                 <div
                   style={{
-                    flex: width,
-                    background: level.color,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    color: '#fff',
-                    fontSize: 10,
-                    fontWeight: 600,
-                    cursor: 'default',
-                    borderRight: '1px solid rgba(255,255,255,0.3)',
+                    display: 'grid',
+                    gridTemplateColumns: `repeat(${cfg.levels.length}, 1fr)`,
+                    gap: 8,
                   }}
                 >
-                  {level.code}
+                  {cfg.levels.map((lv, idx) => {
+                    const color = LEVEL_COLORS[idx % LEVEL_COLORS.length];
+                    return (
+                      <div
+                        key={lv.id}
+                        style={{
+                          background: color + '12',
+                          border: `1.5px solid ${color}44`,
+                          borderRadius: 10, padding: '10px 12px',
+                        }}
+                      >
+                        <Text style={{ fontSize: 12, fontWeight: 700, color, display: 'block', marginBottom: 6 }}>
+                          {lv.name}
+                        </Text>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                          <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
+                            <Text style={{ fontSize: 10, color: '#9ca3af' }}>Score:</Text>
+                            <Tag style={{ fontSize: 10, borderRadius: 4, margin: 0, padding: '0 5px', background: '#f1f5f9', borderColor: '#e2e8f0', color: '#475569' }}>
+                              {SCORE_OP_LABELS[lv.scoreOperator]}
+                            </Tag>
+                            <Text style={{ fontSize: 11, fontWeight: 600, color: '#374151' }}>
+                              {scoreLabel(lv)}
+                            </Text>
+                          </div>
+                          <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
+                            <Text style={{ fontSize: 10, color: '#9ca3af' }}>Increment:</Text>
+                            <Tag
+                              style={{
+                                fontSize: 10, borderRadius: 4, margin: 0, padding: '0 5px',
+                                ...(lv.incrementType === 'no_increment'
+                                  ? { background: '#fff1f2', borderColor: '#fecdd3', color: '#be123c' }
+                                  : { background: '#f0fdf4', borderColor: '#bbf7d0', color: '#15803d' }),
+                              }}
+                            >
+                              {INCREMENT_TYPE_LABELS[lv.incrementType]}
+                            </Tag>
+                            {lv.incrementType !== 'no_increment' && (
+                              <Text style={{ fontSize: 11, fontWeight: 700, color: '#059669' }}>
+                                {lv.incrementPercent}%
+                              </Text>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
-              </Tooltip>
-            );
-          })}
-        </div>
-        <Row style={{ marginTop: 6 }}>
-          {[0, 25, 50, 75, 100].map(v => (
-            <Col key={v} style={{ flex: v === 100 ? 0 : undefined, marginLeft: v === 100 ? 'auto' : undefined }}>
-              <Text type="secondary" style={{ fontSize: 10 }}>{v}%</Text>
-            </Col>
-          ))}
-        </Row>
-      </Card>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  }
 
-      {/* ── Table ─────────────────────────────────────────────────────────── */}
-      <Card bordered={false} style={{ borderRadius: 12, boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}>
-        <Table
-          dataSource={sortedLevels}
-          columns={columns}
-          rowKey="id"
-          size="small"
-          pagination={false}
-          scroll={{ x: 900 }}
+  // ══════════════════════════════════════════════════════════════════════════
+  // FORM VIEW
+  // ══════════════════════════════════════════════════════════════════════════
+  const GRID = '160px 150px 200px 150px 110px 36px';
+
+  return (
+    <div style={{ padding: '16px 20px', background: '#f0faf8', minHeight: '100%' }}>
+
+      {/* Form header */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
+        <Button
+          icon={<ArrowLeftOutlined />}
+          onClick={() => setView('list')}
+          style={{ borderRadius: 8, borderColor: '#a7e3d9', color: '#0f766e' }}
         />
-      </Card>
+        <div>
+          <Title level={4} style={{ margin: 0, color: '#111827' }}>
+            {editId ? 'Edit' : 'Create'} Achievement Level
+          </Title>
+          <Text style={{ color: '#6b7280', fontSize: 12 }}>
+            Select a designation, then configure score-based levels and increment percentages
+          </Text>
+        </div>
+      </div>
 
-      {/* ── Add / Edit Modal ─────────────────────────────────────────────── */}
-      <Modal
-        title={
-          <Space>
-            <TrophyOutlined style={{ color: '#0f766e' }} />
-            {editing ? 'Edit Achievement Level' : 'Add Achievement Level'}
-          </Space>
-        }
-        open={modalOpen}
-        onOk={handleSubmit}
-        onCancel={() => setModalOpen(false)}
-        okText={editing ? 'Update' : 'Add'}
-        width={540}
-        destroyOnClose
+      {/* ── Section 1: Target Designation ─────────────────────────────────── */}
+      <div
+        style={{
+          background: '#fff', borderRadius: 12, padding: '20px 24px',
+          marginBottom: 20, boxShadow: '0 1px 4px rgba(0,0,0,0.07)',
+        }}
       >
-        <Form form={form} layout="vertical" style={{ marginTop: 16 }}>
-          <Space style={{ width: '100%', gap: 12, display: 'flex' }}>
-            <Form.Item name="code" label="Code" rules={[{ required: true }]} style={{ width: 100 }}>
-              <Input placeholder="OS" maxLength={4} style={{ textTransform: 'uppercase' }} />
-            </Form.Item>
-            <Form.Item name="name" label="Level Name" rules={[{ required: true }]} style={{ flex: 1 }}>
-              <Input placeholder="e.g. Outstanding" />
-            </Form.Item>
-            <Form.Item name="rating" label="Rating (1–5)" rules={[{ required: true }]} style={{ width: 120 }}>
-              <InputNumber min={1} max={5} style={{ width: '100%' }} />
-            </Form.Item>
-          </Space>
-          <Space style={{ width: '100%', gap: 12, display: 'flex' }}>
-            <Form.Item
-              name="minScore"
-              label="Min Score (%)"
-              rules={[{ required: true }, { type: 'number', min: 0, max: 100 }]}
-              style={{ flex: 1 }}
+        <Text style={{ fontSize: 13, fontWeight: 700, color: '#374151', display: 'block', marginBottom: 14 }}>
+          Target Designation
+        </Text>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 14 }}>
+
+          {/* Department */}
+          <div>
+            <Text style={{ fontSize: 11, color: '#6b7280', display: 'block', marginBottom: 5 }}>
+              Department <span style={{ color: '#dc2626' }}>*</span>
+            </Text>
+            <Select
+              showSearch
+              value={formDept || undefined}
+              placeholder="Select department..."
+              style={{ width: '100%' }}
+              onChange={v => { setFormDept(v); setFormSection(''); setFormDesig(''); }}
+              optionFilterProp="children"
             >
-              <InputNumber min={0} max={100} style={{ width: '100%' }} addonAfter="%" />
-            </Form.Item>
-            <Form.Item
-              name="maxScore"
-              label="Max Score (%)"
-              rules={[{ required: true }, { type: 'number', min: 0, max: 100 }]}
-              style={{ flex: 1 }}
+              {allDepts.map(d => <Option key={d} value={d}>{d}</Option>)}
+            </Select>
+          </div>
+
+          {/* Section */}
+          <div>
+            <Text style={{ fontSize: 11, color: '#6b7280', display: 'block', marginBottom: 5 }}>
+              Section <span style={{ color: '#dc2626' }}>*</span>
+            </Text>
+            <Select
+              showSearch
+              value={formSection || undefined}
+              placeholder="Select section..."
+              style={{ width: '100%' }}
+              disabled={!formDept}
+              onChange={v => { setFormSection(v); setFormDesig(''); }}
+              optionFilterProp="children"
             >
-              <InputNumber min={0} max={100} style={{ width: '100%' }} addonAfter="%" />
-            </Form.Item>
-          </Space>
-          <Form.Item name="color" label="Colour">
-            <Space wrap>
-              {PRESET_COLORS.map(c => (
-                <div
-                  key={c}
-                  onClick={() => form.setFieldValue('color', c)}
-                  style={{
-                    width: 24, height: 24, borderRadius: '50%', background: c, cursor: 'pointer',
-                    border: form.getFieldValue('color') === c ? '3px solid #111' : '2px solid transparent',
-                  }}
-                />
-              ))}
+              {sectionsForDept.map(s => <Option key={s} value={s}>{s}</Option>)}
+            </Select>
+          </div>
+
+          {/* Designation */}
+          <div>
+            <Text style={{ fontSize: 11, color: '#6b7280', display: 'block', marginBottom: 5 }}>
+              Designation <span style={{ color: '#dc2626' }}>*</span>
+            </Text>
+            <Select
+              showSearch
+              value={formDesig || undefined}
+              placeholder="Select designation..."
+              style={{ width: '100%' }}
+              disabled={!formSection}
+              onChange={setFormDesig}
+              optionFilterProp="children"
+            >
+              {desigsForSection.map(d => <Option key={d} value={d}>{d}</Option>)}
+            </Select>
+          </div>
+        </div>
+      </div>
+
+      {/* ── Section 2: Achievement Levels ──────────────────────────────────── */}
+      <div
+        style={{
+          background: '#fff', borderRadius: 12, padding: '20px 24px',
+          marginBottom: 20, boxShadow: '0 1px 4px rgba(0,0,0,0.07)',
+        }}
+      >
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+          <Text style={{ fontSize: 13, fontWeight: 700, color: '#374151' }}>Achievement Levels</Text>
+          <Button
+            size="small" icon={<PlusOutlined />} onClick={addLevel}
+            style={{ borderRadius: 8, borderColor: '#a7e3d9', color: '#0f766e', background: '#f0fdf9' }}
+          >
+            Add Level
+          </Button>
+        </div>
+
+        {/* Table header */}
+        <div
+          style={{
+            display: 'grid', gridTemplateColumns: GRID,
+            gap: 8, padding: '8px 12px',
+            background: '#f9fafb', borderRadius: 8, marginBottom: 6,
+            border: '1px solid #f3f4f6',
+          }}
+        >
+          {['LEVEL NAME', 'SCORE OPERATOR', 'SCORE', 'INCREMENT TYPE', 'INCREMENT %', ''].map(h => (
+            <Text key={h} style={{ fontSize: 10, fontWeight: 700, color: '#6b7280', letterSpacing: 0.8 }}>
+              {h}
+            </Text>
+          ))}
+        </div>
+
+        {/* Level rows */}
+        {formLevels.length === 0 ? (
+          <div style={{ padding: '30px', textAlign: 'center', color: '#9ca3af', fontSize: 13 }}>
+            No levels added yet. Click "Add Level" to start.
+          </div>
+        ) : (
+          formLevels.map((level, idx) => (
+            <div
+              key={level.id}
+              style={{
+                display: 'grid', gridTemplateColumns: GRID,
+                gap: 8, padding: '9px 12px',
+                borderBottom: idx < formLevels.length - 1 ? '1px solid #f3f4f6' : 'none',
+                alignItems: 'center',
+              }}
+            >
+              {/* Level Name */}
               <Input
-                style={{ width: 90 }}
-                value={form.getFieldValue('color')}
-                onChange={e => form.setFieldValue('color', e.target.value)}
-                placeholder="#hex"
+                size="small"
+                value={level.name}
+                onChange={e => updateLevel(level.id, 'name', e.target.value)}
+                placeholder="e.g. Excellent"
+                style={{ borderRadius: 6 }}
               />
-            </Space>
-          </Form.Item>
-          <Form.Item name="description" label="Description">
-            <TextArea rows={2} placeholder="Describe this achievement level…" />
-          </Form.Item>
-          <Form.Item name="isActive" label="Active" valuePropName="checked">
-            <Switch />
-          </Form.Item>
-        </Form>
-      </Modal>
+
+              {/* Score Operator */}
+              <Select
+                size="small"
+                value={level.scoreOperator}
+                onChange={v => updateLevel(level.id, 'scoreOperator', v as ScoreOperator)}
+                style={{ width: '100%' }}
+              >
+                <Option value="more_than">More than</Option>
+                <Option value="less_than">Less than</Option>
+                <Option value="range">Range</Option>
+              </Select>
+
+              {/* Score value(s) */}
+              <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
+                {level.scoreOperator === 'range' ? (
+                  <>
+                    <InputNumber
+                      size="small" min={0} max={100}
+                      value={level.scoreFrom}
+                      onChange={v => updateLevel(level.id, 'scoreFrom', v ?? 0)}
+                      style={{ width: '46%', borderRadius: 6 }}
+                      placeholder="From"
+                    />
+                    <Text style={{ fontSize: 12, color: '#9ca3af', flexShrink: 0 }}>–</Text>
+                    <InputNumber
+                      size="small" min={0} max={100}
+                      value={level.scoreTo}
+                      onChange={v => updateLevel(level.id, 'scoreTo', v ?? 0)}
+                      style={{ width: '46%', borderRadius: 6 }}
+                      placeholder="To"
+                    />
+                  </>
+                ) : (
+                  <InputNumber
+                    size="small" min={0} max={100}
+                    value={level.scoreValue}
+                    onChange={v => updateLevel(level.id, 'scoreValue', v ?? 0)}
+                    style={{ width: '100%', borderRadius: 6 }}
+                    addonAfter="%"
+                  />
+                )}
+              </div>
+
+              {/* Increment Type */}
+              <Select
+                size="small"
+                value={level.incrementType}
+                onChange={v => {
+                  updateLevel(level.id, 'incrementType', v as IncrementType);
+                  if (v === 'no_increment') updateLevel(level.id, 'incrementPercent', 0);
+                }}
+                style={{ width: '100%' }}
+              >
+                <Option value="above">Above</Option>
+                <Option value="exact">Exact</Option>
+                <Option value="no_increment">No Increment</Option>
+              </Select>
+
+              {/* Increment % */}
+              <InputNumber
+                size="small" min={0} max={100}
+                value={level.incrementPercent}
+                onChange={v => updateLevel(level.id, 'incrementPercent', v ?? 0)}
+                disabled={level.incrementType === 'no_increment'}
+                style={{ width: '100%', borderRadius: 6 }}
+                addonAfter="%"
+              />
+
+              {/* Remove */}
+              <Button
+                size="small" icon={<CloseOutlined />}
+                onClick={() => removeLevel(level.id)}
+                style={{
+                  borderRadius: 6, borderColor: '#fecaca', color: '#dc2626',
+                  background: '#fff5f5', padding: '0 6px',
+                }}
+              />
+            </div>
+          ))
+        )}
+      </div>
+
+      {/* Footer actions */}
+      <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
+        <Button
+          onClick={() => setView('list')}
+          style={{ borderRadius: 10, borderColor: '#a7e3d9', color: '#0f766e', paddingInline: 20 }}
+        >
+          Cancel
+        </Button>
+        <Button
+          type="primary" icon={<SaveOutlined />}
+          disabled={!canSave}
+          onClick={handleSave}
+          style={{ borderRadius: 10, background: '#0f766e', borderColor: '#0f766e', paddingInline: 24 }}
+        >
+          Save Configuration
+        </Button>
+      </div>
     </div>
   );
 }
