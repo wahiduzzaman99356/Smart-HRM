@@ -86,6 +86,18 @@ const MainKPIAreasPage = lazy(
 const SubKPISetupPage = lazy(
   () => import('@/features/performance/pages/SubKPISetupPage'),
 );
+const EmployeeKPIViewPage = lazy(
+  () => import('@/features/performance/pages/EmployeeKPIViewPage'),
+);
+const AchievementLevelPage = lazy(
+  () => import('@/features/performance/pages/AchievementLevelPage'),
+);
+const EvaluationPage = lazy(
+  () => import('@/features/performance/pages/EvaluationPage'),
+);
+const DesignationMatrixPage = lazy(
+  () => import('@/features/performance/pages/DesignationMatrixPage'),
+);
 
 // ── Global providers ──────────────────────────────────────────────────────────
 const queryClient = new QueryClient({
@@ -157,9 +169,10 @@ function AppShell() {
           <Route path="/performance/dashboard"          element={<ComingSoon />} />
           <Route path="/performance/main-kpi"           element={<MainKPIAreasPage />} />
           <Route path="/performance/sub-kpi-setup"      element={<SubKPISetupPage />} />
-          <Route path="/performance/employee-kpi-view"  element={<ComingSoon />} />
-          <Route path="/performance/designation-matrix" element={<ComingSoon />} />
-          <Route path="/performance/achievement-level"  element={<ComingSoon />} />
+          <Route path="/performance/evaluation"         element={<EvaluationPage />} />
+          <Route path="/performance/employee-kpi-view"  element={<EmployeeKPIViewPage />} />
+          <Route path="/performance/designation-matrix" element={<DesignationMatrixPage />} />
+          <Route path="/performance/achievement-level"  element={<AchievementLevelPage />} />
 
           {/* ── Placeholders for every module ── */}
           <Route path="/core-hr/*"             element={<ComingSoon />} />

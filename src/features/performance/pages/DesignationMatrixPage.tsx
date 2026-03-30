@@ -1,326 +1,472 @@
 /**
  * DesignationMatrixPage.tsx
- * ─────────────────────────────────────────────────────────────────────────────
- * Performance Management → Designation Matrix
- * Maps designations to KPI areas with weighted allocations.
+ * Performance Management -> Designation Matrix
+ * View-only designation-wise KPI coverage by eval type.
  */
 
-import { useState, useMemo } from 'react';
-import {
-  Table, Button, Modal, Form, Input, InputNumber, Select, Switch, Tag,
-  Space, Typography, Tooltip, Popconfirm, Card, Tabs, Progress,
-} from 'antd';
+import { useMemo, useState } from 'react';
+import { Button, Card, Select, Space, Table, Tabs, Tag, Typography } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
+import { EditOutlined, PlusOutlined, ReconciliationOutlined, ReloadOutlined, SearchOutlined } from '@ant-design/icons';
 import {
-  PlusOutlined, EditOutlined, DeleteOutlined,
-  ReconciliationOutlined, CheckCircleOutlined, StopOutlined, AppstoreOutlined,
-} from '@ant-design/icons';
-import {
-  INITIAL_DESIGNATION_MATRIX,
-  INITIAL_MAIN_KPI_AREAS,
-  type DesignationMatrix,
-  type KPIPerspective,
+  DEPT_SECTION_DESIG_MAP,
+  INITIAL_EMPLOYEES,
+  INITIAL_SUB_KPIS,
+  type KPIEvalType,
 } from '../types/performance.types';
 
 const { Title, Text } = Typography;
 const { Option } = Select;
 
-const PERSPECTIVE_COLORS: Record<KPIPerspective, string> = {
-  'Financial':         '#0284c7',
-  'Customer':          '#059669',
-  'Internal Process':  '#d97706',
-  'Learning & Growth': '#7c3aed',
+type EvalTab = KPIEvalType;
+
+type MatrixRow = {
+  key: string;
+  subKPIId: string;
+  mainKPIAreaId: string;
+  designation: string;
+  subKPIName: string;
+  category: string;
+  evalType: KPIEvalType;
+  measurementCriteria: string;
+  weight: number;
+  operator: string;
+  target: number;
+  responsible: string;
 };
 
-const DEPARTMENTS = ['Executive', 'Finance', 'Human Resources', 'IT', 'Sales', 'Operations', 'Marketing'];
+type MatrixItem = {
+  areaId: string;
+  areaCode: string;
+  areaName: string;
+  row: MatrixRow;
+};
+
+type MatrixGroup = {
+  areaId: string;
+  areaCode: string;
+  areaName: string;
+  areaWeight: number;
+  rows: MatrixRow[];
+};
+
+const EXAMPLE_ITEMS: Record<'Appraisal' | 'Confirmation KPI', Omit<MatrixItem, 'row'> & {
+  subKPIName: string;
+  category: string;
+  measurementCriteria: string;
+  weight: number;
+  operator: string;
+  target: number;
+}> = {
+  Appraisal: {
+    areaId: 'mk-area-05',
+    areaCode: 'MK-05',
+    areaName: 'Performance Management',
+    subKPIName: 'Appraisal Documentation Quality',
+    category: 'Manual',
+    measurementCriteria: 'Completeness and quality of submitted appraisal forms',
+    weight: 20,
+    operator: '>=',
+    target: 90,
+  },
+  'Confirmation KPI': {
+    areaId: 'mk-area-02',
+    areaCode: 'MK-02',
+    areaName: 'Talent Acquisition & Workforce Management',
+    subKPIName: 'Probation Confirmation Readiness',
+    category: 'Manual',
+    measurementCriteria: 'Employees meeting confirmation checklist and target criteria',
+    weight: 25,
+    operator: '>=',
+    target: 85,
+  },
+};
+
+function unique<T>(arr: T[]): T[] {
+  return [...new Set(arr)];
+}
 
 export default function DesignationMatrixPage() {
-  const [matrix, setMatrix]     = useState<DesignationMatrix[]>(INITIAL_DESIGNATION_MATRIX);
-  const [modalOpen, setModalOpen] = useState(false);
-  const [editing, setEditing]   = useState<DesignationMatrix | null>(null);
-  const [form] = Form.useForm();
-  const [activeTab, setActiveTab] = useState<'list' | 'matrix'>('list');
+  const [activeTab, setActiveTab] = useState<EvalTab>('Evaluation');
 
-  // ── Unique designations ───────────────────────────────────────────────────
-  const designations = useMemo(() =>
-    Array.from(new Set(matrix.map(m => m.designation))), [matrix]);
+  // Draft filters (no auto apply)
+  const [draftDept, setDraftDept] = useState<string>('all');
+  const [draftSection, setDraftSection] = useState<string>('all');
+  const [draftDesignation, setDraftDesignation] = useState<string>('all');
 
-  // ── Matrix view: rows = designations, columns = KPI areas ─────────────────
-  const matrixData = useMemo(() =>
-    designations.map(desig => {
-      const row: Record<string, unknown> = { designation: desig };
-      const deptRow = matrix.find(m => m.designation === desig);
-      row.department = deptRow?.department ?? '';
-      INITIAL_MAIN_KPI_AREAS.forEach(area => {
-        const entry = matrix.find(m => m.designation === desig && m.kpiAreaId === area.id && m.isActive);
-        row[area.id] = entry?.weight ?? null;
-      });
-      const totalW = matrix
-        .filter(m => m.designation === desig && m.isActive)
-        .reduce((s, m) => s + m.weight, 0);
-      row.totalWeight = totalW;
-      return row;
-    }), [matrix, designations]);
+  // Applied filters (table uses these)
+  const [filterDept, setFilterDept] = useState<string>('all');
+  const [filterSection, setFilterSection] = useState<string>('all');
+  const [filterDesignation, setFilterDesignation] = useState<string>('all');
 
-  // ── Handlers ─────────────────────────────────────────────────────────────
-  const openAdd = () => {
-    setEditing(null);
-    form.resetFields();
-    form.setFieldsValue({ isActive: true });
-    setModalOpen(true);
-  };
+  const departments = useMemo(
+    () => unique(DEPT_SECTION_DESIG_MAP.map(m => m.department)),
+    [],
+  );
 
-  const openEdit = (record: DesignationMatrix) => {
-    setEditing(record);
-    form.setFieldsValue(record);
-    setModalOpen(true);
-  };
+  const draftSections = useMemo(() => {
+    const source = draftDept === 'all'
+      ? DEPT_SECTION_DESIG_MAP
+      : DEPT_SECTION_DESIG_MAP.filter(m => m.department === draftDept);
+    return unique(source.map(m => m.section));
+  }, [draftDept]);
 
-  const handleDelete = (id: string) => setMatrix(prev => prev.filter(m => m.id !== id));
-  const handleToggle = (id: string) => setMatrix(prev => prev.map(m => m.id === id ? { ...m, isActive: !m.isActive } : m));
-
-  const handleSubmit = () => {
-    form.validateFields().then(values => {
-      const area = INITIAL_MAIN_KPI_AREAS.find(a => a.id === values.kpiAreaId);
-      if (editing) {
-        setMatrix(prev => prev.map(m => m.id === editing.id
-          ? { ...m, ...values, kpiAreaName: area?.name ?? '', perspective: area?.perspective ?? m.perspective }
-          : m));
-      } else {
-        setMatrix(prev => [...prev, {
-          ...values,
-          id: `dm-${Date.now()}`,
-          kpiAreaName: area?.name ?? '',
-          perspective: area?.perspective ?? 'Financial',
-        }]);
-      }
-      setModalOpen(false);
+  const draftDesignations = useMemo(() => {
+    const source = DEPT_SECTION_DESIG_MAP.filter(m => {
+      const deptOk = draftDept === 'all' || m.department === draftDept;
+      const sectionOk = draftSection === 'all' || m.section === draftSection;
+      return deptOk && sectionOk;
     });
+    return unique(source.flatMap(m => m.designations));
+  }, [draftDept, draftSection]);
+
+  const selectedDesignations = useMemo(() => {
+    const source = DEPT_SECTION_DESIG_MAP.filter(m => {
+      const deptOk = filterDept === 'all' || m.department === filterDept;
+      const sectionOk = filterSection === 'all' || m.section === filterSection;
+      return deptOk && sectionOk;
+    });
+    const possible = unique(source.flatMap(m => m.designations));
+    if (filterDesignation === 'all') return possible;
+    return possible.includes(filterDesignation) ? [filterDesignation] : [];
+  }, [filterDept, filterSection, filterDesignation]);
+
+  const realItems = useMemo<MatrixItem[]>(() => {
+    if (selectedDesignations.length === 0) return [];
+
+    const items: MatrixItem[] = [];
+    for (const designation of selectedDesignations) {
+      for (const kpi of INITIAL_SUB_KPIS.filter(s => s.isActive && s.evalType === activeTab)) {
+        const cfg = kpi.designationConfigs.find(dc => {
+          const designationOk = dc.designation === designation;
+          const deptOk = filterDept === 'all' || !dc.department || dc.department === filterDept;
+          const sectionOk = filterSection === 'all' || !dc.section || dc.section === filterSection;
+          return designationOk && deptOk && sectionOk;
+        });
+
+        if (!cfg) continue;
+
+        items.push({
+          areaId: kpi.mainKPIAreaId,
+          areaCode: kpi.mainKPICode,
+          areaName: kpi.mainKPIAreaName,
+          row: {
+            key: `${kpi.id}-${designation}`,
+            subKPIId: kpi.id,
+            mainKPIAreaId: kpi.mainKPIAreaId,
+            designation,
+            subKPIName: kpi.name,
+            category: kpi.category,
+            evalType: kpi.evalType,
+            measurementCriteria: kpi.measurementCriteria,
+            weight: cfg.weight,
+            operator: cfg.operator,
+            target: cfg.targetValue,
+            responsible: cfg.responsibleTo[0] ?? 'N/A',
+          },
+        });
+      }
+    }
+
+    return items;
+  }, [selectedDesignations, activeTab, filterDept, filterSection]);
+
+  const withExamples = useMemo<MatrixItem[]>(() => {
+    if (realItems.length > 0 || activeTab === 'Evaluation') return realItems;
+
+    const template = EXAMPLE_ITEMS[activeTab as 'Appraisal' | 'Confirmation KPI'];
+    const sourceDesignations = selectedDesignations.length > 0 ? selectedDesignations : ['HOD'];
+
+    return sourceDesignations.map((designation, idx) => ({
+      areaId: template.areaId,
+      areaCode: template.areaCode,
+      areaName: template.areaName,
+      row: {
+        key: `example-${activeTab}-${designation}-${idx}`,
+        subKPIId: '',
+        mainKPIAreaId: template.areaId,
+        designation,
+        subKPIName: template.subKPIName,
+        category: template.category,
+        evalType: activeTab,
+        measurementCriteria: template.measurementCriteria,
+        weight: template.weight,
+        operator: template.operator,
+        target: template.target,
+        responsible: 'Line Manager',
+      },
+    }));
+  }, [realItems, activeTab, selectedDesignations]);
+
+  const weightedItems = useMemo<MatrixItem[]>(() => {
+    const sorted = [...withExamples].sort((a, b) => {
+      if (a.areaCode !== b.areaCode) return a.areaCode.localeCompare(b.areaCode);
+      return a.row.subKPIName.localeCompare(b.row.subKPIName);
+    });
+
+    let running = 0;
+    const accepted: MatrixItem[] = [];
+    for (const item of sorted) {
+      if (running + item.row.weight > 100) continue;
+      accepted.push(item);
+      running += item.row.weight;
+    }
+    return accepted;
+  }, [withExamples]);
+
+  const grouped = useMemo<MatrixGroup[]>(() => {
+    const map = new Map<string, MatrixGroup>();
+
+    for (const item of weightedItems) {
+      if (!map.has(item.areaId)) {
+        map.set(item.areaId, {
+          areaId: item.areaId,
+          areaCode: item.areaCode,
+          areaName: item.areaName,
+          areaWeight: 0,
+          rows: [],
+        });
+      }
+      const group = map.get(item.areaId)!;
+      group.rows.push(item.row);
+      group.areaWeight += item.row.weight;
+    }
+
+    return [...map.values()];
+  }, [weightedItems]);
+
+  const totalWeight = useMemo(
+    () => grouped.reduce((sum, g) => sum + g.areaWeight, 0),
+    [grouped],
+  );
+
+  const employeeCount = useMemo(() => {
+    if (selectedDesignations.length === 0) return 0;
+    return INITIAL_EMPLOYEES.filter(e => {
+      const desigOk = selectedDesignations.includes(e.designation);
+      const deptOk = filterDept === 'all' || e.department === filterDept;
+      const sectionOk = filterSection === 'all' || e.section === filterSection;
+      return desigOk && deptOk && sectionOk;
+    }).length;
+  }, [selectedDesignations, filterDept, filterSection]);
+
+  const applyFilters = () => {
+    setFilterDept(draftDept);
+    setFilterSection(draftSection);
+    setFilterDesignation(draftDesignation);
   };
 
-  // ── List columns ──────────────────────────────────────────────────────────
-  const listColumns: ColumnsType<DesignationMatrix> = [
+  const resetFilters = () => {
+    setDraftDept('all');
+    setDraftSection('all');
+    setDraftDesignation('all');
+    setFilterDept('all');
+    setFilterSection('all');
+    setFilterDesignation('all');
+  };
+
+  const openSubKpiSetupInNewTab = (group: MatrixGroup) => {
+    const designation = filterDesignation !== 'all' ? filterDesignation : '';
+    const params = new URLSearchParams();
+    params.set('openFrom', 'designation-matrix');
+    params.set('mode', 'create');
+    params.set('mainKPIAreaId', group.areaId);
+    params.set('evalType', activeTab);
+    if (designation) params.set('designation', designation);
+    if (filterDept !== 'all') params.set('department', filterDept);
+    if (filterSection !== 'all') params.set('section', filterSection);
+
+    const target = `/performance/sub-kpi-setup?${params.toString()}`;
+    window.open(target, '_blank', 'noopener,noreferrer');
+  };
+
+  const openSubKpiEditInNewTab = (row: MatrixRow) => {
+    const params = new URLSearchParams();
+    params.set('openFrom', 'designation-matrix');
+    params.set('mode', 'edit');
+    params.set('evalType', row.evalType);
+    params.set('mainKPIAreaId', row.mainKPIAreaId);
+    params.set('designation', row.designation);
+    params.set('subKPIName', row.subKPIName);
+    params.set('category', row.category);
+    params.set('measurementCriteria', row.measurementCriteria);
+    params.set('weight', String(row.weight));
+    params.set('operator', row.operator);
+    params.set('target', String(row.target));
+    params.set('responsible', row.responsible);
+    if (row.subKPIId) params.set('subKPIId', row.subKPIId);
+    if (filterDept !== 'all') params.set('department', filterDept);
+    if (filterSection !== 'all') params.set('section', filterSection);
+
+    const target = `/performance/sub-kpi-setup?${params.toString()}`;
+    window.open(target, '_blank', 'noopener,noreferrer');
+  };
+
+  const columns: ColumnsType<MatrixRow> = [
     {
-      title: 'Designation',
-      dataIndex: 'designation',
-      render: (v: string) => <Text strong style={{ fontSize: 12 }}>{v}</Text>,
+      title: 'SUB KPI',
+      dataIndex: 'subKPIName',
+      render: (v: string) => <Text strong style={{ fontSize: 13 }}>{v}</Text>,
     },
     {
-      title: 'Department',
-      dataIndex: 'department',
-      width: 160,
+      title: 'DESIGNATION',
+      dataIndex: 'designation',
+      width: 140,
+      render: (v: string) => <Tag color="blue">{v}</Tag>,
+    },
+    {
+      title: 'CATEGORY',
+      dataIndex: 'category',
+      width: 130,
       render: (v: string) => <Tag>{v}</Tag>,
     },
     {
-      title: 'KPI Area',
-      dataIndex: 'kpiAreaName',
-      width: 200,
-      render: (name: string, row) => (
-        <Tag color={PERSPECTIVE_COLORS[row.perspective]} style={{ fontSize: 11 }}>{name}</Tag>
-      ),
+      title: 'KPI TYPE',
+      dataIndex: 'evalType',
+      width: 150,
+      render: (v: KPIEvalType) => <Tag color={v === 'Evaluation' ? 'cyan' : v === 'Appraisal' ? 'purple' : 'geekblue'}>{v}</Tag>,
     },
     {
-      title: 'Perspective',
-      dataIndex: 'perspective',
-      width: 160,
-      render: (p: KPIPerspective) => (
-        <Text type="secondary" style={{ fontSize: 11 }}>{p}</Text>
-      ),
+      title: 'MEASUREMENT CRITERIA',
+      dataIndex: 'measurementCriteria',
+      width: 300,
+      render: (v: string) => <Text type="secondary">{v}</Text>,
     },
     {
-      title: 'Weight (%)',
+      title: 'WEIGHT %',
       dataIndex: 'weight',
-      width: 120,
-      align: 'center',
-      render: (w: number, row) => (
-        <Space direction="vertical" size={2} style={{ width: 100 }}>
-          <Text strong style={{ color: '#0f766e' }}>{w}%</Text>
-          <Progress percent={w} size="small" showInfo={false} strokeColor={PERSPECTIVE_COLORS[row.perspective]} />
-        </Space>
-      ),
-    },
-    {
-      title: 'Status',
-      dataIndex: 'isActive',
-      width: 80,
-      render: (a: boolean) => (
-        <Tag color={a ? 'success' : 'default'} icon={a ? <CheckCircleOutlined /> : <StopOutlined />} style={{ fontSize: 10 }}>
-          {a ? 'Active' : 'Off'}
-        </Tag>
-      ),
-    },
-    {
-      title: '',
-      width: 100,
-      render: (_: unknown, record: DesignationMatrix) => (
-        <Space size={4}>
-          <Tooltip title="Edit"><Button size="small" icon={<EditOutlined />} onClick={() => openEdit(record)} /></Tooltip>
-          <Tooltip title={record.isActive ? 'Deactivate' : 'Activate'}>
-            <Button size="small" icon={record.isActive ? <StopOutlined /> : <CheckCircleOutlined />} onClick={() => handleToggle(record.id)} />
-          </Tooltip>
-          <Tooltip title="Delete">
-            <Popconfirm title="Delete this mapping?" onConfirm={() => handleDelete(record.id)} okType="danger">
-              <Button size="small" danger icon={<DeleteOutlined />} />
-            </Popconfirm>
-          </Tooltip>
-        </Space>
-      ),
-    },
-  ];
-
-  // ── Matrix view columns ──────────────────────────────────────────────────
-  const matrixColumns: ColumnsType<Record<string, unknown>> = [
-    {
-      title: 'Designation',
-      dataIndex: 'designation',
-      fixed: 'left',
-      width: 180,
-      render: (v: string) => <Text strong style={{ fontSize: 12 }}>{v}</Text>,
-    },
-    {
-      title: 'Department',
-      dataIndex: 'department',
-      width: 130,
-      render: (v: string) => <Tag style={{ fontSize: 10 }}>{v}</Tag>,
-    },
-    ...INITIAL_MAIN_KPI_AREAS.map(area => ({
-      title: (
-        <Space direction="vertical" size={0}>
-          <Tag color={PERSPECTIVE_COLORS[area.perspective]} style={{ fontSize: 10, margin: 0 }}>{area.code}</Tag>
-          <Text style={{ fontSize: 10 }}>{area.name.split(' ')[0]}</Text>
-        </Space>
-      ),
-      dataIndex: area.id,
       width: 110,
-      align: 'center' as const,
-      render: (w: number | null) => w !== null
-        ? <Tag color="#0f766e" style={{ fontSize: 12, fontWeight: 600 }}>{w}%</Tag>
-        : <Text type="secondary" style={{ fontSize: 12 }}>—</Text>,
-    })),
-    {
-      title: 'Total',
-      dataIndex: 'totalWeight',
-      width: 80,
       align: 'center',
-      render: (w: number) => (
-        <Tag color={w === 100 ? 'success' : 'warning'} style={{ fontWeight: 700 }}>{w}%</Tag>
+      render: (v: number) => <Tag color="processing">{v}%</Tag>,
+    },
+    {
+      title: 'OPERATOR',
+      dataIndex: 'operator',
+      width: 95,
+      align: 'center',
+    },
+    {
+      title: 'TARGET',
+      dataIndex: 'target',
+      width: 95,
+      align: 'center',
+      render: (v: number) => <Text strong>{v}</Text>,
+    },
+    {
+      title: 'RESPONSIBLE',
+      dataIndex: 'responsible',
+      width: 140,
+      render: (v: string) => <Tag color="green">{v}</Tag>,
+    },
+    {
+      title: 'ACTIONS',
+      width: 100,
+      align: 'center',
+      render: (_: unknown, row) => (
+        <Button size="small" icon={<EditOutlined />} onClick={() => openSubKpiEditInNewTab(row)}>
+          Edit
+        </Button>
       ),
     },
   ];
 
   return (
-    <div style={{ padding: '16px 20px', background: '#f0f4f3', minHeight: '100%' }}>
-
-      {/* ── Header ─────────────────────────────────────────────────────────── */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-        <div>
-          <Title level={4} style={{ margin: 0, color: '#0f766e' }}>
-            <ReconciliationOutlined style={{ marginRight: 8 }} />Designation Matrix
-          </Title>
-          <Text type="secondary" style={{ fontSize: 12 }}>
-            Map designations to KPI areas with performance weight allocations
-          </Text>
-        </div>
-        <Button type="primary" icon={<PlusOutlined />} onClick={openAdd}>Add Mapping</Button>
+    <div style={{ padding: '16px 20px', background: '#eef6f5', minHeight: '100%', height: '100%', overflowY: 'auto' }}>
+      <div style={{ marginBottom: 12 }}>
+        <Title level={3} style={{ margin: 0, color: '#0f2f35' }}>
+          <ReconciliationOutlined style={{ marginRight: 8, color: '#0f766e' }} />Designation Matrix
+          <Text style={{ marginLeft: 10, color: '#67a8a0', fontSize: 16, fontWeight: 600 }}>Coverage Overview</Text>
+        </Title>
       </div>
 
-      {/* ── Tabs ─────────────────────────────────────────────────────────── */}
-      <Card bordered={false} style={{ borderRadius: 12, boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}>
-        <Tabs
-          activeKey={activeTab}
-          onChange={k => setActiveTab(k as 'list' | 'matrix')}
-          items={[
-            {
-              key: 'list',
-              label: <Space><EditOutlined />List View</Space>,
-              children: (
-                <Table
-                  dataSource={matrix}
-                  columns={listColumns}
-                  rowKey="id"
-                  size="small"
-                  pagination={{ pageSize: 10, showSizeChanger: false }}
-                  scroll={{ x: 800 }}
-                />
-              ),
-            },
-            {
-              key: 'matrix',
-              label: <Space><AppstoreOutlined />Matrix View</Space>,
-              children: (
-                <>
-                  <div style={{ marginBottom: 10, padding: '8px 12px', background: '#f0fdf4', borderRadius: 8, border: '1px solid #bbf7d0' }}>
-                    <Text style={{ fontSize: 12, color: '#065f46' }}>
-                      Matrix shows KPI area weights (%) per designation. Green total = correctly sums to 100%.
-                    </Text>
-                  </div>
-                  <Table
-                    dataSource={matrixData}
-                    columns={matrixColumns}
-                    rowKey="designation"
-                    size="small"
-                    pagination={false}
-                    scroll={{ x: 900 }}
-                    bordered
-                  />
-                </>
-              ),
-            },
-          ]}
-        />
+      <Card bordered={false} style={{ borderRadius: 14, marginBottom: 12 }}>
+        <Space size={10} wrap>
+          <Select value={draftDept} onChange={v => { setDraftDept(v); setDraftSection('all'); setDraftDesignation('all'); }} style={{ width: 200 }}>
+            <Option value="all">All Departments</Option>
+            {departments.map(d => <Option key={d} value={d}>{d}</Option>)}
+          </Select>
+
+          <Select value={draftSection} onChange={v => { setDraftSection(v); setDraftDesignation('all'); }} style={{ width: 200 }}>
+            <Option value="all">All Sections</Option>
+            {draftSections.map(s => <Option key={s} value={s}>{s}</Option>)}
+          </Select>
+
+          <Select value={draftDesignation} onChange={setDraftDesignation} style={{ width: 220 }}>
+            <Option value="all">All Designations</Option>
+            {draftDesignations.map(d => <Option key={d} value={d}>{d}</Option>)}
+          </Select>
+
+          <Button type="primary" icon={<SearchOutlined />} onClick={applyFilters}>Search</Button>
+          <Button icon={<ReloadOutlined />} onClick={resetFilters}>Reset</Button>
+
+          <Tag color="processing">{weightedItems.length} Sub KPIs</Tag>
+          <Tag color="geekblue">{employeeCount} employees</Tag>
+        </Space>
       </Card>
 
-      {/* ── Add / Edit Modal ─────────────────────────────────────────────── */}
-      <Modal
-        title={
-          <Space>
-            <ReconciliationOutlined style={{ color: '#0f766e' }} />
-            {editing ? 'Edit Designation Mapping' : 'Add Designation Mapping'}
-          </Space>
-        }
-        open={modalOpen}
-        onOk={handleSubmit}
-        onCancel={() => setModalOpen(false)}
-        okText={editing ? 'Update' : 'Add'}
-        width={520}
-        destroyOnClose
-      >
-        <Form form={form} layout="vertical" style={{ marginTop: 16 }}>
-          <Form.Item name="designation" label="Designation" rules={[{ required: true, message: 'Required' }]}>
-            <Input placeholder="e.g. Senior Manager" />
-          </Form.Item>
-          <Form.Item name="department" label="Department" rules={[{ required: true }]}>
-            <Select placeholder="Select department">
-              {DEPARTMENTS.map(d => <Option key={d} value={d}>{d}</Option>)}
-            </Select>
-          </Form.Item>
-          <Form.Item name="kpiAreaId" label="KPI Area" rules={[{ required: true }]}>
-            <Select
-              placeholder="Select KPI Area"
-              onChange={(val) => {
-                const area = INITIAL_MAIN_KPI_AREAS.find(a => a.id === val);
-                if (area) form.setFieldValue('perspective', area.perspective);
-              }}
-            >
-              {INITIAL_MAIN_KPI_AREAS.map(a => (
-                <Option key={a.id} value={a.id}>
-                  <Tag color={PERSPECTIVE_COLORS[a.perspective]} style={{ fontSize: 11 }}>{a.name}</Tag>
-                </Option>
-              ))}
-            </Select>
-          </Form.Item>
-          <Form.Item
-            name="weight"
-            label="Weight (%)"
-            rules={[{ required: true }, { type: 'number', min: 1, max: 100 }]}
+      <Card bordered={false} style={{ borderRadius: 14, marginBottom: 12 }}>
+        <Tabs
+          activeKey={activeTab}
+          onChange={key => setActiveTab(key as EvalTab)}
+          items={[
+            { key: 'Evaluation', label: 'Evaluation' },
+            { key: 'Appraisal', label: 'Appraisal' },
+            { key: 'Confirmation KPI', label: 'Confirmation KPI' },
+          ]}
+        />
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 12, marginBottom: 12 }}>
+          <Card bordered={false} style={{ borderRadius: 12, background: '#f8fffd', border: '1px solid #caeee8' }}>
+            <Text type="secondary" style={{ fontSize: 11, letterSpacing: 1 }}>TOTAL SUB KPIs</Text>
+            <Title level={2} style={{ margin: '2px 0 0', color: '#0f766e' }}>{weightedItems.length}</Title>
+            <Text type="secondary">{employeeCount} employees in selected scope</Text>
+          </Card>
+          <Card bordered={false} style={{ borderRadius: 12, background: '#fffbf2', border: '1px solid #f5d28f' }}>
+            <Text type="secondary" style={{ fontSize: 11, letterSpacing: 1 }}>TOTAL WEIGHT</Text>
+            <Title level={2} style={{ margin: '2px 0 0', color: '#059669' }}>{totalWeight.toFixed(1)}%</Title>
+            <Text type="secondary">Total weight cannot exceed 100%</Text>
+          </Card>
+        </div>
+
+        {grouped.map((group, idx) => (
+          <Card
+            key={group.areaId}
+            bordered={false}
+            style={{ borderRadius: 14, marginBottom: 12, background: '#ffffff', border: '1px solid #d7e9e5' }}
+            title={
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+                <Space size={8} wrap>
+                  <Tag color="blue" style={{ margin: 0, fontFamily: 'monospace' }}>{group.areaCode}</Tag>
+                  <Text strong>{idx + 1}. {group.areaName}</Text>
+                  <Tag color="cyan">{group.rows.length} Sub KPIs</Tag>
+                </Space>
+                <Space>
+                  <Text strong style={{ color: '#0f766e' }}>Weight: {group.areaWeight.toFixed(1)}%</Text>
+                  <Button type="primary" icon={<PlusOutlined />} onClick={() => openSubKpiSetupInNewTab(group)}>
+                    Add Sub KPI
+                  </Button>
+                </Space>
+              </div>
+            }
           >
-            <InputNumber min={1} max={100} style={{ width: '100%' }} addonAfter="%" />
-          </Form.Item>
-          <Form.Item name="isActive" label="Active" valuePropName="checked">
-            <Switch />
-          </Form.Item>
-        </Form>
-      </Modal>
+            <Table
+              dataSource={group.rows}
+              columns={columns}
+              rowKey="key"
+              size="small"
+              pagination={{ pageSize: 5, showSizeChanger: false }}
+              scroll={{ x: 1300 }}
+            />
+          </Card>
+        ))}
+
+        {grouped.length === 0 && (
+          <div style={{ padding: '24px 0', textAlign: 'center', color: '#94a3b8' }}>
+            No designation-wise KPI coverage found for selected filters and tab.
+          </div>
+        )}
+      </Card>
+
     </div>
   );
 }

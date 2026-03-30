@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "Bash(git -C /f/HRIS status --short)",
-      "Bash(npx tsc --noEmit)"
+      "Bash(npx tsc --noEmit)",
+      "Bash(npx tsc:*)"
     ]
   }
 }
