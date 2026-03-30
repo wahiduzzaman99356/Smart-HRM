@@ -80,6 +80,9 @@ const MyComplaintsPage = lazy(
 const CompliancePage = lazy(
   () => import('@/features/employee-relations/compliance/pages/CompliancePage'),
 );
+const KpiPage = lazy(
+  () => import('@/features/performance/kpi/pages/KpiPage'),
+);
 
 // ── Global providers ──────────────────────────────────────────────────────────
 const queryClient = new QueryClient({
@@ -146,6 +149,7 @@ function AppShell() {
           <Route path="/employee-relations/disciplinary/conflict-resolution" element={<ConflictResolutionPage />} />
           <Route path="/employee-relations/disciplinary/compliance-tracker" element={<CompliancePage />} />
           <Route path="/ess/my-cases" element={<MyComplaintsPage />} />
+          <Route path="/performance/kpi" element={<KpiPage />} />
 
           {/* ── Placeholders for every module ── */}
           <Route path="/core-hr/*"             element={<ComingSoon />} />
