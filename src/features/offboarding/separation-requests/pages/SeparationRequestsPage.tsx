@@ -471,14 +471,14 @@ export default function SeparationRequestsPage() {
                 {
                   key: 'print-handover',
                   icon: <PrinterOutlined />,
-                  label: 'Print — Handover Form',
-                  onClick: () => message.info(`Printing Handover Form for ${r.empName}`),
+                  label: 'View — Handover Form',
+                  onClick: () => message.info(`Viewing Handover Form for ${r.empName}`),
                 },
                 {
                   key: 'print-settlement',
                   icon: <PrinterOutlined />,
-                  label: 'Print — Final Settlement',
-                  onClick: () => message.info(`Printing Final Settlement for ${r.empName}`),
+                  label: 'View — Final Settlement',
+                  onClick: () => message.info(`Viewing Final Settlement for ${r.empName}`),
                 },
               ],
             }}
