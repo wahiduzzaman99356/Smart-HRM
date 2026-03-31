@@ -2,36 +2,291 @@
 
 > **Feature:** Separation Requests
 > **Date:** 2026-03-31
-> **Status:** Auto-generated stub (update with real endpoint contract)
+> **Status:** Draft workflow contract aligned to current UI
 
 ---
 
 ## Overview
 
-This API spec was auto-generated because a UI module exists for **Separation Requests**.
-Update this file with finalized backend endpoint contracts.
+This module is the HR-facing workflow for managing employee separation requests.
+
+The current UI requires:
+
+- list and filter support for all separation requests
+- a detail view with employee information, notice timeline, attachments, activity timeline, workflow stage, and final decision
+- approval or rejection from the detail view
+- notice period and last working day edits before decision
+- a 5-stage workflow model
+
+The workflow stages are:
+
+1. `Submitted`
+2. `Under Review`
+3. `Clearance`
+4. `Settlement`
+5. `Completed`
+
+`status` and `workflowStage` are separate values:
+
+- `status` is the operational state used for tabs and decision state
+- `workflowStage` is the progress stage shown in the detail view
 
 ---
 
-## Suggested Base URL
+## Base URL
 
 `/api/v1/separation-requests`
 
 ---
 
+## Data Model
+
+### SeparationRequest
+
+```json
+{
+	"id": "SEP-0005",
+	"empId": "EMP-1105",
+	"empName": "Michael Thompson",
+	"department": "Sales",
+	"section": "Enterprise Sales",
+	"designation": "Account Executive",
+	"dateOfJoining": "2022-01-20",
+	"resignationSubmissionDate": "31-03-2026; 04:49 PM",
+	"dateOfSeparation": "2026-04-04",
+	"noticePeriod": 60,
+	"employmentStatus": "Probationary",
+	"modeOfSeparation": "Resignation",
+	"status": "In Progress",
+	"workflowStage": "Settlement",
+	"lineManager": {
+		"name": "Rachel Green",
+		"id": "EMP-0188"
+	},
+	"reason": "Relocation",
+	"remarks": "Employee requested early release.",
+	"noticePeriodOverride": 45,
+	"dateOfSeparationOverride": "2026-04-19",
+	"rejectionRemarks": null,
+	"attachments": [
+		{
+			"key": "handover-form",
+			"title": "Handover Form",
+			"status": "available"
+		},
+		{
+			"key": "final-settlement-form",
+			"title": "Final Settlement Form",
+			"status": "available"
+		}
+	],
+	"activityTimeline": [
+		{
+			"action": "Separation request created",
+			"date": "31-03-2026 04:49 PM",
+			"by": "HR Admin"
+		},
+		{
+			"action": "Notice period / timeline updated",
+			"date": "31-03-2026 05:05 PM",
+			"by": "HR Admin"
+		},
+		{
+			"action": "Final settlement completed",
+			"date": "15-04-2026 10:30 AM",
+			"by": "Payroll Team"
+		}
+	],
+	"finalDecision": {
+		"outcome": "End Separation Process",
+		"date": "15-04-2026 02:00 PM",
+		"by": "HR Admin",
+		"notes": "All checkpoints completed and separation is closed."
+	}
+}
+```
+
+### Allowed Enums
+
+#### status
+
+`Pending | In Progress | Completed | On Hold | Cancelled | Rejected`
+
+#### workflowStage
+
+`Submitted | Under Review | Clearance | Settlement | Completed`
+
+#### modeOfSeparation
+
+`Resignation | Mutual Agreement | End of Contract | Termination | Retirement | Retrenchment`
+
+---
+
 ## Endpoints
 
-### 1) List
-**`GET /api/v1/separation-requests/...`**
+### 1) List Requests
 
-### 2) Detail
+**`GET /api/v1/separation-requests`**
+
+#### Query Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| `q` | string | Search by employee name or employee ID |
+| `department` | string | Filter by department |
+| `employmentStatus` | string | Filter by employment status |
+| `mode` | string | Filter by mode of separation |
+| `status` | string | Filter by operational status |
+| `workflowStage` | string | Filter by workflow stage |
+| `page` | number | Page number |
+| `pageSize` | number | Page size |
+
+#### Response
+
+```json
+{
+	"items": [],
+	"total": 0,
+	"page": 1,
+	"pageSize": 20
+}
+```
+
+### 2) Get Request Detail
+
 **`GET /api/v1/separation-requests/:id`**
 
-### 3) Create
+Returns the full request payload used by the detail popup, including:
+
+- notice timeline values and overrides
+- workflow stage
+- attachments
+- rejection remarks
+- activity timeline
+- final decision
+
+### 3) Create Request
+
 **`POST /api/v1/separation-requests`**
 
-### 4) Update
-**`PATCH /api/v1/separation-requests/:id`**
+#### Request Body
 
-### 5) Action / Workflow
-**`POST /api/v1/separation-requests/:id/action`**
+```json
+{
+	"empId": "EMP-0322",
+	"modeOfSeparation": "Retirement",
+	"reason": "Retirement",
+	"noticePeriod": 90,
+	"dateOfSeparation": "2026-06-30",
+	"remarks": "Employee submitted retirement paperwork."
+}
+```
+
+#### Notes
+
+- new requests should start with `status=Pending`
+- new requests should start with `workflowStage=Submitted`
+
+### 4) Update Notice and Timeline
+
+**`PATCH /api/v1/separation-requests/:id/notice-timeline`**
+
+Used by HR from the detail view before approval or rejection.
+
+#### Request Body
+
+```json
+{
+	"noticePeriod": 45,
+	"lastWorkingDay": "2026-04-19"
+}
+```
+
+#### Response Behavior
+
+- updates `noticePeriodOverride` and `dateOfSeparationOverride` when values differ from the original request
+- appends an activity timeline entry such as `Notice period / timeline updated`
+
+### 5) Approve or Reject Request
+
+**`POST /api/v1/separation-requests/:id/decision`**
+
+#### Request Body
+
+```json
+{
+	"decision": "approve",
+	"noticePeriod": 45,
+	"lastWorkingDay": "2026-04-19",
+	"rejectionRemarks": null
+}
+```
+
+#### Reject Example
+
+```json
+{
+	"decision": "reject",
+	"noticePeriod": 60,
+	"lastWorkingDay": "2026-04-30",
+	"rejectionRemarks": "Please attach the signed resignation letter before resubmitting."
+}
+```
+
+#### Rules
+
+- `rejectionRemarks` is required when `decision=reject`
+- on approval, set `status=In Progress` and `workflowStage=Under Review`
+- on rejection, set `status=Rejected`
+- on approval, attachment entries for `Handover Form` and `Final Settlement Form` should be returned in detail responses
+- append the relevant activity timeline entries for approval or rejection
+
+### 6) Advance Workflow Stage
+
+**`PATCH /api/v1/separation-requests/:id/workflow-stage`**
+
+Used when the request moves through `Under Review`, `Clearance`, `Settlement`, and `Completed`.
+
+#### Request Body
+
+```json
+{
+	"workflowStage": "Settlement",
+	"status": "In Progress",
+	"notes": "Clearance completed and settlement processing started."
+}
+```
+
+#### Rules
+
+- `workflowStage=Completed` may set `status=Completed`
+- stage transitions should append an activity timeline entry
+
+### 7) Record Final Decision
+
+**`POST /api/v1/separation-requests/:id/final-decision`**
+
+Used after settlement is complete to decide whether the separation process should be formally ended.
+
+#### Request Body
+
+```json
+{
+	"outcome": "End Separation Process",
+	"notes": "All clearance and settlement checkpoints are complete."
+}
+```
+
+#### Response Behavior
+
+- stores `finalDecision`
+- appends an activity timeline entry such as `Final decision recorded`
+- this section should appear in detail responses once the workflow reaches `Settlement` or `Completed`
+
+---
+
+## UI Mapping Notes
+
+- HR detail popup reads from the detail endpoint and can update notice timeline before decision
+- rejection remarks must flow through to the employee-facing My Resignation experience
+- final decision appears only after settlement stage is reached

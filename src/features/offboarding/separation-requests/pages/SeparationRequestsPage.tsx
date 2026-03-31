@@ -1,12 +1,10 @@
 import { useMemo, useState } from 'react';
 import {
-  Avatar, Button, Col, Dropdown, Input, Modal,
-  Radio, Row, Select, Space, Table, Tooltip, message,
+  Avatar, Button, Col, Dropdown, Input,
+  Row, Select, Space, Table, Tooltip, message,
 } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import {
-  CheckCircleOutlined,
-  CloseCircleOutlined,
   DownloadOutlined,
   EyeOutlined,
   FilterOutlined,
@@ -19,8 +17,10 @@ import {
   SwapOutlined,
 } from '@ant-design/icons';
 import type { SeparationRequest, SepStatus, EmpStatus, SepMode } from '../types/separation.types';
-import { INITIAL_SEPARATIONS } from '../types/separation.types';
 import { NewSeparationModal } from '../components/NewSeparationModal';
+import { useSeparationStore } from '../store/separationStore';
+import { SeparationDetailModal, type SeparationDetailModalMode } from '@/features/offboarding/components/SeparationDetailModal';
+import { getSeparationTimeline } from '@/features/offboarding/components/separationDetailUtils';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 function colHead(label: string) {
@@ -118,111 +118,50 @@ const STATUS_TABS: { key: SepStatus | 'all'; label: string }[] = [
   { key: 'Rejected',    label: 'Rejected'    },
 ];
 
-// ─── Approve / Reject modal ───────────────────────────────────────────────────
-interface ActionModalProps {
-  record: SeparationRequest | null;
-  onClose: () => void;
-  onConfirm: (id: string, action: 'Approved' | 'Rejected', remarks: string) => void;
+function formatTimelineTimestamp() {
+  return new Date().toLocaleString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+  });
 }
 
-function ApproveRejectModal({ record, onClose, onConfirm }: ActionModalProps) {
-  const [action, setAction]         = useState<'Approved' | 'Rejected'>('Approved');
-  const [remarks, setRemarks]       = useState('');
-  const [remarksErr, setRemarksErr] = useState(false);
+function applyNoticeTimelineUpdate(record: SeparationRequest, noticeUpdate?: { noticePeriod: number; lastWorkingDay: string }) {
+  const effectiveNoticePeriod = record.noticePeriodOverride ?? record.noticePeriod;
+  const effectiveLastWorkingDay = record.dateOfSeparationOverride ?? record.dateOfSeparation;
 
-  const handleOk = () => {
-    if (action === 'Rejected' && !remarks.trim()) { setRemarksErr(true); return; }
-    onConfirm(record!.id, action, remarks.trim());
-    handleClose();
+  if (!noticeUpdate) {
+    return {
+      activityTimeline: [...getSeparationTimeline(record)],
+      dateOfSeparationOverride: record.dateOfSeparationOverride,
+      noticePeriodOverride: record.noticePeriodOverride,
+      wasChanged: false,
+    };
+  }
+
+  const noticeChanged = noticeUpdate.noticePeriod !== effectiveNoticePeriod;
+  const timelineChanged = noticeUpdate.lastWorkingDay !== effectiveLastWorkingDay;
+
+  if (!noticeChanged && !timelineChanged) {
+    return {
+      activityTimeline: [...getSeparationTimeline(record)],
+      dateOfSeparationOverride: record.dateOfSeparationOverride,
+      noticePeriodOverride: record.noticePeriodOverride,
+      wasChanged: false,
+    };
+  }
+
+  return {
+    activityTimeline: [
+      ...getSeparationTimeline(record),
+      { action: 'Notice period / timeline updated', date: formatTimelineTimestamp(), by: 'HR Admin' },
+    ],
+    dateOfSeparationOverride: noticeUpdate.lastWorkingDay !== record.dateOfSeparation ? noticeUpdate.lastWorkingDay : undefined,
+    noticePeriodOverride: noticeUpdate.noticePeriod !== record.noticePeriod ? noticeUpdate.noticePeriod : undefined,
+    wasChanged: true,
   };
-
-  const handleClose = () => {
-    setAction('Approved'); setRemarks(''); setRemarksErr(false);
-    onClose();
-  };
-
-  return (
-    <Modal
-      open={!!record}
-      onCancel={handleClose}
-      onOk={handleOk}
-      okText={action === 'Approved' ? 'Approve' : 'Reject'}
-      okButtonProps={{
-        danger: action === 'Rejected',
-        icon: action === 'Approved' ? <CheckCircleOutlined /> : <CloseCircleOutlined />,
-      }}
-      cancelText="Cancel"
-      title={
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <SwapOutlined style={{ color: '#0f766e' }} />
-          <span>Approve / Reject Request</span>
-        </div>
-      }
-      width={480}
-      destroyOnClose
-    >
-      {record && (
-        <div style={{ paddingTop: 4, display: 'flex', flexDirection: 'column', gap: 18 }}>
-          <div style={{
-            display: 'flex', alignItems: 'center', gap: 12,
-            padding: '10px 14px', borderRadius: 8,
-            background: '#f8fafc', border: '1px solid #e5e7eb',
-          }}>
-            <Avatar
-              size={36}
-              style={{ background: avatarColor(record.empName), fontWeight: 700, fontSize: 13, flexShrink: 0 }}
-            >
-              {initials(record.empName)}
-            </Avatar>
-            <div>
-              <div style={{ fontWeight: 600, fontSize: 13, color: '#111827' }}>{record.empName}</div>
-              <div style={{ fontSize: 12, color: '#6b7280', marginTop: 1 }}>
-                {record.empId} &middot; {record.designation} &middot; {record.department}
-              </div>
-            </div>
-            <div style={{ marginLeft: 'auto' }}>
-              <StatusBadge status={record.status} />
-            </div>
-          </div>
-
-          <div>
-            <div className="filter-label" style={{ marginBottom: 8 }}>ACTION</div>
-            <Radio.Group
-              value={action}
-              onChange={e => { setAction(e.target.value); setRemarksErr(false); }}
-              style={{ display: 'flex', gap: 12 }}
-            >
-              <Radio value="Approved">
-                <span style={{ color: '#059669', fontWeight: 600 }}>Approve</span>
-              </Radio>
-              <Radio value="Rejected">
-                <span style={{ color: '#dc2626', fontWeight: 600 }}>Reject</span>
-              </Radio>
-            </Radio.Group>
-          </div>
-
-          <div>
-            <div className="filter-label" style={{ marginBottom: 6 }}>
-              REMARKS {action === 'Rejected' && <span style={{ color: '#dc2626' }}>*</span>}
-            </div>
-            <Input.TextArea
-              rows={3}
-              placeholder={action === 'Rejected' ? 'Reason for rejection is required…' : 'Optional remarks…'}
-              value={remarks}
-              onChange={e => { setRemarks(e.target.value); if (e.target.value.trim()) setRemarksErr(false); }}
-              status={remarksErr ? 'error' : undefined}
-              style={{ resize: 'none' }}
-            />
-            {remarksErr && (
-              <div style={{ fontSize: 12, color: '#dc2626', marginTop: 4 }}>
-                Remarks are required when rejecting a request.
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-    </Modal>
-  );
 }
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
@@ -230,15 +169,18 @@ type Filters = { search: string; dept: string; emp: string; mode: string };
 const EMPTY_FILTERS: Filters = { search: '', dept: '', emp: '', mode: '' };
 
 export default function SeparationRequestsPage() {
-  const [requests, setRequests] = useState<SeparationRequest[]>(INITIAL_SEPARATIONS);
+  const requests = useSeparationStore((s) => s.requests);
+  const updateRequest = useSeparationStore((s) => s.updateRequest);
 
   const [draft,   setDraft]   = useState<Filters>(EMPTY_FILTERS);
   const [applied, setApplied] = useState<Filters>(EMPTY_FILTERS);
   const [activeTab, setActiveTab] = useState<SepStatus | 'all'>('all');
   const [showFilters, setShowFilters] = useState(false);
   const [selectedKeys, setSelectedKeys] = useState<string[]>([]);
-  const [actionRecord, setActionRecord] = useState<SeparationRequest | null>(null);
+  const [detailState, setDetailState] = useState<{ id: string; mode: SeparationDetailModalMode } | null>(null);
   const [newModalOpen, setNewModalOpen] = useState(false);
+
+  const detailRecord = detailState ? requests.find((request) => request.id === detailState.id) ?? null : null;
 
   const handleApply = () => setApplied(draft);
 
@@ -281,21 +223,64 @@ export default function SeparationRequestsPage() {
   }, [requests, activeTab, applied]);
 
   // ── Approve / Reject confirm ────────────────────────────────────────────────
-  const handleActionConfirm = (id: string, action: 'Approved' | 'Rejected', remarks: string) => {
-    setRequests(prev =>
-      prev.map(r =>
-        r.id === id
-          ? { ...r, status: action === 'Approved' ? 'Completed' : 'Rejected', remarks: remarks || undefined }
-          : r,
-      ),
-    );
-    if (action === 'Approved') message.success('Request approved successfully.');
+  const handleSaveNoticeTimeline = (record: SeparationRequest, noticeUpdate: { noticePeriod: number; lastWorkingDay: string }) => {
+    const updates = applyNoticeTimelineUpdate(record, noticeUpdate);
+    if (!updates.wasChanged) {
+      return;
+    }
+
+    updateRequest(record.id, {
+      activityTimeline: updates.activityTimeline,
+      dateOfSeparationOverride: updates.dateOfSeparationOverride,
+      noticePeriodOverride: updates.noticePeriodOverride,
+    });
+    message.success('Notice period and last working day updated.');
+  };
+
+  const handleActionConfirm = (
+    record: SeparationRequest,
+    action: 'Approved' | 'Rejected',
+    remarks: string,
+    noticeUpdate?: { noticePeriod: number; lastWorkingDay: string },
+  ) => {
+    const updates = applyNoticeTimelineUpdate(record, noticeUpdate);
+    const decisionTimeline = action === 'Approved'
+      ? [
+          ...updates.activityTimeline,
+          { action: 'Request approved for offboarding workflow', date: formatTimelineTimestamp(), by: 'HR Admin' },
+          { action: 'Handover and final settlement forms shared', date: formatTimelineTimestamp(), by: 'HR Admin' },
+        ]
+      : [
+          ...updates.activityTimeline,
+          { action: 'Request rejected', date: formatTimelineTimestamp(), by: 'HR Admin' },
+        ];
+
+    updateRequest(record.id, {
+      activityTimeline: decisionTimeline,
+      dateOfSeparationOverride: updates.dateOfSeparationOverride,
+      noticePeriodOverride: updates.noticePeriodOverride,
+      workflowStage: action === 'Approved' ? 'Under Review' : record.workflowStage,
+      rejectionRemarks: action === 'Rejected' ? remarks : undefined,
+      status: action === 'Approved' ? 'In Progress' : 'Rejected',
+    });
+    setDetailState({ id: record.id, mode: 'view' });
+    if (action === 'Approved') message.success('Request approved and moved to offboarding workflow.');
     else message.error('Request rejected.');
   };
 
   const handleHold = (r: SeparationRequest) => {
-    setRequests(prev => prev.map(req => req.id === r.id ? { ...req, status: 'On Hold' } : req));
+    updateRequest(r.id, {
+      activityTimeline: [
+        ...getSeparationTimeline(r),
+        { action: 'Request placed on hold', date: formatTimelineTimestamp(), by: 'HR Admin' },
+      ],
+      status: 'On Hold',
+    });
     message.warning(`${r.empName}'s request placed on hold.`);
+  };
+
+  const openDetail = (record: SeparationRequest, mode: SeparationDetailModalMode = 'view') => {
+    setDetailState({ id: record.id, mode });
   };
 
   // ── Columns ─────────────────────────────────────────────────────────────────
@@ -450,15 +435,15 @@ export default function SeparationRequestsPage() {
                   key: 'view',
                   icon: <EyeOutlined />,
                   label: 'View Details',
-                  onClick: () => message.info(`Viewing ${r.empName}`),
+                  onClick: () => openDetail(r, 'view'),
                 },
                 { type: 'divider' },
                 {
                   key: 'approve-reject',
                   icon: <SwapOutlined style={{ color: '#0f766e' }} />,
                   label: <span style={{ color: '#0f766e', fontWeight: 600 }}>Approve / Reject</span>,
-                  disabled: isTerminal,
-                  onClick: () => setActionRecord(r),
+                  disabled: r.status !== 'Pending',
+                  onClick: () => openDetail(r, 'decision'),
                 },
                 {
                   key: 'hold',
@@ -472,13 +457,13 @@ export default function SeparationRequestsPage() {
                   key: 'print-handover',
                   icon: <PrinterOutlined />,
                   label: 'View — Handover Form',
-                  onClick: () => message.info(`Viewing Handover Form for ${r.empName}`),
+                  onClick: () => openDetail(r, 'view'),
                 },
                 {
                   key: 'print-settlement',
                   icon: <PrinterOutlined />,
                   label: 'View — Final Settlement',
-                  onClick: () => message.info(`Viewing Final Settlement for ${r.empName}`),
+                  onClick: () => openDetail(r, 'view'),
                 },
               ],
             }}
@@ -675,11 +660,13 @@ export default function SeparationRequestsPage() {
         </div>
       </div>
 
-      {/* ── Approve / Reject modal ────────────────────────────────────────── */}
-      <ApproveRejectModal
-        record={actionRecord}
-        onClose={() => setActionRecord(null)}
-        onConfirm={handleActionConfirm}
+      <SeparationDetailModal
+        record={detailRecord}
+        mode={detailState?.mode ?? 'view'}
+        title="Separation request details"
+        onClose={() => setDetailState(null)}
+        onDecision={detailRecord ? (action, remarks, noticeUpdate) => handleActionConfirm(detailRecord, action, remarks, noticeUpdate) : undefined}
+        onSaveNoticeTimeline={detailRecord ? (noticeUpdate) => handleSaveNoticeTimeline(detailRecord, noticeUpdate) : undefined}
       />
 
       {/* ── New Separation Request modal ──────────────────────────────────── */}

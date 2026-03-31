@@ -16,6 +16,26 @@ export type SepMode =
   | 'Retirement'
   | 'Retrenchment';
 
+export interface TimelineEvent {
+  action: string;
+  date: string;
+  by?: string;
+}
+
+export type SeparationWorkflowStage =
+  | 'Submitted'
+  | 'Under Review'
+  | 'Clearance'
+  | 'Settlement'
+  | 'Completed';
+
+export interface FinalDecision {
+  outcome: 'End Separation Process' | 'Keep Separation Open';
+  date: string;
+  by: string;
+  notes?: string;
+}
+
 export interface SeparationRequest {
   id: string;
   empId: string;
@@ -24,15 +44,23 @@ export interface SeparationRequest {
   section: string;
   designation: string;
   dateOfJoining: string;
-  /** "YYYY-MM-DD HH:mm" */
+  /** "DD-MM-YYYY; HH:MM AM/PM" */
   resignationSubmissionDate: string;
   dateOfSeparation: string;
   noticePeriod: number;
   employmentStatus: EmpStatus;
   modeOfSeparation: SepMode;
   status: SepStatus;
+  workflowStage?: SeparationWorkflowStage;
   lineManager: { name: string; id: string };
+  reason?: string;
   remarks?: string;
+  /** HR-edited values during approval */
+  noticePeriodOverride?: number;
+  dateOfSeparationOverride?: string;
+  rejectionRemarks?: string;
+  activityTimeline?: TimelineEvent[];
+  finalDecision?: FinalDecision;
 }
 
 export const INITIAL_SEPARATIONS: SeparationRequest[] = [
@@ -50,7 +78,13 @@ export const INITIAL_SEPARATIONS: SeparationRequest[] = [
     employmentStatus: 'Permanent',
     modeOfSeparation: 'Retirement',
     status: 'Pending',
+    workflowStage: 'Submitted',
     lineManager: { name: 'Robert Kim', id: 'EMP-0110' },
+    reason: 'Retirement',
+    activityTimeline: [
+      { action: 'Separation request created', date: '22-03-2026', by: 'HR Admin' },
+      { action: 'Notice period and last working day captured', date: '22-03-2026', by: 'HR Admin' },
+    ],
   },
   {
     id: 'SEP-0002',
@@ -66,7 +100,9 @@ export const INITIAL_SEPARATIONS: SeparationRequest[] = [
     employmentStatus: 'Permanent',
     modeOfSeparation: 'Mutual Agreement',
     status: 'Pending',
+    workflowStage: 'Submitted',
     lineManager: { name: 'Sandra Lee', id: 'EMP-0085' },
+    reason: 'Mutual agreement',
   },
   {
     id: 'SEP-0003',
@@ -82,7 +118,15 @@ export const INITIAL_SEPARATIONS: SeparationRequest[] = [
     employmentStatus: 'Permanent',
     modeOfSeparation: 'Retrenchment',
     status: 'On Hold',
+    workflowStage: 'Clearance',
     lineManager: { name: 'Marcus Tan', id: 'EMP-0201' },
+    reason: 'Business restructuring',
+    remarks: 'Awaiting finance clearance sign-off before next action.',
+    activityTimeline: [
+      { action: 'Separation request created', date: '18-03-2026', by: 'HR Admin' },
+      { action: 'Request approved for workflow processing', date: '20-03-2026', by: 'HR Admin' },
+      { action: 'Request placed on hold pending finance confirmation', date: '25-03-2026', by: 'HR Admin' },
+    ],
   },
   {
     id: 'SEP-0004',
@@ -98,7 +142,14 @@ export const INITIAL_SEPARATIONS: SeparationRequest[] = [
     employmentStatus: 'Permanent',
     modeOfSeparation: 'Resignation',
     status: 'In Progress',
+    workflowStage: 'Clearance',
     lineManager: { name: 'David Park', id: 'EMP-0174' },
+    reason: 'Career growth opportunity',
+    activityTimeline: [
+      { action: 'Resignation submitted', date: '15-03-2026', by: 'Sarah Chen' },
+      { action: 'Request approved for offboarding workflow', date: '17-03-2026', by: 'HR Admin' },
+      { action: 'Clearance workflow started', date: '17-03-2026', by: 'HR Admin' },
+    ],
   },
   {
     id: 'SEP-0005',
@@ -114,7 +165,15 @@ export const INITIAL_SEPARATIONS: SeparationRequest[] = [
     employmentStatus: 'Probationary',
     modeOfSeparation: 'Termination',
     status: 'In Progress',
+    workflowStage: 'Settlement',
     lineManager: { name: 'Linda Cruz', id: 'EMP-0143' },
+    reason: 'Performance-based termination',
+    activityTimeline: [
+      { action: 'Separation request created', date: '10-03-2026', by: 'HR Admin' },
+      { action: 'Request approved for workflow processing', date: '11-03-2026', by: 'HR Admin' },
+      { action: 'Exit clearance initiated', date: '12-03-2026', by: 'HR Admin' },
+      { action: 'Final settlement is being processed', date: '25-03-2026', by: 'Payroll Team' },
+    ],
   },
   {
     id: 'SEP-0006',
@@ -130,6 +189,20 @@ export const INITIAL_SEPARATIONS: SeparationRequest[] = [
     employmentStatus: 'Contractual',
     modeOfSeparation: 'End of Contract',
     status: 'Completed',
+    workflowStage: 'Completed',
     lineManager: { name: 'Priya Sharma', id: 'EMP-0067' },
+    reason: 'Contract completed',
+    activityTimeline: [
+      { action: 'Separation request created', date: '28-02-2026', by: 'HR Admin' },
+      { action: 'Request approved for workflow processing', date: '01-03-2026', by: 'HR Admin' },
+      { action: 'Final settlement completed', date: '28-03-2026', by: 'Payroll Team' },
+      { action: 'Final decision recorded', date: '29-03-2026', by: 'HR Admin' },
+    ],
+    finalDecision: {
+      outcome: 'End Separation Process',
+      date: '29-03-2026',
+      by: 'HR Admin',
+      notes: 'All clearance and settlement checkpoints are complete. Separation process is closed.',
+    },
   },
 ];

@@ -92,6 +92,12 @@ const SeparationRequestsPage = lazy(
 const ClearanceManagementPage = lazy(
   () => import('@/features/offboarding/clearance/pages/ClearanceManagementPage'),
 );
+const FinalSettlementPage = lazy(
+  () => import('@/features/offboarding/final-settlement/pages/FinalSettlementPage'),
+);
+const MyResignationPage = lazy(
+  () => import('@/features/offboarding/my-resignation/pages/MyResignationPage'),
+);
 const EmployeeKPIViewPage = lazy(
   () => import('@/features/performance/pages/EmployeeKPIViewPage'),
 );
@@ -189,8 +195,10 @@ function AppShell() {
           <Route path="/performance/my-appraisal"       element={<MyAppraisalPage />} />
 
           {/* ── Offboarding ─────────────────────────────────────────────── */}
+          <Route path="/offboarding/my-resignation"        element={<MyResignationPage />} />
           <Route path="/offboarding/separation-requests" element={<SeparationRequestsPage />} />
           <Route path="/offboarding/clearance"           element={<ClearanceManagementPage />} />
+          <Route path="/offboarding/final-settlement"    element={<FinalSettlementPage />} />
 
           {/* ── Placeholders for every module ── */}
           <Route path="/core-hr/*"             element={<ComingSoon />} />
