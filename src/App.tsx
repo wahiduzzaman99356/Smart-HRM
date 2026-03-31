@@ -104,6 +104,12 @@ const EvaluationPage = lazy(
 const DesignationMatrixPage = lazy(
   () => import('@/features/performance/pages/DesignationMatrixPage'),
 );
+const AppraisalConfigPage = lazy(
+  () => import('@/features/performance/pages/AppraisalConfigPage'),
+);
+const MyAppraisalPage = lazy(
+  () => import('@/features/performance/pages/MyAppraisalPage'),
+);
 
 // ── Global providers ──────────────────────────────────────────────────────────
 const queryClient = new QueryClient({
@@ -178,7 +184,9 @@ function AppShell() {
           <Route path="/performance/evaluation"         element={<EvaluationPage />} />
           <Route path="/performance/employee-kpi-view"  element={<EmployeeKPIViewPage />} />
           <Route path="/performance/designation-matrix" element={<DesignationMatrixPage />} />
-          <Route path="/performance/achievement-level"  element={<AchievementLevelPage />} />
+          <Route path="/performance/achievement-level"   element={<AchievementLevelPage />} />
+          <Route path="/performance/appraisal-config"   element={<AppraisalConfigPage />} />
+          <Route path="/performance/my-appraisal"       element={<MyAppraisalPage />} />
 
           {/* ── Offboarding ─────────────────────────────────────────────── */}
           <Route path="/offboarding/separation-requests" element={<SeparationRequestsPage />} />

@@ -92,7 +92,7 @@ export function InitiateHeadcountForm({
       designation:   pendingSel.designation,
       currentHC:     pendingSel.currentHC,
       requiredHC:    '',
-      budgetRange:   '',
+      budget:        '',
       justification: '',
     }]);
     setPendingSel(null);
@@ -185,14 +185,17 @@ export function InitiateHeadcountForm({
       ),
     },
     {
-      title: <span style={{ fontSize: 10, fontWeight: 700, color: '#9ca3af', letterSpacing: '0.05em' }}>REQUIRED BUDGET RANGE</span>,
-      key: 'budgetRange',
+      title: <span style={{ fontSize: 10, fontWeight: 700, color: '#9ca3af', letterSpacing: '0.05em' }}>BUDGET</span>,
+      key: 'budget',
       width: 180,
       render: (_, r) => (
         <Input
-          value={r.budgetRange}
-          onChange={e => updateRow(r.id, 'budgetRange', e.target.value)}
-          placeholder="Budget Range"
+          value={r.budget}
+          onChange={e => updateRow(r.id, 'budget', e.target.value)}
+          placeholder="Enter amount"
+          prefix={<span style={{ color: '#9ca3af', fontSize: 12 }}>BDT</span>}
+          type="number"
+          min={0}
           style={{ borderRadius: 7 }}
         />
       ),
