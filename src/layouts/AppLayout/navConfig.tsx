@@ -329,11 +329,12 @@ export const NAV_MODULES: NavModule[] = [
     label: 'Offboarding',
     icon: <UserDeleteOutlined />,
     children: [
+      { key: '/offboarding/my-resignation',      icon: <FormOutlined />,        label: 'My Resignation' },
       { key: '/offboarding/separation-requests', icon: <ExportOutlined />,      label: 'Separation Requests' },
-      { key: '/offboarding/clearance',            icon: <ClearOutlined />,       label: 'Clearance Management' },
-      { key: '/offboarding/final-settlement',     icon: <FileDoneOutlined />,    label: 'Final Settlement' },
-      { key: '/offboarding/exit-interview',       icon: <CommentOutlined />,     label: 'Exit Interview' },
-      { key: '/offboarding/separation-policy',    icon: <ProfileOutlined />,     label: 'Separation Policy' },
+      { key: '/offboarding/clearance',           icon: <ClearOutlined />,       label: 'Clearance Management' },
+      { key: '/offboarding/final-settlement',    icon: <FileDoneOutlined />,    label: 'Final Settlement' },
+      { key: '/offboarding/exit-interview',      icon: <CommentOutlined />,     label: 'Exit Interview' },
+      { key: '/offboarding/separation-policy',   icon: <ProfileOutlined />,     label: 'Separation Policy' },
     ],
   },
 
