@@ -55,9 +55,9 @@ const columns: ColumnsType<HCOrgLevelRow> = [
         render: v => <span style={{ fontSize: 14, fontWeight: 700, color: '#0f766e' }}>{v || '—'}</span>,
   },
   {
-    title: <span style={{ fontSize: 10, fontWeight: 700, color: '#9ca3af', letterSpacing: '0.05em' }}>BUDGET RANGE</span>,
-    dataIndex: 'budgetRange',
-    key: 'budgetRange',
+    title: <span style={{ fontSize: 10, fontWeight: 700, color: '#9ca3af', letterSpacing: '0.05em' }}>BUDGET</span>,
+    dataIndex: 'budget',
+    key: 'budget',
     render: v => <span style={{ fontSize: 13, color: '#374151' }}>{v || '—'}</span>,
   },
   {

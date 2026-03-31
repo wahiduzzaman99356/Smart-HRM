@@ -302,12 +302,14 @@ export const NAV_MODULES: NavModule[] = [
     icon: <RiseOutlined />,
     children: [
       { key: '/performance/dashboard',          icon: <DashboardOutlined />,      label: 'Dashboard' },
+      { key: '/performance/my-appraisal',       icon: <StarOutlined />,           label: 'My Appraisal' },
       { key: '/performance/main-kpi',           icon: <AimOutlined />,            label: 'Main KPI Areas' },
       { key: '/performance/sub-kpi-setup',      icon: <PartitionOutlined />,      label: 'Sub KPI Setup' },
       { key: '/performance/evaluation',         icon: <FormOutlined />,           label: 'Evaluation' },
       { key: '/performance/employee-kpi-view',  icon: <FundOutlined />,           label: 'Employee KPI View' },
       { key: '/performance/designation-matrix', icon: <ReconciliationOutlined />, label: 'Designation Matrix' },
-      { key: '/performance/achievement-level',  icon: <TrophyOutlined />,         label: 'Achievement Level Setup' },
+      { key: '/performance/achievement-level',   icon: <TrophyOutlined />,         label: 'Achievement Level Setup' },
+      { key: '/performance/appraisal-config',   icon: <SettingOutlined />,        label: 'Appraisal Configuration' },
     ],
   },
 

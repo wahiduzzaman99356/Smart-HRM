@@ -17,7 +17,7 @@ export interface HCOrgLevelRow {
   designation: string;
   currentHC: number;
   requiredHC: string;
-  budgetRange: string;
+  budget: string;
   justification: string;
 }
 
@@ -76,7 +76,7 @@ export const INITIAL_REQUESTS: HCRequest[] = [
         designation: 'Captain ATR 72-600',
         currentHC: 2,
         requiredHC: '10',
-        budgetRange: '',
+        budget: '',
         justification: '',
       },
     ],
@@ -121,7 +121,7 @@ export const INITIAL_REQUESTS: HCRequest[] = [
         designation: 'Passenger Service Agent',
         currentHC: 3,
         requiredHC: '15',
-        budgetRange: '',
+        budget: '',
         justification: '',
       },
     ],
