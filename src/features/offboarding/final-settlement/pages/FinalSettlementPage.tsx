@@ -11,10 +11,12 @@ import {
   DownOutlined,
   EditOutlined,
   FileDoneOutlined,
+  FileTextOutlined,
   FilterOutlined,
   PlusOutlined,
   ReloadOutlined,
   RightOutlined,
+  SafetyOutlined,
   SearchOutlined,
   SendOutlined,
   TeamOutlined,
@@ -53,6 +55,9 @@ interface SettlementRecord {
   status: SettlementStatus;
   preparedBy: string;
   checkedBy?: string;
+  approvedBy?: string;
+  resignationDetails?: ResignationDetails;
+  clearanceReport?: ClearanceReport;
 }
 
 interface Filters {
@@ -73,6 +78,36 @@ interface EligibleEmployee {
   dateOfJoining: string;
   grossSalary: number;
   tenure: string;
+}
+
+type CardDetailTab = 'settlement' | 'resignation' | 'clearance';
+
+interface ResignationDetails {
+  requestId: string;
+  employeeId: string;
+  separationType: string;
+  employmentStatus: string;
+  resignationDate: string;
+  noticePeriodDays: string;
+  noticeDuration: string;
+  separationStatus: string;
+  reasonForSeparation: string;
+  approver: string;
+  lineManager: string;
+}
+
+interface ClearanceDeptRow {
+  department: string;
+  status: 'Cleared' | 'Pending' | 'In Review';
+  approver: string;
+  date: string;
+  remarks: string;
+}
+
+interface ClearanceReport {
+  clearanceId: string;
+  status: 'Cleared' | 'Pending' | 'In Review';
+  departments: ClearanceDeptRow[];
 }
 
 interface ComputationRow {
@@ -224,22 +259,51 @@ const INITIAL_SETTLEMENTS: SettlementRecord[] = [
     empId: 'FS-001',
     department: 'Finance',
     designation: 'Financial Analyst',
-    reason: 'Resignation',
-    tenure: '3 Years, 8 Months',
-    lastWorkingDay: '2026-03-25',
-    dateOfJoining: '2022-07-18',
+    reason: 'Contract Expiry',
+    tenure: '2 Years, 9 Months',
+    lastWorkingDay: '2026-03-28',
+    dateOfJoining: '2023-06-01',
     payables: [
-      { label: 'Monthly Salary (Pro-rata)', amount: 8600 },
-      { label: 'Leave Encashment', amount: 2800 },
-      { label: 'Mobile Allowance Adjustment', amount: 900 },
+      { label: 'Monthly Salary (Pro-rata) (28d)', amount: 8500 },
+      { label: 'Leave Encashment (12d)', amount: 2400 },
+      { label: 'Bonus', amount: 1200 },
     ],
     deductions: [
-      { label: 'Tax Deduction', amount: 450 },
-      { label: 'Advance Salary Recovery', amount: 200 },
+      { label: 'Tax Deduction', amount: 350 },
+      { label: 'ID Card', amount: 100 },
     ],
     status: 'Paid',
     preparedBy: 'Payroll Officer',
     checkedBy: 'Manager, Human Resources',
+    approvedBy: 'CEO',
+    resignationDetails: {
+      requestId: 'SEP-003',
+      employeeId: 'EMP-0654',
+      separationType: 'End of Contract',
+      employmentStatus: 'Contractual',
+      resignationDate: '2026-02-28',
+      noticePeriodDays: '15 days',
+      noticeDuration: 'Serve Full Notice',
+      separationStatus: 'Completed',
+      reasonForSeparation: 'Contract expiry',
+      approver: 'Robert Kim',
+      lineManager: 'Monica Shah',
+    },
+    clearanceReport: {
+      clearanceId: 'CLR-002',
+      status: 'Cleared',
+      departments: [
+        { department: 'Immediate Supervisor', status: 'Cleared', approver: 'Finance Director',  date: '2026-03-20', remarks: '' },
+        { department: 'Finance & Accounts',   status: 'Cleared', approver: 'Finance Head',      date: '2026-03-21', remarks: '' },
+        { department: 'Administration',       status: 'Cleared', approver: 'Admin Head',        date: '2026-03-20', remarks: '' },
+        { department: 'Asset Management (IT)',status: 'Cleared', approver: 'IT Admin',          date: '2026-03-20', remarks: '' },
+        { department: 'IT Department',        status: 'Cleared', approver: 'IT Manager',        date: '2026-03-21', remarks: '' },
+        { department: 'Airline Security',     status: 'Cleared', approver: 'Security Head',     date: '2026-03-20', remarks: '' },
+        { department: 'Revenue Department',   status: 'Cleared', approver: 'Revenue Manager',   date: '2026-03-22', remarks: '' },
+        { department: 'Head of Department',   status: 'Cleared', approver: 'Finance Director',  date: '2026-03-22', remarks: '' },
+        { department: 'HR Department',        status: 'Cleared', approver: 'HR Manager',        date: '2026-03-23', remarks: '' },
+      ],
+    },
   },
   {
     id: 'fst-002',
@@ -252,8 +316,8 @@ const INITIAL_SETTLEMENTS: SettlementRecord[] = [
     lastWorkingDay: '2026-04-15',
     dateOfJoining: '2024-01-15',
     payables: [
-      { label: 'Monthly Salary (Pro-rata)', amount: 12000 },
-      { label: 'Leave Encashment', amount: 3600 },
+      { label: 'Monthly Salary (Pro-rata) (30d)', amount: 12000 },
+      { label: 'Leave Encashment (18d)', amount: 3600 },
       { label: 'Bonus', amount: 2500 },
     ],
     deductions: [
@@ -263,6 +327,30 @@ const INITIAL_SETTLEMENTS: SettlementRecord[] = [
     status: 'Under Review',
     preparedBy: 'Payroll Officer',
     checkedBy: 'Manager, Human Resources',
+    resignationDetails: {
+      requestId: 'SEP-011',
+      employeeId: 'EMP-1042',
+      separationType: 'Resignation',
+      employmentStatus: 'Permanent',
+      resignationDate: '2026-02-14',
+      noticePeriodDays: '60 days',
+      noticeDuration: 'Serve Full Notice',
+      separationStatus: 'In Progress',
+      reasonForSeparation: 'Personal reasons – career transition',
+      approver: 'James Wilson',
+      lineManager: 'David Park',
+    },
+    clearanceReport: {
+      clearanceId: 'CLR-008',
+      status: 'Pending',
+      departments: [
+        { department: 'Immediate Supervisor', status: 'Cleared',    approver: 'Engineering Manager', date: '2026-04-01', remarks: '' },
+        { department: 'IT Department',        status: 'Cleared',    approver: 'IT Head',             date: '2026-04-02', remarks: '' },
+        { department: 'HR Department',        status: 'Pending',    approver: 'HR Manager',          date: '',          remarks: '' },
+        { department: 'Finance & Accounts',   status: 'Pending',    approver: 'Finance Head',        date: '',          remarks: '' },
+        { department: 'Administration',       status: 'Pending',    approver: 'Admin Head',          date: '',          remarks: '' },
+      ],
+    },
   },
   {
     id: 'fst-003',
@@ -275,9 +363,9 @@ const INITIAL_SETTLEMENTS: SettlementRecord[] = [
     lastWorkingDay: '2026-03-29',
     dateOfJoining: '2024-04-02',
     payables: [
-      { label: 'Monthly Salary (Pro-rata)', amount: 7800 },
+      { label: 'Monthly Salary (Pro-rata) (29d)', amount: 7800 },
       { label: 'Incentive Adjustment', amount: 1800 },
-      { label: 'Leave Encashment', amount: 900 },
+      { label: 'Leave Encashment (9d)', amount: 900 },
     ],
     deductions: [
       { label: 'Tax Deduction', amount: 250 },
@@ -285,6 +373,29 @@ const INITIAL_SETTLEMENTS: SettlementRecord[] = [
     ],
     status: 'Draft',
     preparedBy: 'Payroll Officer',
+    resignationDetails: {
+      requestId: 'SEP-018',
+      employeeId: 'EMP-3058',
+      separationType: 'Resignation',
+      employmentStatus: 'Permanent',
+      resignationDate: '2026-02-27',
+      noticePeriodDays: '30 days',
+      noticeDuration: 'Serve Full Notice',
+      separationStatus: 'Completed',
+      reasonForSeparation: 'Career growth opportunity',
+      approver: 'Angela Torres',
+      lineManager: 'Peter Chang',
+    },
+    clearanceReport: {
+      clearanceId: 'CLR-014',
+      status: 'Pending',
+      departments: [
+        { department: 'Immediate Supervisor', status: 'Cleared', approver: 'Sales Manager', date: '2026-03-25', remarks: '' },
+        { department: 'IT Department',        status: 'Pending', approver: 'IT Head',        date: '',          remarks: '' },
+        { department: 'HR Department',        status: 'Pending', approver: 'HR Manager',     date: '',          remarks: '' },
+        { department: 'Finance & Accounts',   status: 'Pending', approver: 'Finance Head',   date: '',          remarks: '' },
+      ],
+    },
   },
   {
     id: 'fst-004',
@@ -297,8 +408,8 @@ const INITIAL_SETTLEMENTS: SettlementRecord[] = [
     lastWorkingDay: '2026-06-30',
     dateOfJoining: '2022-04-15',
     payables: [
-      { label: 'Monthly Salary (Pro-rata)', amount: 11000 },
-      { label: 'Leave Encashment', amount: 5200 },
+      { label: 'Monthly Salary (Pro-rata) (30d)', amount: 11000 },
+      { label: 'Leave Encashment (22d)', amount: 5200 },
       { label: 'Gratuity', amount: 3000 },
     ],
     deductions: [
@@ -306,6 +417,30 @@ const INITIAL_SETTLEMENTS: SettlementRecord[] = [
     ],
     status: 'Draft',
     preparedBy: 'Payroll Officer',
+    resignationDetails: {
+      requestId: 'SEP-025',
+      employeeId: 'EMP-4219',
+      separationType: 'Retirement',
+      employmentStatus: 'Permanent',
+      resignationDate: '2026-03-15',
+      noticePeriodDays: '90 days',
+      noticeDuration: 'Serve Full Notice',
+      separationStatus: 'In Progress',
+      reasonForSeparation: 'Superannuation – reached mandatory retirement age',
+      approver: 'Maria Santos',
+      lineManager: 'James Okafor',
+    },
+    clearanceReport: {
+      clearanceId: 'CLR-021',
+      status: 'In Review',
+      departments: [
+        { department: 'Immediate Supervisor', status: 'In Review', approver: 'HR Director',   date: '',          remarks: '' },
+        { department: 'Finance & Accounts',   status: 'Pending',   approver: 'Finance Head',  date: '',          remarks: '' },
+        { department: 'Administration',       status: 'Pending',   approver: 'Admin Head',    date: '',          remarks: '' },
+        { department: 'IT Department',        status: 'Pending',   approver: 'IT Manager',    date: '',          remarks: '' },
+        { department: 'HR Department',        status: 'Pending',   approver: 'HR Admin',      date: '',          remarks: '' },
+      ],
+    },
   },
 ];
 
@@ -1107,6 +1242,7 @@ function SettlementCard({ record, expanded, onToggle, onSubmitForReview, onAppro
   const payablesTotal = getPayablesTotal(record);
   const deductionsTotal = getDeductionsTotal(record);
   const theme = STATUS_THEME[record.status];
+  const [activeDetailTab, setActiveDetailTab] = useState<CardDetailTab>('settlement');
 
   return (
     <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 14, overflow: 'hidden', boxShadow: '0 2px 8px rgba(15,23,42,0.04)' }}>
@@ -1163,62 +1299,258 @@ function SettlementCard({ record, expanded, onToggle, onSubmitForReview, onAppro
       </div>
 
       {expanded && (
-        <div style={{ borderTop: `1px solid ${C.border}`, padding: '16px 18px 18px' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))', gap: 12, marginBottom: 16 }}>
-            <MetaItem icon={<FileDoneOutlined style={{ fontSize: 11 }} />} label="Reason" value={record.reason} />
-            <MetaItem icon={<ClockCircleOutlined style={{ fontSize: 11 }} />} label="Tenure" value={record.tenure} />
-            <MetaItem icon={<CalendarOutlined style={{ fontSize: 11 }} />} label="Last Working Day" value={record.lastWorkingDay} />
-            <MetaItem icon={<ApartmentOutlined style={{ fontSize: 11 }} />} label="Date of Joining" value={record.dateOfJoining} />
+        <div style={{ borderTop: `1px solid ${C.border}` }}>
+          {/* ── Detail tab bar ─────────────────────────── */}
+          <div style={{ display: 'flex', gap: 0, borderBottom: `1px solid ${C.border}`, padding: '0 18px', background: C.surface }}>
+            {([
+              { key: 'settlement' as CardDetailTab, label: 'Settlement Breakdown', icon: <DollarCircleOutlined style={{ fontSize: 12 }} /> },
+              { key: 'resignation' as CardDetailTab, label: 'Resignation Details',  icon: <FileTextOutlined   style={{ fontSize: 12 }} /> },
+              { key: 'clearance'  as CardDetailTab, label: 'Clearance Report',     icon: <SafetyOutlined     style={{ fontSize: 12 }} /> },
+            ]).map(tab => (
+              <button
+                key={tab.key}
+                type="button"
+                onClick={e => { e.stopPropagation(); setActiveDetailTab(tab.key); }}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 6,
+                  padding: '10px 16px', border: 'none', background: 'none', cursor: 'pointer',
+                  fontSize: 12, fontWeight: activeDetailTab === tab.key ? 700 : 500,
+                  color: activeDetailTab === tab.key ? C.primary : C.textMuted,
+                  borderBottom: activeDetailTab === tab.key ? `2px solid ${C.primary}` : '2px solid transparent',
+                  marginBottom: -1, fontFamily: 'inherit', whiteSpace: 'nowrap',
+                  transition: 'color 0.1s, border-color 0.1s',
+                }}
+              >
+                {tab.icon}
+                {tab.label}
+              </button>
+            ))}
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 14, marginBottom: 16 }}>
-            <AmountPanel title="Payable" accent={C.success} background={C.successBg} border={C.successBorder} items={record.payables} total={payablesTotal} />
-            <AmountPanel title="Deductions" accent={C.danger} background={C.dangerBg} border={C.dangerBorder} items={record.deductions} total={deductionsTotal} />
-          </div>
-
-          <div style={{ background: 'linear-gradient(135deg, #163563 0%, #1e3a6f 100%)', color: '#ffffff', borderRadius: 12, padding: '12px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginBottom: 14, flexWrap: 'wrap' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'rgba(255,255,255,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                <DollarCircleOutlined style={{ color: '#ffffff' }} />
+          {/* ── Settlement Breakdown ──────────────────── */}
+          {activeDetailTab === 'settlement' && (
+            <div style={{ padding: '16px 18px 18px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))', gap: 12, marginBottom: 16 }}>
+                <MetaItem icon={<FileDoneOutlined style={{ fontSize: 11 }} />} label="Reason"          value={record.reason} />
+                <MetaItem icon={<ClockCircleOutlined style={{ fontSize: 11 }} />} label="Tenure"       value={record.tenure} />
+                <MetaItem icon={<CalendarOutlined style={{ fontSize: 11 }} />} label="Last Working Day" value={record.lastWorkingDay} />
+                <MetaItem icon={<ApartmentOutlined style={{ fontSize: 11 }} />} label="Date of Joining" value={record.dateOfJoining} />
               </div>
-              <div>
-                <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', opacity: 0.82 }}>Net Payable (A - B)</div>
-                <div style={{ fontSize: 12, opacity: 0.88, marginTop: 2 }}>Ready for settlement workflow</div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 14, marginBottom: 16 }}>
+                <AmountPanel title="Payable"    accent={C.success} background={C.successBg} border={C.successBorder} items={record.payables}   total={payablesTotal} />
+                <AmountPanel title="Deductions" accent={C.danger}  background={C.dangerBg}  border={C.dangerBorder}  items={record.deductions} total={deductionsTotal} />
+              </div>
+
+              <div style={{ background: 'linear-gradient(135deg, #163563 0%, #1e3a6f 100%)', color: '#ffffff', borderRadius: 12, padding: '12px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginBottom: 14, flexWrap: 'wrap' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'rgba(255,255,255,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <DollarCircleOutlined style={{ color: '#ffffff' }} />
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', opacity: 0.82 }}>Net Payable (A - B)</div>
+                    <div style={{ fontSize: 12, opacity: 0.88, marginTop: 2 }}>Ready for settlement workflow</div>
+                  </div>
+                </div>
+                <div style={{ fontSize: 28, fontWeight: 800, letterSpacing: '-0.03em' }}>{formatCurrency(netPayable)}</div>
+              </div>
+
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 14, flexWrap: 'wrap' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap' }}>
+                  <span style={{ fontSize: 11, color: C.textMuted }}>Prepared: <strong style={{ color: C.textSecondary }}>{record.preparedBy}</strong></span>
+                  {record.checkedBy && (
+                    <span style={{ fontSize: 11, color: C.textMuted }}>Checked: <strong style={{ color: C.textSecondary }}>{record.checkedBy}</strong></span>
+                  )}
+                  {record.approvedBy && (
+                    <span style={{ fontSize: 11, color: C.textMuted }}>Approved: <strong style={{ color: C.textSecondary }}>{record.approvedBy}</strong></span>
+                  )}
+                </div>
+
+                <Space wrap>
+                  {record.status === 'Draft' && (
+                    <>
+                      <Button icon={<EditOutlined />} onClick={onEdit}>Edit</Button>
+                      <Button type="primary" icon={<SendOutlined />} onClick={onSubmitForReview} style={{ background: C.primaryDark, borderColor: C.primaryDark }}>Submit for Review</Button>
+                    </>
+                  )}
+                  {record.status === 'Under Review' && (
+                    <>
+                      <Button type="primary" icon={<CheckCircleOutlined />} onClick={onApprove} style={{ background: C.primaryDark, borderColor: C.primaryDark }}>Approve</Button>
+                      <Button danger onClick={onDispute}>Dispute</Button>
+                    </>
+                  )}
+                  {record.status === 'Approved' && (
+                    <Button type="primary" icon={<CheckCircleOutlined />} onClick={onMarkPaid} style={{ background: C.primaryDark, borderColor: C.primaryDark }}>Mark as Paid</Button>
+                  )}
+                  {record.status === 'Disputed' && (
+                    <Button onClick={onReopen}>Reopen Review</Button>
+                  )}
+                  <Button icon={<DownloadOutlined />} onClick={onExportPdf}>Export PDF</Button>
+                </Space>
               </div>
             </div>
-            <div style={{ fontSize: 28, fontWeight: 800, letterSpacing: '-0.03em' }}>{formatCurrency(netPayable)}</div>
-          </div>
+          )}
 
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 14, flexWrap: 'wrap' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap' }}>
-              <span style={{ fontSize: 11, color: C.textMuted }}>Prepared by: <strong style={{ color: C.textSecondary }}>{record.preparedBy}</strong></span>
-              {record.checkedBy && (
-                <span style={{ fontSize: 11, color: C.textMuted }}>Checked by: <strong style={{ color: C.textSecondary }}>{record.checkedBy}</strong></span>
+          {/* ── Resignation Details ───────────────────── */}
+          {activeDetailTab === 'resignation' && (
+            <div style={{ padding: '16px 18px 18px' }}>
+              {record.resignationDetails == null ? (
+                <div style={{ border: `1px solid ${C.border}`, borderRadius: 10, padding: '40px 20px', textAlign: 'center', background: C.surface }}>
+                  <FileTextOutlined style={{ fontSize: 20, color: C.textSoft, display: 'block', marginBottom: 10 }} />
+                  <div style={{ fontSize: 13, color: C.textMuted }}>No resignation details available.</div>
+                </div>
+              ) : (
+                <>
+                  {/* 3-column info grid */}
+                  <div style={{ border: `1px solid ${C.border}`, borderRadius: 10, overflow: 'hidden', marginBottom: 12 }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr' }}>
+                      {([
+                        { label: 'REQUEST ID',        value: record.resignationDetails.requestId       },
+                        { label: 'EMPLOYEE ID',       value: record.resignationDetails.employeeId      },
+                        { label: 'SEPARATION TYPE',   value: record.resignationDetails.separationType  },
+                        { label: 'EMPLOYMENT STATUS', value: record.resignationDetails.employmentStatus},
+                        { label: 'DEPARTMENT',        value: record.department                         },
+                        { label: 'DESIGNATION',       value: record.designation                        },
+                        { label: 'DATE OF JOINING',   value: record.dateOfJoining                      },
+                        { label: 'RESIGNATION DATE',  value: record.resignationDetails.resignationDate },
+                        { label: 'LAST WORKING DAY',  value: record.lastWorkingDay                     },
+                        { label: 'NOTICE PERIOD',     value: record.resignationDetails.noticePeriodDays},
+                        { label: 'DURATION',          value: record.resignationDetails.noticeDuration  },
+                        { label: 'STATUS',            value: record.resignationDetails.separationStatus},
+                      ] as Array<{ label: string; value: string }>).map((cell, idx) => {
+                        const col = idx % 3;
+                        const row = Math.floor(idx / 3);
+                        return (
+                          <div key={cell.label} style={{
+                            padding: '12px 16px',
+                            borderRight:  col < 2 ? `1px solid ${C.border}` : 'none',
+                            borderBottom: row < 3 ? `1px solid ${C.border}` : 'none',
+                          }}>
+                            <div style={{ fontSize: 10, fontWeight: 700, color: C.textSoft, letterSpacing: '0.07em', textTransform: 'uppercase', marginBottom: 6 }}>{cell.label}</div>
+                            <div style={{ fontSize: 13, fontWeight: 600, color: C.text }}>{cell.value}</div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Reason for separation – full width */}
+                  <div style={{ border: `1px solid ${C.border}`, borderRadius: 10, overflow: 'hidden', marginBottom: 12 }}>
+                    <div style={{ padding: '12px 16px' }}>
+                      <div style={{ fontSize: 10, fontWeight: 700, color: C.textSoft, letterSpacing: '0.07em', textTransform: 'uppercase', marginBottom: 6 }}>REASON FOR SEPARATION</div>
+                      <div style={{ fontSize: 13, fontWeight: 600, color: C.text }}>{record.resignationDetails.reasonForSeparation}</div>
+                    </div>
+                  </div>
+
+                  {/* Approver + Line Manager */}
+                  <div style={{ border: `1px solid ${C.border}`, borderRadius: 10, overflow: 'hidden', marginBottom: 14 }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr' }}>
+                      <div style={{ padding: '12px 16px', borderRight: `1px solid ${C.border}` }}>
+                        <div style={{ fontSize: 10, fontWeight: 700, color: C.textSoft, letterSpacing: '0.07em', textTransform: 'uppercase', marginBottom: 6 }}>APPROVER</div>
+                        <div style={{ fontSize: 13, fontWeight: 600, color: C.text }}>{record.resignationDetails.approver}</div>
+                      </div>
+                      <div style={{ padding: '12px 16px' }}>
+                        <div style={{ fontSize: 10, fontWeight: 700, color: C.textSoft, letterSpacing: '0.07em', textTransform: 'uppercase', marginBottom: 6 }}>LINE MANAGER</div>
+                        <div style={{ fontSize: 13, fontWeight: 600, color: C.text }}>{record.resignationDetails.lineManager}</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                    <Button icon={<DownloadOutlined />} onClick={onExportPdf}>Export PDF</Button>
+                  </div>
+                </>
               )}
             </div>
+          )}
 
-            <Space wrap>
-              {record.status === 'Draft' && (
-                <>
-                  <Button icon={<EditOutlined />} onClick={onEdit}>Edit</Button>
-                  <Button type="primary" icon={<SendOutlined />} onClick={onSubmitForReview}>Submit for Review</Button>
-                </>
-              )}
-              {record.status === 'Under Review' && (
-                <>
-                  <Button type="primary" icon={<CheckCircleOutlined />} onClick={onApprove}>Approve</Button>
-                  <Button danger onClick={onDispute}>Dispute</Button>
-                </>
-              )}
-              {record.status === 'Approved' && (
-                <Button type="primary" icon={<CheckCircleOutlined />} onClick={onMarkPaid}>Mark as Paid</Button>
-              )}
-              {record.status === 'Disputed' && (
-                <Button onClick={onReopen}>Reopen Review</Button>
-              )}
-              <Button icon={<DownloadOutlined />} onClick={onExportPdf}>Export PDF</Button>
-            </Space>
-          </div>
+          {/* ── Clearance Report ──────────────────────── */}
+          {activeDetailTab === 'clearance' && (
+            <div style={{ padding: '16px 18px 18px' }}>
+              {record.clearanceReport == null ? (
+                <div style={{ border: `1px solid ${C.border}`, borderRadius: 10, padding: '40px 20px', textAlign: 'center', background: C.surface }}>
+                  <SafetyOutlined style={{ fontSize: 20, color: C.textSoft, display: 'block', marginBottom: 10 }} />
+                  <div style={{ fontSize: 13, color: C.textMuted }}>No clearance report available.</div>
+                </div>
+              ) : (() => {
+                const cr = record.clearanceReport;
+                const clearedCount = cr.departments.filter(d => d.status === 'Cleared').length;
+                const totalCount   = cr.departments.length;
+                const pct = totalCount > 0 ? Math.round((clearedCount / totalCount) * 100) : 0;
+                const crColor  = cr.status === 'Cleared' ? C.success : cr.status === 'In Review' ? C.info : C.warning;
+                const crBg     = cr.status === 'Cleared' ? C.successBg : cr.status === 'In Review' ? C.infoBg : C.warningBg;
+                const crBorder = cr.status === 'Cleared' ? C.successBorder : cr.status === 'In Review' ? C.infoBorder : C.warningBorder;
+                return (
+                  <>
+                    {/* Status + ID + progress summary */}
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10, flexWrap: 'wrap', gap: 10 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '3px 10px', borderRadius: 999, border: `1px solid ${crBorder}`, background: crBg, color: crColor, fontSize: 11, fontWeight: 700 }}>
+                          <CheckCircleOutlined style={{ fontSize: 11 }} />
+                          {cr.status}
+                        </span>
+                        <span style={{ fontSize: 12, color: C.textMuted, fontWeight: 600 }}>{cr.clearanceId}</span>
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
+                        <span style={{ fontSize: 11, color: C.textMuted }}>Clearance Progress</span>
+                        <span style={{ fontSize: 22, fontWeight: 800, color: C.text, lineHeight: 1 }}>{clearedCount}/{totalCount}</span>
+                        <span style={{ fontSize: 9, fontWeight: 700, color: C.textSoft, letterSpacing: '0.07em', textTransform: 'uppercase' }}>DEPARTMENTS CLEARED</span>
+                      </div>
+                    </div>
+
+                    <Progress
+                      percent={pct}
+                      strokeColor={pct === 100 ? C.success : C.primary}
+                      trailColor="#e5e7eb"
+                      size="small"
+                      style={{ marginBottom: 14 }}
+                    />
+
+                    {/* Departments table */}
+                    <div style={{ border: `1px solid ${C.border}`, borderRadius: 10, overflow: 'hidden', marginBottom: 14 }}>
+                      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1.5fr 1fr 1fr', padding: '8px 14px', background: C.surfaceMuted, borderBottom: `1px solid ${C.border}`, gap: 8 }}>
+                        {(['DEPARTMENT', 'STATUS', 'APPROVER', 'DATE', 'REMARKS'] as const).map(h => (
+                          <div key={h} style={{ fontSize: 10, fontWeight: 700, color: C.textSoft, letterSpacing: '0.07em', textTransform: 'uppercase' }}>{h}</div>
+                        ))}
+                      </div>
+                      {cr.departments.map((dept, idx) => {
+                        const dc     = dept.status === 'Cleared' ? C.success : dept.status === 'In Review' ? C.info : C.warning;
+                        const dcBg   = dept.status === 'Cleared' ? C.successBg : dept.status === 'In Review' ? C.infoBg : C.warningBg;
+                        const dcBord = dept.status === 'Cleared' ? C.successBorder : dept.status === 'In Review' ? C.infoBorder : C.warningBorder;
+                        const dIcon  = dept.status === 'Cleared'
+                          ? <CheckCircleOutlined style={{ color: C.success, fontSize: 14, flexShrink: 0 }} />
+                          : <ClockCircleOutlined style={{ color: dc, fontSize: 14, flexShrink: 0 }} />;
+                        return (
+                          <div
+                            key={dept.department}
+                            style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1.5fr 1fr 1fr', padding: '10px 14px', gap: 8, borderBottom: idx < cr.departments.length - 1 ? `1px solid ${C.border}` : 'none', alignItems: 'center' }}
+                          >
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, color: C.textSecondary }}>
+                              {dIcon}
+                              {dept.department}
+                            </div>
+                            <div>
+                              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '2px 8px', borderRadius: 999, border: `1px solid ${dcBord}`, background: dcBg, color: dc, fontSize: 11, fontWeight: 700 }}>
+                                <span style={{ width: 5, height: 5, borderRadius: '50%', background: dc, flexShrink: 0 }} />
+                                {dept.status}
+                              </span>
+                            </div>
+                            <div style={{ fontSize: 12, color: C.textSecondary }}>{dept.approver}</div>
+                            <div style={{ fontSize: 12, color: dept.date ? C.textSecondary : C.textSoft }}>{dept.date || '—'}</div>
+                            <div style={{ fontSize: 12, color: C.textSoft }}>{dept.remarks || '—'}</div>
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                      <Button icon={<DownloadOutlined />} onClick={onExportPdf}>Export PDF</Button>
+                    </div>
+                  </>
+                );
+              })()}
+            </div>
+          )}
         </div>
       )}
     </div>
