@@ -14,7 +14,7 @@
 import { useMemo, useState } from 'react';
 import {
   Badge, Button, Col, Collapse, Drawer, Input,
-  InputNumber, Progress, Row, Space, Tabs, Tag,
+  InputNumber, Modal, Progress, Row, Select, Space, Tabs, Tag,
   Tooltip, Typography, Avatar, message,
 } from 'antd';
 import {
@@ -35,6 +35,7 @@ import {
   UserOutlined,
   WarningOutlined,
 } from '@ant-design/icons';
+import { NewSeparationModal } from '@/features/offboarding/separation-requests/components/NewSeparationModal';
 
 const { Title, Text, Paragraph } = Typography;
 const { TextArea } = Input;
@@ -1342,10 +1343,82 @@ interface ApprovalEmployee {
   periodTo: string;
   lmDeadline: string;
   lmStatus: 'Pending' | 'Submitted';
+  hrStatus: 'Pending' | 'Submitted';
   subKPIs: SubKPIItem[];
   selfMarkings: SubKPIMarking[];
   lmMarkings: SubKPIMarking[];
+  hrMarkings: SubKPIMarking[];
   lmOverallRemarks?: string;
+  hrOverallRemarks?: string;
+  hrDecision?: HRDecision;
+  decisionApprovalStatus: 'Not Requested' | 'Pending' | 'Approved' | 'Rejected';
+  decisionApprovalRemarks?: string;
+  decisionApprovalReviewedBy?: string;
+  decisionApprovalReviewedAt?: string;
+  decisionMailSent?: boolean;
+  separationInitiated?: boolean;
+}
+
+interface SeparationInitEmployee {
+  empId: string;
+  name: string;
+  designation: string;
+  department: string;
+  joinedDate?: string;
+}
+
+type HRConfirmationAction = 'Confirmation' | 'Extend' | 'Separation';
+type HRAppraisalAction = 'Appraisal' | 'Separation';
+type HRIncrementType = 'Basic' | 'Gross' | 'No Increment';
+
+interface HRDecision {
+  submittedAt: string;
+  remarks: string;
+  designation?: string;
+  jobGrade?: string;
+  payScale?: string;
+  incrementType?: HRIncrementType;
+  incrementPercent?: number;
+  effectiveDate?: string;
+  nextAppraisalDate?: string;
+  confirmationAction?: HRConfirmationAction;
+  appraisalAction?: HRAppraisalAction;
+  extensionDays?: number;
+}
+
+interface DecisionMailPayload {
+  to: string;
+  cc?: string;
+  bcc?: string;
+  subject: string;
+  body: string;
+}
+
+const DESIGNATION_OPTIONS = [
+  'HR Executive',
+  'HR Officer',
+  'Senior HR Officer',
+  'Assistant Manager - HR',
+  'Manager - HR',
+  'Senior Manager - HR',
+  'Head of HR',
+];
+
+const JOB_GRADE_OPTIONS = ['JG-01', 'JG-02', 'JG-03', 'JG-04', 'JG-05', 'JG-06', 'JG-07'];
+const PAY_SCALE_OPTIONS = ['Entry level', 'Junior', 'Mid', 'Expart'];
+const PAY_SCALE_RANGES: Record<string, string> = {
+  'Entry level': '23,000 to 24,000',
+  Junior: '25,000 to 35,000',
+  Mid: '36,000 to 55,000',
+  Expart: '56,000 to 85,000',
+};
+
+function recommendedIncrementByScore(score: number): number {
+  if (score >= 85) return 10;
+  if (score >= 70) return 7;
+  if (score >= 55) return 5;
+  if (score >= 40) return 3;
+  return 0;
 }
 
 const PENDING_APPROVALS: ApprovalEmployee[] = [
@@ -1354,7 +1427,7 @@ const PENDING_APPROVALS: ApprovalEmployee[] = [
     designation: 'HR Officer', department: 'Human Resources',
     avatarColor: '#0284c7', appraisalType: 'Appraisal',
     periodLabel: 'Yearly Appraisal · FY 2025', periodFrom: '2025-01-01', periodTo: '2025-12-31',
-    lmDeadline: '2026-04-05', lmStatus: 'Pending',
+    lmDeadline: '2026-04-05', lmStatus: 'Pending', hrStatus: 'Pending',
     subKPIs: MY_SUB_KPIS.slice(0, 6),
     selfMarkings: [
       { subKPIId: 'sk-01-01', score: 8,  remarks: 'Completed all milestones per plan.' },
@@ -1365,13 +1438,15 @@ const PENDING_APPROVALS: ApprovalEmployee[] = [
       { subKPIId: 'sk-03-02', score: 8,  remarks: 'Audit score was 88%.' },
     ],
     lmMarkings: [],
+    hrMarkings: [],
+    decisionApprovalStatus: 'Not Requested',
   },
   {
     id: 'appr-002', name: 'Nadia Chowdhury', employeeCode: 'EMP-057',
     designation: 'Recruitment Executive', department: 'Human Resources',
     avatarColor: '#7c3aed', appraisalType: 'Confirmation',
     periodLabel: 'Confirmation Review · Q1 2026', periodFrom: '2026-01-01', periodTo: '2026-03-31',
-    lmDeadline: '2026-04-10', lmStatus: 'Pending',
+    lmDeadline: '2026-04-10', lmStatus: 'Pending', hrStatus: 'Pending',
     subKPIs: MY_SUB_KPIS.slice(2, 6),
     selfMarkings: [
       { subKPIId: 'sk-02-01', score: 7,  remarks: 'Managed 12 open positions this quarter.' },
@@ -1380,13 +1455,15 @@ const PENDING_APPROVALS: ApprovalEmployee[] = [
       { subKPIId: 'sk-03-02', score: 7,  remarks: 'Audit score 85%.' },
     ],
     lmMarkings: [],
+    hrMarkings: [],
+    decisionApprovalStatus: 'Not Requested',
   },
   {
     id: 'appr-003', name: 'Kamal Hossain', employeeCode: 'EMP-033',
     designation: 'Senior HR Officer', department: 'Human Resources',
     avatarColor: '#d97706', appraisalType: 'Appraisal',
     periodLabel: 'Yearly Appraisal · FY 2025', periodFrom: '2025-01-01', periodTo: '2025-12-31',
-    lmDeadline: '2026-04-05', lmStatus: 'Submitted',
+    lmDeadline: '2026-04-05', lmStatus: 'Submitted', hrStatus: 'Submitted',
     subKPIs: MY_SUB_KPIS.slice(0, 7),
     selfMarkings: [
       { subKPIId: 'sk-01-01', score: 9,  remarks: 'All strategic milestones met.' },
@@ -1406,14 +1483,36 @@ const PENDING_APPROVALS: ApprovalEmployee[] = [
       { subKPIId: 'sk-03-02', score: 8,  remarks: 'Audit exceeded expectation.' },
       { subKPIId: 'sk-05-01', score: 8,  remarks: 'Appraisal cycles well managed.' },
     ],
+    hrMarkings: [
+      { subKPIId: 'sk-01-01', score: 8,  remarks: 'Employee performance matches department expectation.' },
+      { subKPIId: 'sk-01-02', score: 8,  remarks: 'Policy ownership has improved this cycle.' },
+      { subKPIId: 'sk-02-01', score: 7,  remarks: 'Hiring closure timeline is acceptable.' },
+      { subKPIId: 'sk-02-02', score: 8,  remarks: 'Strong quality indicators from new hires.' },
+      { subKPIId: 'sk-03-01', score: 10, remarks: 'Excellent compliance maintenance.' },
+      { subKPIId: 'sk-03-02', score: 8,  remarks: 'Audit trend is consistently positive.' },
+      { subKPIId: 'sk-05-01', score: 8,  remarks: 'Delivery consistency is good.' },
+    ],
     lmOverallRemarks: 'Kamal has demonstrated consistent performance across all KPIs this year. His compliance track record is exemplary and his appraisal cycle management is commendable. Recommend for increment consideration.',
+    hrOverallRemarks: 'HR review confirms stable and high performance across operational and compliance KPIs.',
+    hrDecision: {
+      submittedAt: '2026-03-31',
+      remarks: 'Approved for increment and role elevation based on sustained KPI delivery.',
+      designation: 'Assistant Manager - HR',
+      incrementType: 'Gross',
+      incrementPercent: 10,
+      effectiveDate: '2026-04-01',
+      nextAppraisalDate: '2027-04-01',
+    },
+    decisionApprovalStatus: 'Approved',
+    decisionApprovalReviewedBy: 'Head of HR',
+    decisionApprovalReviewedAt: '2026-03-31',
   },
   {
     id: 'appr-004', name: 'Sadia Begum', employeeCode: 'EMP-071',
     designation: 'HR Analyst', department: 'Human Resources',
     avatarColor: '#059669', appraisalType: 'Appraisal',
     periodLabel: 'Yearly Appraisal · FY 2025', periodFrom: '2025-01-01', periodTo: '2025-12-31',
-    lmDeadline: '2026-04-05', lmStatus: 'Pending',
+    lmDeadline: '2026-04-05', lmStatus: 'Pending', hrStatus: 'Pending',
     subKPIs: MY_SUB_KPIS.slice(4, 9),
     selfMarkings: [
       { subKPIId: 'sk-03-01', score: 8,  remarks: 'Maintained full compliance.' },
@@ -1423,13 +1522,15 @@ const PENDING_APPROVALS: ApprovalEmployee[] = [
       { subKPIId: 'sk-07-01', score: 9,  remarks: 'Engagement survey score 80%.' },
     ],
     lmMarkings: [],
+    hrMarkings: [],
+    decisionApprovalStatus: 'Not Requested',
   },
   {
     id: 'appr-005', name: 'Tanvir Alam', employeeCode: 'EMP-089',
     designation: 'HR Executive', department: 'Human Resources',
     avatarColor: '#dc2626', appraisalType: 'Confirmation',
     periodLabel: 'Confirmation Review · Q1 2026', periodFrom: '2026-01-01', periodTo: '2026-03-31',
-    lmDeadline: '2026-04-10', lmStatus: 'Pending',
+    lmDeadline: '2026-04-10', lmStatus: 'Pending', hrStatus: 'Pending',
     subKPIs: MY_SUB_KPIS.slice(0, 5),
     selfMarkings: [
       { subKPIId: 'sk-01-01', score: 7,  remarks: 'Supported strategic HR planning activities.' },
@@ -1439,6 +1540,8 @@ const PENDING_APPROVALS: ApprovalEmployee[] = [
       { subKPIId: 'sk-03-01', score: 8,  remarks: 'No compliance violations on my part.' },
     ],
     lmMarkings: [],
+    hrMarkings: [],
+    decisionApprovalStatus: 'Not Requested',
   },
 ];
 
@@ -1609,6 +1712,27 @@ function LMMarkDrawer({ employee, onClose, onSubmit }: LMMarkDrawerProps) {
                   <Progress percent={pct} strokeColor={pct === 100 ? '#059669' : CLR_PRIMARY} trailColor="#e5e7eb" size="small" showInfo={false} style={{ marginTop: 8 }} />
                 </div>
               )}
+
+              {/* LM Evaluation % card — always visible */}
+              <div style={{ flex: 1.5, minWidth: 160, background: lmHasScore ? 'linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%)' : '#f9fafb', border: `1px solid ${lmHasScore ? '#93c5fd' : '#e5e7eb'}`, borderRadius: 10, padding: '10px 14px', position: 'relative', overflow: 'hidden' }}>
+                {lmHasScore && <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, background: 'linear-gradient(90deg, #3b82f6, #0f766e)' }} />}
+                <div style={{ fontSize: 10, fontWeight: 700, color: '#1d4ed8', letterSpacing: '0.05em', marginBottom: 2 }}>LM EVALUATION %</div>
+                <div style={{ fontSize: 10, color: '#93c5fd', marginBottom: 6 }}>Weighted KPI score</div>
+                {lmHasScore ? (
+                  <>
+                    <div style={{ fontSize: 26, fontWeight: 900, color: scoreColor(lmTotal), lineHeight: 1.1 }}>{lmTotal}%</div>
+                    <Tag style={{ marginTop: 5, borderRadius: 999, fontSize: 10, border: 'none', background: scoreBadge(lmTotal).bg, color: scoreBadge(lmTotal).color, fontWeight: 700, padding: '0 8px' }}>
+                      {scoreBadge(lmTotal).label}
+                    </Tag>
+                    <Progress percent={lmTotal} strokeColor={scoreColor(lmTotal)} trailColor="#dbeafe" size="small" showInfo={false} style={{ marginTop: 8 }} />
+                  </>
+                ) : (
+                  <>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: '#9ca3af', marginTop: 4 }}>Not yet evaluated</div>
+                    <div style={{ fontSize: 10, color: '#d1d5db', marginTop: 4 }}>Score KPIs below to calculate</div>
+                  </>
+                )}
+              </div>
             </div>
           );
         })()}
@@ -1734,37 +1858,787 @@ function LMMarkDrawer({ employee, onClose, onSubmit }: LMMarkDrawerProps) {
   );
 }
 
+interface HRMarkDrawerProps {
+  employee: ApprovalEmployee | null;
+  onClose: () => void;
+  onSubmit: (id: string, markings: SubKPIMarking[], overallRemarks: string) => void;
+}
+
+function HRMarkDrawer({ employee, onClose, onSubmit }: HRMarkDrawerProps) {
+  const [markings, setMarkings]             = useState<SubKPIMarking[]>([]);
+  const [overallRemarks, setOverallRemarks] = useState('');
+  const [expanded, setExpanded]             = useState<string[]>([]);
+  const [submitting, setSubmitting]         = useState(false);
+
+  const prevId = useMemo(() => employee?.id, [employee]);
+  useMemo(() => {
+    if (!employee) return;
+    const init = employee.hrMarkings.length > 0 ? employee.hrMarkings : blankMarkings(employee.subKPIs);
+    setMarkings(init);
+    setOverallRemarks(employee.hrOverallRemarks ?? '');
+    setExpanded(groupByMainKPI(employee.subKPIs).map(g => g.id));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [prevId]);
+
+  if (!employee) return null;
+
+  const groups        = groupByMainKPI(employee.subKPIs);
+  const totalKPIs     = employee.subKPIs.length;
+  const filledKPIs    = markings.filter(m => m.score !== null).length;
+  const pct           = totalKPIs ? Math.round((filledKPIs / totalKPIs) * 100) : 0;
+  const weightedScore = calcWeightedScore(employee.subKPIs, markings);
+  const isReadOnly    = employee.hrStatus === 'Submitted';
+  const selfTotal     = calcWeightedScore(employee.subKPIs, employee.selfMarkings);
+  const lmTotal       = calcWeightedScore(employee.subKPIs, employee.lmMarkings);
+  const hrTotal       = calcWeightedScore(employee.subKPIs, isReadOnly ? employee.hrMarkings : markings);
+  const hrHasScore    = isReadOnly || filledKPIs > 0;
+  const avgTotal      = hrHasScore ? Math.round((selfTotal + lmTotal + hrTotal) / 3) : null;
+
+  const updateMarking = (subKPIId: string, patch: Partial<SubKPIMarking>) =>
+    setMarkings(prev => prev.map(m => m.subKPIId === subKPIId ? { ...m, ...patch } : m));
+
+  const handleSubmit = () => {
+    const incomplete = markings.filter(m => m.score === null);
+    if (incomplete.length > 0) { message.warning(`Please score all ${incomplete.length} remaining KPI(s).`); return; }
+    if (!overallRemarks.trim()) { message.warning('Please provide HR overall remarks before submitting.'); return; }
+    setSubmitting(true);
+    setTimeout(() => { setSubmitting(false); onSubmit(employee.id, markings, overallRemarks.trim()); }, 700);
+  };
+
+  return (
+    <Drawer
+      open={!!employee}
+      onClose={onClose}
+      width={960}
+      title={
+        <Space size={10}>
+          <div style={{ width: 36, height: 36, borderRadius: 10, background: '#ede9fe', border: '1px solid #c4b5fd', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <FileTextOutlined style={{ color: '#6d28d9', fontSize: 17 }} />
+          </div>
+          <div>
+            <div style={{ fontWeight: 700, fontSize: 15, color: '#111827' }}>
+              {isReadOnly ? 'View HR Review' : 'HR Review'}
+            </div>
+            <div style={{ fontSize: 11, color: '#9ca3af' }}>{employee.name} · {employee.employeeCode} · {employee.periodLabel}</div>
+          </div>
+        </Space>
+      }
+      styles={{ body: { background: CLR_BG, padding: '16px 20px' }, header: { background: '#fff', borderBottom: '1px solid #e5e7eb' } }}
+      footer={
+        !isReadOnly ? (
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 8 }}>
+            <Space size={6}>
+              <Text style={{ fontSize: 12, color: '#6b7280' }}>{filledKPIs} / {totalKPIs} scored</Text>
+              {filledKPIs > 0 && <Text style={{ fontSize: 12, fontWeight: 700, color: scoreColor(weightedScore) }}>· Weighted: {weightedScore}%</Text>}
+            </Space>
+            <Space>
+              <Button onClick={onClose} style={{ borderRadius: 8 }}>Cancel</Button>
+              <Button type="primary" icon={<SendOutlined />} loading={submitting} onClick={handleSubmit} style={{ borderRadius: 8 }}>Submit HR Review</Button>
+            </Space>
+          </div>
+        ) : (
+          <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+            <Button onClick={onClose} style={{ borderRadius: 8 }}>Close</Button>
+          </div>
+        )
+      }
+    >
+      <div style={{ background: '#fff', border: `1px solid ${CLR_BORDER}`, borderRadius: 12, padding: '12px 14px', marginBottom: 14 }}>
+        <div style={{ fontSize: 11, color: '#6b7280', fontWeight: 700, marginBottom: 8, letterSpacing: '0.04em' }}>EVALUATION OVERVIEW</div>
+        <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+          <div style={{ flex: 1, minWidth: 120, background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: 10, padding: '10px 12px' }}>
+            <div style={{ fontSize: 10, fontWeight: 700, color: '#6b7280', marginBottom: 4 }}>SELF %</div>
+            <div style={{ fontSize: 22, fontWeight: 900, color: scoreColor(selfTotal), lineHeight: 1.1 }}>{selfTotal}%</div>
+            <Tag style={{ marginTop: 5, borderRadius: 999, fontSize: 10, border: 'none', background: scoreBadge(selfTotal).bg, color: scoreBadge(selfTotal).color, fontWeight: 700, padding: '0 8px' }}>
+              {scoreBadge(selfTotal).label}
+            </Tag>
+          </div>
+
+          <div style={{ flex: 1, minWidth: 120, background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: 10, padding: '10px 12px' }}>
+            <div style={{ fontSize: 10, fontWeight: 700, color: '#6b7280', marginBottom: 4 }}>LM %</div>
+            <div style={{ fontSize: 22, fontWeight: 900, color: scoreColor(lmTotal), lineHeight: 1.1 }}>{lmTotal}%</div>
+            <Tag style={{ marginTop: 5, borderRadius: 999, fontSize: 10, border: 'none', background: scoreBadge(lmTotal).bg, color: scoreBadge(lmTotal).color, fontWeight: 700, padding: '0 8px' }}>
+              {scoreBadge(lmTotal).label}
+            </Tag>
+          </div>
+
+          <div style={{ flex: 1, minWidth: 120, background: hrHasScore ? '#faf5ff' : '#f9fafb', border: `1px solid ${hrHasScore ? '#ddd6fe' : '#e5e7eb'}`, borderRadius: 10, padding: '10px 12px' }}>
+            <div style={{ fontSize: 10, fontWeight: 700, color: '#6b7280', marginBottom: 4 }}>HR %</div>
+            {hrHasScore ? (
+              <>
+                <div style={{ fontSize: 22, fontWeight: 900, color: scoreColor(hrTotal), lineHeight: 1.1 }}>{hrTotal}%</div>
+                <Tag style={{ marginTop: 5, borderRadius: 999, fontSize: 10, border: 'none', background: scoreBadge(hrTotal).bg, color: scoreBadge(hrTotal).color, fontWeight: 700, padding: '0 8px' }}>
+                  {scoreBadge(hrTotal).label}
+                </Tag>
+              </>
+            ) : (
+              <div style={{ fontSize: 13, fontWeight: 600, color: '#9ca3af', marginTop: 6 }}>Not scored yet</div>
+            )}
+          </div>
+
+          <div style={{ flex: 1, minWidth: 120, background: avgTotal !== null ? 'linear-gradient(135deg, #fef3c7 0%, #fef9ee 100%)' : '#f9fafb', border: `1px solid ${avgTotal !== null ? '#fde68a' : '#e5e7eb'}`, borderRadius: 10, padding: '10px 12px' }}>
+            <div style={{ fontSize: 10, fontWeight: 700, color: '#6b7280', marginBottom: 4 }}>EVAL. AVG %</div>
+            {avgTotal !== null ? (
+              <>
+                <div style={{ fontSize: 22, fontWeight: 900, color: scoreColor(avgTotal), lineHeight: 1.1 }}>{avgTotal}%</div>
+                <Tag style={{ marginTop: 5, borderRadius: 999, fontSize: 10, border: 'none', background: scoreBadge(avgTotal).bg, color: scoreBadge(avgTotal).color, fontWeight: 700, padding: '0 8px' }}>
+                  {scoreBadge(avgTotal).label}
+                </Tag>
+              </>
+            ) : (
+              <div style={{ fontSize: 13, fontWeight: 600, color: '#9ca3af', marginTop: 6 }}>Pending HR score</div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      <Collapse activeKey={expanded} onChange={keys => setExpanded(keys as string[])} ghost style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+        {groups.map(group => (
+          <Panel
+            key={group.id}
+            style={{ background: '#fff', border: `1px solid ${CLR_BORDER}`, borderRadius: 12, overflow: 'hidden', marginBottom: 0 }}
+            header={
+              <Space size={8}>
+                <div style={{ width: 3, height: 14, background: '#6d28d9', borderRadius: 2 }} />
+                <Text style={{ fontSize: 12, fontWeight: 700, color: '#111827' }}>{group.name}</Text>
+                <Tag style={{ borderRadius: 999, fontSize: 10, border: '1px solid #ddd6fe', background: '#f5f3ff', color: '#6d28d9', fontWeight: 600 }}>{group.code}</Tag>
+              </Space>
+            }
+          >
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              {group.items.map((kpi, idx) => {
+                const hrMark   = markings.find(m => m.subKPIId === kpi.id);
+                const selfMark = employee.selfMarkings.find(m => m.subKPIId === kpi.id);
+                const lmMark   = employee.lmMarkings.find(m => m.subKPIId === kpi.id);
+                const scored   = hrMark?.score !== null && hrMark?.score !== undefined;
+                return (
+                  <div key={kpi.id} style={{ border: `1px solid ${scored ? '#ddd6fe' : '#e5e7eb'}`, borderLeft: `3px solid ${scored ? '#6d28d9' : '#d1d5db'}`, borderRadius: 10, padding: '12px 14px', background: scored ? '#faf5ff' : '#fafafa' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 10 }}>
+                      <div>
+                        <Space size={6}>
+                          <div style={{ fontSize: 10, background: '#f3f4f6', color: '#6b7280', borderRadius: 4, padding: '1px 6px', fontWeight: 700 }}>{idx + 1}</div>
+                          <Text style={{ fontSize: 13, fontWeight: 700, color: '#111827' }}>{kpi.name}</Text>
+                        </Space>
+                        <div style={{ fontSize: 11, color: '#9ca3af', marginTop: 3, marginLeft: 20 }}>{kpi.measurementCriteria}</div>
+                      </div>
+                      <Tag style={{ borderRadius: 999, fontSize: 10, border: 'none', background: '#f3f4f6', color: '#374151', fontWeight: 600 }}>Wt: {kpi.weight}%</Tag>
+                    </div>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 10 }}>
+                      <div style={{ background: '#f0f9ff', border: '1px solid #bae6fd', borderRadius: 8, padding: '9px 10px' }}>
+                        <div style={{ fontSize: 10, fontWeight: 700, color: '#0369a1', marginBottom: 2 }}>EMPLOYEE MARK</div>
+                        <div style={{ fontSize: 12, color: '#1e40af' }}>
+                          Score: <strong>{selfMark?.score ?? '—'}/{kpi.markOutOf}</strong>
+                        </div>
+                        <div style={{ fontSize: 11, color: '#1e3a8a', marginTop: 3 }}>{selfMark?.remarks || 'No remarks'}</div>
+                      </div>
+                      <div style={{ background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: 8, padding: '9px 10px' }}>
+                        <div style={{ fontSize: 10, fontWeight: 700, color: '#1d4ed8', marginBottom: 2 }}>LINE MANAGER MARK</div>
+                        <div style={{ fontSize: 12, color: '#1e40af' }}>
+                          Score: <strong>{lmMark?.score ?? '—'}/{kpi.markOutOf}</strong>
+                        </div>
+                        <div style={{ fontSize: 11, color: '#1e3a8a', marginTop: 3 }}>{lmMark?.remarks || 'No remarks yet'}</div>
+                      </div>
+                    </div>
+
+                    <Row gutter={12}>
+                      <Col span={6}>
+                        <FieldLabel>HR Score (out of {kpi.markOutOf})</FieldLabel>
+                        <InputNumber
+                          value={hrMark?.score ?? undefined}
+                          onChange={v => !isReadOnly && updateMarking(kpi.id, { score: v ?? null })}
+                          min={0} max={kpi.markOutOf} step={0.5}
+                          disabled={isReadOnly}
+                          style={{ width: '100%' }}
+                          placeholder="0 – 10"
+                          status={!isReadOnly && !scored ? 'warning' : undefined}
+                        />
+                      </Col>
+                      <Col span={18}>
+                        <FieldLabel>HR Remarks</FieldLabel>
+                        <Input.TextArea
+                          value={hrMark?.remarks ?? ''}
+                          onChange={e => !isReadOnly && updateMarking(kpi.id, { remarks: e.target.value })}
+                          rows={2} disabled={isReadOnly}
+                          placeholder="Your HR remarks for this KPI..."
+                          style={{ borderRadius: 8, fontSize: 12, resize: 'none' }}
+                        />
+                      </Col>
+                    </Row>
+                  </div>
+                );
+              })}
+            </div>
+          </Panel>
+        ))}
+      </Collapse>
+
+      <div style={{ background: '#fff', border: `1px solid ${isReadOnly ? CLR_BORDER : '#ddd6fe'}`, borderRadius: 12, padding: '16px 18px', marginTop: 14 }}>
+        <div style={{ fontSize: 12, fontWeight: 700, color: '#374151', marginBottom: 8 }}>
+          HR Overall Remarks <span style={{ color: '#dc2626', fontSize: 11 }}>{!isReadOnly ? '*' : ''}</span>
+        </div>
+        <Input.TextArea
+          value={overallRemarks}
+          onChange={e => !isReadOnly && setOverallRemarks(e.target.value)}
+          disabled={isReadOnly}
+          rows={4}
+          maxLength={1000}
+          showCount={!isReadOnly}
+          placeholder="Provide HR summary and recommendation..."
+          style={{ borderRadius: 8, fontSize: 13, resize: 'none' }}
+          status={!isReadOnly && !overallRemarks.trim() ? 'warning' : undefined}
+        />
+        {!isReadOnly && (
+          <div style={{ fontSize: 11, color: '#9ca3af', marginTop: 6 }}>Required before submitting HR review.</div>
+        )}
+      </div>
+
+      <div style={{ marginTop: 10, fontSize: 11, color: pct === 100 ? '#059669' : '#6b7280', fontWeight: 600 }}>
+        Completion: {filledKPIs}/{totalKPIs} KPI scored ({pct}%)
+      </div>
+    </Drawer>
+  );
+}
+
+interface HRDecisionModalProps {
+  employee: ApprovalEmployee | null;
+  open: boolean;
+  onClose: () => void;
+  onSendForApproval: (id: string, decision: HRDecision) => void;
+  mode: 'hr' | 'approval';
+  onApproveRequest: (id: string, remarks: string) => void;
+  onRejectRequest: (id: string, remarks: string) => void;
+}
+
+function HRDecisionModal({ employee, open, onClose, onSendForApproval, mode, onApproveRequest, onRejectRequest }: HRDecisionModalProps) {
+  const [decision, setDecision] = useState<HRDecision>({ submittedAt: '2026-03-31', remarks: '' });
+  const [approvalRemarks, setApprovalRemarks] = useState('');
+  const prevId = useMemo(() => employee?.id, [employee]);
+
+  const setPatch = (patch: Partial<HRDecision>) => setDecision(prev => ({ ...prev, ...patch }));
+
+  useMemo(() => {
+    if (!employee) return;
+    const self = calcWeightedScore(employee.subKPIs, employee.selfMarkings);
+    const lm = calcWeightedScore(employee.subKPIs, employee.lmMarkings);
+    const hr = calcWeightedScore(employee.subKPIs, employee.hrMarkings);
+    const recPct = recommendedIncrementByScore(Math.round((self + lm + hr) / 3));
+
+    const defaultNextAppraisalDate = (() => {
+      const d = new Date(employee.periodTo ?? '2025-12-31');
+      d.setFullYear(d.getFullYear() + 1);
+      return d.toISOString().slice(0, 10);
+    })();
+    setDecision(
+      employee.hrDecision ?? {
+        submittedAt: '2026-03-31',
+        remarks: '',
+        designation: employee.designation,
+        jobGrade: 'JG-05',
+        payScale: 'Entry level',
+        incrementType: employee.appraisalType === 'Appraisal' ? 'No Increment' : undefined,
+        incrementPercent: employee.appraisalType === 'Appraisal' ? undefined : recPct,
+        confirmationAction: employee.appraisalType === 'Confirmation' ? 'Confirmation' : undefined,
+        appraisalAction: employee.appraisalType === 'Appraisal' ? 'Appraisal' : undefined,
+        nextAppraisalDate: employee.appraisalType === 'Appraisal' ? defaultNextAppraisalDate : undefined,
+      },
+    );
+
+    setApprovalRemarks('');
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [prevId]);
+
+  if (!employee) return null;
+
+  const selfTotal = calcWeightedScore(employee.subKPIs, employee.selfMarkings);
+  const lmTotal   = calcWeightedScore(employee.subKPIs, employee.lmMarkings);
+  const hrTotal   = calcWeightedScore(employee.subKPIs, employee.hrMarkings);
+  const overall   = Math.round((selfTotal + lmTotal + hrTotal) / 3);
+  const recommendedIncrementPct = recommendedIncrementByScore(overall);
+
+  const validateDecision = () => {
+    if (!decision.remarks?.trim()) {
+      message.warning('Decision remarks are required.');
+      return false;
+    }
+    if (employee.appraisalType === 'Appraisal') {
+      if (decision.appraisalAction === 'Separation') {
+        // effective date is optional for separation
+      } else {
+        if (decision.incrementType !== 'No Increment' && !decision.incrementPercent) {
+          message.warning('Provide increment percentage.');
+          return false;
+        }
+        if (decision.incrementType !== 'No Increment' && !decision.effectiveDate) {
+          message.warning('Provide effective date.');
+          return false;
+        }
+        if (!decision.nextAppraisalDate) {
+          message.warning('Set next appraisal date.');
+          return false;
+        }
+      }
+    } else {
+      if (decision.confirmationAction === 'Extend' && !decision.extensionDays) {
+        message.warning('Provide extension period in days.');
+        return false;
+      }
+      if (decision.confirmationAction !== 'Separation' && !decision.effectiveDate) {
+        message.warning('Provide effective date.');
+        return false;
+      }
+      if (decision.confirmationAction === 'Confirmation' && decision.incrementType !== 'No Increment' && !decision.incrementPercent) {
+        message.warning('Provide confirmation increment percentage.');
+        return false;
+      }
+    }
+    return true;
+  };
+
+  const submitDecisionForApproval = () => {
+    onSendForApproval(employee.id, { ...decision, submittedAt: '2026-03-31' });
+  };
+
+  const handleSendForApproval = () => {
+    if (!validateDecision()) return;
+    submitDecisionForApproval();
+    onClose();
+    message.success('Decision request sent for approval.');
+  };
+
+  const handleApproveInApprovalMode = () => {
+    onApproveRequest(employee.id, approvalRemarks.trim() || 'Approved from decision approval tab.');
+    onClose();
+    message.success('Decision approved.');
+  };
+
+  const handleRejectInApprovalMode = () => {
+    if (!approvalRemarks.trim()) { message.warning('Please provide rejection remarks.'); return; }
+    onRejectRequest(employee.id, approvalRemarks.trim());
+    onClose();
+    message.success('Decision rejected.');
+  };
+
+  return (
+    <Modal
+      open={open}
+      onCancel={onClose}
+      width={980}
+      title={`HR Decision · ${employee.name} (${employee.employeeCode})`}
+      footer={[
+        <Button key="cancel" onClick={onClose}>Cancel</Button>,
+        ...(mode === 'hr'
+          ? [
+              <Button key="save" type="primary" onClick={handleSendForApproval}>
+                {employee.decisionApprovalStatus === 'Rejected' ? 'Send for approval again' : 'Send for approval'}
+              </Button>,
+            ]
+          : employee.decisionApprovalStatus === 'Pending'
+          ? [
+              <Button key="reject" danger onClick={handleRejectInApprovalMode}>Reject</Button>,
+              <Button key="approve" type="primary" onClick={handleApproveInApprovalMode}>Approve</Button>,
+            ]
+          : []),
+      ]}
+    >
+      <div style={{ marginBottom: 10 }}>
+        {employee.decisionApprovalStatus === 'Pending' && (
+          <Tag style={{ border: 'none', borderRadius: 999, background: '#fef3c7', color: '#92400e', fontWeight: 700 }}>Decision Approval: Pending</Tag>
+        )}
+        {employee.decisionApprovalStatus === 'Approved' && (
+          <Tag style={{ border: 'none', borderRadius: 999, background: '#d1fae5', color: '#065f46', fontWeight: 700 }}>Decision Approval: Approved</Tag>
+        )}
+        {employee.decisionApprovalStatus === 'Rejected' && (
+          <Tag style={{ border: 'none', borderRadius: 999, background: '#fee2e2', color: '#991b1b', fontWeight: 700 }}>Decision Approval: Rejected</Tag>
+        )}
+      </div>
+      {mode === 'hr' && employee.decisionApprovalStatus === 'Rejected' && employee.decisionApprovalRemarks && (
+        <div style={{ marginBottom: 10, background: '#fff1f2', border: '1px solid #fecdd3', borderRadius: 8, padding: '8px 10px' }}>
+          <div style={{ fontSize: 11, fontWeight: 700, color: '#991b1b', marginBottom: 2 }}>Reject Reason</div>
+          <div style={{ fontSize: 12, color: '#be123c' }}>{employee.decisionApprovalRemarks}</div>
+        </div>
+      )}
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,minmax(120px,1fr))', gap: 10, marginBottom: 14 }}>
+        {[
+          { label: 'Self', score: selfTotal, bg: '#f0fdf4' },
+          { label: 'Line Manager', score: lmTotal, bg: '#eff6ff' },
+          { label: 'HR', score: hrTotal, bg: '#faf5ff' },
+          { label: 'Achievement Level', score: overall, bg: '#fef9c3' },
+        ].map(card => (
+          <div key={card.label} style={{ background: card.bg, border: '1px solid #e5e7eb', borderRadius: 8, padding: '10px 12px' }}>
+            <div style={{ fontSize: 10, color: '#6b7280', fontWeight: 700 }}>{card.label.toUpperCase()}</div>
+            <div style={{ marginTop: 3, fontSize: 20, fontWeight: 900, color: scoreColor(card.score) }}>{card.score}%</div>
+            <Tag style={{ marginTop: 4, borderRadius: 999, border: 'none', background: scoreBadge(card.score).bg, color: scoreBadge(card.score).color, fontSize: 10, fontWeight: 700 }}>{scoreBadge(card.score).label}</Tag>
+          </div>
+        ))}
+      </div>
+
+      <div style={{ maxHeight: 220, overflowY: 'auto', marginBottom: 14, border: '1px solid #e5e7eb', borderRadius: 10, padding: 10 }}>
+        {employee.subKPIs.map((kpi, idx) => {
+          const selfMark = employee.selfMarkings.find(m => m.subKPIId === kpi.id);
+          const lmMark = employee.lmMarkings.find(m => m.subKPIId === kpi.id);
+          const hrMark = employee.hrMarkings.find(m => m.subKPIId === kpi.id);
+          return (
+            <div key={kpi.id} style={{ padding: '8px 6px', borderBottom: idx < employee.subKPIs.length - 1 ? '1px solid #f3f4f6' : undefined }}>
+              <div style={{ fontWeight: 700, fontSize: 12, color: '#111827' }}>{kpi.name}</div>
+              <div style={{ fontSize: 11, color: '#6b7280', marginTop: 2 }}>
+                Emp: {selfMark?.score ?? '—'}/{kpi.markOutOf} | LM: {lmMark?.score ?? '—'}/{kpi.markOutOf} | HR: {hrMark?.score ?? '—'}/{kpi.markOutOf}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {employee.appraisalType === 'Confirmation' ? (
+        <div style={{ border: '1px solid #e5e7eb', borderRadius: 10, padding: 12 }}>
+          <FieldLabel>Decision Type</FieldLabel>
+          <Space wrap style={{ marginBottom: 10 }}>
+            {(['Confirmation', 'Extend', 'Separation'] as HRConfirmationAction[]).map(v => (
+              <Button key={v} type={decision.confirmationAction === v ? 'primary' : 'default'} onClick={() => setPatch({ confirmationAction: v })}>
+                {v}
+              </Button>
+            ))}
+          </Space>
+
+          {decision.confirmationAction === 'Confirmation' && (
+            <Row gutter={12}>
+              <Col span={10}>
+                <FieldLabel>Designation</FieldLabel>
+                <Select
+                  showSearch
+                  value={decision.designation}
+                  onChange={v => setPatch({ designation: v })}
+                  placeholder="Updated designation"
+                  options={DESIGNATION_OPTIONS.map(v => ({ value: v, label: v }))}
+                  filterOption={(input, option) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase())}
+                />
+              </Col>
+              <Col span={7}>
+                <FieldLabel>Job Grade</FieldLabel>
+                <Select value={decision.jobGrade} onChange={v => setPatch({ jobGrade: v })} options={JOB_GRADE_OPTIONS.map(v => ({ value: v, label: v }))} />
+              </Col>
+              <Col span={7}>
+                <FieldLabel>Pay Scale</FieldLabel>
+                <Select value={decision.payScale} onChange={v => setPatch({ payScale: v })} options={PAY_SCALE_OPTIONS.map(v => ({ value: v, label: v }))} />
+                {decision.payScale && (
+                  <div style={{ marginTop: 4, fontSize: 11, color: '#6b7280' }}>
+                    Range: {PAY_SCALE_RANGES[decision.payScale]}
+                  </div>
+                )}
+              </Col>
+            </Row>
+          )}
+
+          {decision.confirmationAction === 'Confirmation' && (
+            <Row gutter={12} style={{ marginTop: 10 }}>
+              <Col span={8}>
+                <FieldLabel>Increment Type</FieldLabel>
+                <Space wrap>
+                  {(['Basic', 'Gross', 'No Increment'] as HRIncrementType[]).map(v => (
+                    <Button
+                      key={v}
+                      size="small"
+                      type={decision.incrementType === v ? 'primary' : 'default'}
+                      onClick={() => setPatch({ incrementType: v, incrementPercent: v === 'No Increment' ? undefined : (decision.incrementPercent ?? recommendedIncrementPct) })}
+                    >
+                      {v}
+                    </Button>
+                  ))}
+                </Space>
+              </Col>
+              {decision.incrementType !== 'No Increment' && (
+                <Col span={8}>
+                  <FieldLabel>Increment %</FieldLabel>
+                  <InputNumber value={decision.incrementPercent} onChange={v => setPatch({ incrementPercent: Number(v) || undefined })} min={0} max={100} style={{ width: '100%' }} />
+                  <div style={{ marginTop: 4, fontSize: 11, color: '#6b7280' }}>Recommended: {recommendedIncrementPct}%</div>
+                </Col>
+              )}
+              <Col span={8}>
+                <FieldLabel>Effective Date</FieldLabel>
+                <Input type="date" value={decision.effectiveDate} onChange={e => setPatch({ effectiveDate: e.target.value || undefined })} />
+              </Col>
+            </Row>
+          )}
+
+          {decision.confirmationAction === 'Extend' && (
+            <Row gutter={12}>
+              <Col span={8}>
+                <FieldLabel>Extension Days</FieldLabel>
+                <InputNumber value={decision.extensionDays} onChange={v => setPatch({ extensionDays: Number(v) || undefined })} min={1} style={{ width: '100%' }} />
+              </Col>
+              <Col span={10}>
+                <FieldLabel>Designation (Optional)</FieldLabel>
+                <Select
+                  showSearch
+                  value={decision.designation}
+                  onChange={v => setPatch({ designation: v })}
+                  placeholder="Designation after extension"
+                  options={DESIGNATION_OPTIONS.map(v => ({ value: v, label: v }))}
+                  filterOption={(input, option) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase())}
+                />
+              </Col>
+              <Col span={6}>
+                <FieldLabel>Effective Date</FieldLabel>
+                <Input type="date" value={decision.effectiveDate} onChange={e => setPatch({ effectiveDate: e.target.value || undefined })} />
+              </Col>
+            </Row>
+          )}
+
+          {decision.confirmationAction === 'Separation' && (
+            <Row gutter={12}>
+              <Col span={24}>
+                <FieldLabel>Effective Date <span style={{ fontSize: 10, color: '#9ca3af', fontWeight: 400 }}>(Optional)</span></FieldLabel>
+                <Input type="date" value={decision.effectiveDate ?? ''} onChange={e => setPatch({ effectiveDate: e.target.value || undefined })} style={{ maxWidth: 220 }} />
+              </Col>
+            </Row>
+          )}
+        </div>
+      ) : (
+        <div style={{ border: '1px solid #e5e7eb', borderRadius: 10, padding: 12 }}>
+          <FieldLabel>Decision Type</FieldLabel>
+          <Space wrap style={{ marginBottom: 10 }}>
+            {(['Appraisal', 'Separation'] as HRAppraisalAction[]).map(v => (
+              <Button key={v} type={decision.appraisalAction === v ? 'primary' : 'default'} onClick={() => setPatch({ appraisalAction: v })}>
+                {v}
+              </Button>
+            ))}
+          </Space>
+
+          {decision.appraisalAction !== 'Separation' && (
+            <>
+              <Row gutter={12}>
+                <Col span={10}>
+                  <FieldLabel>Updated Designation</FieldLabel>
+                  <Select
+                    showSearch
+                    value={decision.designation}
+                    onChange={v => setPatch({ designation: v })}
+                    placeholder="Updated designation"
+                    options={DESIGNATION_OPTIONS.map(v => ({ value: v, label: v }))}
+                    filterOption={(input, option) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase())}
+                  />
+                </Col>
+                <Col span={7}>
+                  <FieldLabel>Job Grade</FieldLabel>
+                  <Select value={decision.jobGrade} onChange={v => setPatch({ jobGrade: v })} options={JOB_GRADE_OPTIONS.map(v => ({ value: v, label: v }))} />
+                </Col>
+                <Col span={7}>
+                  <FieldLabel>Pay Scale</FieldLabel>
+                  <Select value={decision.payScale} onChange={v => setPatch({ payScale: v })} options={PAY_SCALE_OPTIONS.map(v => ({ value: v, label: v }))} />
+                  {decision.payScale && (
+                    <div style={{ marginTop: 4, fontSize: 11, color: '#6b7280' }}>
+                      Range: {PAY_SCALE_RANGES[decision.payScale]}
+                    </div>
+                  )}
+                </Col>
+              </Row>
+              <Row gutter={12} style={{ marginTop: 10 }}>
+                <Col span={8}>
+                  <FieldLabel>Increment Option</FieldLabel>
+                  <Space wrap>
+                    {(['Basic', 'Gross', 'No Increment'] as HRIncrementType[]).map(v => (
+                      <Button
+                        key={v}
+                        size="small"
+                        type={decision.incrementType === v ? 'primary' : 'default'}
+                        onClick={() => setPatch({ incrementType: v, incrementPercent: v === 'No Increment' ? undefined : (decision.incrementPercent ?? recommendedIncrementPct) })}
+                      >
+                        {v}
+                      </Button>
+                    ))}
+                  </Space>
+                </Col>
+                {decision.incrementType !== 'No Increment' && (
+                  <Col span={8}>
+                    <FieldLabel>Increment %</FieldLabel>
+                    <InputNumber value={decision.incrementPercent} onChange={v => setPatch({ incrementPercent: Number(v) || undefined })} min={0} max={100} style={{ width: '100%' }} />
+                    <div style={{ marginTop: 4, fontSize: 11, color: '#6b7280' }}>Recommended: {recommendedIncrementPct}%</div>
+                  </Col>
+                )}
+              </Row>
+              <Row gutter={12} style={{ marginTop: 10 }}>
+                <Col span={12}>
+                  <FieldLabel>Effective Date</FieldLabel>
+                  <Input type="date" value={decision.effectiveDate ?? ''} onChange={e => setPatch({ effectiveDate: e.target.value || undefined })} disabled={decision.incrementType === 'No Increment'} />
+                </Col>
+                <Col span={12}>
+                  <FieldLabel>
+                    Next Appraisal Date
+                    <span style={{ marginLeft: 6, fontSize: 10, fontWeight: 400, color: '#059669', background: '#d1fae5', borderRadius: 999, padding: '1px 7px' }}>Auto-set</span>
+                  </FieldLabel>
+                  <Input
+                    type="date"
+                    value={decision.nextAppraisalDate ?? ''}
+                    readOnly
+                    style={{ background: '#f0fdf4', borderColor: '#a7f3d0', color: '#065f46', cursor: 'default' }}
+                  />
+                  <div style={{ fontSize: 10, color: '#6b7280', marginTop: 3 }}>Auto-calculated: 1 year from period end</div>
+                </Col>
+              </Row>
+            </>
+          )}
+
+          {decision.appraisalAction === 'Separation' && (
+            <Row gutter={12}>
+              <Col span={24}>
+                <FieldLabel>Effective Date <span style={{ fontSize: 10, color: '#9ca3af', fontWeight: 400 }}>(Optional)</span></FieldLabel>
+                <Input type="date" value={decision.effectiveDate ?? ''} onChange={e => setPatch({ effectiveDate: e.target.value || undefined })} style={{ maxWidth: 220 }} />
+              </Col>
+            </Row>
+          )}
+        </div>
+      )}
+
+      <div style={{ marginTop: 12 }}>
+        <FieldLabel>Remarks</FieldLabel>
+        <Input.TextArea
+          rows={3}
+          value={decision.remarks}
+          onChange={e => setPatch({ remarks: e.target.value })}
+          placeholder="Final decision remarks"
+        />
+      </div>
+      {mode === 'approval' && employee.decisionApprovalStatus === 'Pending' && (
+        <div style={{ marginTop: 12 }}>
+          <FieldLabel>Approval Remarks</FieldLabel>
+          <Input.TextArea rows={3} value={approvalRemarks} onChange={e => setApprovalRemarks(e.target.value)} placeholder="Write approval or rejection remarks" />
+        </div>
+      )}
+    </Modal>
+  );
+}
+
+interface DecisionMailModalProps {
+  employee: ApprovalEmployee | null;
+  open: boolean;
+  onClose: () => void;
+  onSend: (id: string, payload: DecisionMailPayload) => void;
+}
+
+function DecisionMailModal({ employee, open, onClose, onSend }: DecisionMailModalProps) {
+  const [draft, setDraft] = useState({ to: '', cc: '', bcc: '', subject: '', body: '' });
+  const prevId = useMemo(() => employee?.id, [employee]);
+
+  useMemo(() => {
+    if (!employee) return;
+    setDraft({
+      to: `${employee.employeeCode.toLowerCase()}@smart-hrm.local`,
+      cc: '',
+      bcc: '',
+      subject: `HR Decision - ${employee.periodLabel}`,
+      body: `Dear ${employee.name},\n\nYour ${employee.appraisalType.toLowerCase()} decision has been approved.\nPlease review the details in the HR system.\n\nRegards,\nHR Team`,
+    });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [prevId]);
+
+  if (!employee) return null;
+
+  const handleSend = () => {
+    if (employee.decisionMailSent) {
+      message.info('Email already sent for this approved decision.');
+      onClose();
+      return;
+    }
+    if (!draft.to.trim()) { message.warning('To email is required.'); return; }
+    if (!draft.subject.trim()) { message.warning('Email subject is required.'); return; }
+    onSend(employee.id, draft);
+    onClose();
+    message.success('Email sent successfully.');
+  };
+
+  return (
+    <Modal open={open} onCancel={onClose} onOk={handleSend} okText="Send mail" width={760} title={`Send mail to ${employee.name}`}>
+      <Row gutter={10}>
+        <Col span={24}>
+          <FieldLabel>To</FieldLabel>
+          <Input value={draft.to} onChange={e => setDraft(prev => ({ ...prev, to: e.target.value }))} placeholder="employee@company.com" />
+        </Col>
+      </Row>
+      <Row gutter={10} style={{ marginTop: 10 }}>
+        <Col span={12}>
+          <FieldLabel>CC</FieldLabel>
+          <Input value={draft.cc} onChange={e => setDraft(prev => ({ ...prev, cc: e.target.value }))} placeholder="Optional" />
+        </Col>
+        <Col span={12}>
+          <FieldLabel>Bcc</FieldLabel>
+          <Input value={draft.bcc} onChange={e => setDraft(prev => ({ ...prev, bcc: e.target.value }))} placeholder="Optional" />
+        </Col>
+      </Row>
+      <div style={{ marginTop: 10 }}>
+        <FieldLabel>Subject</FieldLabel>
+        <Input value={draft.subject} onChange={e => setDraft(prev => ({ ...prev, subject: e.target.value }))} placeholder="Mail subject" />
+      </div>
+      <div style={{ marginTop: 10 }}>
+        <FieldLabel>Body</FieldLabel>
+        <Input.TextArea rows={7} value={draft.body} onChange={e => setDraft(prev => ({ ...prev, body: e.target.value }))} placeholder="Write mail body" />
+      </div>
+    </Modal>
+  );
+}
+
 // ─── Approvals Full Page ──────────────────────────────────────────────────────
 interface ApprovalsPageProps {
   open: boolean;
   approvals: ApprovalEmployee[];
   onClose: () => void;
   onLMSubmit: (id: string, markings: SubKPIMarking[], overallRemarks: string) => void;
+  onHRSubmit: (id: string, markings: SubKPIMarking[], overallRemarks: string) => void;
+  onHRDecisionSubmit: (id: string, decision: HRDecision) => void;
+  onDecisionApprove: (id: string, remarks: string) => void;
+  onDecisionReject: (id: string, remarks: string) => void;
+  onDecisionMailSend: (id: string, payload: DecisionMailPayload) => void;
+  onSeparationInitiated: (id: string) => void;
 }
 
-function ApprovalsPage({ open, approvals, onClose, onLMSubmit }: ApprovalsPageProps) {
-  const [filterStatus,   setFilterStatus]   = useState<'All' | 'Pending' | 'Submitted'>('All');
+function ApprovalsPage({ open, approvals, onClose, onLMSubmit, onHRSubmit, onHRDecisionSubmit, onDecisionApprove, onDecisionReject, onDecisionMailSend, onSeparationInitiated }: ApprovalsPageProps) {
+  const [activeTab,      setActiveTab]      = useState<'lm' | 'hr' | 'decision-approval'>('lm');
+  const [filterStatus,   setFilterStatus]   = useState<'All' | 'Pending' | 'Submitted' | 'Rejected'>('All');
   const [filterType,     setFilterType]     = useState<'All' | 'Appraisal' | 'Confirmation'>('All');
   const [searchQ,        setSearchQ]        = useState('');
   const [lmMarkTarget,   setLMMarkTarget]   = useState<ApprovalEmployee | null>(null);
+  const [hrMarkTarget,   setHRMarkTarget]   = useState<ApprovalEmployee | null>(null);
+  const [decisionTarget, setDecisionTarget] = useState<ApprovalEmployee | null>(null);
+  const [decisionModalMode, setDecisionModalMode] = useState<'hr' | 'approval'>('hr');
+  const [mailTarget, setMailTarget] = useState<ApprovalEmployee | null>(null);
+  const [separationTarget, setSeparationTarget] = useState<ApprovalEmployee | null>(null);
+  const [decisionFilter, setDecisionFilter] = useState<'All' | 'Pending' | 'Approved' | 'Rejected'>('All');
 
   if (!open) return null;
 
-  const resetFilters = () => { setFilterStatus('All'); setFilterType('All'); setSearchQ(''); };
+  const resetFilters = () => { setFilterStatus('All'); setFilterType('All'); setSearchQ(''); setDecisionFilter('All'); };
 
-  const pending   = approvals.filter(a => a.lmStatus === 'Pending');
-  const submitted = approvals.filter(a => a.lmStatus === 'Submitted');
+  const statusOf = (emp: ApprovalEmployee) => (activeTab === 'lm' ? emp.lmStatus : emp.hrStatus);
+  const decisionPending = approvals.filter(a => a.decisionApprovalStatus === 'Pending').length;
+  const decisionDone = approvals.filter(a => a.decisionApprovalStatus === 'Approved' || a.decisionApprovalStatus === 'Rejected').length;
+
+  const pending   = approvals.filter(a => statusOf(a) === 'Pending');
+  const submitted = approvals.filter(a => statusOf(a) === 'Submitted');
+
+  const decisionRows = approvals.filter(emp => {
+    if (!emp.hrDecision) return false;
+    if (filterType !== 'All' && emp.appraisalType !== filterType) return false;
+    const q = searchQ.trim().toLowerCase();
+    if (q && !emp.name.toLowerCase().includes(q) && !emp.employeeCode.toLowerCase().includes(q) && !emp.designation.toLowerCase().includes(q)) return false;
+    if (decisionFilter === 'All') return true;
+    return emp.decisionApprovalStatus === decisionFilter;
+  });
 
   const displayed = approvals.filter(emp => {
-    if (filterStatus !== 'All' && emp.lmStatus !== filterStatus) return false;
+    if (activeTab === 'hr' && filterStatus === 'Rejected') {
+      if (emp.decisionApprovalStatus !== 'Rejected') return false;
+    } else if (filterStatus !== 'All' && statusOf(emp) !== filterStatus) {
+      return false;
+    }
     if (filterType   !== 'All' && emp.appraisalType !== filterType) return false;
     const q = searchQ.trim().toLowerCase();
     if (q && !emp.name.toLowerCase().includes(q) && !emp.employeeCode.toLowerCase().includes(q) && !emp.designation.toLowerCase().includes(q)) return false;
     return true;
   });
 
-  // Sync lmMarkTarget from approvals (so status refreshes after submit)
-  const syncedTarget = lmMarkTarget ? (approvals.find(a => a.id === lmMarkTarget.id) ?? null) : null;
+  const syncedLMTarget = lmMarkTarget ? (approvals.find(a => a.id === lmMarkTarget.id) ?? null) : null;
+  const syncedHRTarget = hrMarkTarget ? (approvals.find(a => a.id === hrMarkTarget.id) ?? null) : null;
+  const syncedDecisionTarget = decisionTarget ? (approvals.find(a => a.id === decisionTarget.id) ?? null) : null;
 
   return (
     <div style={{ padding: '16px 20px', background: CLR_BG, minHeight: '100%', height: '100%', overflowY: 'auto' }}>
@@ -1776,22 +2650,77 @@ function ApprovalsPage({ open, approvals, onClose, onLMSubmit }: ApprovalsPagePr
             <div>
               <Title level={3} style={{ margin: 0, color: '#1f2937' }}>
                 Approvals
-                <Text style={{ marginLeft: 10, color: CLR_PRIMARY, fontSize: 16, fontWeight: 500 }}>Line Manager Review</Text>
+                <Text style={{ marginLeft: 10, color: CLR_PRIMARY, fontSize: 16, fontWeight: 500 }}>
+                  {activeTab === 'lm' ? 'Line Manager Review' : activeTab === 'hr' ? 'HR Review & Decision' : 'Decision Approval'}
+                </Text>
               </Title>
               <Text type="secondary" style={{ fontSize: 13 }}>
-                Employee appraisal &amp; confirmation reviews pending your evaluation
+                {activeTab === 'lm'
+                  ? 'Employee appraisal and confirmation reviews pending your line manager evaluation'
+                  : activeTab === 'hr'
+                  ? 'Review employee, line manager and HR marks, then record final HR decision'
+                  : 'View all decision requests and approve or reject'}
               </Text>
             </div>
           </div>
           <Space size={8}>
             <div style={{ background: '#fef3c7', border: '1px solid #fde68a', borderRadius: 8, padding: '6px 14px', fontSize: 12, fontWeight: 700, color: '#92400e' }}>
-              {pending.length} Pending
+              {activeTab === 'decision-approval' ? `${decisionPending} Pending` : `${pending.length} Pending`}
             </div>
             <div style={{ background: '#d1fae5', border: '1px solid #6ee7b7', borderRadius: 8, padding: '6px 14px', fontSize: 12, fontWeight: 700, color: '#065f46' }}>
-              {submitted.length} Submitted
+              {activeTab === 'decision-approval' ? `${decisionDone} Processed` : `${submitted.length} Submitted`}
             </div>
           </Space>
         </div>
+      </div>
+
+      <div style={{ background: '#fff', border: `1px solid ${CLR_BORDER}`, borderRadius: 12, padding: '10px 12px', marginBottom: 12 }}>
+        <Tabs
+          activeKey={activeTab}
+          onChange={k => {
+            setActiveTab(k as 'lm' | 'hr' | 'decision-approval');
+            setFilterStatus('All');
+            setDecisionFilter('All');
+          }}
+          items={[
+            {
+              key: 'lm',
+              label: (
+                <Space size={6}>
+                  <StarOutlined />
+                  Line manager
+                  <span style={{ background: '#f3f4f6', borderRadius: 999, padding: '1px 7px', fontSize: 11, fontWeight: 700 }}>
+                    {approvals.filter(a => a.lmStatus === 'Pending').length}
+                  </span>
+                </Space>
+              ),
+            },
+            {
+              key: 'hr',
+              label: (
+                <Space size={6}>
+                  <FileTextOutlined />
+                  HR
+                  <span style={{ background: '#f3f4f6', borderRadius: 999, padding: '1px 7px', fontSize: 11, fontWeight: 700 }}>
+                    {approvals.filter(a => a.hrStatus === 'Pending').length}
+                  </span>
+                </Space>
+              ),
+            },
+            {
+              key: 'decision-approval',
+              label: (
+                <Space size={6}>
+                  <SafetyCertificateOutlined />
+                  Decision approval
+                  <span style={{ background: '#f3f4f6', borderRadius: 999, padding: '1px 7px', fontSize: 11, fontWeight: 700 }}>
+                    {decisionPending}
+                  </span>
+                </Space>
+              ),
+            },
+          ]}
+        />
       </div>
 
       {/* Search + filters toolbar */}
@@ -1805,17 +2734,28 @@ function ApprovalsPage({ open, approvals, onClose, onLMSubmit }: ApprovalsPagePr
             allowClear
             style={{ width: 260, borderRadius: 8, borderColor: CLR_BORDER }}
           />
-          {/* Status filter */}
           <div style={{ display: 'flex', gap: 6 }}>
-            {(['All', 'Pending', 'Submitted'] as const).map(f => (
-              <Button key={f} size="small" type={filterStatus === f ? 'primary' : 'default'}
-                onClick={() => setFilterStatus(f)}
-                style={{ borderRadius: 999, ...(filterStatus !== f ? { borderColor: CLR_BORDER, color: CLR_PRIMARY } : {}) }}>
-                {f} ({f === 'All' ? approvals.length : f === 'Pending' ? pending.length : submitted.length})
+            {(activeTab === 'decision-approval'
+              ? (['All', 'Pending', 'Approved', 'Rejected'] as const)
+              : (activeTab === 'hr' ? (['All', 'Pending', 'Submitted', 'Rejected'] as const) : (['All', 'Pending', 'Submitted'] as const))
+            ).map(f => (
+              <Button
+                key={f}
+                size="small"
+                type={(activeTab === 'decision-approval' ? decisionFilter : filterStatus) === f ? 'primary' : 'default'}
+                onClick={() => {
+                  if (activeTab === 'decision-approval') {
+                    setDecisionFilter(f as 'All' | 'Pending' | 'Approved' | 'Rejected');
+                  } else {
+                    setFilterStatus(f as 'All' | 'Pending' | 'Submitted' | 'Rejected');
+                  }
+                }}
+                style={{ borderRadius: 999, ...(activeTab !== 'decision-approval' && filterStatus !== f ? { borderColor: CLR_BORDER, color: CLR_PRIMARY } : {}) }}
+              >
+                {f}
               </Button>
             ))}
           </div>
-          {/* Type filter */}
           <div style={{ display: 'flex', gap: 6 }}>
             {(['All', 'Appraisal', 'Confirmation'] as const).map(t => (
               <Button key={t} size="small" type={filterType === t ? 'primary' : 'default'}
@@ -1825,24 +2765,61 @@ function ApprovalsPage({ open, approvals, onClose, onLMSubmit }: ApprovalsPagePr
               </Button>
             ))}
           </div>
-          {(searchQ || filterStatus !== 'All' || filterType !== 'All') && (
+          {(searchQ || filterStatus !== 'All' || filterType !== 'All' || decisionFilter !== 'All') && (
             <Button size="small" onClick={resetFilters} style={{ borderRadius: 999, borderColor: '#fca5a5', color: '#dc2626' }}>
               Reset
             </Button>
           )}
-          <Text type="secondary" style={{ fontSize: 12, marginLeft: 'auto' }}>{displayed.length} result{displayed.length !== 1 ? 's' : ''}</Text>
+          <Text type="secondary" style={{ fontSize: 12, marginLeft: 'auto' }}>
+            {activeTab === 'decision-approval' ? decisionRows.length : displayed.length} result{(activeTab === 'decision-approval' ? decisionRows.length : displayed.length) !== 1 ? 's' : ''}
+          </Text>
         </div>
       </div>
+
+      {activeTab === 'decision-approval' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+
+          {decisionRows.map(emp => (
+            <div key={emp.id} style={{ background: '#fff', border: `1px solid ${CLR_BORDER}`, borderRadius: 12, padding: '12px 14px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 10 }}>
+                <div>
+                  <Text strong>{emp.name} ({emp.employeeCode})</Text>
+                  <div><Text type="secondary" style={{ fontSize: 12 }}>{emp.designation} · {emp.appraisalType} · {emp.periodLabel}</Text></div>
+                </div>
+                <Space>
+                  <Button size="small" icon={<EyeOutlined />} onClick={() => { setDecisionModalMode('approval'); setDecisionTarget(emp); }}>View</Button>
+                </Space>
+              </div>
+              <div style={{ marginTop: 8 }}>
+                {emp.decisionApprovalStatus === 'Pending' && <Tag style={{ border: 'none', borderRadius: 999, background: '#fef3c7', color: '#92400e' }}>Pending Approval</Tag>}
+                {emp.decisionApprovalStatus === 'Approved' && <Tag style={{ border: 'none', borderRadius: 999, background: '#d1fae5', color: '#065f46' }}>Approved</Tag>}
+                {emp.decisionApprovalStatus === 'Rejected' && <Tag style={{ border: 'none', borderRadius: 999, background: '#fee2e2', color: '#991b1b' }}>Rejected</Tag>}
+              </div>
+            </div>
+          ))}
+
+          {decisionRows.length === 0 && (
+            <div style={{ textAlign: 'center', padding: '60px 0', color: '#9ca3af' }}>
+              <Text type="secondary" style={{ fontSize: 14 }}>No decision requests found.</Text>
+            </div>
+          )}
+        </div>
+      )}
+
+      {activeTab !== 'decision-approval' && (
+      <>
 
       {/* List */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
         {displayed.map(emp => {
           const selfScore = calcWeightedScore(emp.subKPIs, emp.selfMarkings);
           const lmScore   = calcWeightedScore(emp.subKPIs, emp.lmMarkings);
+          const hrScore   = calcWeightedScore(emp.subKPIs, emp.hrMarkings);
           const daysLeft  = daysUntil(emp.lmDeadline);
-          const isPending = emp.lmStatus === 'Pending';
+          const isPending = statusOf(emp) === 'Pending';
           const isUrgent  = daysLeft <= 3 && isPending;
           const isConf    = emp.appraisalType === 'Confirmation';
+          const hrCanMark = emp.lmStatus === 'Submitted' || emp.hrStatus === 'Submitted';
 
           return (
             <div key={emp.id} style={{ background: '#fff', border: `1px solid ${isPending ? (isUrgent ? '#fca5a5' : '#fde68a') : CLR_BORDER}`, borderRadius: 14, overflow: 'hidden', boxShadow: '0 1px 4px rgba(0,0,0,0.04)' }}>
@@ -1864,14 +2841,72 @@ function ApprovalsPage({ open, approvals, onClose, onLMSubmit }: ApprovalsPagePr
                   </div>
                 </Space>
                 <Space size={8}>
-                  {isPending ? (
-                    <Button type="primary" icon={<EditOutlined />} onClick={() => setLMMarkTarget(emp)} style={{ borderRadius: 10, fontWeight: 700 }}>
-                      Mark Review
-                    </Button>
+                  {activeTab === 'lm' ? (
+                    isPending ? (
+                      <Button type="primary" icon={<EditOutlined />} onClick={() => setLMMarkTarget(emp)} style={{ borderRadius: 10, fontWeight: 700 }}>
+                        Mark Review
+                      </Button>
+                    ) : (
+                      <Button icon={<EyeOutlined />} onClick={() => setLMMarkTarget(emp)} style={{ borderRadius: 10, borderColor: CLR_BORDER, color: CLR_PRIMARY, fontWeight: 600 }}>
+                        View Review
+                      </Button>
+                    )
                   ) : (
-                    <Button icon={<EyeOutlined />} onClick={() => setLMMarkTarget(emp)} style={{ borderRadius: 10, borderColor: CLR_BORDER, color: CLR_PRIMARY, fontWeight: 600 }}>
-                      View Review
-                    </Button>
+                    <>
+                      {isPending ? (
+                        <Button
+                          type="primary"
+                          icon={<EditOutlined />}
+                          disabled={!hrCanMark}
+                          onClick={() => setHRMarkTarget(emp)}
+                          style={{ borderRadius: 10, fontWeight: 700 }}
+                        >
+                          {hrCanMark ? 'Mark HR Review' : 'Waiting LM'}
+                        </Button>
+                      ) : (
+                        <Button icon={<EyeOutlined />} onClick={() => setHRMarkTarget(emp)} style={{ borderRadius: 10, borderColor: '#c4b5fd', color: '#6d28d9', fontWeight: 600 }}>
+                          View HR Review
+                        </Button>
+                      )}
+                      {emp.hrStatus === 'Submitted' && (
+                        emp.decisionApprovalStatus === 'Approved' ? (
+                          <>
+                            <Button
+                              icon={<SendOutlined />}
+                              onClick={() => !emp.decisionMailSent && setMailTarget(emp)}
+                              disabled={!!emp.decisionMailSent}
+                              style={{ borderRadius: 10, fontWeight: 600 }}
+                            >
+                              {emp.decisionMailSent ? 'Mail sent' : 'Send mail'}
+                            </Button>
+                            {emp.appraisalType === 'Confirmation' && emp.hrDecision?.confirmationAction === 'Separation' && (
+                              <Button
+                                icon={<SafetyCertificateOutlined />}
+                                disabled={!!emp.separationInitiated}
+                                onClick={() => !emp.separationInitiated && setSeparationTarget(emp)}
+                                style={{ borderRadius: 10, fontWeight: 600 }}
+                              >
+                                {emp.separationInitiated ? 'Separation initiated' : 'Initiate separation'}
+                              </Button>
+                            )}
+                            {emp.appraisalType === 'Appraisal' && emp.hrDecision?.appraisalAction === 'Separation' && (
+                              <Button
+                                icon={<SafetyCertificateOutlined />}
+                                disabled={!!emp.separationInitiated}
+                                onClick={() => !emp.separationInitiated && setSeparationTarget(emp)}
+                                style={{ borderRadius: 10, fontWeight: 600 }}
+                              >
+                                {emp.separationInitiated ? 'Separation initiated' : 'Initiate separation'}
+                              </Button>
+                            )}
+                          </>
+                        ) : (
+                          <Button icon={<FileTextOutlined />} onClick={() => { setDecisionModalMode('hr'); setDecisionTarget(emp); }} style={{ borderRadius: 10, fontWeight: 600 }}>
+                            {emp.decisionApprovalStatus === 'Rejected' ? 'Revise Decision' : 'Decision'}
+                          </Button>
+                        )
+                      )}
+                    </>
                   )}
                 </Space>
               </div>
@@ -1908,6 +2943,15 @@ function ApprovalsPage({ open, approvals, onClose, onLMSubmit }: ApprovalsPagePr
                 </div>
                 {!isPending && (
                   <div>
+                    <Text style={{ fontSize: 10, color: '#9ca3af', fontWeight: 700 }}>{activeTab === 'lm' ? 'LM SCORE' : 'HR SCORE'}</Text>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 2 }}>
+                      <Text style={{ fontSize: 16, fontWeight: 800, color: scoreColor(activeTab === 'lm' ? lmScore : hrScore) }}>{activeTab === 'lm' ? lmScore : hrScore}%</Text>
+                      <Tag style={{ borderRadius: 999, fontSize: 10, border: 'none', background: scoreBadge(activeTab === 'lm' ? lmScore : hrScore).bg, color: scoreBadge(activeTab === 'lm' ? lmScore : hrScore).color, fontWeight: 600, margin: 0 }}>{scoreBadge(activeTab === 'lm' ? lmScore : hrScore).label}</Tag>
+                    </div>
+                  </div>
+                )}
+                {activeTab === 'hr' && emp.lmStatus === 'Submitted' && (
+                  <div>
                     <Text style={{ fontSize: 10, color: '#9ca3af', fontWeight: 700 }}>LM SCORE</Text>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 2 }}>
                       <Text style={{ fontSize: 16, fontWeight: 800, color: scoreColor(lmScore) }}>{lmScore}%</Text>
@@ -1917,9 +2961,28 @@ function ApprovalsPage({ open, approvals, onClose, onLMSubmit }: ApprovalsPagePr
                 )}
                 <div style={{ marginLeft: 'auto' }}>
                   {isPending ? (
-                    <Tag icon={<ClockCircleOutlined />} style={{ borderRadius: 999, fontSize: 11, fontWeight: 700, paddingInline: 10, border: 'none', background: '#fef3c7', color: '#92400e' }}>Pending Review</Tag>
+                    <Tag icon={<ClockCircleOutlined />} style={{ borderRadius: 999, fontSize: 11, fontWeight: 700, paddingInline: 10, border: 'none', background: '#fef3c7', color: '#92400e' }}>
+                      {activeTab === 'lm' ? 'Pending Review' : 'Pending HR Review'}
+                    </Tag>
                   ) : (
-                    <Tag icon={<CheckCircleOutlined />} style={{ borderRadius: 999, fontSize: 11, fontWeight: 700, paddingInline: 10, border: 'none', background: '#d1fae5', color: '#065f46' }}>Review Submitted</Tag>
+                    <Tag icon={<CheckCircleOutlined />} style={{ borderRadius: 999, fontSize: 11, fontWeight: 700, paddingInline: 10, border: 'none', background: '#d1fae5', color: '#065f46' }}>
+                      {activeTab === 'lm' ? 'Review Submitted' : 'HR Review Submitted'}
+                    </Tag>
+                  )}
+                  {activeTab === 'hr' && emp.hrStatus === 'Submitted' && emp.decisionApprovalStatus === 'Pending' && (
+                    <Tag style={{ marginLeft: 6, border: 'none', borderRadius: 999, background: '#fef3c7', color: '#92400e', fontWeight: 700 }}>
+                      Decision Pending Approval
+                    </Tag>
+                  )}
+                  {activeTab === 'hr' && emp.hrStatus === 'Submitted' && emp.decisionApprovalStatus === 'Approved' && (
+                    <Tag style={{ marginLeft: 6, border: 'none', borderRadius: 999, background: '#d1fae5', color: '#065f46', fontWeight: 700 }}>
+                      Decision Approved{emp.decisionMailSent ? ' · Email Sent' : ''}
+                    </Tag>
+                  )}
+                  {activeTab === 'hr' && emp.hrStatus === 'Submitted' && emp.decisionApprovalStatus === 'Rejected' && (
+                    <Tag style={{ marginLeft: 6, border: 'none', borderRadius: 999, background: '#fee2e2', color: '#991b1b', fontWeight: 700 }}>
+                      Decision Rejected
+                    </Tag>
                   )}
                 </div>
               </div>
@@ -1934,16 +2997,63 @@ function ApprovalsPage({ open, approvals, onClose, onLMSubmit }: ApprovalsPagePr
           <Text type="secondary" style={{ fontSize: 14 }}>No results for the current filters.</Text>
         </div>
       )}
+      </>
+      )}
 
       {/* LM Mark Drawer */}
       <LMMarkDrawer
-        employee={syncedTarget}
+        employee={syncedLMTarget}
         onClose={() => setLMMarkTarget(null)}
         onSubmit={(id, markings, overallRemarks) => {
           onLMSubmit(id, markings, overallRemarks);
           setLMMarkTarget(null);
-          message.success('Review submitted successfully!');
+          message.success('Line manager review submitted successfully!');
         }}
+      />
+
+      <HRMarkDrawer
+        employee={syncedHRTarget}
+        onClose={() => setHRMarkTarget(null)}
+        onSubmit={(id, markings, overallRemarks) => {
+          onHRSubmit(id, markings, overallRemarks);
+          setHRMarkTarget(null);
+          message.success('HR review submitted successfully! You can now click Decision.');
+        }}
+      />
+
+      <HRDecisionModal
+        employee={syncedDecisionTarget}
+        open={!!syncedDecisionTarget}
+        onClose={() => setDecisionTarget(null)}
+        mode={decisionModalMode}
+        onSendForApproval={onHRDecisionSubmit}
+        onApproveRequest={onDecisionApprove}
+        onRejectRequest={onDecisionReject}
+      />
+
+      <DecisionMailModal
+        employee={mailTarget ? (approvals.find(a => a.id === mailTarget.id) ?? null) : null}
+        open={!!mailTarget}
+        onClose={() => setMailTarget(null)}
+        onSend={onDecisionMailSend}
+      />
+
+      <NewSeparationModal
+        open={!!separationTarget}
+        onClose={() => setSeparationTarget(null)}
+        onSubmit={() => {
+          if (separationTarget) {
+            onSeparationInitiated(separationTarget.id);
+          }
+          setSeparationTarget(null);
+        }}
+        initialEmployee={separationTarget ? {
+          empId: separationTarget.employeeCode,
+          name: separationTarget.name,
+          designation: separationTarget.designation,
+          department: separationTarget.department,
+        } : undefined}
+        initialSeparationType="Termination"
       />
     </div>
   );
@@ -2117,6 +3227,75 @@ export default function MyAppraisalPage() {
     ));
   };
 
+  const handleHRSubmit = (id: string, markings: SubKPIMarking[], overallRemarks: string) => {
+    setApprovals(prev => prev.map(a =>
+      a.id !== id ? a : {
+        ...a,
+        hrStatus: 'Submitted' as const,
+        hrMarkings: markings,
+        hrOverallRemarks: overallRemarks,
+        decisionApprovalStatus: 'Not Requested' as const,
+        decisionMailSent: false,
+        separationInitiated: false,
+      }
+    ));
+  };
+
+  const handleHRDecisionSubmit = (id: string, decision: HRDecision) => {
+    setApprovals(prev => prev.map(a =>
+      a.id !== id ? a : {
+        ...a,
+        hrDecision: decision,
+        decisionApprovalStatus: 'Pending' as const,
+        decisionApprovalRemarks: undefined,
+        decisionApprovalReviewedBy: undefined,
+        decisionApprovalReviewedAt: undefined,
+        decisionMailSent: false,
+        separationInitiated: false,
+      }
+    ));
+  };
+
+  const handleDecisionApprove = (id: string, remarks: string) => {
+    setApprovals(prev => prev.map(a =>
+      a.id !== id ? a : {
+        ...a,
+        decisionApprovalStatus: 'Approved' as const,
+        decisionApprovalRemarks: remarks,
+        decisionApprovalReviewedBy: 'Approver',
+        decisionApprovalReviewedAt: '2026-04-01',
+      }
+    ));
+  };
+
+  const handleDecisionReject = (id: string, remarks: string) => {
+    setApprovals(prev => prev.map(a =>
+      a.id !== id ? a : {
+        ...a,
+        decisionApprovalStatus: 'Rejected' as const,
+        decisionApprovalRemarks: remarks,
+        decisionApprovalReviewedBy: 'Approver',
+        decisionApprovalReviewedAt: '2026-04-01',
+      }
+    ));
+  };
+
+  const handleDecisionMailSend = (id: string, _payload: DecisionMailPayload) => {
+    setApprovals(prev => prev.map(a =>
+      a.id !== id ? a : { ...a, decisionMailSent: true }
+    ));
+  };
+
+  const handleSeparationInitiated = (id: string) => {
+    setApprovals(prev => prev.map(a =>
+      a.id !== id ? a : { ...a, separationInitiated: true }
+    ));
+  };
+
+  const approvalAttentionCount = approvals.filter(a =>
+    a.lmStatus === 'Pending' || (a.lmStatus === 'Submitted' && a.hrStatus === 'Pending')
+  ).length;
+
   // Sync viewTarget when records change (so it reflects updated state)
   const syncedViewTarget = viewTarget ? (records.find(r => r.id === viewTarget.id) ?? null) : null;
 
@@ -2134,6 +3313,12 @@ export default function MyAppraisalPage() {
         approvals={approvals}
         onClose={() => setApprovalsOpen(false)}
         onLMSubmit={handleLMSubmit}
+        onHRSubmit={handleHRSubmit}
+        onHRDecisionSubmit={handleHRDecisionSubmit}
+        onDecisionApprove={handleDecisionApprove}
+        onDecisionReject={handleDecisionReject}
+        onDecisionMailSend={handleDecisionMailSend}
+        onSeparationInitiated={handleSeparationInitiated}
       />
     );
   }
@@ -2159,9 +3344,9 @@ export default function MyAppraisalPage() {
             style={{ borderRadius: 10, borderColor: CLR_BORDER, color: CLR_PRIMARY, fontWeight: 700, height: 38 }}
           >
             Approvals
-            {PENDING_APPROVALS.filter(a => a.lmStatus === 'Pending').length > 0 && (
+            {approvalAttentionCount > 0 && (
               <Tag style={{ marginLeft: 6, borderRadius: 999, fontSize: 10, fontWeight: 700, border: 'none', background: '#fef3c7', color: '#92400e', padding: '0 6px' }}>
-                {PENDING_APPROVALS.filter(a => a.lmStatus === 'Pending').length}
+                {approvalAttentionCount}
               </Tag>
             )}
           </Button>
