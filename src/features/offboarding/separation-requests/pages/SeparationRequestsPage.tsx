@@ -362,6 +362,15 @@ export default function SeparationRequestsPage() {
       render: v => <span style={{ fontSize: 13, fontWeight: 600, color: '#374151' }}>{v}d</span>,
     },
     {
+      title: colHead('DURATION'),
+      dataIndex: 'duration',
+      key: 'duration',
+      width: 180,
+      render: (v: string | undefined) => v
+        ? <span style={{ fontSize: 12, color: '#374151' }}>{v}</span>
+        : <span style={{ fontSize: 12, color: '#9ca3af' }}>—</span>,
+    },
+    {
       title: colHead('EMPLOYMENT STATUS'),
       dataIndex: 'employmentStatus',
       key: 'employmentStatus',

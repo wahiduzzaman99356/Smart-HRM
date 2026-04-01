@@ -116,6 +116,12 @@ const AppraisalConfigPage = lazy(
 const MyAppraisalPage = lazy(
   () => import('@/features/performance/pages/MyAppraisalPage'),
 );
+const SeparationPolicyPage = lazy(
+  () => import('@/features/offboarding/separation-policy/pages/SeparationPolicyPage'),
+);
+const ExitInterviewsPage = lazy(
+  () => import('@/features/offboarding/exit-interviews/pages/ExitInterviewsPage'),
+);
 
 // ── Global providers ──────────────────────────────────────────────────────────
 const queryClient = new QueryClient({
@@ -199,6 +205,8 @@ function AppShell() {
           <Route path="/offboarding/separation-requests" element={<SeparationRequestsPage />} />
           <Route path="/offboarding/clearance"           element={<ClearanceManagementPage />} />
           <Route path="/offboarding/final-settlement"    element={<FinalSettlementPage />} />
+          <Route path="/offboarding/separation-policy"  element={<SeparationPolicyPage />} />
+          <Route path="/offboarding/exit-interview"     element={<ExitInterviewsPage />} />
 
           {/* ── Placeholders for every module ── */}
           <Route path="/core-hr/*"             element={<ComingSoon />} />
