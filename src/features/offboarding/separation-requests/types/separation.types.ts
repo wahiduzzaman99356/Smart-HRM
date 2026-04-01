@@ -48,6 +48,8 @@ export interface SeparationRequest {
   resignationSubmissionDate: string;
   dateOfSeparation: string;
   noticePeriod: number;
+  /** Notice duration type selected by employee — e.g. "Serve Full Notice" or "Early Release (Notice Buyout)" */
+  duration?: string;
   employmentStatus: EmpStatus;
   modeOfSeparation: SepMode;
   status: SepStatus;
@@ -141,6 +143,7 @@ export const INITIAL_SEPARATIONS: SeparationRequest[] = [
     noticePeriod: 60,
     employmentStatus: 'Permanent',
     modeOfSeparation: 'Resignation',
+    duration: 'Serve Full Notice',
     status: 'In Progress',
     workflowStage: 'Clearance',
     lineManager: { name: 'David Park', id: 'EMP-0174' },

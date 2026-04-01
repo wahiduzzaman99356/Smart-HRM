@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import {
-  CalendarOutlined,
+  BankOutlined,
   CheckOutlined,
   ClockCircleOutlined,
   CloseCircleOutlined,
@@ -45,6 +45,21 @@ const RESIGNATION_REASONS = [
   'Career Change',
   'Family Obligations',
   'Other',
+];
+
+const NOTICE_DURATION_OPTIONS = [
+  { label: 'Serve Full Notice', value: 'Serve Full Notice' },
+  { label: 'Early Release (Notice Buyout)', value: 'Early Release (Notice Buyout)' },
+];
+
+const RESIGNATION_POLICY_RULES = [
+  'Employee shall serve 60 days notice in writing/email.',
+  'May pay gross salary for the notice period in lieu of notice.',
+  'Must hand over charge, return books, papers, documents & other properties.',
+  'Management may waive notice period fully or partially at discretion.',
+  'May adjust notice period with Annual Leave upon employee request.',
+  'No resignation accepted if disciplinary proceedings are pending.',
+  'For Flight Crew: notice period as per agreement/contract applies.',
 ];
 
 // ─── Colors ───────────────────────────────────────────────────────────────────
@@ -267,15 +282,16 @@ function DownloadCard({ icon, title, description, filename }: {
 // ─── Resignation application form ─────────────────────────────────────────────
 
 function ResignationForm({ onSubmit }: {
-  onSubmit: (data: { reason: string; lastWorkingDay: string; lastWorkingDayRaw: string; details: string }) => void;
+  onSubmit: (data: { reason: string; duration: string; lastWorkingDay: string; lastWorkingDayRaw: string; details: string }) => void;
 }) {
   const [reason, setReason]               = useState('');
+  const [duration, setDuration]           = useState('');
   const [lastWorkingDay, setLastWorkingDay] = useState<Dayjs | null>(null);
   const [details, setDetails]             = useState('');
   const [submitting, setSubmitting]       = useState(false);
   const [confirmOpen, setConfirmOpen]     = useState(false);
 
-  const isValid = reason && lastWorkingDay && details.trim().length > 0;
+  const isValid = reason && duration && lastWorkingDay && details.trim().length > 0;
 
   const handleConfirm = () => {
     setConfirmOpen(false);
@@ -284,6 +300,7 @@ function ResignationForm({ onSubmit }: {
       setSubmitting(false);
       onSubmit({
         reason,
+        duration,
         lastWorkingDay: lastWorkingDay!.format('MMM D, YYYY'),
         lastWorkingDayRaw: lastWorkingDay!.format('YYYY-MM-DD'),
         details,
@@ -317,6 +334,12 @@ function ResignationForm({ onSubmit }: {
         </div>
 
         <div style={{ marginBottom: 18 }}>
+          <FieldLabel required>Duration</FieldLabel>
+          <Select style={{ width: '100%' }} placeholder="Select notice duration type" value={duration || undefined} onChange={setDuration} size="large"
+            options={NOTICE_DURATION_OPTIONS} />
+        </div>
+
+        <div style={{ marginBottom: 18 }}>
           <FieldLabel required>Requested Last Working Day</FieldLabel>
           <DatePicker style={{ width: '100%' }} size="large" value={lastWorkingDay} onChange={setLastWorkingDay}
             format="MM/DD/YYYY" placeholder="mm/dd/yyyy" disabledDate={d => d.isBefore(new Date(), 'day')} />
@@ -337,22 +360,41 @@ function ResignationForm({ onSubmit }: {
 
       {/* Right sidebar */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+        {/* Resignation Policy */}
         <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 14, padding: '20px 22px', boxShadow: '0 2px 8px rgba(15,23,42,0.04)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-            <CalendarOutlined style={{ color: C.navy, fontSize: 15 }} />
-            <span style={{ fontSize: 13, fontWeight: 700, color: C.textSecondary }}>Notice Period</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+            <FileTextOutlined style={{ color: C.navy, fontSize: 15 }} />
+            <span style={{ fontSize: 13, fontWeight: 700, color: C.text }}>Resignation Policy</span>
           </div>
-          <div style={{ fontSize: 40, fontWeight: 800, color: C.navy, letterSpacing: '-0.03em', lineHeight: 1, marginBottom: 10 }}>
-            {CURRENT_EMPLOYEE.noticePeriodDays} <span style={{ fontSize: 20 }}>days</span>
+          <p style={{ fontSize: 11, color: C.textMuted, marginBottom: 14 }}>Employee-initiated voluntary departure</p>
+
+          {/* Probation / Confirmed notice boxes */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 12 }}>
+            {[{ label: 'PROBATION', days: 30 }, { label: 'CONFIRMED', days: 60 }].map(item => (
+              <div key={item.label} style={{ border: `1px solid ${C.border}`, borderRadius: 8, padding: '10px 14px' }}>
+                <div style={{ fontSize: 9, fontWeight: 700, color: C.textSoft, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 4 }}>{item.label}</div>
+                <div style={{ fontSize: 20, fontWeight: 800, color: C.text }}>{item.days} <span style={{ fontSize: 13, fontWeight: 500 }}>days</span></div>
+              </div>
+            ))}
           </div>
-          <p style={{ fontSize: 12, color: C.textMuted, lineHeight: 1.6, margin: 0 }}>
-            As per company policy, you are required to serve a {CURRENT_EMPLOYEE.noticePeriodDays}-day notice period from the date of acceptance.
-          </p>
+
+          <p style={{ fontSize: 11, color: C.textMuted, marginBottom: 14 }}>60 days notice or gross salary in lieu</p>
+
+          <div style={{ fontSize: 9, fontWeight: 700, color: C.textSoft, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 8 }}>Policy Rules</div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
+            {RESIGNATION_POLICY_RULES.map(rule => (
+              <div key={rule} style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
+                <RightOutlined style={{ fontSize: 9, color: C.textMuted, flexShrink: 0, marginTop: 3 }} />
+                <span style={{ fontSize: 11, color: C.textSecondary, lineHeight: 1.5 }}>{rule}</span>
+              </div>
+            ))}
+          </div>
         </div>
 
+        {/* What Happens Next */}
         <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 14, padding: '20px 22px', boxShadow: '0 2px 8px rgba(15,23,42,0.04)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
-            <CalendarOutlined style={{ color: C.navy, fontSize: 15 }} />
+            <BankOutlined style={{ color: C.navy, fontSize: 15 }} />
             <span style={{ fontSize: 13, fontWeight: 700, color: C.textSecondary }}>What Happens Next?</span>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -384,6 +426,7 @@ function ResignationForm({ onSubmit }: {
             { label: 'Employee',         value: `${CURRENT_EMPLOYEE.name} (${CURRENT_EMPLOYEE.id})` },
             { label: 'Department',       value: `${CURRENT_EMPLOYEE.department} · ${CURRENT_EMPLOYEE.designation}` },
             { label: 'Reason',           value: reason },
+            { label: 'Duration',         value: duration },
             { label: 'Last Working Day', value: lastWorkingDay?.format('MMM D, YYYY') ?? '' },
             { label: 'Notice Period',    value: `${CURRENT_EMPLOYEE.noticePeriodDays} days` },
           ].map((item, idx, arr) => (
@@ -656,8 +699,8 @@ export default function MyResignationPage() {
     }
   }, [latestRequest]);
 
-  const handleSubmit = ({ reason, lastWorkingDay: _lastWorkingDay, lastWorkingDayRaw, details }: {
-    reason: string; lastWorkingDay: string; lastWorkingDayRaw: string; details: string;
+  const handleSubmit = ({ reason, duration, lastWorkingDay: _lastWorkingDay, lastWorkingDayRaw, details }: {
+    reason: string; duration: string; lastWorkingDay: string; lastWorkingDayRaw: string; details: string;
   }) => {
     const today     = new Date();
     const formatted = today.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
@@ -677,6 +720,7 @@ export default function MyResignationPage() {
       resignationSubmissionDate: `${ddMmYyyy}; ${timeStr}`,
       dateOfSeparation: lastWorkingDayRaw,
       noticePeriod: CURRENT_EMPLOYEE.noticePeriodDays,
+      duration,
       employmentStatus: 'Permanent',
       modeOfSeparation: 'Resignation',
       status: 'Pending',
@@ -739,14 +783,14 @@ export default function MyResignationPage() {
         <ResignationForm onSubmit={handleSubmit} />
       )}
 
-      {/* Previous Resignation Requests */}
-      {historyEntries.length > 0 && (
-        <div style={{ marginTop: 24, background: C.surface, border: `1px solid ${C.border}`, borderRadius: 14, padding: '20px 22px', boxShadow: '0 2px 8px rgba(15,23,42,0.04)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-            <HistoryOutlined style={{ color: C.textMuted, fontSize: 15 }} />
-            <span style={{ fontSize: 15, fontWeight: 700, color: C.text }}>Previous Resignation Requests</span>
-          </div>
-          <p style={{ fontSize: 12, color: C.textMuted, marginBottom: 16 }}>History of your past resignation requests</p>
+      {/* Previous Resignation Requests — always visible */}
+      <div style={{ marginTop: 24, background: C.surface, border: `1px solid ${C.border}`, borderRadius: 14, padding: '20px 22px', boxShadow: '0 2px 8px rgba(15,23,42,0.04)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+          <HistoryOutlined style={{ color: C.textMuted, fontSize: 15 }} />
+          <span style={{ fontSize: 15, fontWeight: 700, color: C.text }}>Previous Resignation Requests</span>
+        </div>
+        <p style={{ fontSize: 12, color: C.textMuted, marginBottom: 16 }}>History of your past resignation requests</p>
+        {historyEntries.length > 0 ? (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             {historyEntries.map(entry => (
               <HistoryCard
@@ -756,8 +800,12 @@ export default function MyResignationPage() {
               />
             ))}
           </div>
-        </div>
-      )}
+        ) : (
+          <div style={{ textAlign: 'center', padding: '20px 0', color: C.textSoft, fontSize: 13 }}>
+            No previous resignation requests found.
+          </div>
+        )}
+      </div>
 
       <SeparationDetailModal
         record={viewingRecord}

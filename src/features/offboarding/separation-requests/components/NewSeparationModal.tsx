@@ -180,6 +180,11 @@ function StepProgress({ current }: { current: number }) {
 }
 
 // ─── Form data ────────────────────────────────────────────────────────────────
+const NOTICE_DURATION_OPTIONS = [
+  { label: 'Serve Full Notice',              value: 'Serve Full Notice'              },
+  { label: 'Early Release (Notice Buyout)',   value: 'Early Release (Notice Buyout)'  },
+];
+
 interface FormData {
   // Step 1
   employee: MockEmployee | null;
@@ -191,6 +196,7 @@ interface FormData {
   eligibleForRehire: boolean;
   additionalDetails: string;
   // Step 3
+  duration:          string;
   dateOfSeparation:  string;   // last working day (YYYY-MM-DD)
   earlyRelease:      boolean;
   earlyReleaseReason: string;
@@ -205,7 +211,7 @@ const EMPTY_FORM: FormData = {
   employee: null,
   separationType: '', noticeDays: 0, primaryReason: '',
   confidential: false, eligibleForRehire: true, additionalDetails: '',
-  dateOfSeparation: '', earlyRelease: false, earlyReleaseReason: '',
+  duration: '', dateOfSeparation: '', earlyRelease: false, earlyReleaseReason: '',
   documents: [],
   approver: '', additionalNotes: '',
 };
@@ -419,6 +425,22 @@ function Step3({
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+
+      {/* ── Duration ── */}
+      <div>
+        <SectionHead>Duration</SectionHead>
+        <Select
+          style={{ width: '100%' }}
+          placeholder="Select notice duration type"
+          value={form.duration || undefined}
+          onChange={v => setForm(p => ({
+            ...p,
+            duration: v ?? '',
+            earlyRelease: v === 'Early Release (Notice Buyout)',
+          }))}
+          options={NOTICE_DURATION_OPTIONS}
+        />
+      </div>
 
       {/* ── Two-column inputs ── */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
@@ -767,12 +789,17 @@ function Step5({
           {/* Row 3 */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', borderBottom: '1px solid #f3f4f6' }}>
             <SummaryCell label="Notice Period"   value={`${form.noticeDays} days`} />
+            <SummaryCell label="Duration"        value={form.duration} />
+          </div>
+          {/* Row 3b */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', borderBottom: '1px solid #f3f4f6' }}>
             <SummaryCell label="Last Working Day" value={form.dateOfSeparation} />
+            <SummaryCell label="Documents"        value={form.documents.length ? `${form.documents.length} attached` : '0 attached'} />
           </div>
           {/* Row 4 */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr' }}>
-            <SummaryCell label="Documents"         value={form.documents.length ? `${form.documents.length} attached` : '0 attached'} />
             <SummaryCell label="Eligible for Rehire" value={form.eligibleForRehire ? 'Yes' : 'No'} />
+            <SummaryCell label="" value="" />
           </div>
         </div>
       </div>

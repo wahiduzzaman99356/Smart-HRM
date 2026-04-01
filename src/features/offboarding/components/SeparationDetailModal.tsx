@@ -476,6 +476,14 @@ export function SeparationDetailModal({
                 )}
               </div>
             </div>
+            {record.duration && (
+              <div style={{ marginTop: 14, paddingTop: 14, borderTop: `1px solid ${UI.border}` }}>
+                <div style={{ fontSize: 11, color: UI.muted, marginBottom: 6, letterSpacing: '0.06em', textTransform: 'uppercase' }}>
+                  Duration
+                </div>
+                <div style={{ fontSize: 14, fontWeight: 600, color: UI.text }}>{record.duration}</div>
+              </div>
+            )}
             {showEditableNoticeTimeline && (noticeError || timelineError) && (
               <div style={{ fontSize: 12, color: UI.danger, marginTop: 8 }}>
                 Enter a valid notice period and last working day before saving or taking a decision.

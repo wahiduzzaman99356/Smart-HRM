@@ -1202,3 +1202,23 @@ body,
 .ant-tag {
   transition: opacity 0.12s ease;
 }
+
+/* ── Rich text policy content preview ──────────────────────── */
+.policy-content-preview p { margin: 0 0 8px; }
+.policy-content-preview p:last-child { margin-bottom: 0; }
+.policy-content-preview h1 { font-size: 16px; font-weight: 700; color: #111827; margin: 0 0 6px; }
+.policy-content-preview h2 { font-size: 14px; font-weight: 700; color: #111827; margin: 12px 0 5px; }
+.policy-content-preview h3 { font-size: 13px; font-weight: 700; color: #374151; margin: 10px 0 4px; }
+.policy-content-preview ul,
+.policy-content-preview ol  { padding-left: 20px; margin: 4px 0 8px; }
+.policy-content-preview li  { margin-bottom: 4px; }
+.policy-content-preview strong { color: #111827; }
+.policy-content-preview blockquote {
+  border-left: 3px solid #0f766e;
+  background: #f0fdfa;
+  padding: 6px 12px;
+  margin: 8px 0;
+  border-radius: 0 6px 6px 0;
+  color: #4b5563;
+}
+.policy-content-preview a { color: #0f766e; }
