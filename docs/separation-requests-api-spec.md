@@ -122,6 +122,41 @@ The workflow stages are:
 
 ---
 
+### ActionRequiredItem
+
+Action-required items are created when Performance Management approves a separation decision for an employee. This provides a quick entry point for HR to create a separation request.
+
+```json
+{
+	"id": "ACT-REQ-001",
+	"empId": "EMP-0033",
+	"empName": "Kamal Hossain",
+	"empCode": "EMP-033",
+	"designation": "Senior HR Officer",
+	"department": "Human Resources",
+	"dateOfJoining": "2022-06-15",
+	"employmentStatus": "Permanent",
+	"actionType": "Separation Decision Approved",
+	"source": "Performance Appraisal",
+	"appraisalPeriodLabel": "Yearly Appraisal · FY 2025",
+	"decisionDetails": {
+		"decision": "Separation",
+		"effectiveDate": "2026-04-01",
+		"remarks": "Approved for separation based on performance appraisal decision"
+	},
+	"status": "Pending",
+	"createdAt": "2026-03-31",
+	"createdBy": "System",
+	"actionUrl": "/api/v1/separation-requests/actions/:id/create-request"
+}
+```
+
+#### status (ActionRequiredItem)
+
+`Pending | Processed | Cancelled`
+
+---
+
 ## Endpoints
 
 ### 1) List Requests
@@ -283,6 +318,57 @@ Used after settlement is complete to decide whether the separation process shoul
 - appends an activity timeline entry such as `Final decision recorded`
 - this section should appear in detail responses once the workflow reaches `Settlement` or `Completed`
 
+### 8) List Action-Required Items
+
+**`GET /api/v1/separation-requests/actions/required`**
+
+Returns a list of pending action-required items triggered by Performance Management appraisal decisions. These represent separation decisions approved by HR that need to be processed as separation requests.
+
+#### Query Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| `q` | string | Search by employee name or employee ID |
+| `status` | string | Filter by action status (`Pending`, `Processed`, `Cancelled`) |
+| `page` | number | Page number |
+| `pageSize` | number | Page size |
+
+#### Response
+
+```json
+{
+	"items": [],
+	"total": 0,
+	"page": 1,
+	"pageSize": 20
+}
+```
+
+### 9) Create Separation Request from Action
+
+**`POST /api/v1/separation-requests/actions/:actionId/create-request`**
+
+Creates a new separation request directly from an action-required item triggered by a performance appraisal decision.
+
+#### Request Body
+
+```json
+{
+	"modeOfSeparation": "Termination",
+	"reason": "Performance Termination",
+	"noticePeriod": 0,
+	"dateOfSeparation": "2026-04-01",
+	"remarks": "Separation initiated from approved performance appraisal decision"
+}
+```
+
+#### Response Behavior
+
+- creates a new `SeparationRequest` with `status=Pending` and `workflowStage=Submitted`
+- updates the corresponding `ActionRequiredItem` status to `Processed`
+- appends activity: "Separation request created from performance appraisal action"
+- returns the created `SeparationRequest` object
+
 ---
 
 ## UI Mapping Notes
@@ -290,3 +376,6 @@ Used after settlement is complete to decide whether the separation process shoul
 - HR detail popup reads from the detail endpoint and can update notice timeline before decision
 - rejection remarks must flow through to the employee-facing My Resignation experience
 - final decision appears only after settlement stage is reached
+- action-required items appear as a dedicated section at the top of Separation Requests page
+- users click "Take Action" on an action-required item to open the new separation modal pre-filled with employee details
+- once processed, action items are marked as "Processed" and moved to a history section

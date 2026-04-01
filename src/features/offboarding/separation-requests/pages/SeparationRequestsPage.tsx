@@ -16,8 +16,10 @@ import {
   SearchOutlined,
   SwapOutlined,
 } from '@ant-design/icons';
-import type { SeparationRequest, SepStatus, EmpStatus, SepMode } from '../types/separation.types';
+import type { SeparationRequest, SepStatus, EmpStatus, SepMode, ActionRequiredItem } from '../types/separation.types';
+import { INITIAL_ACTION_REQUIRED } from '../types/separation.types';
 import { NewSeparationModal } from '../components/NewSeparationModal';
+import { ActionRequiredSection } from '../components/ActionRequiredModal';
 import { useSeparationStore } from '../store/separationStore';
 import { SeparationDetailModal, type SeparationDetailModalMode } from '@/features/offboarding/components/SeparationDetailModal';
 import { getSeparationTimeline } from '@/features/offboarding/components/separationDetailUtils';
@@ -179,6 +181,9 @@ export default function SeparationRequestsPage() {
   const [selectedKeys, setSelectedKeys] = useState<string[]>([]);
   const [detailState, setDetailState] = useState<{ id: string; mode: SeparationDetailModalMode } | null>(null);
   const [newModalOpen, setNewModalOpen] = useState(false);
+  const [actionRequiredItems, setActionRequiredItems] = useState<ActionRequiredItem[]>(INITIAL_ACTION_REQUIRED);
+  const [selectedActionItem, setSelectedActionItem] = useState<ActionRequiredItem | null>(null);
+  const [showSeparationModal, setShowSeparationModal] = useState(false);
 
   const detailRecord = detailState ? requests.find((request) => request.id === detailState.id) ?? null : null;
 
@@ -281,6 +286,28 @@ export default function SeparationRequestsPage() {
 
   const openDetail = (record: SeparationRequest, mode: SeparationDetailModalMode = 'view') => {
     setDetailState({ id: record.id, mode });
+  };
+
+  const handleActionProcessed = (actionId: string) => {
+    setActionRequiredItems(prev =>
+      prev.map(item =>
+        item.id === actionId ? { ...item, status: 'Processed' } : item
+      )
+    );
+  };
+
+  const handleTakeActionOnItem = (item: ActionRequiredItem) => {
+    setSelectedActionItem(item);
+    setShowSeparationModal(true);
+  };
+
+  const handleSeparationSubmitted = () => {
+    if (selectedActionItem) {
+      handleActionProcessed(selectedActionItem.id);
+      message.success('Separation request created successfully');
+    }
+    setShowSeparationModal(false);
+    setSelectedActionItem(null);
   };
 
   // ── Columns ─────────────────────────────────────────────────────────────────
@@ -504,13 +531,15 @@ export default function SeparationRequestsPage() {
           <h1>Separation Requests</h1>
           <p>Manage and track all employee separation cases &middot; {requests.length} total</p>
         </div>
-        <Button
-          type="primary"
-          icon={<PlusOutlined />}
-          onClick={() => setNewModalOpen(true)}
-        >
-          New Request
-        </Button>
+        <Space>
+          <Button
+            type="primary"
+            icon={<PlusOutlined />}
+            onClick={() => setNewModalOpen(true)}
+          >
+            New Request
+          </Button>
+        </Space>
       </div>
 
       {/* ── Filter bar ───────────────────────────────────────────────────── */}
@@ -644,6 +673,13 @@ export default function SeparationRequestsPage() {
         </span>
       </div>
 
+      {/* ── Action Required section ───────────────────────────────────────── */}
+      <ActionRequiredSection
+        items={actionRequiredItems}
+        onTakeAction={handleTakeActionOnItem}
+        onProcessed={handleActionProcessed}
+      />
+
       {/* ── Table ─────────────────────────────────────────────────────────── */}
       <div className="list-surface">
         <Table
@@ -684,6 +720,26 @@ export default function SeparationRequestsPage() {
         onClose={() => setNewModalOpen(false)}
         onSubmit={() => setNewModalOpen(false)}
       />
+
+      {/* ── New Separation Request modal (from Action Item) ─────────────────── */}
+      {selectedActionItem && (
+        <NewSeparationModal
+          open={showSeparationModal}
+          onClose={() => {
+            setShowSeparationModal(false);
+            setSelectedActionItem(null);
+          }}
+          onSubmit={handleSeparationSubmitted}
+          initialEmployee={{
+            empId: selectedActionItem.empId,
+            name: selectedActionItem.empName,
+            designation: selectedActionItem.designation,
+            department: selectedActionItem.department,
+            joinedDate: selectedActionItem.dateOfJoining,
+          }}
+          initialSeparationType="Termination"
+        />
+      )}
     </div>
   );
 }
