@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Avatar, Button, Checkbox, DatePicker, Input, Modal,
   Select, Upload, message,
@@ -825,11 +825,43 @@ interface Props {
   open: boolean;
   onClose: () => void;
   onSubmit: (form: FormData) => void;
+  initialEmployee?: {
+    empId: string;
+    name: string;
+    designation: string;
+    department: string;
+    joinedDate?: string;
+  };
+  initialSeparationType?: string;
 }
 
-export function NewSeparationModal({ open, onClose, onSubmit }: Props) {
+export function NewSeparationModal({ open, onClose, onSubmit, initialEmployee, initialSeparationType }: Props) {
   const [step, setStep] = useState(1);
   const [form, setForm] = useState<FormData>(EMPTY_FORM);
+
+  useEffect(() => {
+    if (!open) return;
+    const initEmp = initialEmployee
+      ? {
+          empId: initialEmployee.empId,
+          name: initialEmployee.name,
+          designation: initialEmployee.designation,
+          department: initialEmployee.department,
+          joinedDate: initialEmployee.joinedDate || '2021-01-01',
+        }
+      : null;
+
+    const initType = initialSeparationType || '';
+    const notice = SEP_TYPES.find(t => t.key === initType)?.noticeDays ?? 0;
+
+    setStep(1);
+    setForm({
+      ...EMPTY_FORM,
+      employee: initEmp,
+      separationType: initType,
+      noticeDays: notice,
+    });
+  }, [open, initialEmployee, initialSeparationType]);
 
   const canNext = () => {
     if (step === 1) return !!form.employee;

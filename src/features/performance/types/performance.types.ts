@@ -163,6 +163,47 @@ export interface EmployeeSubKPIConfig {
   isRemoved: boolean;
 }
 
+// ── KPI Change Approval Workflow ──────────────────────────────────────────────
+export type KPIChangeStatus = 'Pending' | 'Approved' | 'Rejected';
+
+export interface KPIChangeDetail {
+  type: 'added' | 'removed' | 'modified';
+  subKPIId: string;
+  subKPIName: string;
+  subKPICode: string;
+  mainKPIAreaId: string;
+  mainKPIAreaName: string;
+  mainKPICode: string;
+  // For added/modified
+  newWeight?: number;
+  newOperator?: ComparisonOperator;
+  newTargetValue?: number;
+  newResponsibleTo?: string[];
+  // For modified (previous values)
+  prevWeight?: number;
+  prevOperator?: ComparisonOperator;
+  prevTargetValue?: number;
+}
+
+export interface KPIChangeRequest {
+  id: string;
+  employeeId: string;
+  employeeName: string;
+  employeeDesignation: string;
+  employeeDepartment: string;
+  employeeSection: string;
+  employeeAvatarColor: string;
+  requestedBy: string;
+  requestedAt: string;
+  status: KPIChangeStatus;
+  changes: KPIChangeDetail[];
+  reviewedBy?: string;
+  reviewedAt?: string;
+  remarks?: string;
+  /** Full proposed config snapshot — applied to empKPIMap on approval */
+  proposedConfigs: EmployeeSubKPIConfig[];
+}
+
 export interface EmployeeKPIRecord {
   id: string;
   employeeId: string;

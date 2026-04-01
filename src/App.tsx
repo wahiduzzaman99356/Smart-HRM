@@ -80,6 +80,9 @@ const MyComplaintsPage = lazy(
 const CompliancePage = lazy(
   () => import('@/features/employee-relations/compliance/pages/CompliancePage'),
 );
+const PerformanceDashboardPage = lazy(
+  () => import('@/features/performance/pages/PerformanceDashboardPage'),
+);
 const MainKPIAreasPage = lazy(
   () => import('@/features/performance/pages/MainKPIAreasPage'),
 );
@@ -190,7 +193,7 @@ function AppShell() {
           <Route path="/ess/my-cases" element={<MyComplaintsPage />} />
 
           {/* ── Performance Management (submenu only) ─────────────────────── */}
-          <Route path="/performance/dashboard"          element={<ComingSoon />} />
+          <Route path="/performance/dashboard"          element={<PerformanceDashboardPage />} />
           <Route path="/performance/main-kpi"           element={<MainKPIAreasPage />} />
           <Route path="/performance/sub-kpi-setup"      element={<SubKPISetupPage />} />
           <Route path="/performance/evaluation"         element={<EvaluationPage />} />

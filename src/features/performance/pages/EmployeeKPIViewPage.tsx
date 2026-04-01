@@ -1,18 +1,23 @@
 /**
  * EmployeeKPIViewPage.tsx
  * ─────────────────────────────────────────────────────────────────────────────
- * Employee KPI View — list of employees + per-employee KPI configure page.
+ * Employee KPI View with full approval workflow:
+ *  • List view: employee cards with KPI stats, Config button, History button
+ *  • Configure view: add/remove sub KPIs → submit for approval (not immediate save)
+ *  • Approval button (HR): opens KPIApprovalModal to approve/reject requests
+ *  • History button (per employee): opens KPIChangeHistoryModal with rejection reasons
  */
 
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useRef } from 'react';
 import {
   Input, Select, Button, Tag, Typography, InputNumber, Avatar,
-  Tooltip, Space, Divider,
+  Tooltip, Space, Divider, Badge, message, notification,
 } from 'antd';
 import {
   SearchOutlined, ReloadOutlined, SettingOutlined, DeleteOutlined,
-  WarningOutlined, ArrowLeftOutlined, SaveOutlined, PlusOutlined,
-  UndoOutlined, CloseOutlined,
+  WarningOutlined, ArrowLeftOutlined, PlusOutlined,
+  UndoOutlined, CloseOutlined, CheckCircleOutlined,
+  HistoryOutlined, SendOutlined, InfoCircleOutlined,
 } from '@ant-design/icons';
 import {
   INITIAL_EMPLOYEES,
@@ -21,22 +26,22 @@ import {
   type Employee,
   type EmployeeSubKPIConfig,
   type ComparisonOperator,
-  type MeasurementFrequency,
+  type KPIChangeRequest,
+  type KPIChangeDetail,
 } from '../types/performance.types';
+import KPIApprovalModal from '../components/KPIApprovalModal';
+import KPIChangeHistoryModal from '../components/KPIChangeHistoryModal';
 
 const { Text, Title } = Typography;
 const { Option } = Select;
 
 // ── Operators ─────────────────────────────────────────────────────────────────
 const OPERATORS: ComparisonOperator[] = ['>=', '<=', '>', '<', '='];
-const OP_LABEL: Record<ComparisonOperator, string> = {
-  '>=': '>= (>=)', '<=': '<= (<=)', '>': '> (>)', '<': '< (<)', '=': '= (=)',
-};
 
 // ── Avatar helpers ────────────────────────────────────────────────────────────
 const AVATAR_COLORS = [
-  '#ef4444','#0f766e','#7c3aed','#f59e0b','#ec4899',
-  '#0891b2','#65a30d','#ea580c','#6366f1','#0284c7',
+  '#ef4444', '#0f766e', '#7c3aed', '#f59e0b', '#ec4899',
+  '#0891b2', '#65a30d', '#ea580c', '#6366f1', '#0284c7',
 ];
 function initials(name: string) {
   return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
@@ -70,282 +75,372 @@ function buildDefaultConfigs(employees: Employee[]): Record<string, EmployeeSubK
   return map;
 }
 
-// ── Check if a config entry needs configuration ───────────────────────────────
 function needsConfig(cfg: EmployeeSubKPIConfig) {
-  return cfg.source === 'added' && !cfg.isRemoved && (cfg.weight === 0 || cfg.targetValue === 0 || cfg.responsibleTo.length === 0);
+  return cfg.source === 'added' && !cfg.isRemoved &&
+    (cfg.weight === 0 || cfg.targetValue === 0 || cfg.responsibleTo.length === 0);
 }
 
-export default function EmployeeKPIViewPage() {
-  // ── Persisted state across views ──────────────────────────────────────────
-  const [empKPIMap, setEmpKPIMap] = useState<Record<string, EmployeeSubKPIConfig[]>>(
-    () => buildDefaultConfigs(INITIAL_EMPLOYEES)
-  );
+// ── Diff builder: compare baseline vs proposed ────────────────────────────────
+function buildChanges(
+  baseline: EmployeeSubKPIConfig[],
+  proposed: EmployeeSubKPIConfig[],
+): KPIChangeDetail[] {
+  const changes: KPIChangeDetail[] = [];
 
-  // ── View state ────────────────────────────────────────────────────────────
-  const [view, setView] = useState<'list' | 'configure'>('list');
-  const [configEmpId, setConfigEmpId] = useState<string | null>(null);
+  const baseMap = new Map(baseline.map(c => [c.subKPIId, c]));
+  const propMap = new Map(proposed.map(c => [c.subKPIId, c]));
 
-  // ── List filters ──────────────────────────────────────────────────────────
-  const [searchQ, setSearchQ]     = useState('');
-  const [fDesig, setFDesig]       = useState('all');
-  const [fDept, setFDept]         = useState('all');
-  const [fSection, setFSection]   = useState('all');
-  const [fMainKPI, setFMainKPI]   = useState('all');
-  const [fSubKPI, setFSubKPI]     = useState('all');
+  for (const [id, prop] of propMap) {
+    const base = baseMap.get(id);
+    const subKPI = INITIAL_SUB_KPIS.find(s => s.id === id);
+    if (!subKPI) continue;
 
-  // ── Derived filter options ────────────────────────────────────────────────
+    const common = {
+      subKPIId: id,
+      subKPIName: subKPI.name,
+      subKPICode: subKPI.code,
+      mainKPIAreaId: subKPI.mainKPIAreaId,
+      mainKPIAreaName: subKPI.mainKPIAreaName,
+      mainKPICode: subKPI.mainKPICode,
+    };
+
+    if (!base) {
+      // Brand-new sub KPI added (not in baseline)
+      if (!prop.isRemoved) {
+        changes.push({ ...common, type: 'added', newWeight: prop.weight, newOperator: prop.operator, newTargetValue: prop.targetValue, newResponsibleTo: prop.responsibleTo });
+      }
+    } else {
+      // Existed in baseline
+      const wasRemoved = base.isRemoved;
+      const isNowRemoved = prop.isRemoved;
+
+      if (!wasRemoved && isNowRemoved) {
+        changes.push({ ...common, type: 'removed' });
+      } else if (wasRemoved && !isNowRemoved) {
+        changes.push({ ...common, type: 'added', newWeight: prop.weight, newOperator: prop.operator, newTargetValue: prop.targetValue, newResponsibleTo: prop.responsibleTo });
+      } else if (!wasRemoved && !isNowRemoved) {
+        const weightChanged    = base.weight !== prop.weight;
+        const opChanged        = base.operator !== prop.operator;
+        const targetChanged    = base.targetValue !== prop.targetValue;
+        if (weightChanged || opChanged || targetChanged) {
+          changes.push({
+            ...common,
+            type: 'modified',
+            prevWeight: base.weight,     newWeight: prop.weight,
+            prevOperator: base.operator, newOperator: prop.operator,
+            prevTargetValue: base.targetValue, newTargetValue: prop.targetValue,
+            newResponsibleTo: prop.responsibleTo,
+          });
+        }
+      }
+    }
+  }
+
+  return changes;
+}
+
+// ── Unique ID generator ───────────────────────────────────────────────────────
+let _reqSeq = 1;
+function genReqId() { return `req-${Date.now()}-${_reqSeq++}`; }
+
+// ══════════════════════════════════════════════════════════════════════════════
+// LIST VIEW
+// ══════════════════════════════════════════════════════════════════════════════
+interface ListViewProps {
+  empKPIMap: Record<string, EmployeeSubKPIConfig[]>;
+  changeRequests: KPIChangeRequest[];
+  onConfigure: (empId: string) => void;
+  onOpenHistory: (empId: string) => void;
+  onOpenApproval: () => void;
+}
+
+function ListView({ empKPIMap, changeRequests, onConfigure, onOpenHistory, onOpenApproval }: ListViewProps) {
+  const [searchQ, setSearchQ]   = useState('');
+  const [fDesig, setFDesig]     = useState('all');
+  const [fDept, setFDept]       = useState('all');
+  const [fSection, setFSection] = useState('all');
+  const [fMainKPI, setFMainKPI] = useState('all');
+  const [fSubKPI, setFSubKPI]   = useState('all');
+  const [deletedIds, setDeletedIds] = useState<string[]>([]);
+
   const designations = useMemo(() => [...new Set(INITIAL_EMPLOYEES.map(e => e.designation))], []);
   const departments  = useMemo(() => [...new Set(INITIAL_EMPLOYEES.map(e => e.department))], []);
   const sections     = useMemo(() => [...new Set(INITIAL_EMPLOYEES.map(e => e.section))], []);
 
-  // ── Filtered employee list ────────────────────────────────────────────────
+  const pendingCount = changeRequests.filter(r => r.status === 'Pending').length;
+
   const filteredEmps = useMemo(() => {
     return INITIAL_EMPLOYEES.filter(emp => {
+      if (deletedIds.includes(emp.id)) return false;
       const q = searchQ.trim().toLowerCase();
       if (q && !emp.name.toLowerCase().includes(q) && !emp.employeeId.toLowerCase().includes(q)) return false;
-      if (fDesig !== 'all' && emp.designation !== fDesig) return false;
-      if (fDept  !== 'all' && emp.department !== fDept)   return false;
-      if (fSection !== 'all' && emp.section !== fSection)   return false;
+      if (fDesig !== 'all'   && emp.designation !== fDesig)   return false;
+      if (fDept  !== 'all'   && emp.department  !== fDept)    return false;
+      if (fSection !== 'all' && emp.section     !== fSection)  return false;
       if (fMainKPI !== 'all') {
-        const hasArea = (empKPIMap[emp.id] ?? []).some(c => c.mainKPIAreaId === fMainKPI && !c.isRemoved);
-        if (!hasArea) return false;
+        const has = (empKPIMap[emp.id] ?? []).some(c => c.mainKPIAreaId === fMainKPI && !c.isRemoved);
+        if (!has) return false;
       }
       if (fSubKPI !== 'all') {
-        const hasSub = (empKPIMap[emp.id] ?? []).some(c => c.subKPIId === fSubKPI && !c.isRemoved);
-        if (!hasSub) return false;
+        const has = (empKPIMap[emp.id] ?? []).some(c => c.subKPIId === fSubKPI && !c.isRemoved);
+        if (!has) return false;
       }
       return true;
     });
-  }, [searchQ, fDesig, fDept, fSection, fMainKPI, fSubKPI, empKPIMap]);
+  }, [searchQ, fDesig, fDept, fSection, fMainKPI, fSubKPI, empKPIMap, deletedIds]);
 
   const resetFilters = () => {
     setSearchQ(''); setFDesig('all'); setFDept('all');
     setFSection('all'); setFMainKPI('all'); setFSubKPI('all');
   };
 
-  // ── KPI summary helpers ───────────────────────────────────────────────────
   const getEmpStats = useCallback((empId: string) => {
-    const cfgs = empKPIMap[empId] ?? [];
+    const cfgs    = empKPIMap[empId] ?? [];
     const active  = cfgs.filter(c => !c.isRemoved);
     const added   = active.filter(c => c.source === 'added');
     const removed = cfgs.filter(c => c.isRemoved && c.source === 'default');
     return { total: active.length, added: added.length, removed: removed.length };
   }, [empKPIMap]);
 
-  // ── Open configure ────────────────────────────────────────────────────────
-  const openConfigure = (empId: string) => {
-    setConfigEmpId(empId);
-    setView('configure');
-  };
+  const getEmpPending = (empId: string) =>
+    changeRequests.filter(r => r.employeeId === empId && r.status === 'Pending').length;
 
-  // ── Delete employee ───────────────────────────────────────────────────────
-  const [deletedEmpIds, setDeletedEmpIds] = useState<string[]>([]);
-  const handleDeleteEmp = (empId: string) => setDeletedEmpIds(prev => [...prev, empId]);
-  const visibleEmps = filteredEmps.filter(e => !deletedEmpIds.includes(e.id));
+  const getEmpHistory = (empId: string) =>
+    changeRequests.filter(r => r.employeeId === empId).length;
 
-  // ══════════════════════════════════════════════════════════════════════════
-  // LIST VIEW
-  // ══════════════════════════════════════════════════════════════════════════
-  if (view === 'list') {
-    return (
-      <div style={{ padding: '16px 20px', background: '#f0faf8', minHeight: '100%' }}>
-        {/* Header */}
-        <div style={{ marginBottom: 16 }}>
+  return (
+    <div style={{ padding: '16px 20px', background: '#f0faf8', minHeight: '100%' }}>
+      {/* Header */}
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 16 }}>
+        <div>
           <Title level={3} style={{ margin: 0, color: '#0f766e', fontWeight: 700 }}>
             Employee KPI View
           </Title>
-          <Text style={{ color: '#6b7280', fontSize: 13, fontStyle: 'italic' }}>Individual Assessment</Text>
+          <Text style={{ color: '#6b7280', fontSize: 13, fontStyle: 'italic' }}>
+            Individual Assessment — configure, submit &amp; track KPI changes
+          </Text>
         </div>
 
-        {/* Filter bar */}
-        <div
-          style={{
-            display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center',
-            padding: '12px 16px', background: '#fff', borderRadius: 12,
-            marginBottom: 20, boxShadow: '0 1px 4px rgba(0,0,0,0.07)',
-          }}
-        >
-          <Input
-            value={searchQ} onChange={e => setSearchQ(e.target.value)}
-            placeholder="Search by name or ID..."
-            prefix={<SearchOutlined style={{ color: '#9ca3af' }} />}
-            style={{ width: 200, borderRadius: 8 }}
-          />
-          <Select value={fDesig} onChange={setFDesig} style={{ width: 160 }} placeholder="All Designations">
-            <Option value="all">All Designations</Option>
-            {designations.map(d => <Option key={d} value={d}>{d}</Option>)}
-          </Select>
-          <Select value={fDept} onChange={setFDept} style={{ width: 160 }} placeholder="All Departments">
-            <Option value="all">All Departments</Option>
-            {departments.map(d => <Option key={d} value={d}>{d}</Option>)}
-          </Select>
-          <Select value={fSection} onChange={setFSection} style={{ width: 150 }} placeholder="All Sections">
-            <Option value="all">All Sections</Option>
-            {sections.map(s => <Option key={s} value={s}>{s}</Option>)}
-          </Select>
-          <Select value={fMainKPI} onChange={setFMainKPI} style={{ width: 160 }} placeholder="All Main KPIs">
-            <Option value="all">All Main KPIs</Option>
-            {INITIAL_MAIN_KPI_AREAS.map(a => <Option key={a.id} value={a.id}>{a.code} - {a.name.slice(0, 20)}</Option>)}
-          </Select>
-          <Select value={fSubKPI} onChange={setFSubKPI} style={{ width: 160 }} placeholder="All Sub KPIs">
-            <Option value="all">All Sub KPIs</Option>
-            {INITIAL_SUB_KPIS.map(s => <Option key={s.id} value={s.id}>{s.name}</Option>)}
-          </Select>
+        {/* HR Approval button */}
+        <Badge count={pendingCount} offset={[-4, 4]}>
           <Button
-            type="primary"
-            icon={<SearchOutlined />}
-            style={{ borderRadius: 8, background: '#0f766e', borderColor: '#0f766e' }}
+            icon={<CheckCircleOutlined />}
+            onClick={onOpenApproval}
+            style={{
+              borderRadius: 10, borderColor: '#a7e3d9', color: '#0f766e',
+              background: pendingCount > 0 ? '#e6f7f4' : '#fff',
+              fontWeight: 600, paddingInline: 16, height: 38,
+              boxShadow: pendingCount > 0 ? '0 0 0 2px rgba(15,118,110,0.15)' : undefined,
+            }}
           >
-            Search
+            KPI Approvals
           </Button>
-          <Button icon={<ReloadOutlined />} onClick={resetFilters} style={{ borderRadius: 8 }}>
-            Reset
-          </Button>
-        </div>
+        </Badge>
+      </div>
 
-        {/* Employee cards grid */}
+      {/* Pending notice banner */}
+      {pendingCount > 0 && (
         <div
           style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(3, 1fr)',
-            gap: 16,
+            display: 'flex', alignItems: 'center', gap: 10,
+            padding: '10px 16px', borderRadius: 10, marginBottom: 16,
+            background: '#fef3c7', border: '1px solid #fde68a',
           }}
         >
-          {visibleEmps.map(emp => {
-            const stats = getEmpStats(emp.id);
-            return (
-              <div
-                key={emp.id}
-                style={{
-                  background: '#fff', borderRadius: 14,
-                  border: '1.5px solid #e5e7eb',
-                  padding: '18px 20px',
-                  boxShadow: '0 1px 4px rgba(0,0,0,0.05)',
-                  transition: 'box-shadow 0.2s',
-                }}
-              >
-                {/* Employee header */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
-                  <Avatar
-                    size={44}
-                    style={{
-                      background: avatarColor(emp), fontSize: 14, fontWeight: 700,
-                      flexShrink: 0, borderRadius: 12,
-                    }}
-                  >
-                    {initials(emp.name)}
-                  </Avatar>
+          <InfoCircleOutlined style={{ color: '#f59e0b', fontSize: 16 }} />
+          <Text style={{ fontSize: 13, color: '#92400e' }}>
+            <strong>{pendingCount}</strong> KPI change request{pendingCount !== 1 ? 's are' : ' is'} pending HR approval.
+          </Text>
+          <Button size="small" type="link" onClick={onOpenApproval} style={{ color: '#0f766e', padding: 0, fontWeight: 600 }}>
+            Review now →
+          </Button>
+        </div>
+      )}
+
+      {/* Filter bar */}
+      <div
+        style={{
+          display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center',
+          padding: '12px 16px', background: '#fff', borderRadius: 12,
+          marginBottom: 20, boxShadow: '0 1px 4px rgba(0,0,0,0.07)',
+        }}
+      >
+        <Input
+          value={searchQ} onChange={e => setSearchQ(e.target.value)}
+          placeholder="Search by name or ID..."
+          prefix={<SearchOutlined style={{ color: '#9ca3af' }} />}
+          style={{ width: 200, borderRadius: 8 }}
+          allowClear
+        />
+        <Select value={fDesig} onChange={setFDesig} style={{ width: 160 }}>
+          <Option value="all">All Designations</Option>
+          {designations.map(d => <Option key={d} value={d}>{d}</Option>)}
+        </Select>
+        <Select value={fDept} onChange={setFDept} style={{ width: 160 }}>
+          <Option value="all">All Departments</Option>
+          {departments.map(d => <Option key={d} value={d}>{d}</Option>)}
+        </Select>
+        <Select value={fSection} onChange={setFSection} style={{ width: 150 }}>
+          <Option value="all">All Sections</Option>
+          {sections.map(s => <Option key={s} value={s}>{s}</Option>)}
+        </Select>
+        <Select value={fMainKPI} onChange={setFMainKPI} style={{ width: 160 }}>
+          <Option value="all">All Main KPIs</Option>
+          {INITIAL_MAIN_KPI_AREAS.map(a => <Option key={a.id} value={a.id}>{a.code} - {a.name.slice(0, 18)}</Option>)}
+        </Select>
+        <Select value={fSubKPI} onChange={setFSubKPI} style={{ width: 160 }}>
+          <Option value="all">All Sub KPIs</Option>
+          {INITIAL_SUB_KPIS.map(s => <Option key={s.id} value={s.id}>{s.name}</Option>)}
+        </Select>
+        <Button
+          type="primary"
+          icon={<SearchOutlined />}
+          style={{ borderRadius: 8, background: '#0f766e', borderColor: '#0f766e' }}
+        >
+          Search
+        </Button>
+        <Button icon={<ReloadOutlined />} onClick={resetFilters} style={{ borderRadius: 8 }}>
+          Reset
+        </Button>
+        <Text style={{ marginLeft: 'auto', fontSize: 12, color: '#9ca3af' }}>
+          {filteredEmps.length} employee{filteredEmps.length !== 1 ? 's' : ''}
+        </Text>
+      </div>
+
+      {/* Employee cards grid */}
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fill, minmax(310px, 1fr))',
+          gap: 16,
+        }}
+      >
+        {filteredEmps.map(emp => {
+          const stats   = getEmpStats(emp.id);
+          const pending = getEmpPending(emp.id);
+          const history = getEmpHistory(emp.id);
+          return (
+            <div
+              key={emp.id}
+              style={{
+                background: '#fff', borderRadius: 14,
+                border: `1.5px solid ${pending > 0 ? '#fde68a' : '#e5e7eb'}`,
+                padding: '18px 20px',
+                boxShadow: pending > 0 ? '0 2px 8px rgba(245,158,11,0.10)' : '0 1px 4px rgba(0,0,0,0.05)',
+                transition: 'box-shadow 0.2s',
+              }}
+            >
+              {/* Employee header */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
+                <Avatar
+                  size={44}
+                  style={{
+                    background: avatarColor(emp), fontSize: 14, fontWeight: 700,
+                    flexShrink: 0, borderRadius: 12,
+                  }}
+                >
+                  {initials(emp.name)}
+                </Avatar>
+                <div style={{ flex: 1, overflow: 'hidden' }}>
+                  <Text strong style={{ fontSize: 15, color: '#111827' }}>{emp.name}</Text>
                   <div>
-                    <Text strong style={{ fontSize: 15, color: '#111827' }}>{emp.name}</Text>
-                    <div>
-                      <Text style={{ fontSize: 12, color: '#9ca3af' }}>{emp.employeeId}</Text>
-                    </div>
+                    <Text style={{ fontSize: 12, color: '#9ca3af' }}>{emp.employeeId}</Text>
                   </div>
                 </div>
-
-                {/* Designation + dept·section */}
-                <div style={{ marginBottom: 10 }}>
-                  <Text style={{ fontSize: 12, color: '#374151' }}>{emp.designation}</Text>
-                  <div>
-                    <Text style={{ fontSize: 11, color: '#9ca3af' }}>
-                      {emp.department} · {emp.section}
-                    </Text>
-                  </div>
-                </div>
-
-                {/* KPI count badges */}
-                <div style={{ display: 'flex', gap: 6, alignItems: 'center', marginBottom: 14, flexWrap: 'wrap' }}>
-                  <Tag
-                    style={{
-                      background: '#e6f7f4', borderColor: '#a7e3d9', color: '#0f766e',
-                      borderRadius: 6, fontWeight: 600, fontSize: 12,
-                    }}
-                  >
-                    {stats.total} KPIs
-                  </Tag>
-                  {stats.added > 0 && (
-                    <Tag
-                      style={{
-                        background: '#fef3c7', borderColor: '#fbbf24', color: '#92400e',
-                        borderRadius: 6, fontSize: 11, fontWeight: 600,
-                      }}
-                    >
-                      {stats.added} custom
+                {pending > 0 && (
+                  <Tooltip title={`${pending} change request pending approval`}>
+                    <Tag style={{ background: '#fef3c7', borderColor: '#fde68a', color: '#92400e', borderRadius: 6, fontWeight: 700, fontSize: 11 }}>
+                      {pending} Pending
                     </Tag>
-                  )}
-                  {stats.removed > 0 && (
-                    <Tag
-                      style={{
-                        background: '#fff1f2', borderColor: '#fecdd3', color: '#be123c',
-                        borderRadius: 6, fontSize: 11,
-                      }}
-                    >
-                      -{stats.removed} removed
-                    </Tag>
-                  )}
-                </div>
+                  </Tooltip>
+                )}
+              </div>
 
-                {/* Actions */}
-                <div style={{ display: 'flex', gap: 8 }}>
-                  <Button
-                    size="small"
-                    icon={<SettingOutlined />}
-                    onClick={() => openConfigure(emp.id)}
-                    style={{
-                      borderRadius: 8, borderColor: '#a7e3d9', color: '#0f766e',
-                      background: '#f0fdf9', fontSize: 12,
-                    }}
-                  >
-                    Configure
-                  </Button>
-                  <Button
-                    size="small"
-                    icon={<DeleteOutlined />}
-                    onClick={() => handleDeleteEmp(emp.id)}
-                    style={{
-                      borderRadius: 8, borderColor: '#fecaca', color: '#ef4444',
-                      background: '#fff5f5',
-                    }}
-                  />
+              {/* Designation + dept·section */}
+              <div style={{ marginBottom: 10 }}>
+                <Text style={{ fontSize: 12, color: '#374151' }}>{emp.designation}</Text>
+                <div>
+                  <Text style={{ fontSize: 11, color: '#9ca3af' }}>
+                    {emp.department} · {emp.section}
+                  </Text>
                 </div>
               </div>
-            );
-          })}
-        </div>
-      </div>
-    );
-  }
 
-  // ══════════════════════════════════════════════════════════════════════════
-  // CONFIGURE VIEW
-  // ══════════════════════════════════════════════════════════════════════════
-  return (
-    <ConfigureView
-      empId={configEmpId!}
-      empKPIMap={empKPIMap}
-      onSave={(empId, configs) => {
-        setEmpKPIMap(prev => ({ ...prev, [empId]: configs }));
-        setView('list');
-      }}
-      onBack={() => setView('list')}
-    />
+              {/* KPI count badges */}
+              <div style={{ display: 'flex', gap: 6, alignItems: 'center', marginBottom: 14, flexWrap: 'wrap' }}>
+                <Tag style={{ background: '#e6f7f4', borderColor: '#a7e3d9', color: '#0f766e', borderRadius: 6, fontWeight: 600, fontSize: 12 }}>
+                  {stats.total} KPIs
+                </Tag>
+                {stats.added > 0 && (
+                  <Tag style={{ background: '#fef3c7', borderColor: '#fbbf24', color: '#92400e', borderRadius: 6, fontSize: 11, fontWeight: 600 }}>
+                    {stats.added} custom
+                  </Tag>
+                )}
+                {stats.removed > 0 && (
+                  <Tag style={{ background: '#fff1f2', borderColor: '#fecdd3', color: '#be123c', borderRadius: 6, fontSize: 11 }}>
+                    -{stats.removed} removed
+                  </Tag>
+                )}
+              </div>
+
+              {/* Actions */}
+              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                <Button
+                  size="small"
+                  icon={<SettingOutlined />}
+                  onClick={() => onConfigure(emp.id)}
+                  style={{
+                    borderRadius: 8, borderColor: '#a7e3d9', color: '#0f766e',
+                    background: '#f0fdf9', fontSize: 12, fontWeight: 600,
+                  }}
+                >
+                  Configure
+                </Button>
+                {history > 0 && (
+                  <Button
+                    size="small"
+                    icon={<HistoryOutlined />}
+                    onClick={() => onOpenHistory(emp.id)}
+                    style={{
+                      borderRadius: 8, borderColor: '#ddd6fe', color: '#7c3aed',
+                      background: '#f5f3ff', fontSize: 12,
+                    }}
+                  >
+                    History ({history})
+                  </Button>
+                )}
+                <Button
+                  size="small"
+                  icon={<DeleteOutlined />}
+                  onClick={() => setDeletedIds(p => [...p, emp.id])}
+                  style={{
+                    borderRadius: 8, borderColor: '#fecaca', color: '#ef4444',
+                    background: '#fff5f5',
+                  }}
+                />
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
   );
 }
 
 // ══════════════════════════════════════════════════════════════════════════════
-// CONFIGURE VIEW COMPONENT
+// CONFIGURE VIEW
 // ══════════════════════════════════════════════════════════════════════════════
 interface ConfigureViewProps {
   empId: string;
   empKPIMap: Record<string, EmployeeSubKPIConfig[]>;
-  onSave: (empId: string, configs: EmployeeSubKPIConfig[]) => void;
+  onSubmit: (empId: string, proposed: EmployeeSubKPIConfig[], changes: KPIChangeDetail[]) => void;
   onBack: () => void;
 }
 
-function ConfigureView({ empId, empKPIMap, onSave, onBack }: ConfigureViewProps) {
+function ConfigureView({ empId, empKPIMap, onSubmit, onBack }: ConfigureViewProps) {
   const emp = INITIAL_EMPLOYEES.find(e => e.id === empId)!;
 
-  // Local working copy — user edits here, saved on "Save All Changes"
+  // Local working copy
   const [configs, setConfigs] = useState<EmployeeSubKPIConfig[]>(
     () => JSON.parse(JSON.stringify(empKPIMap[empId] ?? []))
   );
@@ -353,10 +448,10 @@ function ConfigureView({ empId, empKPIMap, onSave, onBack }: ConfigureViewProps)
   // Sidebar state
   const [selectedAreaId, setSelectedAreaId] = useState<string>(
     () => {
-      const firstAreaWithKPI = INITIAL_MAIN_KPI_AREAS.find(a =>
+      const first = INITIAL_MAIN_KPI_AREAS.find(a =>
         (empKPIMap[empId] ?? []).some(c => c.mainKPIAreaId === a.id)
       );
-      return firstAreaWithKPI?.id ?? INITIAL_MAIN_KPI_AREAS[0].id;
+      return first?.id ?? INITIAL_MAIN_KPI_AREAS[0].id;
     }
   );
   const [areaSearch, setAreaSearch] = useState('');
@@ -370,14 +465,14 @@ function ConfigureView({ empId, empKPIMap, onSave, onBack }: ConfigureViewProps)
     const stats: Record<string, { active: number; needsCfg: boolean }> = {};
     for (const area of INITIAL_MAIN_KPI_AREAS) {
       const areaConfigs = configs.filter(c => c.mainKPIAreaId === area.id);
-      const active = areaConfigs.filter(c => !c.isRemoved).length;
-      const nc = areaConfigs.some(c => needsConfig(c));
-      stats[area.id] = { active, needsCfg: nc };
+      stats[area.id] = {
+        active: areaConfigs.filter(c => !c.isRemoved).length,
+        needsCfg: areaConfigs.some(c => needsConfig(c)),
+      };
     }
     return stats;
   }, [configs]);
 
-  // Visible areas in sidebar: areas that have at least 1 config OR are in default
   const sidebarAreas = useMemo(() => {
     return INITIAL_MAIN_KPI_AREAS.filter(area => {
       const hasConfig = configs.some(c => c.mainKPIAreaId === area.id);
@@ -388,17 +483,14 @@ function ConfigureView({ empId, empKPIMap, onSave, onBack }: ConfigureViewProps)
     });
   }, [configs, areaSearch]);
 
-  // ── Derived: sub KPIs for selected area ──────────────────────────────────
-  // Sort: added (non-removed) first, then default, removed last
   const areaConfigs = useMemo(() => {
     const raw = configs.filter(c => c.mainKPIAreaId === selectedAreaId);
-    const addedActive  = raw.filter(c => c.source === 'added'   && !c.isRemoved);
+    const addedActive   = raw.filter(c => c.source === 'added'   && !c.isRemoved);
     const defaultActive = raw.filter(c => c.source === 'default' && !c.isRemoved);
-    const removed      = raw.filter(c => c.isRemoved);
+    const removed       = raw.filter(c => c.isRemoved);
     return [...addedActive, ...defaultActive, ...removed];
   }, [configs, selectedAreaId]);
 
-  // ALL sub KPIs not yet tagged for this employee (across all areas)
   const addableSubKPIs = useMemo(() => {
     const alreadyTagged = new Set(configs.map(c => c.subKPIId));
     return INITIAL_SUB_KPIS.filter(s =>
@@ -412,9 +504,7 @@ function ConfigureView({ empId, empKPIMap, onSave, onBack }: ConfigureViewProps)
 
   // ── Config mutators ────────────────────────────────────────────────────────
   const updateConfig = useCallback((subKPIId: string, field: keyof EmployeeSubKPIConfig, value: unknown) => {
-    setConfigs(prev => prev.map(c =>
-      c.subKPIId === subKPIId ? { ...c, [field]: value } : c
-    ));
+    setConfigs(prev => prev.map(c => c.subKPIId === subKPIId ? { ...c, [field]: value } : c));
   }, []);
 
   const removeConfig  = (subKPIId: string) => updateConfig(subKPIId, 'isRemoved', true);
@@ -428,28 +518,57 @@ function ConfigureView({ empId, empKPIMap, onSave, onBack }: ConfigureViewProps)
       subKPIId: subKPI.id,
       mainKPIAreaId: subKPI.mainKPIAreaId,
       source: 'added',
-      weight: 0,
-      operator: '>=',
-      targetValue: 0,
-      responsibleTo: ['Line Manager'],
-      isRemoved: false,
+      weight: 0, operator: '>=', targetValue: 0,
+      responsibleTo: ['Line Manager'], isRemoved: false,
     };
-    // Prepend so it shows at top of its area
     setConfigs(prev => [newCfg, ...prev]);
-    // Auto-navigate to the area of the newly tagged sub KPI
     setSelectedAreaId(subKPI.mainKPIAreaId);
     setSelectedAddId(null);
     setAddSearch('');
   };
 
-  // ── Render ─────────────────────────────────────────────────────────────────
+  // ── Submit for approval ─────────────────────────────────────────────────────
+  const handleSubmit = () => {
+    const baseline = empKPIMap[empId] ?? [];
+    const changes  = buildChanges(baseline, configs);
+
+    if (changes.length === 0) {
+      message.info('No changes detected to submit for approval.');
+      return;
+    }
+
+    const unconfigured = configs.some(c => needsConfig(c));
+    if (unconfigured) {
+      message.warning('Please complete configuration for all newly added sub KPIs before submitting.');
+      return;
+    }
+
+    onSubmit(empId, configs, changes);
+  };
+
+  // ── Change indicator: has unsaved changes vs baseline ──────────────────────
+  const changesCount = useMemo(() => {
+    const baseline = empKPIMap[empId] ?? [];
+    return buildChanges(baseline, configs).length;
+  }, [configs, empKPIMap, empId]);
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: '#f0faf8' }}>
       {/* Header */}
-      <div style={{ padding: '14px 24px', background: '#fff', borderBottom: '1px solid #e5e7eb' }}>
-        <Title level={4} style={{ margin: 0, color: '#111827' }}>
-          Configure KPIs — <span style={{ color: '#0f766e' }}>{emp.name}</span>
-        </Title>
+      <div style={{ padding: '14px 24px', background: '#fff', borderBottom: '1px solid #e5e7eb', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div>
+          <Title level={4} style={{ margin: 0, color: '#111827' }}>
+            Configure KPIs — <span style={{ color: '#0f766e' }}>{emp.name}</span>
+          </Title>
+          <Text style={{ fontSize: 12, color: '#6b7280' }}>
+            Changes will be submitted for HR approval before taking effect.
+          </Text>
+        </div>
+        {changesCount > 0 && (
+          <Tag style={{ background: '#fef3c7', borderColor: '#fde68a', color: '#92400e', borderRadius: 6, fontWeight: 700, fontSize: 12 }}>
+            {changesCount} pending change{changesCount !== 1 ? 's' : ''}
+          </Tag>
+        )}
       </div>
 
       {/* Body: sidebar + main */}
@@ -463,7 +582,7 @@ function ConfigureView({ empId, empKPIMap, onSave, onBack }: ConfigureViewProps)
             display: 'flex', flexDirection: 'column', overflow: 'hidden',
           }}
         >
-          {/* Employee info card */}
+          {/* Employee info */}
           <div style={{ padding: '16px 14px 12px', borderBottom: '1px solid #f3f4f6' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
               <Avatar
@@ -512,13 +631,7 @@ function ConfigureView({ empId, empKPIMap, onSave, onBack }: ConfigureViewProps)
                   }}
                 >
                   <div style={{ overflow: 'hidden', flex: 1 }}>
-                    <Text
-                      style={{
-                        fontSize: 11, fontWeight: 600,
-                        color: isSelected ? '#0f766e' : '#374151',
-                        display: 'block', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
-                      }}
-                    >
+                    <Text style={{ fontSize: 11, fontWeight: 600, color: isSelected ? '#0f766e' : '#374151', display: 'block', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                       {area.code}
                     </Text>
                     <Text style={{ fontSize: 10, color: '#6b7280', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
@@ -531,14 +644,7 @@ function ConfigureView({ empId, empKPIMap, onSave, onBack }: ConfigureViewProps)
                         <WarningOutlined style={{ color: '#f59e0b', fontSize: 12 }} />
                       </Tooltip>
                     )}
-                    <span
-                      style={{
-                        fontSize: 10, fontWeight: 700,
-                        background: isSelected ? '#0f766e' : '#e5e7eb',
-                        color: isSelected ? '#fff' : '#374151',
-                        borderRadius: 99, padding: '1px 6px', minWidth: 20, textAlign: 'center',
-                      }}
-                    >
+                    <span style={{ fontSize: 10, fontWeight: 700, background: isSelected ? '#0f766e' : '#e5e7eb', color: isSelected ? '#fff' : '#374151', borderRadius: 99, padding: '1px 6px', minWidth: 20, textAlign: 'center' }}>
                       {stats.active}
                     </span>
                   </div>
@@ -554,7 +660,6 @@ function ConfigureView({ empId, empKPIMap, onSave, onBack }: ConfigureViewProps)
             const area = INITIAL_MAIN_KPI_AREAS.find(a => a.id === selectedAreaId);
             if (!area) return null;
             const stats = areaStats[selectedAreaId] ?? { active: 0 };
-            const configsInArea = configs.filter(c => c.mainKPIAreaId === selectedAreaId);
 
             return (
               <>
@@ -569,7 +674,7 @@ function ConfigureView({ empId, empKPIMap, onSave, onBack }: ConfigureViewProps)
                   </Tag>
                 </div>
 
-                {/* Table header */}
+                {/* Column header */}
                 <div
                   style={{
                     display: 'grid',
@@ -579,23 +684,22 @@ function ConfigureView({ empId, empKPIMap, onSave, onBack }: ConfigureViewProps)
                     border: '1px solid #f3f4f6',
                   }}
                 >
-                  {['SUB KPI', 'SOURCE', 'WEIGHT %', 'OPERATOR', 'TARGET %', 'RESPONSIBLE TO', ''].map(h => (
+                  {['SUB KPI', 'SOURCE', 'WEIGHT %', 'OPERATOR', 'TARGET', 'RESPONSIBLE TO', ''].map(h => (
                     <Text key={h} style={{ fontSize: 10, fontWeight: 700, color: '#6b7280', letterSpacing: 0.8 }}>{h}</Text>
                   ))}
                 </div>
 
                 {/* Sub KPI rows */}
-                {configsInArea.length === 0 ? (
-                  <div style={{ padding: '30px', textAlign: 'center', color: '#9ca3af', fontSize: 13 }}>
+                {areaConfigs.length === 0 ? (
+                  <div style={{ padding: 30, textAlign: 'center', color: '#9ca3af', fontSize: 13 }}>
                     No KPIs configured for this area yet.
                   </div>
                 ) : (
-                  configsInArea.map(cfg => {
+                  areaConfigs.map(cfg => {
                     const subKPI = INITIAL_SUB_KPIS.find(s => s.id === cfg.subKPIId);
                     if (!subKPI) return null;
                     const isRemoved = cfg.isRemoved;
                     const nc = needsConfig(cfg);
-
                     return (
                       <div key={cfg.subKPIId}>
                         <div
@@ -608,7 +712,7 @@ function ConfigureView({ empId, empKPIMap, onSave, onBack }: ConfigureViewProps)
                             alignItems: 'center',
                           }}
                         >
-                          {/* Sub KPI name + description */}
+                          {/* Sub KPI name */}
                           <div>
                             <Text strong style={{ fontSize: 13, color: isRemoved ? '#9ca3af' : '#111827' }}>
                               {subKPI.name}
@@ -623,78 +727,48 @@ function ConfigureView({ empId, empKPIMap, onSave, onBack }: ConfigureViewProps)
                             </div>
                           </div>
 
-                          {/* Source badge */}
+                          {/* Source */}
                           <div>
-                            <Tag
-                              style={{
-                                borderRadius: 6, fontSize: 11, fontWeight: 600,
-                                ...(cfg.source === 'default'
-                                  ? { background: '#f0f9ff', borderColor: '#bae6fd', color: '#0369a1' }
-                                  : { background: '#f0fdf4', borderColor: '#bbf7d0', color: '#15803d' }),
-                              }}
-                            >
+                            <Tag style={{ borderRadius: 6, fontSize: 11, fontWeight: 600, ...(cfg.source === 'default' ? { background: '#f0f9ff', borderColor: '#bae6fd', color: '#0369a1' } : { background: '#f0fdf4', borderColor: '#bbf7d0', color: '#15803d' }) }}>
                               {cfg.source === 'default' ? 'Default' : 'Added'}
                             </Tag>
                           </div>
 
                           {/* Weight */}
-                          {isRemoved ? (
-                            <Text style={{ color: '#d1d5db', fontSize: 13 }}>—</Text>
-                          ) : (
+                          {isRemoved ? <Text style={{ color: '#d1d5db', fontSize: 13 }}>—</Text> : (
                             <InputNumber
-                              size="small"
-                              min={0} max={100}
+                              size="small" min={0} max={100}
                               value={cfg.weight}
                               onChange={v => updateConfig(cfg.subKPIId, 'weight', v ?? 0)}
-                              style={{
-                                width: '100%', borderRadius: 6,
-                                borderColor: nc && cfg.weight === 0 ? '#f97316' : undefined,
-                              }}
+                              style={{ width: '100%', borderRadius: 6, borderColor: nc && cfg.weight === 0 ? '#f97316' : undefined }}
                               addonAfter="%"
                             />
                           )}
 
                           {/* Operator */}
-                          {isRemoved ? (
-                            <Text style={{ color: '#d1d5db', fontSize: 13 }}>—</Text>
-                          ) : (
-                            <Select
-                              size="small"
-                              value={cfg.operator}
-                              onChange={v => updateConfig(cfg.subKPIId, 'operator', v as ComparisonOperator)}
-                              style={{ width: '100%' }}
-                            >
+                          {isRemoved ? <Text style={{ color: '#d1d5db', fontSize: 13 }}>—</Text> : (
+                            <Select size="small" value={cfg.operator} onChange={v => updateConfig(cfg.subKPIId, 'operator', v as ComparisonOperator)} style={{ width: '100%' }}>
                               {OPERATORS.map(op => <Option key={op} value={op}>{op}</Option>)}
                             </Select>
                           )}
 
                           {/* Target */}
-                          {isRemoved ? (
-                            <Text style={{ color: '#d1d5db', fontSize: 13 }}>—</Text>
-                          ) : (
+                          {isRemoved ? <Text style={{ color: '#d1d5db', fontSize: 13 }}>—</Text> : (
                             <InputNumber
-                              size="small"
-                              min={0} max={10000}
+                              size="small" min={0} max={10000}
                               value={cfg.targetValue}
                               onChange={v => updateConfig(cfg.subKPIId, 'targetValue', v ?? 0)}
-                              style={{
-                                width: '100%', borderRadius: 6,
-                                borderColor: nc && cfg.targetValue === 0 ? '#f97316' : undefined,
-                              }}
+                              style={{ width: '100%', borderRadius: 6, borderColor: nc && cfg.targetValue === 0 ? '#f97316' : undefined }}
                             />
                           )}
 
                           {/* Responsible To */}
-                          {isRemoved ? (
-                            <Text style={{ color: '#d1d5db', fontSize: 13 }}>—</Text>
-                          ) : (
+                          {isRemoved ? <Text style={{ color: '#d1d5db', fontSize: 13 }}>—</Text> : (
                             <Select
-                              size="small"
-                              mode="multiple"
+                              size="small" mode="multiple"
                               value={cfg.responsibleTo}
                               onChange={v => updateConfig(cfg.subKPIId, 'responsibleTo', v)}
-                              style={{ width: '100%' }}
-                              maxTagCount={1}
+                              style={{ width: '100%' }} maxTagCount={1}
                               placeholder="Select..."
                               dropdownStyle={{ minWidth: 200 }}
                             >
@@ -705,33 +779,18 @@ function ConfigureView({ empId, empKPIMap, onSave, onBack }: ConfigureViewProps)
 
                           {/* Action */}
                           {isRemoved ? (
-                            <Button
-                              size="small"
-                              icon={<UndoOutlined />}
-                              onClick={() => restoreConfig(cfg.subKPIId)}
-                              style={{
-                                borderRadius: 6, borderColor: '#fed7aa', color: '#ea580c',
-                                background: '#fff7ed', fontSize: 11,
-                              }}
-                            >
+                            <Button size="small" icon={<UndoOutlined />} onClick={() => restoreConfig(cfg.subKPIId)}
+                              style={{ borderRadius: 6, borderColor: '#fed7aa', color: '#ea580c', background: '#fff7ed', fontSize: 11 }}>
                               Restore
                             </Button>
                           ) : (
-                            <Button
-                              size="small"
-                              icon={<CloseOutlined />}
-                              onClick={() => removeConfig(cfg.subKPIId)}
-                              style={{
-                                borderRadius: 6, borderColor: '#fecaca', color: '#dc2626',
-                                background: '#fff5f5', fontSize: 11,
-                              }}
-                            >
+                            <Button size="small" icon={<CloseOutlined />} onClick={() => removeConfig(cfg.subKPIId)}
+                              style={{ borderRadius: 6, borderColor: '#fecaca', color: '#dc2626', background: '#fff5f5', fontSize: 11 }}>
                               Remove
                             </Button>
                           )}
                         </div>
 
-                        {/* Warning row for unconfigured added KPIs */}
                         {nc && (
                           <div style={{ padding: '4px 12px 6px', borderBottom: '1px solid #f3f4f6' }}>
                             <Text style={{ fontSize: 11, color: '#f97316' }}>
@@ -759,12 +818,11 @@ function ConfigureView({ empId, empKPIMap, onSave, onBack }: ConfigureViewProps)
                   </div>
                   <Text style={{ fontSize: 12, color: '#6b7280', display: 'block', marginBottom: 12 }}>
                     Search and add any Sub KPI not tagged with this employee's designation.
-                    The sub KPI's Main KPI area will be highlighted in the sidebar for configuration.
+                    Changes will be sent for HR approval.
                   </Text>
                   <div style={{ display: 'flex', gap: 8 }}>
                     <Select
-                      showSearch
-                      value={selectedAddId}
+                      showSearch value={selectedAddId}
                       placeholder="Search sub KPI to add..."
                       filterOption={false}
                       onSearch={setAddSearch}
@@ -794,8 +852,7 @@ function ConfigureView({ empId, empKPIMap, onSave, onBack }: ConfigureViewProps)
                       ))}
                     </Select>
                     <Button
-                      type="primary"
-                      icon={<PlusOutlined />}
+                      type="primary" icon={<PlusOutlined />}
                       disabled={!selectedAddId}
                       onClick={tagSubKPI}
                       style={{ borderRadius: 8, background: '#0f766e', borderColor: '#0f766e' }}
@@ -826,15 +883,154 @@ function ConfigureView({ empId, empKPIMap, onSave, onBack }: ConfigureViewProps)
         >
           Back to Employees
         </Button>
-        <Button
-          type="primary"
-          icon={<SaveOutlined />}
-          onClick={() => onSave(empId, configs)}
-          style={{ borderRadius: 10, background: '#0f766e', borderColor: '#0f766e', paddingInline: 24 }}
-        >
-          Save All Changes
-        </Button>
+        <Space size={10}>
+          {changesCount > 0 && (
+            <Text style={{ fontSize: 12, color: '#6b7280' }}>
+              {changesCount} change{changesCount !== 1 ? 's' : ''} ready to submit
+            </Text>
+          )}
+          <Button
+            type="primary"
+            icon={<SendOutlined />}
+            onClick={handleSubmit}
+            disabled={changesCount === 0}
+            style={{
+              borderRadius: 10,
+              background: changesCount > 0 ? '#0f766e' : undefined,
+              borderColor: changesCount > 0 ? '#0f766e' : undefined,
+              paddingInline: 24,
+            }}
+          >
+            Submit for Approval
+          </Button>
+        </Space>
       </div>
     </div>
+  );
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// ROOT PAGE
+// ══════════════════════════════════════════════════════════════════════════════
+export default function EmployeeKPIViewPage() {
+  // ── Persisted KPI map (updated only on approval) ──────────────────────────
+  const [empKPIMap, setEmpKPIMap] = useState<Record<string, EmployeeSubKPIConfig[]>>(
+    () => buildDefaultConfigs(INITIAL_EMPLOYEES)
+  );
+
+  // ── Change requests ───────────────────────────────────────────────────────
+  const [changeRequests, setChangeRequests] = useState<KPIChangeRequest[]>([]);
+
+  // ── View state ────────────────────────────────────────────────────────────
+  const [view, setView] = useState<'list' | 'configure'>('list');
+  const [configEmpId, setConfigEmpId] = useState<string | null>(null);
+
+  // ── Modal state ───────────────────────────────────────────────────────────
+  const [approvalOpen, setApprovalOpen]  = useState(false);
+  const [historyOpen, setHistoryOpen]    = useState(false);
+  const [historyEmpId, setHistoryEmpId]  = useState<string | null>(null);
+
+  // ── Submit for approval ───────────────────────────────────────────────────
+  const handleSubmit = (empId: string, proposedConfigs: EmployeeSubKPIConfig[], changes: KPIChangeDetail[]) => {
+    const emp = INITIAL_EMPLOYEES.find(e => e.id === empId)!;
+    const req: KPIChangeRequest = {
+      id: genReqId(),
+      employeeId: empId,
+      employeeName: emp.name,
+      employeeDesignation: emp.designation,
+      employeeDepartment: emp.department,
+      employeeSection: emp.section,
+      employeeAvatarColor: avatarColor(emp),
+      requestedBy: 'Current User',
+      requestedAt: new Date().toISOString(),
+      status: 'Pending',
+      changes,
+      proposedConfigs,
+    };
+    setChangeRequests(prev => [req, ...prev]);
+    setView('list');
+    notification.success({
+      message: 'KPI Change Submitted',
+      description: `${changes.length} change(s) for ${emp.name} submitted for HR approval.`,
+      placement: 'topRight',
+      duration: 4,
+    });
+  };
+
+  // ── HR Approve ────────────────────────────────────────────────────────────
+  const handleApprove = (reqId: string) => {
+    setChangeRequests(prev => prev.map(r => {
+      if (r.id !== reqId) return r;
+      // Apply proposed configs to empKPIMap
+      setEmpKPIMap(m => ({ ...m, [r.employeeId]: r.proposedConfigs }));
+      return {
+        ...r,
+        status: 'Approved',
+        reviewedBy: 'HR Manager',
+        reviewedAt: new Date().toISOString(),
+      };
+    }));
+  };
+
+  // ── HR Reject ─────────────────────────────────────────────────────────────
+  const handleReject = (reqId: string, remarks: string) => {
+    setChangeRequests(prev => prev.map(r =>
+      r.id !== reqId ? r : {
+        ...r,
+        status: 'Rejected',
+        reviewedBy: 'HR Manager',
+        reviewedAt: new Date().toISOString(),
+        remarks,
+      }
+    ));
+  };
+
+  // ── Open configure ────────────────────────────────────────────────────────
+  const openConfigure = (empId: string) => {
+    setConfigEmpId(empId);
+    setView('configure');
+  };
+
+  const openHistory = (empId: string) => {
+    setHistoryEmpId(empId);
+    setHistoryOpen(true);
+  };
+
+  return (
+    <>
+      {view === 'list' ? (
+        <ListView
+          empKPIMap={empKPIMap}
+          changeRequests={changeRequests}
+          onConfigure={openConfigure}
+          onOpenHistory={openHistory}
+          onOpenApproval={() => setApprovalOpen(true)}
+        />
+      ) : (
+        <ConfigureView
+          empId={configEmpId!}
+          empKPIMap={empKPIMap}
+          onSubmit={handleSubmit}
+          onBack={() => setView('list')}
+        />
+      )}
+
+      {/* Approval drawer */}
+      <KPIApprovalModal
+        open={approvalOpen}
+        onClose={() => setApprovalOpen(false)}
+        requests={changeRequests}
+        onApprove={handleApprove}
+        onReject={handleReject}
+      />
+
+      {/* History modal */}
+      <KPIChangeHistoryModal
+        open={historyOpen}
+        onClose={() => setHistoryOpen(false)}
+        employeeId={historyEmpId}
+        requests={changeRequests}
+      />
+    </>
   );
 }
