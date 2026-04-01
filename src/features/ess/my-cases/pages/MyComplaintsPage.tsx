@@ -14,7 +14,7 @@ import {
   MoreOutlined, FileOutlined, DeleteOutlined, SendOutlined,
   WarningFilled, CloseOutlined, InfoCircleOutlined,
   FilePdfOutlined, CopyOutlined, AuditOutlined,
-  MessageOutlined, PaperClipOutlined,
+  MessageOutlined, PaperClipOutlined, UpOutlined, DownOutlined,
 } from '@ant-design/icons';
 
 type DateRange = RangePickerProps['value'];
@@ -1046,6 +1046,7 @@ export default function MyComplaintsPage() {
   const [draft,          setDraft]          = useState<Filters>(EMPTY_FILTERS);
   const [applied,        setApplied]        = useState<Filters>(EMPTY_FILTERS);
   const [activeTab,      setActiveTab]      = useState<TabKey>('all');
+  const [actionRequiredExpanded, setActionRequiredExpanded] = useState(true);
   const [showFilters,    setShowFilters]    = useState(false);
   const [showInfo,       setShowInfo]       = useState(true);
   const [respondTicket,  setRespondTicket]  = useState<ComplaintTicket | null>(null);
@@ -1093,6 +1094,8 @@ export default function MyComplaintsPage() {
 
   const showCauseItems = useMemo(() => tickets.filter(t => t.showCause), [tickets]);
   const qaItems        = useMemo(() => tickets.filter(t => t.investigationQA), [tickets]);
+  const showCauseCount = showCauseItems.length;
+  const qaCount = qaItems.length;
   const actionRequired = useMemo(() => showCauseItems.length + qaItems.length, [showCauseItems, qaItems]);
 
   const handleSubmitResponse = (ticketId: string) => {
@@ -1442,20 +1445,67 @@ export default function MyComplaintsPage() {
 
       {/* ── Action required banner ────────────────────────────────────────── */}
       {actionRequired > 0 && (activeTab === 'all' || activeTab === 'Ongoing') && (
-        <div style={{ border: '1px solid #fed7aa', borderRadius: 10, overflow: 'hidden', marginBottom: 16 }}>
-          <div style={{
-            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            padding: '8px 16px', background: '#fff7ed', borderBottom: '1px solid #fed7aa',
-          }}>
+        <div style={{ border: '1px solid #fed7aa', borderRadius: 10, overflow: 'hidden', marginBottom: 16, boxShadow: '0 1px 2px rgba(0,0,0,0.04)' }}>
+          <button
+            onClick={() => setActionRequiredExpanded((prev) => !prev)}
+            style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              width: '100%',
+              padding: '10px 16px', background: '#fff7ed', borderBottom: actionRequiredExpanded ? '1px solid #fed7aa' : 'none',
+              border: 'none',
+              cursor: 'pointer',
+            }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <WarningFilled style={{ color: '#ea580c', fontSize: 14 }} />
               <span style={{ fontWeight: 700, fontSize: 13, color: '#92400e' }}>
                 ACTION REQUIRED ({actionRequired})
               </span>
             </div>
-            <span style={{ fontSize: 12, color: '#b45309' }}>Respond before the deadline to avoid delays</span>
-          </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <span style={{
+                fontSize: 11,
+                fontWeight: 700,
+                color: '#991b1b',
+                background: '#fee2e2',
+                border: '1px solid #fecaca',
+                borderRadius: 999,
+                padding: '2px 8px',
+                letterSpacing: '0.03em',
+              }}>
+                {showCauseCount} Show Cause
+              </span>
+              <span style={{
+                fontSize: 11,
+                fontWeight: 700,
+                color: '#0e7490',
+                background: '#ecfeff',
+                border: '1px solid #a5f3fc',
+                borderRadius: 999,
+                padding: '2px 8px',
+                letterSpacing: '0.03em',
+              }}>
+                {qaCount} Q&A
+              </span>
+              <span style={{ fontSize: 12, color: '#b45309' }}>Respond before deadline</span>
+              {actionRequiredExpanded ? <UpOutlined style={{ color: '#b45309', fontSize: 12 }} /> : <DownOutlined style={{ color: '#b45309', fontSize: 12 }} />}
+            </div>
+          </button>
 
+          {actionRequiredExpanded && (
+            <>
+          {showCauseCount > 0 && (
+            <div style={{
+              padding: '7px 16px',
+              fontSize: 11,
+              fontWeight: 700,
+              letterSpacing: '0.05em',
+              color: '#991b1b',
+              background: '#fff1f2',
+              borderBottom: '1px solid #fecdd3',
+            }}>
+              SHOW CAUSE RESPONSES
+            </div>
+          )}
           {/* Show Cause items */}
           {showCauseItems.map(item => (
             <div key={`sc-${item.ticketId}`} style={{ padding: '12px 16px', background: '#fffbf5', borderBottom: '1px solid #fef3c7' }}>
@@ -1495,6 +1545,19 @@ export default function MyComplaintsPage() {
             </div>
           ))}
 
+          {qaCount > 0 && (
+            <div style={{
+              padding: '7px 16px',
+              fontSize: 11,
+              fontWeight: 700,
+              letterSpacing: '0.05em',
+              color: '#0e7490',
+              background: '#f0fdff',
+              borderBottom: '1px solid #bae6fd',
+            }}>
+              INVESTIGATION Q&A
+            </div>
+          )}
           {/* Q&A Session items */}
           {qaItems.map(item => (
             <div key={`qa-${item.ticketId}`} style={{ padding: '12px 16px', background: '#f0fdfe', borderBottom: '1px solid #cffafe' }}>
@@ -1531,6 +1594,8 @@ export default function MyComplaintsPage() {
               </div>
             </div>
           ))}
+            </>
+          )}
         </div>
       )}
 

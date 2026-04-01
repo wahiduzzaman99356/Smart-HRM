@@ -65,6 +65,56 @@ export interface SeparationRequest {
   finalDecision?: FinalDecision;
 }
 
+export type ActionRequiredStatus = 'Pending' | 'Processed' | 'Cancelled';
+
+export interface DecisionDetails {
+  decision: 'Separation' | 'Appraisal' | 'Confirmation';
+  effectiveDate: string;
+  remarks?: string;
+}
+
+export interface ActionRequiredItem {
+  id: string;
+  empId: string;
+  empName: string;
+  empCode: string;
+  designation: string;
+  department: string;
+  dateOfJoining: string;
+  employmentStatus: EmpStatus;
+  actionType: 'Separation Decision Approved';
+  source: 'Performance Appraisal';
+  appraisalPeriodLabel: string;
+  decisionDetails: DecisionDetails;
+  status: ActionRequiredStatus;
+  createdAt: string;
+  createdBy: string;
+}
+
+export const INITIAL_ACTION_REQUIRED: ActionRequiredItem[] = [
+  {
+    id: 'ACT-REQ-001',
+    empId: 'EMP-0033',
+    empName: 'Kamal Hossain',
+    empCode: 'EMP-033',
+    designation: 'Senior HR Officer',
+    department: 'Human Resources',
+    dateOfJoining: '2022-06-15',
+    employmentStatus: 'Permanent',
+    actionType: 'Separation Decision Approved',
+    source: 'Performance Appraisal',
+    appraisalPeriodLabel: 'Yearly Appraisal · FY 2025',
+    decisionDetails: {
+      decision: 'Separation',
+      effectiveDate: '2026-04-01',
+      remarks: 'Approved for separation based on performance appraisal decision',
+    },
+    status: 'Pending',
+    createdAt: '2026-03-31',
+    createdBy: 'System',
+  },
+];
+
 export const INITIAL_SEPARATIONS: SeparationRequest[] = [
   {
     id: 'SEP-0001',

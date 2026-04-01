@@ -183,6 +183,50 @@ The Performance module implements a Balanced Scorecard KPI framework. It covers:
 
 ---
 
+### HRDecision
+
+Represents the final HR decision made during the appraisal approval process. This may include increment decisions, confirmation outcomes, or separation directives.
+
+```json
+{
+	"id": "dec-001",
+	"employeeId": "EMP-0033",
+	"employeeName": "Kamal Hossain",
+	"appraisalPeriod": "FY 2025",
+	"appraisalType": "Appraisal",
+	"overallScore": 82,
+	"decisionType": "Appraisal",
+	"submittedAt": "2026-03-31 02:00 PM",
+	"submittedBy": "Head of HR",
+	"remarks": "Approved for increment and role elevation based on sustained KPI delivery.",
+	"isApproved": true,
+	"incrementDetails": {
+		"type": "Gross",
+		"percentage": 10,
+		"effectiveDate": "2026-04-01",
+		"newDesignation": "Assistant Manager - HR",
+		"newPayScale": "Senior"
+	},
+	"separationDetails": null
+}
+```
+
+**`decisionType`** — `"Appraisal"` | `"Confirmation"` | `"Separation"`
+
+When `decisionType=Separation`, the `separationDetails` object contains:
+
+```json
+{
+	"separationDetails": {
+		"decision": "Separation",
+		"effectiveDate": "2026-04-01",
+		"remarks": "Separation termination based on performance appraisal decision"
+	}
+}
+```
+
+---
+
 ## Endpoints
 
 ### Main KPI Areas
