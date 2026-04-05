@@ -139,9 +139,9 @@ export default function MainKPIAreasPage() {
           style={{
             fontFamily: 'monospace',
             fontWeight: 700,
-            color: '#0f766e',
+            color: 'var(--color-primary)',
             borderColor: '#8dd3c8',
-            background: '#e6f7f4',
+            background: 'var(--color-primary-tint)',
           }}
         >
           {v}
@@ -151,14 +151,14 @@ export default function MainKPIAreasPage() {
     {
       title: 'Main KPI Area',
       dataIndex: 'name',
-      render: (name: string) => <Text strong style={{ color: '#1f2937', fontSize: 14 }}>{name}</Text>,
+      render: (name: string) => <Text strong style={{ color: 'var(--color-text-secondary)', fontSize: 14 }}>{name}</Text>,
     },
     {
       title: 'Sub KPIs',
       dataIndex: 'subKpiCount',
       width: 130,
       render: (count: number) => (
-        <Tag style={{ borderColor: '#9ddfd4', color: '#0f766e', background: '#e6f7f4', fontWeight: 700, fontSize: 12 }}>
+        <Tag style={{ borderColor: '#9ddfd4', color: 'var(--color-primary)', background: 'var(--color-primary-tint)', fontWeight: 700, fontSize: 12 }}>
           {count} KPI{count === 1 ? '' : 's'}
         </Tag>
       ),
@@ -175,8 +175,8 @@ export default function MainKPIAreasPage() {
               style={{
                 marginInlineEnd: 0,
                 borderColor: '#9ddfd4',
-                color: '#0f766e',
-                background: '#eaf9f6',
+                color: 'var(--color-primary)',
+                background: 'var(--color-primary-tint)',
                 borderRadius: 999,
                 paddingInline: 10,
               }}
@@ -196,7 +196,7 @@ export default function MainKPIAreasPage() {
             size="small"
             icon={<EditOutlined style={{ color: '#f97316' }} />}
             onClick={() => openEdit(record)}
-            style={{ borderColor: '#a7e3d9', color: '#0f766e' }}
+            style={{ borderColor: 'var(--color-border)', color: 'var(--color-primary)' }}
           >
             Edit
           </Button>
@@ -205,7 +205,7 @@ export default function MainKPIAreasPage() {
             danger
             icon={<DeleteOutlined />}
             onClick={() => handleDelete(record.id)}
-            style={{ borderColor: '#f2c4c4', color: '#dc2626', background: '#fff5f5' }}
+            style={{ borderColor: '#f2c4c4', color: '#dc2626', background: 'var(--color-status-rejected-bg)' }}
           />
         </Space>
       ),
@@ -213,15 +213,15 @@ export default function MainKPIAreasPage() {
   ];
 
   return (
-    <div style={{ padding: '16px 20px', background: '#eef5f4', minHeight: '100%' }}>
+    <div style={{ padding: '16px 20px', background: 'var(--color-bg-subtle)', minHeight: '100%' }}>
       <div style={{ marginBottom: 14 }}>
-        <Title level={3} style={{ margin: 0, color: '#1f2937' }}>
+        <Title level={3} style={{ margin: 0, color: 'var(--color-text-secondary)' }}>
           Main KPI Areas
-          <Text style={{ marginLeft: 10, color: '#0f766e', fontSize: 22, fontWeight: 500 }}>Configuration</Text>
+          <Text style={{ marginLeft: 10, color: 'var(--color-primary)', fontSize: 22, fontWeight: 500 }}>Configuration</Text>
         </Title>
       </div>
 
-      <Card bordered={false} style={{ borderRadius: 16, background: '#f7fbfa' }}>
+      <Card bordered={false} style={{ borderRadius: 16, background: 'var(--color-bg-subtle)' }}>
         <div
           style={{
             display: 'flex',
@@ -237,11 +237,11 @@ export default function MainKPIAreasPage() {
               value={query}
               onChange={e => setQuery(e.target.value)}
               placeholder="Search KPI areas..."
-              prefix={<SearchOutlined style={{ color: '#64748b' }} />}
+              prefix={<SearchOutlined style={{ color: 'var(--color-text-tertiary)' }} />}
               style={{
                 width: 310,
-                background: '#ffffff',
-                borderColor: '#a7e3d9',
+                background: 'var(--color-bg-surface)',
+                borderColor: 'var(--color-border)',
                 borderRadius: 10,
               }}
             />
@@ -255,7 +255,7 @@ export default function MainKPIAreasPage() {
             </Button>
             <Button
               icon={<ReloadOutlined />}
-              style={{ borderRadius: 10, borderColor: '#c7ddda', color: '#94a3b8' }}
+              style={{ borderRadius: 10, borderColor: '#c7ddda', color: 'var(--color-text-tertiary)' }}
               onClick={handleReset}
             >
               Reset
@@ -295,30 +295,30 @@ export default function MainKPIAreasPage() {
         width={560}
         destroyOnClose
         okButtonProps={{ style: { borderRadius: 12, paddingInline: 22 } }}
-        cancelButtonProps={{ style: { borderRadius: 12, borderColor: '#a7e3d9', color: '#0f766e' } }}
+        cancelButtonProps={{ style: { borderRadius: 12, borderColor: 'var(--color-border)', color: 'var(--color-primary)' } }}
       >
         <Form form={form} layout="vertical" style={{ marginTop: 16 }}>
           <Form.Item
             name="code"
-            label={<Text style={{ letterSpacing: 1, fontSize: 12, color: '#0f766e' }}>KPI CODE</Text>}
+            label={<Text style={{ letterSpacing: 1, fontSize: 12, color: 'var(--color-primary)' }}>KPI CODE</Text>}
             rules={[{ required: true, message: 'KPI code is required' }]}
           >
             <Input
               placeholder="e.g. MK-15"
               maxLength={12}
-              style={{ borderRadius: 12, borderColor: '#a7e3d9', textTransform: 'uppercase' }}
+              style={{ borderRadius: 12, borderColor: 'var(--color-border)', textTransform: 'uppercase' }}
             />
           </Form.Item>
 
           <Form.Item
             name="name"
-            label={<Text style={{ letterSpacing: 1, fontSize: 12, color: '#0f766e' }}>KPI AREA NAME</Text>}
+            label={<Text style={{ letterSpacing: 1, fontSize: 12, color: 'var(--color-primary)' }}>KPI AREA NAME</Text>}
             rules={[{ required: true, message: 'KPI area name is required' }]}
           >
             <Input
               placeholder="e.g. 15. Workforce Analytics"
               maxLength={120}
-              style={{ borderRadius: 12, borderColor: '#a7e3d9' }}
+              style={{ borderRadius: 12, borderColor: 'var(--color-border)' }}
             />
           </Form.Item>
         </Form>

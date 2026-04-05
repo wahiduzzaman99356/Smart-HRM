@@ -700,15 +700,15 @@ export const INITIAL_SUB_KPIS: SubKPI[] = [
 // ── Employees ─────────────────────────────────────────────────────────────────
 export const INITIAL_EMPLOYEES: Employee[] = [
   { id: 'emp-1',  employeeId: 'HR-001', name: 'Ahmed Rahman',   designation: 'HOD',                department: 'Human Resources', section: 'General HR',     avatarColor: '#ef4444' },
-  { id: 'emp-2',  employeeId: 'HR-002', name: 'Fatima Islam',   designation: 'HOD',                department: 'Human Resources', section: 'General HR',     avatarColor: '#0f766e' },
+  { id: 'emp-2',  employeeId: 'HR-002', name: 'Fatima Islam',   designation: 'HOD',                department: 'Human Resources', section: 'General HR',     avatarColor: 'var(--color-primary)' },
   { id: 'emp-3',  employeeId: 'HR-003', name: 'Nasrin Akter',   designation: 'Executive-HR',       department: 'Human Resources', section: 'Recruitment',    avatarColor: '#7c3aed' },
-  { id: 'emp-4',  employeeId: 'HR-004', name: 'Karim Hossain',  designation: 'Executive-HR',       department: 'Human Resources', section: 'Training & Dev', avatarColor: '#0f766e' },
+  { id: 'emp-4',  employeeId: 'HR-004', name: 'Karim Hossain',  designation: 'Executive-HR',       department: 'Human Resources', section: 'Training & Dev', avatarColor: 'var(--color-primary)' },
   { id: 'emp-5',  employeeId: 'HR-005', name: 'Priya Das',      designation: 'Executive-HR',       department: 'Human Resources', section: 'Recruitment',    avatarColor: '#f59e0b' },
-  { id: 'emp-6',  employeeId: 'HR-006', name: 'Rahim Uddin',    designation: 'Executive-Insurance', department: 'Finance & Admin', section: 'Insurance',     avatarColor: '#0f766e' },
+  { id: 'emp-6',  employeeId: 'HR-006', name: 'Rahim Uddin',    designation: 'Executive-Insurance', department: 'Finance & Admin', section: 'Insurance',     avatarColor: 'var(--color-primary)' },
   { id: 'emp-7',  employeeId: 'HR-007', name: 'Sultana Begum',  designation: 'Executive-Insurance', department: 'Finance & Admin', section: 'Insurance',     avatarColor: '#7c3aed' },
   { id: 'emp-8',  employeeId: 'HR-008', name: 'Jahangir Alam',  designation: 'Executive-Payroll',   department: 'Finance & Admin', section: 'Payroll',       avatarColor: '#f59e0b' },
   { id: 'emp-9',  employeeId: 'HR-009', name: 'Roksana Khatun', designation: 'Executive-Payroll',   department: 'Finance & Admin', section: 'Payroll',       avatarColor: '#ec4899' },
-  { id: 'emp-10', employeeId: 'HR-010', name: 'Minhajul Abedin', designation: 'Executive-Vetting',  department: 'Compliance',      section: 'Vetting & Audit', avatarColor: '#0f766e' },
+  { id: 'emp-10', employeeId: 'HR-010', name: 'Minhajul Abedin', designation: 'Executive-Vetting',  department: 'Compliance',      section: 'Vetting & Audit', avatarColor: 'var(--color-primary)' },
   { id: 'emp-11', employeeId: 'HR-011', name: 'Sharmin Jahan',  designation: 'Executive-Vetting',   department: 'Compliance',      section: 'Vetting & Audit', avatarColor: '#0891b2' },
 ];
 

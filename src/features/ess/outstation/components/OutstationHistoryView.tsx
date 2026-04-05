@@ -57,7 +57,7 @@ function DayDetailModal({ record, onClose }: { record: AttendanceRecord | null; 
       footer={null}
       title={
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <CalendarOutlined style={{ color: '#0d9488' }} />
+          <CalendarOutlined style={{ color: 'var(--color-primary)' }} />
           <span>Attendance Details — {dayjs(record.date).format('DD MMMM YYYY')}</span>
         </div>
       }
@@ -71,70 +71,70 @@ function DayDetailModal({ record, onClose }: { record: AttendanceRecord | null; 
       </div>
 
       {/* Check-In */}
-      <div style={{ background: '#f0fdfa', border: '1.5px solid #99f6e4', borderRadius: 10, padding: '14px 18px', marginBottom: 12 }}>
-        <div style={{ fontSize: 12, fontWeight: 700, color: '#0f766e', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 10, display: 'flex', alignItems: 'center', gap: 6 }}>
+      <div style={{ background: 'var(--color-primary-tint)', border: '1.5px solid #99f6e4', borderRadius: 10, padding: '14px 18px', marginBottom: 12 }}>
+        <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--color-primary)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 10, display: 'flex', alignItems: 'center', gap: 6 }}>
           <LoginOutlined /> Check-In
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
           <div>
-            <div style={{ fontSize: 11, color: '#6b7280', marginBottom: 4 }}>Time</div>
-            <div style={{ fontSize: 15, fontWeight: 700, color: '#111827' }}>{record.checkInTime ?? '—'}</div>
+            <div style={{ fontSize: 11, color: 'var(--color-text-tertiary)', marginBottom: 4 }}>Time</div>
+            <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--color-text-primary)' }}>{record.checkInTime ?? '—'}</div>
           </div>
           <div>
-            <div style={{ fontSize: 11, color: '#6b7280', marginBottom: 4 }}>Coordinates</div>
+            <div style={{ fontSize: 11, color: 'var(--color-text-tertiary)', marginBottom: 4 }}>Coordinates</div>
             {record.checkInLat != null ? (
-              <div style={{ fontSize: 12, color: '#374151', display: 'flex', alignItems: 'center', gap: 4 }}>
-                <EnvironmentOutlined style={{ color: '#0d9488', fontSize: 12 }} />
+              <div style={{ fontSize: 12, color: 'var(--color-text-secondary)', display: 'flex', alignItems: 'center', gap: 4 }}>
+                <EnvironmentOutlined style={{ color: 'var(--color-primary)', fontSize: 12 }} />
                 <span>{record.checkInLat.toFixed(5)}, {record.checkInLng!.toFixed(5)}</span>
               </div>
-            ) : <span style={{ fontSize: 13, color: '#9ca3af' }}>—</span>}
+            ) : <span style={{ fontSize: 13, color: 'var(--color-text-disabled)' }}>—</span>}
           </div>
         </div>
       </div>
 
       {/* Check-Out */}
-      <div style={{ background: '#fff1f2', border: '1.5px solid #fca5a5', borderRadius: 10, padding: '14px 18px', marginBottom: 12 }}>
+      <div style={{ background: 'var(--color-status-rejected-bg)', border: '1.5px solid #fca5a5', borderRadius: 10, padding: '14px 18px', marginBottom: 12 }}>
         <div style={{ fontSize: 12, fontWeight: 700, color: '#991b1b', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 10, display: 'flex', alignItems: 'center', gap: 6 }}>
           <LogoutOutlined /> Check-Out
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
           <div>
-            <div style={{ fontSize: 11, color: '#6b7280', marginBottom: 4 }}>Time</div>
-            <div style={{ fontSize: 15, fontWeight: 700, color: '#111827' }}>{record.checkOutTime ?? '—'}</div>
+            <div style={{ fontSize: 11, color: 'var(--color-text-tertiary)', marginBottom: 4 }}>Time</div>
+            <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--color-text-primary)' }}>{record.checkOutTime ?? '—'}</div>
           </div>
           <div>
-            <div style={{ fontSize: 11, color: '#6b7280', marginBottom: 4 }}>Coordinates</div>
+            <div style={{ fontSize: 11, color: 'var(--color-text-tertiary)', marginBottom: 4 }}>Coordinates</div>
             {record.checkOutLat != null ? (
-              <div style={{ fontSize: 12, color: '#374151', display: 'flex', alignItems: 'center', gap: 4 }}>
+              <div style={{ fontSize: 12, color: 'var(--color-text-secondary)', display: 'flex', alignItems: 'center', gap: 4 }}>
                 <EnvironmentOutlined style={{ color: '#dc2626', fontSize: 12 }} />
                 <span>{record.checkOutLat.toFixed(5)}, {record.checkOutLng!.toFixed(5)}</span>
               </div>
-            ) : <span style={{ fontSize: 13, color: '#9ca3af' }}>—</span>}
+            ) : <span style={{ fontSize: 13, color: 'var(--color-text-disabled)' }}>—</span>}
           </div>
         </div>
       </div>
 
       {/* Remarks */}
       <div style={{ marginBottom: 12 }}>
-        <div style={{ fontSize: 12, color: '#374151', fontWeight: 700, marginBottom: 6 }}>Remarks</div>
-        <div style={{ padding: '10px 14px', background: '#f9fafb', border: '1px solid #e5e7eb', borderRadius: 8, fontSize: 13, color: '#374151', minHeight: 44 }}>
-          {record.remarks || <span style={{ color: '#9ca3af', fontStyle: 'italic' }}>No remarks</span>}
+        <div style={{ fontSize: 12, color: 'var(--color-text-secondary)', fontWeight: 700, marginBottom: 6 }}>Remarks</div>
+        <div style={{ padding: '10px 14px', background: 'var(--color-bg-subtle)', border: '1px solid var(--color-border)', borderRadius: 8, fontSize: 13, color: 'var(--color-text-secondary)', minHeight: 44 }}>
+          {record.remarks || <span style={{ color: 'var(--color-text-disabled)', fontStyle: 'italic' }}>No remarks</span>}
         </div>
       </div>
 
       {/* Proof */}
       <div>
-        <div style={{ fontSize: 12, color: '#374151', fontWeight: 700, marginBottom: 6 }}>Proof of Attendance</div>
+        <div style={{ fontSize: 12, color: 'var(--color-text-secondary)', fontWeight: 700, marginBottom: 6 }}>Proof of Attendance</div>
         {record.proofFileName ? (
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 14px', border: '1px solid #e5e7eb', borderRadius: 8, background: '#f9fafb', fontSize: 13, color: '#374151' }}>
-              <PaperClipOutlined style={{ color: '#0d9488' }} />
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 14px', border: '1px solid var(--color-border)', borderRadius: 8, background: 'var(--color-bg-subtle)', fontSize: 13, color: 'var(--color-text-secondary)' }}>
+              <PaperClipOutlined style={{ color: 'var(--color-primary)' }} />
               {record.proofFileName}
             </div>
-            <Button type="link" style={{ padding: 0, fontSize: 13, color: '#0d9488' }}>View File</Button>
+            <Button type="link" style={{ padding: 0, fontSize: 13, color: 'var(--color-primary)' }}>View File</Button>
           </div>
         ) : (
-          <div style={{ padding: '10px 14px', background: '#f9fafb', border: '1px solid #e5e7eb', borderRadius: 8, fontSize: 13, color: '#9ca3af', fontStyle: 'italic' }}>
+          <div style={{ padding: '10px 14px', background: 'var(--color-bg-subtle)', border: '1px solid var(--color-border)', borderRadius: 8, fontSize: 13, color: 'var(--color-text-disabled)', fontStyle: 'italic' }}>
             No proof of attendance uploaded
           </div>
         )}
@@ -197,12 +197,12 @@ function CalendarSection({ purpose, setup, records, onDayClick }: CalendarSectio
   };
 
   // Theme colors
-  const accentColor  = isWfh ? '#d97706' : '#0d9488';
-  const accentLight  = isWfh ? '#fef3c7' : '#e0f2f1';
-  const accentBorder = isWfh ? '#fcd34d' : '#99f6e4';
+  const accentColor  = isWfh ? '#d97706' : 'var(--color-primary)';
+  const accentLight  = isWfh ? 'var(--color-status-pending-bg)' : 'var(--color-primary-tint)';
+  const accentBorder = isWfh ? 'rgba(252, 211, 77, 0.45)' : '#99f6e4';
 
   return (
-    <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 12, overflow: 'hidden', marginBottom: 20 }}>
+    <div style={{ background: 'var(--color-bg-surface)', border: '1px solid var(--color-border)', borderRadius: 12, overflow: 'hidden', marginBottom: 20 }}>
       {/* Section header */}
       <div style={{
         padding: '14px 20px',
@@ -215,9 +215,9 @@ function CalendarSection({ purpose, setup, records, onDayClick }: CalendarSectio
             {isWfh ? <HomeOutlined /> : <GlobalOutlined />}
           </div>
           <div>
-            <div style={{ fontSize: 15, fontWeight: 700, color: '#111827' }}>{purpose}</div>
+            <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--color-text-primary)' }}>{purpose}</div>
             {setup ? (
-              <div style={{ fontSize: 11, color: '#6b7280', marginTop: 2 }}>
+              <div style={{ fontSize: 11, color: 'var(--color-text-tertiary)', marginTop: 2 }}>
                 {setup.dateMode === 'specific'
                   ? `${setup.specificDates.length} scheduled date(s)`
                   : setup.dateRange
@@ -226,7 +226,7 @@ function CalendarSection({ purpose, setup, records, onDayClick }: CalendarSectio
                 {' · '}{setup.shiftLabel}
               </div>
             ) : (
-              <div style={{ fontSize: 11, color: '#9ca3af', fontStyle: 'italic', marginTop: 2 }}>No schedule configured</div>
+              <div style={{ fontSize: 11, color: 'var(--color-text-disabled)', fontStyle: 'italic', marginTop: 2 }}>No schedule configured</div>
             )}
           </div>
         </div>
@@ -240,14 +240,14 @@ function CalendarSection({ purpose, setup, records, onDayClick }: CalendarSectio
       </div>
 
       {/* Month Navigation */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 20px', borderBottom: '1px solid #e5e7eb', background: '#fafafa' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 20px', borderBottom: '1px solid var(--color-border)', background: 'var(--color-bg-subtle)' }}>
         <Button
           type="text"
           icon={<LeftOutlined />}
           onClick={() => setCurrentMonth(m => m.subtract(1, 'month'))}
           style={{ borderRadius: 8 }}
         />
-        <div style={{ fontSize: 15, fontWeight: 700, color: '#111827' }}>
+        <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--color-text-primary)' }}>
           {currentMonth.format('MMMM YYYY')}
         </div>
         <Button
@@ -259,9 +259,9 @@ function CalendarSection({ purpose, setup, records, onDayClick }: CalendarSectio
       </div>
 
       {/* Week-day headers */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', background: '#f8fafc', borderBottom: '1px solid #e5e7eb' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', background: 'var(--color-bg-subtle)', borderBottom: '1px solid var(--color-border)' }}>
         {WEEK_DAYS.map(d => (
-          <div key={d} style={{ padding: '7px 0', textAlign: 'center', fontSize: 12, fontWeight: 700, color: '#6b7280', letterSpacing: '0.05em' }}>
+          <div key={d} style={{ padding: '7px 0', textAlign: 'center', fontSize: 12, fontWeight: 700, color: 'var(--color-text-tertiary)', letterSpacing: '0.05em' }}>
             {d}
           </div>
         ))}
@@ -276,9 +276,9 @@ function CalendarSection({ purpose, setup, records, onDayClick }: CalendarSectio
                 key={`empty-${idx}`}
                 style={{
                   minHeight: 100,
-                  background: '#f9fafb',
-                  borderRight: (idx + 1) % 7 !== 0 ? '1px solid #f3f4f6' : 'none',
-                  borderBottom: '1px solid #f3f4f6',
+                  background: 'var(--color-bg-subtle)',
+                  borderRight: (idx + 1) % 7 !== 0 ? '1px solid var(--color-border)' : 'none',
+                  borderBottom: '1px solid var(--color-border)',
                 }}
               />
             );
@@ -290,7 +290,7 @@ function CalendarSection({ purpose, setup, records, onDayClick }: CalendarSectio
           const record    = attendanceMap.get(dateStr);
           const isWeekend = idx % 7 >= 5;
           const clickable = scheduled && !!record;
-          const baseBg    = isToday ? accentLight : isWeekend ? '#fafafa' : '#fff';
+          const baseBg    = isToday ? accentLight : isWeekend ? 'var(--color-bg-subtle)' : 'var(--color-bg-surface)';
 
           return (
             <div
@@ -299,8 +299,8 @@ function CalendarSection({ purpose, setup, records, onDayClick }: CalendarSectio
               style={{
                 minHeight: 100,
                 padding: '7px 9px',
-                borderRight: (idx + 1) % 7 !== 0 ? '1px solid #f3f4f6' : 'none',
-                borderBottom: '1px solid #f3f4f6',
+                borderRight: (idx + 1) % 7 !== 0 ? '1px solid var(--color-border)' : 'none',
+                borderBottom: '1px solid var(--color-border)',
                 cursor: clickable ? 'pointer' : 'default',
                 background: baseBg,
                 transition: 'background 0.12s',
@@ -313,7 +313,7 @@ function CalendarSection({ purpose, setup, records, onDayClick }: CalendarSectio
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
                 <span style={{
                   fontSize: 13, fontWeight: isToday ? 800 : 500,
-                  color: isToday ? accentColor : '#374151',
+                  color: isToday ? accentColor : 'var(--color-text-secondary)',
                   width: 24, height: 24, borderRadius: 12,
                   background: isToday ? accentLight : 'transparent',
                   border: isToday ? `1.5px solid ${accentBorder}` : 'none',
@@ -337,7 +337,7 @@ function CalendarSection({ purpose, setup, records, onDayClick }: CalendarSectio
                 )}
 
                 {scheduled && !record && (
-                  <span style={{ fontSize: 9, color: '#d1d5db', fontStyle: 'italic' }}>Scheduled</span>
+                  <span style={{ fontSize: 9, color: 'var(--color-text-disabled)', fontStyle: 'italic' }}>Scheduled</span>
                 )}
               </div>
 
@@ -357,13 +357,13 @@ function CalendarSection({ purpose, setup, records, onDayClick }: CalendarSectio
                     </div>
                   ) : null}
                   {!record.checkInTime && !record.checkOutTime && (
-                    <div style={{ fontSize: 10, color: '#9ca3af', fontStyle: 'italic' }}>No check-in</div>
+                    <div style={{ fontSize: 10, color: 'var(--color-text-disabled)', fontStyle: 'italic' }}>No check-in</div>
                   )}
                 </div>
               )}
 
               {scheduled && !record && (
-                <div style={{ marginTop: 4, fontSize: 10, color: '#d1d5db', fontStyle: 'italic' }}>No data</div>
+                <div style={{ marginTop: 4, fontSize: 10, color: 'var(--color-text-disabled)', fontStyle: 'italic' }}>No data</div>
               )}
 
               {/* Proof indicator dot */}
@@ -380,8 +380,8 @@ function CalendarSection({ purpose, setup, records, onDayClick }: CalendarSectio
       </div>
 
       {/* Legend */}
-      <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', alignItems: 'center', padding: '10px 20px', borderTop: '1px solid #e5e7eb', background: '#fafafa' }}>
-        <span style={{ fontSize: 12, color: '#6b7280', fontWeight: 600 }}>Legend:</span>
+      <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', alignItems: 'center', padding: '10px 20px', borderTop: '1px solid var(--color-border)', background: 'var(--color-bg-subtle)' }}>
+        <span style={{ fontSize: 12, color: 'var(--color-text-tertiary)', fontWeight: 600 }}>Legend:</span>
         {(Object.keys(ATTENDANCE_STATUS_STYLE) as AttendanceStatus[]).map(s => {
           const st = ATTENDANCE_STATUS_STYLE[s];
           return (
@@ -393,9 +393,9 @@ function CalendarSection({ purpose, setup, records, onDayClick }: CalendarSectio
         })}
         <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
           <span style={{ width: 7, height: 7, borderRadius: 4, background: accentColor, display: 'inline-block' }} />
-          <span style={{ fontSize: 11, color: '#6b7280' }}>Proof attached</span>
+          <span style={{ fontSize: 11, color: 'var(--color-text-tertiary)' }}>Proof attached</span>
         </div>
-        <span style={{ fontSize: 11, color: '#9ca3af', marginLeft: 4, fontStyle: 'italic' }}>Click a date to view details</span>
+        <span style={{ fontSize: 11, color: 'var(--color-text-disabled)', marginLeft: 4, fontStyle: 'italic' }}>Click a date to view details</span>
       </div>
     </div>
   );
@@ -422,29 +422,29 @@ export function OutstationHistoryView({ setups, allAttendance, onBack }: Props) 
   };
 
   return (
-    <div style={{ height: '100%', overflowY: 'auto', background: '#eef4f5', padding: '20px 24px' }}>
+    <div style={{ height: '100%', overflowY: 'auto', background: 'var(--color-bg-subtle)', padding: '20px 24px' }}>
       {/* Back */}
       <Button
         type="link"
         icon={<ArrowLeftOutlined />}
-        style={{ padding: 0, marginBottom: 16, color: '#0d9488', fontWeight: 500, fontSize: 13 }}
+        style={{ padding: 0, marginBottom: 16, color: 'var(--color-primary)', fontWeight: 500, fontSize: 13 }}
         onClick={onBack}
       >
         Back to list
       </Button>
 
       {/* Employee Header */}
-      <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 12, padding: '16px 22px', marginBottom: 20, display: 'flex', gap: 16, alignItems: 'center', flexWrap: 'wrap' }}>
-        <div style={{ width: 52, height: 52, borderRadius: 26, background: 'linear-gradient(135deg, #e0f2f1 0%, #ccfbf1 100%)', color: '#0d9488', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, flexShrink: 0, border: '2px solid #99f6e4' }}>
+      <div style={{ background: 'var(--color-bg-surface)', border: '1px solid var(--color-border)', borderRadius: 12, padding: '16px 22px', marginBottom: 20, display: 'flex', gap: 16, alignItems: 'center', flexWrap: 'wrap' }}>
+        <div style={{ width: 52, height: 52, borderRadius: 26, background: 'linear-gradient(135deg, #e0f2f1 0%, #ccfbf1 100%)', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, flexShrink: 0, border: '2px solid #99f6e4' }}>
           <TeamOutlined />
         </div>
         <div style={{ flex: 1, minWidth: 200 }}>
           <div style={{ fontSize: 17, fontWeight: 700, color: '#0f172a' }}>{firstSetup.employeeName}</div>
-          <div style={{ fontSize: 12, color: '#64748b', marginTop: 3 }}>ID: {firstSetup.employeeId}</div>
-          <div style={{ fontSize: 12, color: '#6b7280', marginTop: 2 }}>
+          <div style={{ fontSize: 12, color: 'var(--color-text-tertiary)', marginTop: 3 }}>ID: {firstSetup.employeeId}</div>
+          <div style={{ fontSize: 12, color: 'var(--color-text-tertiary)', marginTop: 2 }}>
             {setups.length} active setup{setups.length !== 1 ? 's' : ''}
             {' · '}
-            <span style={{ fontWeight: 600, color: '#0d9488' }}>
+            <span style={{ fontWeight: 600, color: 'var(--color-primary)' }}>
               {setups.map(s => s.purpose).join(' & ')}
             </span>
           </div>

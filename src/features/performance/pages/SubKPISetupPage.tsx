@@ -326,7 +326,7 @@ export default function SubKPISetupPage() {
       width: 210,
       render: (code: string, row) => (
         <div>
-          <Tag style={{ fontFamily: 'monospace', fontWeight: 700, color: '#0f766e', borderColor: '#8dd3c8', background: '#e6f7f4', fontSize: 11, marginBottom: 2 }}>
+          <Tag style={{ fontFamily: 'monospace', fontWeight: 700, color: 'var(--color-primary)', borderColor: '#8dd3c8', background: 'var(--color-primary-tint)', fontSize: 11, marginBottom: 2 }}>
             {code || row.mainKPICode}
           </Tag>
           <div>
@@ -358,16 +358,16 @@ export default function SubKPISetupPage() {
         <Space direction="vertical" size={4} style={{ width: '100%' }}>
           {configs.map(cfg => (
             <Space key={cfg.designation} size={4} wrap={false} style={{ alignItems: 'center' }}>
-              <Tag style={{ borderRadius: 999, paddingInline: 10, fontSize: 11, borderColor: '#9ddfd4', color: '#0f766e', background: '#eaf9f6', marginInlineEnd: 0, whiteSpace: 'nowrap' }}>
+              <Tag style={{ borderRadius: 999, paddingInline: 10, fontSize: 11, borderColor: '#9ddfd4', color: 'var(--color-primary)', background: 'var(--color-primary-tint)', marginInlineEnd: 0, whiteSpace: 'nowrap' }}>
                 {cfg.designation}
               </Tag>
-              <Tag style={{ borderRadius: 4, fontSize: 11, fontWeight: 700, borderColor: '#9ddfd4', color: '#0f766e', background: '#eaf9f6', marginInlineEnd: 0 }}>
+              <Tag style={{ borderRadius: 4, fontSize: 11, fontWeight: 700, borderColor: '#9ddfd4', color: 'var(--color-primary)', background: 'var(--color-primary-tint)', marginInlineEnd: 0 }}>
                 {cfg.weight}%
               </Tag>
-              <Tag style={{ borderRadius: 4, fontSize: 11, borderColor: '#e5e7eb', color: '#374151', background: '#f9fafb', paddingInline: 6, marginInlineEnd: 0 }}>
+              <Tag style={{ borderRadius: 4, fontSize: 11, borderColor: 'var(--color-border)', color: 'var(--color-text-secondary)', background: 'var(--color-bg-subtle)', paddingInline: 6, marginInlineEnd: 0 }}>
                 {cfg.operator}
               </Tag>
-              <Text style={{ fontSize: 11, color: '#64748b', whiteSpace: 'nowrap' }}>
+              <Text style={{ fontSize: 11, color: 'var(--color-text-tertiary)', whiteSpace: 'nowrap' }}>
                 {cfg.operator}{cfg.targetValue}
               </Text>
             </Space>
@@ -380,8 +380,8 @@ export default function SubKPISetupPage() {
       width: 130,
       render: (_: unknown, record: SubKPI) => (
         <Space size={6}>
-          <Button size="small" icon={<EditOutlined style={{ color: '#f97316' }} />} onClick={() => openEdit(record)} style={{ borderColor: '#a7e3d9', color: '#0f766e' }}>Edit</Button>
-          <Button size="small" danger icon={<DeleteOutlined />} onClick={() => handleDelete(record.id)} style={{ borderColor: '#f2c4c4', color: '#dc2626', background: '#fff5f5' }} />
+          <Button size="small" icon={<EditOutlined style={{ color: '#f97316' }} />} onClick={() => openEdit(record)} style={{ borderColor: 'var(--color-border)', color: 'var(--color-primary)' }}>Edit</Button>
+          <Button size="small" danger icon={<DeleteOutlined />} onClick={() => handleDelete(record.id)} style={{ borderColor: '#f2c4c4', color: '#dc2626', background: 'var(--color-status-rejected-bg)' }} />
         </Space>
       ),
     },
@@ -392,17 +392,17 @@ export default function SubKPISetupPage() {
   // ══════════════════════════════════════════════════════════════════════════════
   if (view === 'list') {
     return (
-      <div style={{ padding: '16px 20px', background: '#eef5f4', minHeight: '100%', height: '100%', overflowY: 'auto' }}>
+      <div style={{ padding: '16px 20px', background: 'var(--color-bg-subtle)', minHeight: '100%', height: '100%', overflowY: 'auto' }}>
         <div style={{ marginBottom: 14 }}>
-          <Title level={3} style={{ margin: 0, color: '#1f2937' }}>
+          <Title level={3} style={{ margin: 0, color: 'var(--color-text-secondary)' }}>
             Sub KPI Setup
-            <Text style={{ marginLeft: 10, color: '#0f766e', fontSize: 22, fontWeight: 500 }}>Manage &amp; Configure</Text>
+            <Text style={{ marginLeft: 10, color: 'var(--color-primary)', fontSize: 22, fontWeight: 500 }}>Manage &amp; Configure</Text>
           </Title>
         </div>
-        <Card bordered={false} style={{ borderRadius: 16, background: '#f7fbfa' }}>
+        <Card bordered={false} style={{ borderRadius: 16, background: 'var(--color-bg-subtle)' }}>
           <div style={{ display: 'flex', gap: 10, alignItems: 'center', marginBottom: 14, flexWrap: 'wrap', justifyContent: 'space-between' }}>
             <Space size={8} wrap>
-              <Input value={searchQ} onChange={e => setSearchQ(e.target.value)} placeholder="Search sub KPIs..." prefix={<SearchOutlined style={{ color: '#64748b' }} />} style={{ width: 280, borderRadius: 10, borderColor: '#a7e3d9' }} />
+              <Input value={searchQ} onChange={e => setSearchQ(e.target.value)} placeholder="Search sub KPIs..." prefix={<SearchOutlined style={{ color: 'var(--color-text-tertiary)' }} />} style={{ width: 280, borderRadius: 10, borderColor: 'var(--color-border)' }} />
               <Select value={filterMainKPI} onChange={setFilterMainKPI} style={{ width: 200 }}>
                 <Option value="all">All Main KPIs</Option>
                 {INITIAL_MAIN_KPI_AREAS.map(a => (
@@ -414,7 +414,7 @@ export default function SubKPISetupPage() {
                 {[...new Set(DEPT_SECTION_DESIG_MAP.flatMap(m => m.designations))].map(d => <Option key={d} value={d}>{d}</Option>)}
               </Select>
               <Button type="primary" icon={<SearchOutlined />} style={{ borderRadius: 10 }} onClick={() => undefined}>Search</Button>
-              <Button icon={<ReloadOutlined />} style={{ borderRadius: 10, borderColor: '#c7ddda', color: '#94a3b8' }} onClick={() => { setSearchQ(''); setFilterMainKPI('all'); setFilterDesig('all'); }}>Reset</Button>
+              <Button icon={<ReloadOutlined />} style={{ borderRadius: 10, borderColor: '#c7ddda', color: 'var(--color-text-tertiary)' }} onClick={() => { setSearchQ(''); setFilterMainKPI('all'); setFilterDesig('all'); }}>Reset</Button>
             </Space>
             <Button type="primary" icon={<PlusOutlined />} onClick={openCreate} style={{ borderRadius: 12, paddingInline: 18 }}>+ Create Sub KPI</Button>
           </div>
@@ -449,9 +449,9 @@ export default function SubKPISetupPage() {
   ];
 
   return (
-    <div style={{ padding: '16px 20px', background: '#eef5f4', minHeight: '100%', height: '100%', overflowY: 'auto' }}>
+    <div style={{ padding: '16px 20px', background: 'var(--color-bg-subtle)', minHeight: '100%', height: '100%', overflowY: 'auto' }}>
       <div style={{ marginBottom: 18 }}>
-        <Title level={3} style={{ margin: 0, color: '#1f2937' }}>
+        <Title level={3} style={{ margin: 0, color: 'var(--color-text-secondary)' }}>
           {editingId ? 'Edit Sub KPI' : 'Create Sub KPI'}
         </Title>
       </div>
@@ -459,9 +459,9 @@ export default function SubKPISetupPage() {
       <Form form={form} layout="vertical" requiredMark={false}>
 
         {/* ── Section 1: Basic Information ───────────────────────────────────── */}
-        <Card bordered={false} style={{ borderRadius: 16, marginBottom: 16, background: '#fff' }}>
+        <Card bordered={false} style={{ borderRadius: 16, marginBottom: 16, background: 'var(--color-bg-surface)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
-            <FileTextOutlined style={{ fontSize: 16, color: '#0f766e' }} />
+            <FileTextOutlined style={{ fontSize: 16, color: 'var(--color-primary)' }} />
             <Text strong style={{ fontSize: 15 }}>Basic Information</Text>
           </div>
 
@@ -475,21 +475,21 @@ export default function SubKPISetupPage() {
 
           <Form.Item
             name="name"
-            label={<Text style={{ letterSpacing: 1, fontSize: 12, color: '#0f766e' }}>SUB KPI NAME</Text>}
+            label={<Text style={{ letterSpacing: 1, fontSize: 12, color: 'var(--color-primary)' }}>SUB KPI NAME</Text>}
             rules={[{ required: true, message: 'Sub KPI name is required' }]}
             style={{ marginBottom: 14 }}
           >
-            <Input placeholder="e.g. Recruitment Efficiency Score" style={{ borderRadius: 10, borderColor: '#a7e3d9' }} />
+            <Input placeholder="e.g. Recruitment Efficiency Score" style={{ borderRadius: 10, borderColor: 'var(--color-border)' }} />
           </Form.Item>
 
           <Row gutter={16}>
             <Col span={8}>
-              <Form.Item name="code" label={<Text style={{ letterSpacing: 1, fontSize: 12, color: '#0f766e' }}>KPI CODE</Text>} rules={[{ required: true, message: 'KPI code is required' }]}>
-                <Input placeholder="e.g. MK-01-05" maxLength={20} style={{ borderRadius: 10, borderColor: '#a7e3d9', textTransform: 'uppercase' }} />
+              <Form.Item name="code" label={<Text style={{ letterSpacing: 1, fontSize: 12, color: 'var(--color-primary)' }}>KPI CODE</Text>} rules={[{ required: true, message: 'KPI code is required' }]}>
+                <Input placeholder="e.g. MK-01-05" maxLength={20} style={{ borderRadius: 10, borderColor: 'var(--color-border)', textTransform: 'uppercase' }} />
               </Form.Item>
             </Col>
             <Col span={8}>
-              <Form.Item name="mainKPIAreaId" label={<Text style={{ letterSpacing: 1, fontSize: 12, color: '#0f766e' }}>MAIN KPI AREA</Text>} rules={[{ required: true, message: 'Main KPI area is required' }]}>
+              <Form.Item name="mainKPIAreaId" label={<Text style={{ letterSpacing: 1, fontSize: 12, color: 'var(--color-primary)' }}>MAIN KPI AREA</Text>} rules={[{ required: true, message: 'Main KPI area is required' }]}>
                 <Select placeholder="Select Main KPI Area">
                   {INITIAL_MAIN_KPI_AREAS.map(a => (
                     <Option key={a.id} value={a.id}>{a.code} - {a.name}</Option>
@@ -498,22 +498,22 @@ export default function SubKPISetupPage() {
               </Form.Item>
             </Col>
             <Col span={8}>
-              <Form.Item name="measurementCriteria" label={<Text style={{ letterSpacing: 1, fontSize: 12, color: '#0f766e' }}>MEASUREMENT CRITERIA</Text>}>
-                <Input placeholder="How this KPI is measured..." style={{ borderRadius: 10, borderColor: '#a7e3d9' }} />
+              <Form.Item name="measurementCriteria" label={<Text style={{ letterSpacing: 1, fontSize: 12, color: 'var(--color-primary)' }}>MEASUREMENT CRITERIA</Text>}>
+                <Input placeholder="How this KPI is measured..." style={{ borderRadius: 10, borderColor: 'var(--color-border)' }} />
               </Form.Item>
             </Col>
             <Col span={8}>
-              <Form.Item name="markOutOf" label={<Text style={{ letterSpacing: 1, fontSize: 12, color: '#0f766e' }}>MARK OUT OF</Text>}>
-                <InputNumber min={0} placeholder="e.g. 100" style={{ width: '100%', borderRadius: 10, borderColor: '#a7e3d9' }} />
+              <Form.Item name="markOutOf" label={<Text style={{ letterSpacing: 1, fontSize: 12, color: 'var(--color-primary)' }}>MARK OUT OF</Text>}>
+                <InputNumber min={0} placeholder="e.g. 100" style={{ width: '100%', borderRadius: 10, borderColor: 'var(--color-border)' }} />
               </Form.Item>
             </Col>
           </Row>
         </Card>
 
         {/* ── Section 2: Tag Designations ────────────────────────────────────── */}
-        <Card bordered={false} style={{ borderRadius: 16, marginBottom: 16, background: '#fff' }}>
+        <Card bordered={false} style={{ borderRadius: 16, marginBottom: 16, background: 'var(--color-bg-surface)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-            <TagsOutlined style={{ fontSize: 16, color: '#0f766e' }} />
+            <TagsOutlined style={{ fontSize: 16, color: 'var(--color-primary)' }} />
             <Text strong style={{ fontSize: 15 }}>Tag Designations</Text>
             <Text type="secondary" style={{ fontSize: 12 }}>Search and select</Text>
           </div>
@@ -536,7 +536,7 @@ export default function SubKPISetupPage() {
             <div
               style={{
                 display: 'flex', alignItems: 'center', gap: 10,
-                padding: '8px 14px', background: '#eff6ff',
+                padding: '8px 14px', background: 'var(--color-status-info-bg)',
                 borderRadius: 8, marginBottom: 12, border: '1px solid #bfdbfe',
               }}
             >
@@ -556,7 +556,7 @@ export default function SubKPISetupPage() {
             <div
               style={{
                 display: 'flex', alignItems: 'center', gap: 10,
-                padding: '8px 14px', background: '#fff1f2',
+                padding: '8px 14px', background: 'var(--color-status-rejected-bg)',
                 borderRadius: 8, marginBottom: 12, border: '1px solid #fecdd3',
               }}
             >
@@ -580,7 +580,7 @@ export default function SubKPISetupPage() {
           >
             {/* Department */}
             <div>
-              <Text style={{ fontSize: 11, color: '#6b7280', display: 'block', marginBottom: 4, fontWeight: 600, letterSpacing: 0.6 }}>DEPARTMENT</Text>
+              <Text style={{ fontSize: 11, color: 'var(--color-text-tertiary)', display: 'block', marginBottom: 4, fontWeight: 600, letterSpacing: 0.6 }}>DEPARTMENT</Text>
               <Select
                 showSearch
                 value={pickDept || undefined}
@@ -596,7 +596,7 @@ export default function SubKPISetupPage() {
 
             {/* Section */}
             <div>
-              <Text style={{ fontSize: 11, color: '#6b7280', display: 'block', marginBottom: 4, fontWeight: 600, letterSpacing: 0.6 }}>SECTION</Text>
+              <Text style={{ fontSize: 11, color: 'var(--color-text-tertiary)', display: 'block', marginBottom: 4, fontWeight: 600, letterSpacing: 0.6 }}>SECTION</Text>
               <Select
                 showSearch
                 value={pickSection || undefined}
@@ -613,7 +613,7 @@ export default function SubKPISetupPage() {
 
             {/* Designation */}
             <div>
-              <Text style={{ fontSize: 11, color: '#6b7280', display: 'block', marginBottom: 4, fontWeight: 600, letterSpacing: 0.6 }}>DESIGNATION</Text>
+              <Text style={{ fontSize: 11, color: 'var(--color-text-tertiary)', display: 'block', marginBottom: 4, fontWeight: 600, letterSpacing: 0.6 }}>DESIGNATION</Text>
               <Select
                 showSearch
                 value={pickDesig || undefined}
@@ -635,7 +635,7 @@ export default function SubKPISetupPage() {
               icon={<PlusOutlined />}
               disabled={!pickDesig}
               onClick={tagDesignation}
-              style={{ borderRadius: 8, background: '#0f766e', borderColor: '#0f766e' }}
+              style={{ borderRadius: 8, background: 'var(--color-primary)', borderColor: 'var(--color-primary)' }}
             >
               + Tag
             </Button>
@@ -650,10 +650,10 @@ export default function SubKPISetupPage() {
                 return (
                   <Tag
                     key={key} closable onClose={() => untagDesignation(key)}
-                    style={{ borderRadius: 8, paddingInline: 10, borderColor: '#9ddfd4', color: '#0f766e', background: '#eaf9f6' }}
+                    style={{ borderRadius: 8, paddingInline: 10, borderColor: '#9ddfd4', color: 'var(--color-primary)', background: 'var(--color-primary-tint)' }}
                   >
                     <span style={{ fontWeight: 600 }}>{desig}</span>
-                    <span style={{ color: '#9ca3af', fontSize: 10, marginLeft: 4 }}>{dept} · {section}</span>
+                    <span style={{ color: 'var(--color-text-disabled)', fontSize: 10, marginLeft: 4 }}>{dept} · {section}</span>
                   </Tag>
                 );
               })}
@@ -666,9 +666,9 @@ export default function SubKPISetupPage() {
 
         {/* ── Section 3: Per-Designation Configuration ───────────────────────── */}
         {taggedKeys.length > 0 && (
-          <Card bordered={false} style={{ borderRadius: 16, marginBottom: 16, background: '#fff' }}>
+          <Card bordered={false} style={{ borderRadius: 16, marginBottom: 16, background: 'var(--color-bg-surface)' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
-              <SettingOutlined style={{ fontSize: 16, color: '#0f766e' }} />
+              <SettingOutlined style={{ fontSize: 16, color: 'var(--color-primary)' }} />
               <Text strong style={{ fontSize: 15 }}>Per-Designation Configuration</Text>
             </div>
 
@@ -678,11 +678,11 @@ export default function SubKPISetupPage() {
                 display: 'grid',
                 gridTemplateColumns: computedGridCols,
                 gap: 10, padding: '8px 10px',
-                background: '#eef8f6', borderRadius: 8, marginBottom: 8,
+                background: 'var(--color-primary-tint)', borderRadius: 8, marginBottom: 8,
               }}
             >
               {computedGridHeaders.map(h => (
-                <Text key={h} style={{ fontSize: 10, fontWeight: 700, color: '#374151', letterSpacing: 0.8 }}>{h}</Text>
+                <Text key={h} style={{ fontSize: 10, fontWeight: 700, color: 'var(--color-text-secondary)', letterSpacing: 0.8 }}>{h}</Text>
               ))}
             </div>
 
@@ -710,11 +710,11 @@ export default function SubKPISetupPage() {
                 >
                   {/* Designation with dept/section context */}
                   <div>
-                    <Tag style={{ borderRadius: 6, paddingInline: 10, fontSize: 11, borderColor: '#9ddfd4', color: '#0f766e', background: '#eaf9f6', margin: 0, marginBottom: 2 }}>
+                    <Tag style={{ borderRadius: 6, paddingInline: 10, fontSize: 11, borderColor: '#9ddfd4', color: 'var(--color-primary)', background: 'var(--color-primary-tint)', margin: 0, marginBottom: 2 }}>
                       {cfg.designation}
                     </Tag>
                     <div>
-                      <Text style={{ fontSize: 10, color: '#9ca3af' }}>{dept} · {section}</Text>
+                      <Text style={{ fontSize: 10, color: 'var(--color-text-disabled)' }}>{dept} · {section}</Text>
                     </div>
                   </div>
 
@@ -722,7 +722,7 @@ export default function SubKPISetupPage() {
                   <InputNumber
                     min={0} max={100} value={cfg.weight}
                     onChange={v => updateDesigConfig(key, 'weight', v ?? 0)}
-                    style={{ width: '100%', borderColor: '#a7e3d9', borderRadius: 8 }}
+                    style={{ width: '100%', borderColor: 'var(--color-border)', borderRadius: 8 }}
                     placeholder="5"
                   />
 
@@ -739,7 +739,7 @@ export default function SubKPISetupPage() {
                   <InputNumber
                     min={0} max={10000} value={cfg.targetValue}
                     onChange={v => updateDesigConfig(key, 'targetValue', v ?? 0)}
-                    style={{ width: '100%', borderColor: '#a7e3d9', borderRadius: 8 }}
+                    style={{ width: '100%', borderColor: 'var(--color-border)', borderRadius: 8 }}
                     placeholder="0"
                     addonAfter={useCountUnit ? 'Count' : '%'}
                   />
@@ -794,7 +794,7 @@ export default function SubKPISetupPage() {
         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 12 }}>
           <Button
             onClick={() => { setView('list'); resetForm(); }}
-            style={{ borderRadius: 12, borderColor: '#a7e3d9', color: '#0f766e', paddingInline: 22 }}
+            style={{ borderRadius: 12, borderColor: 'var(--color-border)', color: 'var(--color-primary)', paddingInline: 22 }}
           >
             Cancel
           </Button>

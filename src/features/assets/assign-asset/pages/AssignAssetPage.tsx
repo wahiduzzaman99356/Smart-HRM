@@ -523,7 +523,7 @@ export default function AssignAssetPage() {
           <Button onClick={resetAssignTo}>Reset</Button>
         </div>
 
-        <div style={{ borderTop: '1px solid #e2e8f0', margin: '16px 0' }} />
+        <div style={{ borderTop: '1px solid var(--color-border)', margin: '16px 0' }} />
 
         <div style={sectionTitle}>Asset Assignment</div>
         <div style={assetFormGrid}>
@@ -701,7 +701,7 @@ export default function AssignAssetPage() {
           <div style={{ minWidth: 220 }}>
             <div style={labelStyle}>Serial Number</div>
             <Input
-              prefix={<SearchOutlined style={{ color: '#94a3b8' }} />}
+              prefix={<SearchOutlined style={{ color: 'var(--color-text-tertiary)' }} />}
               placeholder="Filter by serial"
               value={serialFilter}
               onChange={e => setSerialFilter(e.target.value)}
@@ -775,7 +775,7 @@ const sectionTitle: React.CSSProperties = {
 const labelStyle: React.CSSProperties = {
   fontSize: 12,
   fontWeight: 700,
-  color: '#334155',
+  color: 'var(--color-text-secondary)',
   marginBottom: 6,
 };
 
@@ -795,5 +795,5 @@ const emptyWrap: React.CSSProperties = {
   border: '1px dashed #cbd5e1',
   borderRadius: 12,
   padding: 24,
-  background: '#f8fafc',
+  background: 'var(--color-bg-subtle)',
 };

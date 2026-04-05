@@ -42,11 +42,11 @@ const { TextArea } = Input;
 const { Panel } = Collapse;
 
 // ─── Design tokens (matches global theme) ────────────────────────────────────
-const CLR_PRIMARY   = '#0f766e';
-const CLR_PRIMARY_L = '#eef8f6';
-const CLR_BORDER    = '#a7e3d9';
-const CLR_BG        = '#eef5f4';
-const CLR_CARD      = '#ffffff';
+const CLR_PRIMARY   = 'var(--color-primary)';
+const CLR_PRIMARY_L = 'var(--color-primary-tint)';
+const CLR_BORDER    = 'var(--color-border)';
+const CLR_BG        = 'var(--color-bg-subtle)';
+const CLR_CARD      = 'var(--color-bg-surface)';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 type AppraisalType = 'Confirmation' | 'Appraisal';
@@ -375,23 +375,23 @@ function calcWeightedScore(subKPIs: SubKPIItem[], markings: SubKPIMarking[]): nu
 
 function scoreColor(pct: number) {
   if (pct >= 85) return '#059669';
-  if (pct >= 70) return '#0f766e';
+  if (pct >= 70) return 'var(--color-primary)';
   if (pct >= 50) return '#d97706';
   return '#dc2626';
 }
 
 function scoreBadge(pct: number) {
-  if (pct >= 85) return { label: 'Outstanding', color: '#059669', bg: '#d1fae5' };
-  if (pct >= 70) return { label: 'Excellent',   color: '#0f766e', bg: '#ccfbf1' };
-  if (pct >= 55) return { label: 'Good',        color: '#0284c7', bg: '#dbeafe' };
-  if (pct >= 40) return { label: 'Average',     color: '#d97706', bg: '#fef3c7' };
-  return              { label: 'Below Avg',    color: '#dc2626', bg: '#fee2e2' };
+  if (pct >= 85) return { label: 'Outstanding', color: '#059669', bg: 'var(--color-status-approved-bg)' };
+  if (pct >= 70) return { label: 'Excellent',   color: 'var(--color-primary)', bg: 'var(--color-status-approved-bg)' };
+  if (pct >= 55) return { label: 'Good',        color: '#0284c7', bg: 'var(--color-status-info-bg)' };
+  if (pct >= 40) return { label: 'Average',     color: '#d97706', bg: 'var(--color-status-pending-bg)' };
+  return              { label: 'Below Avg',    color: '#dc2626', bg: 'var(--color-status-rejected-bg)' };
 }
 
 // ─── Shared: FieldLabel ───────────────────────────────────────────────────────
 function FieldLabel({ children }: { children: React.ReactNode }) {
   return (
-    <div style={{ fontSize: 10, fontWeight: 700, color: '#9ca3af', letterSpacing: '0.06em', marginBottom: 4 }}>
+    <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--color-text-disabled)', letterSpacing: '0.06em', marginBottom: 4 }}>
       {children}
     </div>
   );
@@ -403,7 +403,7 @@ function TypeTag({ type }: { type: AppraisalType }) {
   return (
     <Tag style={{
       borderRadius: 999, fontSize: 11, fontWeight: 700, paddingInline: 10, border: 'none',
-      background: isConf ? '#e0f2fe' : '#ede9fe',
+      background: isConf ? 'var(--color-status-info-bg)' : 'rgba(124, 58, 237, 0.13)',
       color:      isConf ? '#0369a1' : '#6d28d9',
     }}>
       {isConf ? '✦ Confirmation' : '⬟ Appraisal'}
@@ -414,10 +414,10 @@ function TypeTag({ type }: { type: AppraisalType }) {
 // ─── Status tag ───────────────────────────────────────────────────────────────
 function StatusTag({ status }: { status: AppraisalStatus }) {
   const map: Record<AppraisalStatus, { bg: string; color: string; icon: React.ReactNode }> = {
-    'Pending Self':    { bg: '#fef3c7', color: '#92400e', icon: <ClockCircleOutlined /> },
-    'Self Submitted':  { bg: '#dbeafe', color: '#1e40af', icon: <SendOutlined /> },
+    'Pending Self':    { bg: 'var(--color-status-pending-bg)', color: '#d97706', icon: <ClockCircleOutlined /> },
+    'Self Submitted':  { bg: 'var(--color-status-info-bg)', color: '#1e40af', icon: <SendOutlined /> },
     'In Review':       { bg: '#f3e8ff', color: '#6d28d9', icon: <EyeOutlined /> },
-    'Completed':       { bg: '#d1fae5', color: '#065f46', icon: <CheckCircleOutlined /> },
+    'Completed':       { bg: 'var(--color-status-approved-bg)', color: 'var(--color-primary-dark)', icon: <CheckCircleOutlined /> },
   };
   const s = map[status];
   return (
@@ -437,18 +437,18 @@ function PipelinePills({ steps }: { steps: PipelineStep[] }) {
         const active  = !done && !skipped && steps.slice(0, idx).every(s => s.status === 'Submitted');
         return (
           <div key={step.role} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-            {idx > 0 && <div style={{ width: 14, height: 1, background: done ? CLR_PRIMARY : '#d1d5db' }} />}
+            {idx > 0 && <div style={{ width: 14, height: 1, background: done ? CLR_PRIMARY : 'var(--color-border)' }} />}
             <Tooltip title={step.submittedAt ? `Submitted ${step.submittedAt}` : step.status}>
               <div style={{
                 display: 'flex', alignItems: 'center', gap: 4,
-                background: done ? CLR_PRIMARY_L : skipped ? '#f9fafb' : active ? '#fef9c3' : '#f3f4f6',
-                border: `1px solid ${done ? CLR_BORDER : skipped ? '#e5e7eb' : active ? '#fde68a' : '#e5e7eb'}`,
+                background: done ? CLR_PRIMARY_L : skipped ? 'var(--color-bg-subtle)' : active ? 'var(--color-status-pending-bg)' : 'var(--color-bg-subtle)',
+                border: `1px solid ${done ? CLR_BORDER : skipped ? 'var(--color-border)' : active ? 'rgba(253, 230, 138, 0.4)' : 'var(--color-border)'}`,
                 borderRadius: 999, padding: '2px 8px', fontSize: 11, fontWeight: 600,
-                color: done ? CLR_PRIMARY : skipped ? '#9ca3af' : active ? '#92400e' : '#6b7280',
+                color: done ? CLR_PRIMARY : skipped ? 'var(--color-text-disabled)' : active ? '#92400e' : 'var(--color-text-tertiary)',
               }}>
                 {done   && <CheckCircleOutlined style={{ fontSize: 11 }} />}
                 {active && <ClockCircleOutlined style={{ fontSize: 11 }} />}
-                {!done && !active && !skipped && <div style={{ width: 7, height: 7, borderRadius: '50%', background: '#d1d5db' }} />}
+                {!done && !active && !skipped && <div style={{ width: 7, height: 7, borderRadius: '50%', background: 'var(--color-border)' }} />}
                 {step.role}
               </div>
             </Tooltip>
@@ -465,7 +465,7 @@ function DeadlineBadge({ dateStr, status }: { dateStr: string; status: Appraisal
   if (status === 'Completed') {
     return (
       <Space size={4}>
-        <LockOutlined style={{ color: '#9ca3af', fontSize: 12 }} />
+        <LockOutlined style={{ color: 'var(--color-text-disabled)', fontSize: 12 }} />
         <Text type="secondary" style={{ fontSize: 12 }}>Cycle closed</Text>
       </Space>
     );
@@ -474,8 +474,8 @@ function DeadlineBadge({ dateStr, status }: { dateStr: string; status: Appraisal
   const past   = days < 0;
   return (
     <Space size={4}>
-      <CalendarOutlined style={{ fontSize: 12, color: past ? '#dc2626' : urgent ? '#d97706' : '#6b7280' }} />
-      <Text style={{ fontSize: 12, fontWeight: 600, color: past ? '#dc2626' : urgent ? '#d97706' : '#374151' }}>
+      <CalendarOutlined style={{ fontSize: 12, color: past ? '#dc2626' : urgent ? '#d97706' : 'var(--color-text-tertiary)' }} />
+      <Text style={{ fontSize: 12, fontWeight: 600, color: past ? '#dc2626' : urgent ? '#d97706' : 'var(--color-text-secondary)' }}>
         {past
           ? `Overdue by ${Math.abs(days)}d`
           : days === 0
@@ -544,16 +544,16 @@ function SelfMarkDrawer({ record, onClose, onSubmit }: SelfMarkDrawerProps) {
             <FormOutlined style={{ color: CLR_PRIMARY, fontSize: 17 }} />
           </div>
           <div>
-            <div style={{ fontWeight: 700, fontSize: 15, color: '#111827' }}>Self Assessment</div>
-            <div style={{ fontSize: 11, color: '#9ca3af', fontWeight: 400 }}>{record.periodLabel}</div>
+            <div style={{ fontWeight: 700, fontSize: 15, color: 'var(--color-text-primary)' }}>Self Assessment</div>
+            <div style={{ fontSize: 11, color: 'var(--color-text-disabled)', fontWeight: 400 }}>{record.periodLabel}</div>
           </div>
         </Space>
       }
-      styles={{ body: { background: CLR_BG, padding: '16px 20px' }, header: { background: '#fff', borderBottom: '1px solid #e5e7eb' } }}
+      styles={{ body: { background: CLR_BG, padding: '16px 20px' }, header: { background: 'var(--color-bg-surface)', borderBottom: '1px solid var(--color-border)' } }}
       footer={
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 8 }}>
           <Space size={6}>
-            <Text style={{ fontSize: 12, color: '#6b7280' }}>{filledKPIs} / {totalKPIs} scored</Text>
+            <Text style={{ fontSize: 12, color: 'var(--color-text-tertiary)' }}>{filledKPIs} / {totalKPIs} scored</Text>
             {filledKPIs > 0 && (
               <Text style={{ fontSize: 12, fontWeight: 700, color: scoreColor(weightedScore) }}>
                 · Weighted: {weightedScore}%
@@ -574,17 +574,17 @@ function SelfMarkDrawer({ record, onClose, onSubmit }: SelfMarkDrawerProps) {
       }
     >
       {/* Progress bar */}
-      <div style={{ background: '#fff', border: `1px solid ${CLR_BORDER}`, borderRadius: 12, padding: '14px 18px', marginBottom: 16 }}>
+      <div style={{ background: 'var(--color-bg-surface)', border: `1px solid ${CLR_BORDER}`, borderRadius: 12, padding: '14px 18px', marginBottom: 16 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-          <Text style={{ fontSize: 12, fontWeight: 700, color: '#374151' }}>Completion Progress</Text>
-          <Text style={{ fontSize: 12, color: pct === 100 ? '#059669' : '#6b7280', fontWeight: 600 }}>
+          <Text style={{ fontSize: 12, fontWeight: 700, color: 'var(--color-text-secondary)' }}>Completion Progress</Text>
+          <Text style={{ fontSize: 12, color: pct === 100 ? '#059669' : 'var(--color-text-tertiary)', fontWeight: 600 }}>
             {pct === 100 ? '✓ All scored' : `${filledKPIs} of ${totalKPIs} KPIs scored`}
           </Text>
         </div>
         <Progress percent={pct} strokeColor={pct === 100 ? '#059669' : CLR_PRIMARY} trailColor="#e5e7eb" size="small" showInfo={false} />
         {filledKPIs > 0 && (
           <div style={{ marginTop: 8, display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-            <div style={{ fontSize: 11, color: '#9ca3af' }}>Running weighted score:</div>
+            <div style={{ fontSize: 11, color: 'var(--color-text-disabled)' }}>Running weighted score:</div>
             <div style={{ fontSize: 11, fontWeight: 700, color: scoreColor(weightedScore) }}>
               {weightedScore}% — {scoreBadge(weightedScore).label}
             </div>
@@ -605,20 +605,20 @@ function SelfMarkDrawer({ record, onClose, onSubmit }: SelfMarkDrawerProps) {
           return (
             <Panel
               key={group.id}
-              style={{ background: '#fff', border: `1px solid ${CLR_BORDER}`, borderRadius: 12, overflow: 'hidden', marginBottom: 0 }}
+              style={{ background: 'var(--color-bg-surface)', border: `1px solid ${CLR_BORDER}`, borderRadius: 12, overflow: 'hidden', marginBottom: 0 }}
               header={
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
                   <Space size={8}>
                     <div style={{ width: 3, height: 14, background: CLR_PRIMARY, borderRadius: 2 }} />
-                    <Text style={{ fontSize: 12, fontWeight: 700, color: '#111827' }}>{group.name}</Text>
+                    <Text style={{ fontSize: 12, fontWeight: 700, color: 'var(--color-text-primary)' }}>{group.name}</Text>
                     <Tag style={{ borderRadius: 999, fontSize: 10, border: `1px solid ${CLR_BORDER}`, background: CLR_PRIMARY_L, color: CLR_PRIMARY, fontWeight: 600 }}>
                       {group.code}
                     </Tag>
                   </Space>
                   <Tag style={{
                     borderRadius: 999, fontSize: 10, fontWeight: 700, border: 'none',
-                    background: filledInGroup === group.items.length ? '#d1fae5' : '#f3f4f6',
-                    color: filledInGroup === group.items.length ? '#065f46' : '#6b7280',
+                    background: filledInGroup === group.items.length ? 'var(--color-status-approved-bg)' : 'var(--color-bg-subtle)',
+                    color: filledInGroup === group.items.length ? 'var(--color-primary-dark)' : 'var(--color-text-tertiary)',
                   }}>
                     {filledInGroup}/{group.items.length}
                   </Tag>
@@ -631,28 +631,28 @@ function SelfMarkDrawer({ record, onClose, onSubmit }: SelfMarkDrawerProps) {
                   const scored  = marking?.score !== null && marking?.score !== undefined;
                   return (
                     <div key={kpi.id} style={{
-                      border: `1px solid ${scored ? CLR_BORDER : '#e5e7eb'}`,
-                      borderLeft: `3px solid ${scored ? CLR_PRIMARY : '#d1d5db'}`,
+                      border: `1px solid ${scored ? CLR_BORDER : 'var(--color-border)'}`,
+                      borderLeft: `3px solid ${scored ? CLR_PRIMARY : 'var(--color-border)'}`,
                       borderRadius: 10, padding: '12px 14px',
-                      background: scored ? CLR_PRIMARY_L : '#fafafa',
+                      background: scored ? CLR_PRIMARY_L : 'var(--color-bg-subtle)',
                     }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
                         <div>
                           <Space size={6}>
-                            <div style={{ fontSize: 10, background: '#f3f4f6', color: '#6b7280', borderRadius: 4, padding: '1px 6px', fontWeight: 700 }}>
+                            <div style={{ fontSize: 10, background: 'var(--color-bg-subtle)', color: 'var(--color-text-tertiary)', borderRadius: 4, padding: '1px 6px', fontWeight: 700 }}>
                               {idx + 1}
                             </div>
-                            <Text style={{ fontSize: 13, fontWeight: 700, color: '#111827' }}>{kpi.name}</Text>
+                            <Text style={{ fontSize: 13, fontWeight: 700, color: 'var(--color-text-primary)' }}>{kpi.name}</Text>
                           </Space>
-                          <div style={{ fontSize: 11, color: '#9ca3af', marginTop: 3, marginLeft: 20 }}>
+                          <div style={{ fontSize: 11, color: 'var(--color-text-disabled)', marginTop: 3, marginLeft: 20 }}>
                             {kpi.measurementCriteria}
                           </div>
                         </div>
                         <Space size={6}>
-                          <Tag style={{ borderRadius: 999, fontSize: 10, border: 'none', background: '#f3f4f6', color: '#374151', fontWeight: 600 }}>
+                          <Tag style={{ borderRadius: 999, fontSize: 10, border: 'none', background: 'var(--color-bg-subtle)', color: 'var(--color-text-secondary)', fontWeight: 600 }}>
                             Wt: {kpi.weight}%
                           </Tag>
-                          <Tag style={{ borderRadius: 999, fontSize: 10, border: 'none', background: '#ede9fe', color: '#6d28d9', fontWeight: 600 }}>
+                          <Tag style={{ borderRadius: 999, fontSize: 10, border: 'none', background: 'rgba(124, 58, 237, 0.13)', color: '#6d28d9', fontWeight: 600 }}>
                             Target: {kpi.targetValue}{kpi.unit}
                           </Tag>
                         </Space>
@@ -706,10 +706,10 @@ interface ReviewDrawerProps {
 }
 
 const ROLE_COLORS: Record<string, { icon: React.ReactNode; color: string; bg: string }> = {
-  Self:           { icon: <UserOutlined />,    color: '#0f766e', bg: '#eef8f6' },
-  'Line Manager': { icon: <StarOutlined />,    color: '#0284c7', bg: '#dbeafe' },
-  HR:             { icon: <FileTextOutlined />,color: '#7c3aed', bg: '#ede9fe' },
-  HOD:            { icon: <TrophyOutlined />,  color: '#d97706', bg: '#fef3c7' },
+  Self:           { icon: <UserOutlined />,    color: 'var(--color-primary)', bg: 'var(--color-primary-tint)' },
+  'Line Manager': { icon: <StarOutlined />,    color: '#0284c7', bg: 'var(--color-status-info-bg)' },
+  HR:             { icon: <FileTextOutlined />,color: '#7c3aed', bg: 'rgba(124, 58, 237, 0.13)' },
+  HOD:            { icon: <TrophyOutlined />,  color: '#d97706', bg: 'var(--color-status-pending-bg)' },
 };
 
 function FullPageAppraisalReview({ record, onClose }: ReviewDrawerProps) {
@@ -745,7 +745,7 @@ function FullPageAppraisalReview({ record, onClose }: ReviewDrawerProps) {
 
     if (pendingRoles.includes(role)) {
       return (
-        <div style={{ padding: '32px 0', textAlign: 'center', color: '#9ca3af' }}>
+        <div style={{ padding: '32px 0', textAlign: 'center', color: 'var(--color-text-disabled)' }}>
           <ClockCircleOutlined style={{ fontSize: 32, display: 'block', marginBottom: 10 }} />
           <Text type="secondary" style={{ fontSize: 13 }}>
             {role === 'Self' ? 'Self assessment not yet submitted.' : `Awaiting ${role} review.`}
@@ -758,7 +758,7 @@ function FullPageAppraisalReview({ record, onClose }: ReviewDrawerProps) {
       <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
         {/* Summary bar */}
         <div style={{
-          display: 'flex', alignItems: 'center', gap: 16, background: '#fff',
+          display: 'flex', alignItems: 'center', gap: 16, background: 'var(--color-bg-surface)',
           border: `1px solid ${CLR_BORDER}`, borderRadius: 12, padding: '12px 18px', flexWrap: 'wrap',
         }}>
           <div>
@@ -767,7 +767,7 @@ function FullPageAppraisalReview({ record, onClose }: ReviewDrawerProps) {
               {weightedScore}%
             </div>
           </div>
-          <div style={{ width: 1, height: 36, background: '#e5e7eb' }} />
+          <div style={{ width: 1, height: 36, background: 'var(--color-bg-subtle)' }} />
           <div>
             <FieldLabel>Achievement Level</FieldLabel>
             <Tag style={{ borderRadius: 999, fontWeight: 700, fontSize: 12, border: 'none', background: badge.bg, color: badge.color }}>
@@ -781,12 +781,12 @@ function FullPageAppraisalReview({ record, onClose }: ReviewDrawerProps) {
 
         {/* KPI groups */}
         {groups.map(group => (
-          <div key={group.id} style={{ background: '#fff', border: `1px solid #e5e7eb`, borderRadius: 12, overflow: 'hidden' }}>
+          <div key={group.id} style={{ background: 'var(--color-bg-surface)', border: `1px solid #e5e7eb`, borderRadius: 12, overflow: 'hidden' }}>
             <div style={{ background: CLR_PRIMARY_L, padding: '10px 16px', borderBottom: `1px solid ${CLR_BORDER}` }}>
               <Space size={8}>
                 <div style={{ width: 3, height: 13, background: CLR_PRIMARY, borderRadius: 2 }} />
-                <Text style={{ fontSize: 12, fontWeight: 700, color: '#111827' }}>{group.name}</Text>
-                <Tag style={{ borderRadius: 999, fontSize: 10, border: `1px solid ${CLR_BORDER}`, background: '#fff', color: CLR_PRIMARY, fontWeight: 600 }}>{group.code}</Tag>
+                <Text style={{ fontSize: 12, fontWeight: 700, color: 'var(--color-text-primary)' }}>{group.name}</Text>
+                <Tag style={{ borderRadius: 999, fontSize: 10, border: `1px solid ${CLR_BORDER}`, background: 'var(--color-bg-surface)', color: CLR_PRIMARY, fontWeight: 600 }}>{group.code}</Tag>
               </Space>
             </div>
             <div style={{ padding: '10px 16px', display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -794,36 +794,36 @@ function FullPageAppraisalReview({ record, onClose }: ReviewDrawerProps) {
                 const m = markings.find(x => x.subKPIId === kpi.id);
                 const pctScore = m && m.score !== null ? Math.round((m.score / kpi.markOutOf) * 100) : null;
                 return (
-                  <div key={kpi.id} style={{ border: '1px solid #f0f0f0', borderLeft: `3px solid ${pctScore !== null ? scoreColor(pctScore) : '#e5e7eb'}`, borderRadius: 8, padding: '10px 12px', background: pctScore !== null ? '#fafefe' : '#f9fafb' }}>
+                  <div key={kpi.id} style={{ border: '1px solid #f0f0f0', borderLeft: `3px solid ${pctScore !== null ? scoreColor(pctScore) : 'var(--color-border)'}`, borderRadius: 8, padding: '10px 12px', background: pctScore !== null ? '#fafefe' : 'var(--color-bg-subtle)' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 6 }}>
                       <Space size={6}>
-                        <div style={{ fontSize: 10, background: '#f3f4f6', color: '#6b7280', borderRadius: 4, padding: '1px 6px', fontWeight: 700 }}>
+                        <div style={{ fontSize: 10, background: 'var(--color-bg-subtle)', color: 'var(--color-text-tertiary)', borderRadius: 4, padding: '1px 6px', fontWeight: 700 }}>
                           {idx + 1}
                         </div>
-                        <Text style={{ fontSize: 13, fontWeight: 700, color: '#111827' }}>{kpi.name}</Text>
+                        <Text style={{ fontSize: 13, fontWeight: 700, color: 'var(--color-text-primary)' }}>{kpi.name}</Text>
                       </Space>
                       <Space size={6}>
                         {pctScore !== null ? (
                           <>
                             <div style={{ fontSize: 16, fontWeight: 800, color: scoreColor(pctScore) }}>
-                              {m!.score} <span style={{ fontSize: 11, color: '#9ca3af', fontWeight: 400 }}>/ {kpi.markOutOf}</span>
+                              {m!.score} <span style={{ fontSize: 11, color: 'var(--color-text-disabled)', fontWeight: 400 }}>/ {kpi.markOutOf}</span>
                             </div>
                             <Tag style={{ borderRadius: 999, fontSize: 10, border: 'none', background: scoreBadge(pctScore).bg, color: scoreBadge(pctScore).color, fontWeight: 700 }}>
                               {pctScore}%
                             </Tag>
                           </>
                         ) : (
-                          <Tag style={{ borderRadius: 999, fontSize: 10, border: 'none', background: '#f3f4f6', color: '#9ca3af' }}>Not scored</Tag>
+                          <Tag style={{ borderRadius: 999, fontSize: 10, border: 'none', background: 'var(--color-bg-subtle)', color: 'var(--color-text-disabled)' }}>Not scored</Tag>
                         )}
                       </Space>
                     </div>
                     {m?.remarks && (
-                      <div style={{ fontSize: 12, color: '#4b5563', background: '#f8fafc', borderRadius: 6, padding: '6px 10px', borderLeft: '2px solid #d1d5db', marginTop: 4 }}>
+                      <div style={{ fontSize: 12, color: 'var(--color-text-secondary)', background: 'var(--color-bg-subtle)', borderRadius: 6, padding: '6px 10px', borderLeft: '2px solid var(--color-border)', marginTop: 4 }}>
                         "{m.remarks}"
                       </div>
                     )}
                     {!m?.remarks && (
-                      <div style={{ fontSize: 11, color: '#d1d5db', fontStyle: 'italic' }}>No remarks provided.</div>
+                      <div style={{ fontSize: 11, color: 'var(--color-text-disabled)', fontStyle: 'italic' }}>No remarks provided.</div>
                     )}
                   </div>
                 );
@@ -851,8 +851,8 @@ function FullPageAppraisalReview({ record, onClose }: ReviewDrawerProps) {
           {/* Self Score */}
           <Col xs={24} sm={12}>
             <div style={{
-              background: '#fff',
-              border: `2px solid ${selfReady ? CLR_BORDER : '#e5e7eb'}`,
+              background: 'var(--color-bg-surface)',
+              border: `2px solid ${selfReady ? CLR_BORDER : 'var(--color-border)'}`,
               borderRadius: 12,
               padding: 16,
             }}>
@@ -900,7 +900,7 @@ function FullPageAppraisalReview({ record, onClose }: ReviewDrawerProps) {
         {/* Evaluator Scores breakdown */}
         {submittedRoles.length > 0 && (
           <div style={{
-            background: '#fff',
+            background: 'var(--color-bg-surface)',
             border: `1px solid ${CLR_BORDER}`,
             borderRadius: 12,
             padding: 16,
@@ -913,7 +913,7 @@ function FullPageAppraisalReview({ record, onClose }: ReviewDrawerProps) {
                 if (!submittedRoles.includes(role)) return null;
                 const markings = record.evalMarkings[role] ?? [];
                 const score = calcWeightedScore(record.subKPIs, markings);
-                const rcColor = ROLE_COLORS[role] ?? { color: '#6b7280', bg: '#f3f4f6' };
+                const rcColor = ROLE_COLORS[role] ?? { color: 'var(--color-text-tertiary)', bg: 'var(--color-bg-subtle)' };
                 return (
                   <div key={role} style={{
                     display: 'flex', alignItems: 'center', justifyContent: 'space-between',
@@ -941,7 +941,7 @@ function FullPageAppraisalReview({ record, onClose }: ReviewDrawerProps) {
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 14 }}>
               <span style={{ fontSize: 32, lineHeight: 1 }}>🎉</span>
               <div>
-                <div style={{ fontSize: 15, fontWeight: 800, color: '#065f46' }}>Congratulations!</div>
+                <div style={{ fontSize: 15, fontWeight: 800, color: 'var(--color-primary-dark)' }}>Congratulations!</div>
                 <div style={{ fontSize: 12, color: '#047857', marginTop: 2 }}>
                   Your outstanding performance has earned you a <strong>+{record.increment.percentageIncrease}% salary increment</strong> effective from {record.increment.effectiveDate}.
                 </div>
@@ -950,12 +950,12 @@ function FullPageAppraisalReview({ record, onClose }: ReviewDrawerProps) {
             <Row gutter={[12, 12]}>
               <Col xs={24} sm={8}>
                 <div>
-                  <div style={{ fontSize: 11, color: '#6b7280', fontWeight: 700, marginBottom: 4 }}>PERCENTAGE INCREASE</div>
+                  <div style={{ fontSize: 11, color: 'var(--color-text-tertiary)', fontWeight: 700, marginBottom: 4 }}>PERCENTAGE INCREASE</div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
                     <div style={{ fontSize: 20, fontWeight: 800, color: '#059669' }}>
                       +{record.increment.percentageIncrease}%
                     </div>
-                    <Tag style={{ borderRadius: 999, fontSize: 11, fontWeight: 600, border: 'none', background: '#d1fae5', color: '#065f46', margin: 0 }}>
+                    <Tag style={{ borderRadius: 999, fontSize: 11, fontWeight: 600, border: 'none', background: 'var(--color-status-approved-bg)', color: 'var(--color-primary-dark)', margin: 0 }}>
                       Based on Basic/Gross
                     </Tag>
                   </div>
@@ -963,16 +963,16 @@ function FullPageAppraisalReview({ record, onClose }: ReviewDrawerProps) {
               </Col>
               <Col xs={24} sm={8}>
                 <div>
-                  <div style={{ fontSize: 11, color: '#6b7280', fontWeight: 700, marginBottom: 4 }}>EFFECTIVE DATE</div>
-                  <div style={{ fontSize: 14, fontWeight: 700, color: '#111827' }}>
+                  <div style={{ fontSize: 11, color: 'var(--color-text-tertiary)', fontWeight: 700, marginBottom: 4 }}>EFFECTIVE DATE</div>
+                  <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--color-text-primary)' }}>
                     {record.increment.effectiveDate}
                   </div>
                 </div>
               </Col>
               <Col xs={24} sm={8}>
                 <div>
-                  <div style={{ fontSize: 11, color: '#6b7280', fontWeight: 700, marginBottom: 4 }}>NEXT APPRAISAL DATE</div>
-                  <div style={{ fontSize: 14, fontWeight: 700, color: '#0f766e' }}>
+                  <div style={{ fontSize: 11, color: 'var(--color-text-tertiary)', fontWeight: 700, marginBottom: 4 }}>NEXT APPRAISAL DATE</div>
+                  <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--color-primary)' }}>
                     {record.increment.nextAppraisalDate || 'N/A'}
                   </div>
                 </div>
@@ -981,13 +981,13 @@ function FullPageAppraisalReview({ record, onClose }: ReviewDrawerProps) {
             {record.increment.newDesignation && (
               <div style={{ marginTop: 12, paddingTop: 12, borderTop: '1px solid #a7f3d0', display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
                 <span style={{ fontSize: 16 }}>🏅</span>
-                <div style={{ fontSize: 11, color: '#6b7280', fontWeight: 700 }}>DESIGNATION CHANGE</div>
+                <div style={{ fontSize: 11, color: 'var(--color-text-tertiary)', fontWeight: 700 }}>DESIGNATION CHANGE</div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-                  <Tag style={{ borderRadius: 999, fontSize: 11, fontWeight: 600, background: '#f1f5f9', color: '#64748b', border: '1px solid #cbd5e1', margin: 0 }}>
+                  <Tag style={{ borderRadius: 999, fontSize: 11, fontWeight: 600, background: 'var(--color-bg-subtle)', color: 'var(--color-text-tertiary)', border: '1px solid var(--color-border)', margin: 0 }}>
                     {record.increment.previousDesignation}
                   </Tag>
                   <span style={{ color: '#059669', fontWeight: 800, fontSize: 14 }}>→</span>
-                  <Tag style={{ borderRadius: 999, fontSize: 11, fontWeight: 700, background: '#d1fae5', color: '#065f46', border: '1px solid #6ee7b7', margin: 0 }}>
+                  <Tag style={{ borderRadius: 999, fontSize: 11, fontWeight: 700, background: 'var(--color-status-approved-bg)', color: 'var(--color-primary-dark)', border: '1px solid #6ee7b7', margin: 0 }}>
                     {record.increment.newDesignation}
                   </Tag>
                 </div>
@@ -999,7 +999,7 @@ function FullPageAppraisalReview({ record, onClose }: ReviewDrawerProps) {
         {/* No Increment Info */}
         {record.increment && !record.increment.isApplied && (
           <div style={{
-            background: '#fef3c7',
+            background: 'var(--color-status-pending-bg)',
             border: `1px solid #fde68a`,
             borderRadius: 12,
             padding: 16,
@@ -1010,7 +1010,7 @@ function FullPageAppraisalReview({ record, onClose }: ReviewDrawerProps) {
                 <FieldLabel>No Salary Increment</FieldLabel>
               </div>
             </div>
-            <Text style={{ fontSize: 12, color: '#92400e' }}>
+            <Text style={{ fontSize: 12, color: '#d97706' }}>
               No increment has been approved for this appraisal period.
             </Text>
           </div>
@@ -1019,7 +1019,7 @@ function FullPageAppraisalReview({ record, onClose }: ReviewDrawerProps) {
         {/* Confirmation Details */}
         {record.confirmation && (
           <div style={{
-            background: record.confirmation.status === 'Extended' ? '#f0f9ff' : '#f0fdf4',
+            background: record.confirmation.status === 'Extended' ? 'var(--color-status-info-bg)' : 'var(--color-status-approved-bg)',
             border: `2px solid ${record.confirmation.status === 'Extended' ? '#bae6fd' : '#86efac'}`,
             borderRadius: 14,
             overflow: 'hidden',
@@ -1055,7 +1055,7 @@ function FullPageAppraisalReview({ record, onClose }: ReviewDrawerProps) {
                   }}>
                     <span style={{ fontSize: 28 }}>🎉</span>
                     <div>
-                      <div style={{ fontSize: 14, fontWeight: 800, color: '#065f46' }}>Congratulations!</div>
+                      <div style={{ fontSize: 14, fontWeight: 800, color: 'var(--color-primary-dark)' }}>Congratulations!</div>
                       <div style={{ fontSize: 12, color: '#047857', marginTop: 2 }}>
                         Your confirmation has been approved with a salary increment.
                       </div>
@@ -1065,48 +1065,48 @@ function FullPageAppraisalReview({ record, onClose }: ReviewDrawerProps) {
                   {/* Increment details */}
                   <Row gutter={[16, 16]}>
                     <Col xs={24} sm={8}>
-                      <div style={{ textAlign: 'center', background: '#fff', border: '1px solid #d1fae5', borderRadius: 10, padding: '14px 10px' }}>
-                        <div style={{ fontSize: 11, color: '#6b7280', fontWeight: 700, marginBottom: 6 }}>INCREMENT</div>
+                      <div style={{ textAlign: 'center', background: 'var(--color-bg-surface)', border: '1px solid #d1fae5', borderRadius: 10, padding: '14px 10px' }}>
+                        <div style={{ fontSize: 11, color: 'var(--color-text-tertiary)', fontWeight: 700, marginBottom: 6 }}>INCREMENT</div>
                         <div style={{ fontSize: 32, fontWeight: 900, color: '#059669', lineHeight: 1 }}>
                           +{record.confirmation.incrementPercentage}%
                         </div>
                         {record.confirmation.incrementBasis && (
                           <Tag style={{ marginTop: 8, borderRadius: 999, fontWeight: 700, fontSize: 11, border: 'none',
-                            background: '#d1fae5', color: '#065f46' }}>
+                            background: 'var(--color-status-approved-bg)', color: 'var(--color-primary-dark)' }}>
                             On {record.confirmation.incrementBasis}
                           </Tag>
                         )}
                       </div>
                     </Col>
                     <Col xs={24} sm={8}>
-                      <div style={{ textAlign: 'center', background: '#fff', border: '1px solid #d1fae5', borderRadius: 10, padding: '14px 10px' }}>
-                        <div style={{ fontSize: 11, color: '#6b7280', fontWeight: 700, marginBottom: 6 }}>EFFECTIVE FROM</div>
-                        <div style={{ fontSize: 16, fontWeight: 800, color: '#111827' }}>
+                      <div style={{ textAlign: 'center', background: 'var(--color-bg-surface)', border: '1px solid #d1fae5', borderRadius: 10, padding: '14px 10px' }}>
+                        <div style={{ fontSize: 11, color: 'var(--color-text-tertiary)', fontWeight: 700, marginBottom: 6 }}>EFFECTIVE FROM</div>
+                        <div style={{ fontSize: 16, fontWeight: 800, color: 'var(--color-text-primary)' }}>
                           {record.confirmation.effectiveFrom ?? '—'}
                         </div>
-                        <div style={{ fontSize: 10, color: '#9ca3af', marginTop: 4 }}>Start date of new salary</div>
+                        <div style={{ fontSize: 10, color: 'var(--color-text-disabled)', marginTop: 4 }}>Start date of new salary</div>
                       </div>
                     </Col>
                     <Col xs={24} sm={8}>
-                      <div style={{ textAlign: 'center', background: '#fff', border: '1px solid #d1fae5', borderRadius: 10, padding: '14px 10px' }}>
-                        <div style={{ fontSize: 11, color: '#6b7280', fontWeight: 700, marginBottom: 6 }}>CONFIRMED ON</div>
-                        <div style={{ fontSize: 16, fontWeight: 800, color: '#111827' }}>
+                      <div style={{ textAlign: 'center', background: 'var(--color-bg-surface)', border: '1px solid #d1fae5', borderRadius: 10, padding: '14px 10px' }}>
+                        <div style={{ fontSize: 11, color: 'var(--color-text-tertiary)', fontWeight: 700, marginBottom: 6 }}>CONFIRMED ON</div>
+                        <div style={{ fontSize: 16, fontWeight: 800, color: 'var(--color-text-primary)' }}>
                           {record.pipeline.find(s => s.role === 'HOD' || s.role === 'HR')?.submittedAt ?? '—'}
                         </div>
-                        <div style={{ fontSize: 10, color: '#9ca3af', marginTop: 4 }}>Final approval date</div>
+                        <div style={{ fontSize: 10, color: 'var(--color-text-disabled)', marginTop: 4 }}>Final approval date</div>
                       </div>
                     </Col>
                   </Row>
                   {record.confirmation.newDesignation && (
-                    <div style={{ marginTop: 12, background: '#fff', border: '1px solid #d1fae5', borderRadius: 10, padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+                    <div style={{ marginTop: 12, background: 'var(--color-bg-surface)', border: '1px solid #d1fae5', borderRadius: 10, padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
                       <span style={{ fontSize: 16 }}>🏅</span>
-                      <div style={{ fontSize: 11, color: '#6b7280', fontWeight: 700 }}>DESIGNATION CHANGE</div>
+                      <div style={{ fontSize: 11, color: 'var(--color-text-tertiary)', fontWeight: 700 }}>DESIGNATION CHANGE</div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-                        <Tag style={{ borderRadius: 999, fontSize: 11, fontWeight: 600, background: '#f1f5f9', color: '#64748b', border: '1px solid #cbd5e1', margin: 0 }}>
+                        <Tag style={{ borderRadius: 999, fontSize: 11, fontWeight: 600, background: 'var(--color-bg-subtle)', color: 'var(--color-text-tertiary)', border: '1px solid var(--color-border)', margin: 0 }}>
                           {record.confirmation.previousDesignation}
                         </Tag>
                         <span style={{ color: '#059669', fontWeight: 800, fontSize: 14 }}>→</span>
-                        <Tag style={{ borderRadius: 999, fontSize: 11, fontWeight: 700, background: '#d1fae5', color: '#065f46', border: '1px solid #6ee7b7', margin: 0 }}>
+                        <Tag style={{ borderRadius: 999, fontSize: 11, fontWeight: 700, background: 'var(--color-status-approved-bg)', color: 'var(--color-primary-dark)', border: '1px solid #6ee7b7', margin: 0 }}>
                           {record.confirmation.newDesignation}
                         </Tag>
                       </div>
@@ -1119,12 +1119,12 @@ function FullPageAppraisalReview({ record, onClose }: ReviewDrawerProps) {
               {record.confirmation.status === 'Completed' && (record.confirmation.incrementPercentage ?? 0) === 0 && (
                 <div style={{
                   display: 'flex', alignItems: 'center', gap: 12,
-                  background: '#fff', border: '1px solid #d1fae5', borderRadius: 10, padding: '14px 18px',
+                  background: 'var(--color-bg-surface)', border: '1px solid #d1fae5', borderRadius: 10, padding: '14px 18px',
                 }}>
                   <span style={{ fontSize: 24 }}>✅</span>
                   <div>
-                    <div style={{ fontSize: 13, fontWeight: 700, color: '#065f46' }}>Confirmation Approved</div>
-                    <div style={{ fontSize: 12, color: '#6b7280', marginTop: 2 }}>Confirmed without a salary increment for this cycle.</div>
+                    <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--color-primary-dark)' }}>Confirmation Approved</div>
+                    <div style={{ fontSize: 12, color: 'var(--color-text-tertiary)', marginTop: 2 }}>Confirmed without a salary increment for this cycle.</div>
                   </div>
                 </div>
               )}
@@ -1134,28 +1134,28 @@ function FullPageAppraisalReview({ record, onClose }: ReviewDrawerProps) {
                 <>
                   <Row gutter={[16, 16]} style={{ marginBottom: 14 }}>
                     <Col xs={24} sm={8}>
-                      <div style={{ background: '#fff', border: '1px solid #bae6fd', borderRadius: 10, padding: '12px 14px' }}>
-                        <div style={{ fontSize: 11, color: '#6b7280', fontWeight: 700, marginBottom: 4 }}>EXTENSION PERIOD</div>
+                      <div style={{ background: 'var(--color-bg-surface)', border: '1px solid #bae6fd', borderRadius: 10, padding: '12px 14px' }}>
+                        <div style={{ fontSize: 11, color: 'var(--color-text-tertiary)', fontWeight: 700, marginBottom: 4 }}>EXTENSION PERIOD</div>
                         <div style={{ fontSize: 20, fontWeight: 800, color: '#0284c7' }}>{record.confirmation.extensionMonths} Months</div>
                       </div>
                     </Col>
                     <Col xs={24} sm={8}>
-                      <div style={{ background: '#fff', border: '1px solid #bae6fd', borderRadius: 10, padding: '12px 14px' }}>
-                        <div style={{ fontSize: 11, color: '#6b7280', fontWeight: 700, marginBottom: 4 }}>EXTENSION UNTIL</div>
-                        <div style={{ fontSize: 16, fontWeight: 800, color: '#111827' }}>{record.confirmation.extensionEndDate}</div>
+                      <div style={{ background: 'var(--color-bg-surface)', border: '1px solid #bae6fd', borderRadius: 10, padding: '12px 14px' }}>
+                        <div style={{ fontSize: 11, color: 'var(--color-text-tertiary)', fontWeight: 700, marginBottom: 4 }}>EXTENSION UNTIL</div>
+                        <div style={{ fontSize: 16, fontWeight: 800, color: 'var(--color-text-primary)' }}>{record.confirmation.extensionEndDate}</div>
                       </div>
                     </Col>
                     <Col xs={24} sm={8}>
-                      <div style={{ background: '#fff', border: '1px solid #bae6fd', borderRadius: 10, padding: '12px 14px' }}>
-                        <div style={{ fontSize: 11, color: '#6b7280', fontWeight: 700, marginBottom: 4 }}>INCREMENT</div>
-                        <div style={{ fontSize: 16, fontWeight: 800, color: '#9ca3af' }}>Not Applied</div>
+                      <div style={{ background: 'var(--color-bg-surface)', border: '1px solid #bae6fd', borderRadius: 10, padding: '12px 14px' }}>
+                        <div style={{ fontSize: 11, color: 'var(--color-text-tertiary)', fontWeight: 700, marginBottom: 4 }}>INCREMENT</div>
+                        <div style={{ fontSize: 16, fontWeight: 800, color: 'var(--color-text-disabled)' }}>Not Applied</div>
                       </div>
                     </Col>
                   </Row>
                   {record.confirmation.extensionReason && (
-                    <div style={{ background: '#fff', border: '1px solid #bae6fd', borderRadius: 10, padding: '14px 16px' }}>
-                      <div style={{ fontSize: 10, color: '#6b7280', fontWeight: 700, letterSpacing: '0.05em', marginBottom: 8 }}>REASON FOR EXTENSION</div>
-                      <div style={{ fontSize: 13, color: '#111827', lineHeight: 1.7 }}>
+                    <div style={{ background: 'var(--color-bg-surface)', border: '1px solid #bae6fd', borderRadius: 10, padding: '14px 16px' }}>
+                      <div style={{ fontSize: 10, color: 'var(--color-text-tertiary)', fontWeight: 700, letterSpacing: '0.05em', marginBottom: 8 }}>REASON FOR EXTENSION</div>
+                      <div style={{ fontSize: 13, color: 'var(--color-text-primary)', lineHeight: 1.7 }}>
                         {record.confirmation.extensionReason}
                       </div>
                     </div>
@@ -1185,17 +1185,17 @@ function FullPageAppraisalReview({ record, onClose }: ReviewDrawerProps) {
       ),
     },
     ...record.pipeline.map(step => {
-      const rc = ROLE_COLORS[step.role] ?? { icon: <UserOutlined />, color: '#6b7280', bg: '#f3f4f6' };
+      const rc = ROLE_COLORS[step.role] ?? { icon: <UserOutlined />, color: 'var(--color-text-tertiary)', bg: 'var(--color-bg-subtle)' };
       const submitted = step.status === 'Submitted';
       return {
         key: step.role,
         label: (
           <Space size={5}>
-            <span style={{ color: submitted ? rc.color : '#9ca3af' }}>{rc.icon}</span>
-            <span style={{ fontWeight: 600, color: submitted ? rc.color : '#9ca3af' }}>{step.role}</span>
+            <span style={{ color: submitted ? rc.color : 'var(--color-text-disabled)' }}>{rc.icon}</span>
+            <span style={{ fontWeight: 600, color: submitted ? rc.color : 'var(--color-text-disabled)' }}>{step.role}</span>
             {submitted
               ? <Badge dot style={{ background: '#059669' }} />
-              : <Badge dot style={{ background: '#d1d5db' }} />}
+              : <Badge dot style={{ background: 'var(--color-border)' }} />}
           </Space>
         ),
         children: (
@@ -1224,8 +1224,8 @@ function FullPageAppraisalReview({ record, onClose }: ReviewDrawerProps) {
         }}>
           {/* Header */}
           <div style={{
-            background: '#fff',
-            borderBottom: '1px solid #e5e7eb',
+            background: 'var(--color-bg-surface)',
+            borderBottom: '1px solid var(--color-border)',
             padding: '16px 24px',
             display: 'flex',
             justifyContent: 'space-between',
@@ -1237,8 +1237,8 @@ function FullPageAppraisalReview({ record, onClose }: ReviewDrawerProps) {
                 <EyeOutlined style={{ color: CLR_PRIMARY, fontSize: 17 }} />
               </div>
               <div>
-                <div style={{ fontWeight: 700, fontSize: 16, color: '#111827' }}>Appraisal Review</div>
-                <div style={{ fontSize: 12, color: '#9ca3af', fontWeight: 400 }}>{record.periodLabel}</div>
+                <div style={{ fontWeight: 700, fontSize: 16, color: 'var(--color-text-primary)' }}>Appraisal Review</div>
+                <div style={{ fontSize: 12, color: 'var(--color-text-disabled)', fontWeight: 400 }}>{record.periodLabel}</div>
               </div>
             </Space>
             <Button
@@ -1259,29 +1259,29 @@ function FullPageAppraisalReview({ record, onClose }: ReviewDrawerProps) {
           }}>
             <div style={{ maxWidth: 1400, margin: '0 auto' }}>
               {/* Pipeline timeline */}
-              <div style={{ background: '#fff', border: `1px solid ${CLR_BORDER}`, borderRadius: 12, padding: '16px 20px', marginBottom: 20 }}>
-                <Text style={{ fontSize: 11, fontWeight: 700, color: '#9ca3af', letterSpacing: '0.05em' }}>PIPELINE PROGRESS</Text>
+              <div style={{ background: 'var(--color-bg-surface)', border: `1px solid ${CLR_BORDER}`, borderRadius: 12, padding: '16px 20px', marginBottom: 20 }}>
+                <Text style={{ fontSize: 11, fontWeight: 700, color: 'var(--color-text-disabled)', letterSpacing: '0.05em' }}>PIPELINE PROGRESS</Text>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 12, flexWrap: 'wrap' }}>
                   {record.pipeline.map((step, idx) => {
                     const done = step.status === 'Submitted';
-                    const rc   = ROLE_COLORS[step.role] ?? { color: '#6b7280', bg: '#f3f4f6', icon: <UserOutlined /> };
+                    const rc   = ROLE_COLORS[step.role] ?? { color: 'var(--color-text-tertiary)', bg: 'var(--color-bg-subtle)', icon: <UserOutlined /> };
                     return (
                       <div key={step.role} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                        {idx > 0 && <div style={{ width: 20, height: 1, background: done ? CLR_PRIMARY : '#e5e7eb' }} />}
+                        {idx > 0 && <div style={{ width: 20, height: 1, background: done ? CLR_PRIMARY : 'var(--color-border)' }} />}
                         <div style={{
                           display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3,
                         }}>
                           <div style={{
                             width: 34, height: 34, borderRadius: '50%',
-                            background: done ? rc.bg : '#f3f4f6',
-                            border: `2px solid ${done ? rc.color : '#d1d5db'}`,
+                            background: done ? rc.bg : 'var(--color-bg-subtle)',
+                            border: `2px solid ${done ? rc.color : 'var(--color-border)'}`,
                             display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            color: done ? rc.color : '#d1d5db', fontSize: 15,
+                            color: done ? rc.color : 'var(--color-border)', fontSize: 15,
                           }}>
                             {done ? <CheckCircleOutlined /> : rc.icon}
                           </div>
-                          <Text style={{ fontSize: 10, fontWeight: 700, color: done ? rc.color : '#9ca3af' }}>{step.role}</Text>
-                          {step.submittedAt && <Text style={{ fontSize: 9, color: '#9ca3af' }}>{step.submittedAt}</Text>}
+                          <Text style={{ fontSize: 10, fontWeight: 700, color: done ? rc.color : 'var(--color-text-disabled)' }}>{step.role}</Text>
+                          {step.submittedAt && <Text style={{ fontSize: 9, color: 'var(--color-text-disabled)' }}>{step.submittedAt}</Text>}
                         </div>
                       </div>
                     );
@@ -1301,8 +1301,8 @@ function FullPageAppraisalReview({ record, onClose }: ReviewDrawerProps) {
 
           {/* Footer */}
           <div style={{
-            background: '#fff',
-            borderTop: '1px solid #e5e7eb',
+            background: 'var(--color-bg-surface)',
+            borderTop: '1px solid var(--color-border)',
             padding: '16px 24px',
             display: 'flex',
             justifyContent: 'space-between',
@@ -1314,8 +1314,8 @@ function FullPageAppraisalReview({ record, onClose }: ReviewDrawerProps) {
                 <Space key={step.role} size={4}>
                   {step.status === 'Submitted'
                     ? <CheckCircleOutlined style={{ color: '#059669', fontSize: 12 }} />
-                    : <ClockCircleOutlined style={{ color: '#d1d5db', fontSize: 12 }} />}
-                  <Text style={{ fontSize: 11, color: step.status === 'Submitted' ? '#374151' : '#9ca3af', fontWeight: 600 }}>
+                    : <ClockCircleOutlined style={{ color: 'var(--color-text-disabled)', fontSize: 12 }} />}
+                  <Text style={{ fontSize: 11, color: step.status === 'Submitted' ? 'var(--color-text-secondary)' : 'var(--color-text-disabled)', fontWeight: 600 }}>
                     {step.role}
                   </Text>
                 </Space>
@@ -1602,19 +1602,19 @@ function LMMarkDrawer({ employee, onClose, onSubmit }: LMMarkDrawerProps) {
             <StarOutlined style={{ color: CLR_PRIMARY, fontSize: 17 }} />
           </div>
           <div>
-            <div style={{ fontWeight: 700, fontSize: 15, color: '#111827' }}>
+            <div style={{ fontWeight: 700, fontSize: 15, color: 'var(--color-text-primary)' }}>
               {isReadOnly ? 'View LM Review' : 'Line Manager Review'}
             </div>
-            <div style={{ fontSize: 11, color: '#9ca3af' }}>{employee.name} · {employee.employeeCode} · {employee.periodLabel}</div>
+            <div style={{ fontSize: 11, color: 'var(--color-text-disabled)' }}>{employee.name} · {employee.employeeCode} · {employee.periodLabel}</div>
           </div>
         </Space>
       }
-      styles={{ body: { background: CLR_BG, padding: '16px 20px' }, header: { background: '#fff', borderBottom: '1px solid #e5e7eb' } }}
+      styles={{ body: { background: CLR_BG, padding: '16px 20px' }, header: { background: 'var(--color-bg-surface)', borderBottom: '1px solid var(--color-border)' } }}
       footer={
         !isReadOnly ? (
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 8 }}>
             <Space size={6}>
-              <Text style={{ fontSize: 12, color: '#6b7280' }}>{filledKPIs} / {totalKPIs} scored</Text>
+              <Text style={{ fontSize: 12, color: 'var(--color-text-tertiary)' }}>{filledKPIs} / {totalKPIs} scored</Text>
               {filledKPIs > 0 && <Text style={{ fontSize: 12, fontWeight: 700, color: scoreColor(weightedScore) }}>· Weighted: {weightedScore}%</Text>}
             </Space>
             <Space>
@@ -1630,7 +1630,7 @@ function LMMarkDrawer({ employee, onClose, onSubmit }: LMMarkDrawerProps) {
       }
     >
       {/* Employee summary */}
-      <div style={{ background: '#fff', border: `1px solid ${CLR_BORDER}`, borderRadius: 12, padding: '14px 18px', marginBottom: 14 }}>
+      <div style={{ background: 'var(--color-bg-surface)', border: `1px solid ${CLR_BORDER}`, borderRadius: 12, padding: '14px 18px', marginBottom: 14 }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 10 }}>
           <Space size={10}>
             <Avatar size={40} style={{ background: employee.avatarColor, fontWeight: 700, fontSize: 14 }}>
@@ -1642,10 +1642,10 @@ function LMMarkDrawer({ employee, onClose, onSubmit }: LMMarkDrawerProps) {
             </div>
           </Space>
           <Space size={8}>
-            <Tag style={{ borderRadius: 999, fontSize: 11, fontWeight: 700, paddingInline: 10, border: 'none', background: employee.appraisalType === 'Confirmation' ? '#e0f2fe' : '#ede9fe', color: employee.appraisalType === 'Confirmation' ? '#0369a1' : '#6d28d9' }}>
+            <Tag style={{ borderRadius: 999, fontSize: 11, fontWeight: 700, paddingInline: 10, border: 'none', background: employee.appraisalType === 'Confirmation' ? 'var(--color-status-info-bg)' : 'rgba(124, 58, 237, 0.13)', color: employee.appraisalType === 'Confirmation' ? '#0369a1' : '#6d28d9' }}>
               {employee.appraisalType === 'Confirmation' ? '✦ Confirmation' : '⬟ Appraisal'}
             </Tag>
-            {isReadOnly && <Tag style={{ borderRadius: 999, fontWeight: 700, border: 'none', background: '#d1fae5', color: '#065f46' }}><CheckCircleOutlined /> Review Submitted</Tag>}
+            {isReadOnly && <Tag style={{ borderRadius: 999, fontWeight: 700, border: 'none', background: 'var(--color-status-approved-bg)', color: 'var(--color-primary-dark)' }}><CheckCircleOutlined /> Review Submitted</Tag>}
           </Space>
         </div>
 
@@ -1657,8 +1657,8 @@ function LMMarkDrawer({ employee, onClose, onSubmit }: LMMarkDrawerProps) {
           return (
             <div style={{ marginTop: 14, display: 'flex', gap: 10, flexWrap: 'wrap' }}>
               {/* Self evaluation card */}
-              <div style={{ flex: 1, minWidth: 120, background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: 10, padding: '10px 14px' }}>
-                <div style={{ fontSize: 10, fontWeight: 700, color: '#6b7280', letterSpacing: '0.05em', marginBottom: 4 }}>SELF SCORE</div>
+              <div style={{ flex: 1, minWidth: 120, background: 'var(--color-status-approved-bg)', border: '1px solid #bbf7d0', borderRadius: 10, padding: '10px 14px' }}>
+                <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--color-text-tertiary)', letterSpacing: '0.05em', marginBottom: 4 }}>SELF SCORE</div>
                 <div style={{ fontSize: 22, fontWeight: 900, color: scoreColor(selfTotal), lineHeight: 1.1 }}>{selfTotal}%</div>
                 <Tag style={{ marginTop: 5, borderRadius: 999, fontSize: 10, border: 'none', background: scoreBadge(selfTotal).bg, color: scoreBadge(selfTotal).color, fontWeight: 700, padding: '0 8px' }}>
                   {scoreBadge(selfTotal).label}
@@ -1667,8 +1667,8 @@ function LMMarkDrawer({ employee, onClose, onSubmit }: LMMarkDrawerProps) {
               </div>
 
               {/* LM evaluation card */}
-              <div style={{ flex: 1, minWidth: 120, background: lmHasScore ? '#eff6ff' : '#f9fafb', border: `1px solid ${lmHasScore ? '#bfdbfe' : '#e5e7eb'}`, borderRadius: 10, padding: '10px 14px' }}>
-                <div style={{ fontSize: 10, fontWeight: 700, color: '#6b7280', letterSpacing: '0.05em', marginBottom: 4 }}>LM SCORE</div>
+              <div style={{ flex: 1, minWidth: 120, background: lmHasScore ? 'var(--color-status-info-bg)' : 'var(--color-bg-subtle)', border: `1px solid ${lmHasScore ? 'rgba(59, 130, 246, 0.22)' : 'var(--color-border)'}`, borderRadius: 10, padding: '10px 14px' }}>
+                <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--color-text-tertiary)', letterSpacing: '0.05em', marginBottom: 4 }}>LM SCORE</div>
                 {lmHasScore ? (
                   <>
                     <div style={{ fontSize: 22, fontWeight: 900, color: scoreColor(lmTotal), lineHeight: 1.1 }}>{lmTotal}%</div>
@@ -1679,17 +1679,17 @@ function LMMarkDrawer({ employee, onClose, onSubmit }: LMMarkDrawerProps) {
                   </>
                 ) : (
                   <>
-                    <div style={{ fontSize: 13, fontWeight: 600, color: '#9ca3af', marginTop: 4 }}>Not scored yet</div>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--color-text-disabled)', marginTop: 4 }}>Not scored yet</div>
                     {!isReadOnly && (
-                      <div style={{ fontSize: 10, color: '#d1d5db', marginTop: 4 }}>Score KPIs below to see LM score</div>
+                      <div style={{ fontSize: 10, color: 'var(--color-text-disabled)', marginTop: 4 }}>Score KPIs below to see LM score</div>
                     )}
                   </>
                 )}
               </div>
 
               {/* Average card */}
-              <div style={{ flex: 1, minWidth: 120, background: avgTotal !== null ? 'linear-gradient(135deg, #fef3c7 0%, #fef9ee 100%)' : '#f9fafb', border: `1px solid ${avgTotal !== null ? '#fde68a' : '#e5e7eb'}`, borderRadius: 10, padding: '10px 14px' }}>
-                <div style={{ fontSize: 10, fontWeight: 700, color: '#6b7280', letterSpacing: '0.05em', marginBottom: 4 }}>EVAL. AVG</div>
+              <div style={{ flex: 1, minWidth: 120, background: avgTotal !== null ? 'linear-gradient(135deg, #fef3c7 0%, #fef9ee 100%)' : 'var(--color-bg-subtle)', border: `1px solid ${avgTotal !== null ? 'rgba(253, 230, 138, 0.4)' : 'var(--color-border)'}`, borderRadius: 10, padding: '10px 14px' }}>
+                <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--color-text-tertiary)', letterSpacing: '0.05em', marginBottom: 4 }}>EVAL. AVG</div>
                 {avgTotal !== null && avgBadge ? (
                   <>
                     <div style={{ fontSize: 22, fontWeight: 900, color: scoreColor(avgTotal), lineHeight: 1.1 }}>{avgTotal}%</div>
@@ -1699,22 +1699,22 @@ function LMMarkDrawer({ employee, onClose, onSubmit }: LMMarkDrawerProps) {
                     <Progress percent={avgTotal} strokeColor={scoreColor(avgTotal)} trailColor="#e5e7eb" size="small" showInfo={false} style={{ marginTop: 8 }} />
                   </>
                 ) : (
-                  <div style={{ fontSize: 13, fontWeight: 600, color: '#9ca3af', marginTop: 4 }}>Pending scores</div>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--color-text-disabled)', marginTop: 4 }}>Pending scores</div>
                 )}
               </div>
 
               {/* Completion card — only in edit mode */}
               {!isReadOnly && (
-                <div style={{ flex: 1, minWidth: 120, background: pct === 100 ? '#d1fae5' : '#f8fafc', border: `1px solid ${pct === 100 ? '#6ee7b7' : '#e2e8f0'}`, borderRadius: 10, padding: '10px 14px' }}>
-                  <div style={{ fontSize: 10, fontWeight: 700, color: '#6b7280', letterSpacing: '0.05em', marginBottom: 4 }}>COMPLETION</div>
+                <div style={{ flex: 1, minWidth: 120, background: pct === 100 ? 'var(--color-status-approved-bg)' : 'var(--color-bg-subtle)', border: `1px solid ${pct === 100 ? 'var(--color-status-approved-bg)' : 'var(--color-border)'}`, borderRadius: 10, padding: '10px 14px' }}>
+                  <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--color-text-tertiary)', letterSpacing: '0.05em', marginBottom: 4 }}>COMPLETION</div>
                   <div style={{ fontSize: 22, fontWeight: 900, color: pct === 100 ? '#059669' : CLR_PRIMARY, lineHeight: 1.1 }}>{pct}%</div>
-                  <div style={{ fontSize: 11, color: '#6b7280', marginTop: 4 }}>{filledKPIs} / {totalKPIs} KPIs scored</div>
+                  <div style={{ fontSize: 11, color: 'var(--color-text-tertiary)', marginTop: 4 }}>{filledKPIs} / {totalKPIs} KPIs scored</div>
                   <Progress percent={pct} strokeColor={pct === 100 ? '#059669' : CLR_PRIMARY} trailColor="#e5e7eb" size="small" showInfo={false} style={{ marginTop: 8 }} />
                 </div>
               )}
 
               {/* LM Evaluation % card — always visible */}
-              <div style={{ flex: 1.5, minWidth: 160, background: lmHasScore ? 'linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%)' : '#f9fafb', border: `1px solid ${lmHasScore ? '#93c5fd' : '#e5e7eb'}`, borderRadius: 10, padding: '10px 14px', position: 'relative', overflow: 'hidden' }}>
+              <div style={{ flex: 1.5, minWidth: 160, background: lmHasScore ? 'linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%)' : 'var(--color-bg-subtle)', border: `1px solid ${lmHasScore ? '#93c5fd' : 'var(--color-border)'}`, borderRadius: 10, padding: '10px 14px', position: 'relative', overflow: 'hidden' }}>
                 {lmHasScore && <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, background: 'linear-gradient(90deg, #3b82f6, #0f766e)' }} />}
                 <div style={{ fontSize: 10, fontWeight: 700, color: '#1d4ed8', letterSpacing: '0.05em', marginBottom: 2 }}>LM EVALUATION %</div>
                 <div style={{ fontSize: 10, color: '#93c5fd', marginBottom: 6 }}>Weighted KPI score</div>
@@ -1728,8 +1728,8 @@ function LMMarkDrawer({ employee, onClose, onSubmit }: LMMarkDrawerProps) {
                   </>
                 ) : (
                   <>
-                    <div style={{ fontSize: 13, fontWeight: 600, color: '#9ca3af', marginTop: 4 }}>Not yet evaluated</div>
-                    <div style={{ fontSize: 10, color: '#d1d5db', marginTop: 4 }}>Score KPIs below to calculate</div>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--color-text-disabled)', marginTop: 4 }}>Not yet evaluated</div>
+                    <div style={{ fontSize: 10, color: 'var(--color-text-disabled)', marginTop: 4 }}>Score KPIs below to calculate</div>
                   </>
                 )}
               </div>
@@ -1743,11 +1743,11 @@ function LMMarkDrawer({ employee, onClose, onSubmit }: LMMarkDrawerProps) {
         {groups.map(group => (
           <Panel
             key={group.id}
-            style={{ background: '#fff', border: `1px solid ${CLR_BORDER}`, borderRadius: 12, overflow: 'hidden', marginBottom: 0 }}
+            style={{ background: 'var(--color-bg-surface)', border: `1px solid ${CLR_BORDER}`, borderRadius: 12, overflow: 'hidden', marginBottom: 0 }}
             header={
               <Space size={8}>
                 <div style={{ width: 3, height: 14, background: CLR_PRIMARY, borderRadius: 2 }} />
-                <Text style={{ fontSize: 12, fontWeight: 700, color: '#111827' }}>{group.name}</Text>
+                <Text style={{ fontSize: 12, fontWeight: 700, color: 'var(--color-text-primary)' }}>{group.name}</Text>
                 <Tag style={{ borderRadius: 999, fontSize: 10, border: `1px solid ${CLR_BORDER}`, background: CLR_PRIMARY_L, color: CLR_PRIMARY, fontWeight: 600 }}>{group.code}</Tag>
               </Space>
             }
@@ -1759,27 +1759,27 @@ function LMMarkDrawer({ employee, onClose, onSubmit }: LMMarkDrawerProps) {
                 const scored   = lmMark?.score !== null && lmMark?.score !== undefined;
                 const selfPct  = selfMark?.score != null ? Math.round((selfMark.score / kpi.markOutOf) * 100) : null;
                 return (
-                  <div key={kpi.id} style={{ border: `1px solid ${scored ? CLR_BORDER : '#e5e7eb'}`, borderLeft: `3px solid ${scored ? CLR_PRIMARY : '#d1d5db'}`, borderRadius: 10, padding: '12px 14px', background: scored ? CLR_PRIMARY_L : '#fafafa' }}>
+                  <div key={kpi.id} style={{ border: `1px solid ${scored ? CLR_BORDER : 'var(--color-border)'}`, borderLeft: `3px solid ${scored ? CLR_PRIMARY : 'var(--color-border)'}`, borderRadius: 10, padding: '12px 14px', background: scored ? CLR_PRIMARY_L : 'var(--color-bg-subtle)' }}>
                     {/* KPI title row */}
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 10 }}>
                       <div>
                         <Space size={6}>
-                          <div style={{ fontSize: 10, background: '#f3f4f6', color: '#6b7280', borderRadius: 4, padding: '1px 6px', fontWeight: 700 }}>{idx + 1}</div>
-                          <Text style={{ fontSize: 13, fontWeight: 700, color: '#111827' }}>{kpi.name}</Text>
+                          <div style={{ fontSize: 10, background: 'var(--color-bg-subtle)', color: 'var(--color-text-tertiary)', borderRadius: 4, padding: '1px 6px', fontWeight: 700 }}>{idx + 1}</div>
+                          <Text style={{ fontSize: 13, fontWeight: 700, color: 'var(--color-text-primary)' }}>{kpi.name}</Text>
                         </Space>
-                        <div style={{ fontSize: 11, color: '#9ca3af', marginTop: 3, marginLeft: 20 }}>{kpi.measurementCriteria}</div>
+                        <div style={{ fontSize: 11, color: 'var(--color-text-disabled)', marginTop: 3, marginLeft: 20 }}>{kpi.measurementCriteria}</div>
                       </div>
-                      <Tag style={{ borderRadius: 999, fontSize: 10, border: 'none', background: '#f3f4f6', color: '#374151', fontWeight: 600 }}>Wt: {kpi.weight}%</Tag>
+                      <Tag style={{ borderRadius: 999, fontSize: 10, border: 'none', background: 'var(--color-bg-subtle)', color: 'var(--color-text-secondary)', fontWeight: 600 }}>Wt: {kpi.weight}%</Tag>
                     </div>
 
                     {/* Employee self input — prominent read-only panel */}
-                    <div style={{ background: '#f0f9ff', border: '1px solid #bae6fd', borderRadius: 8, padding: '10px 12px', marginBottom: 10 }}>
+                    <div style={{ background: 'var(--color-status-info-bg)', border: '1px solid #bae6fd', borderRadius: 8, padding: '10px 12px', marginBottom: 10 }}>
                       <div style={{ fontSize: 10, fontWeight: 700, color: '#0369a1', letterSpacing: '0.05em', marginBottom: 6 }}>EMPLOYEE SELF-ASSESSMENT</div>
                       <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', alignItems: 'flex-start' }}>
                         <div style={{ minWidth: 80 }}>
-                          <div style={{ fontSize: 10, color: '#64748b', fontWeight: 600, marginBottom: 2 }}>Score</div>
+                          <div style={{ fontSize: 10, color: 'var(--color-text-tertiary)', fontWeight: 600, marginBottom: 2 }}>Score</div>
                           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                            <Text style={{ fontSize: 18, fontWeight: 800, color: selfPct !== null ? scoreColor(selfPct) : '#9ca3af' }}>
+                            <Text style={{ fontSize: 18, fontWeight: 800, color: selfPct !== null ? scoreColor(selfPct) : 'var(--color-text-disabled)' }}>
                               {selfMark?.score ?? '—'}<Text type="secondary" style={{ fontSize: 11, fontWeight: 400 }}>/{kpi.markOutOf}</Text>
                             </Text>
                             {selfPct !== null && (
@@ -1789,7 +1789,7 @@ function LMMarkDrawer({ employee, onClose, onSubmit }: LMMarkDrawerProps) {
                         </div>
                         {selfMark?.remarks && (
                           <div style={{ flex: 1, minWidth: 160 }}>
-                            <div style={{ fontSize: 10, color: '#64748b', fontWeight: 600, marginBottom: 2 }}>Remarks</div>
+                            <div style={{ fontSize: 10, color: 'var(--color-text-tertiary)', fontWeight: 600, marginBottom: 2 }}>Remarks</div>
                             <div style={{ fontSize: 12, color: '#1e40af', fontStyle: 'italic', lineHeight: 1.5 }}>"{selfMark.remarks}"</div>
                           </div>
                         )}
@@ -1835,8 +1835,8 @@ function LMMarkDrawer({ employee, onClose, onSubmit }: LMMarkDrawerProps) {
       </Collapse>
 
       {/* Overall Remarks */}
-      <div style={{ background: '#fff', border: `1px solid ${isReadOnly ? CLR_BORDER : '#fde68a'}`, borderRadius: 12, padding: '16px 18px', marginTop: 14 }}>
-        <div style={{ fontSize: 12, fontWeight: 700, color: '#374151', marginBottom: 8 }}>
+      <div style={{ background: 'var(--color-bg-surface)', border: `1px solid ${isReadOnly ? CLR_BORDER : 'rgba(253, 230, 138, 0.4)'}`, borderRadius: 12, padding: '16px 18px', marginTop: 14 }}>
+        <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--color-text-secondary)', marginBottom: 8 }}>
           Overall Remarks <span style={{ color: '#dc2626', fontSize: 11 }}>{!isReadOnly ? '*' : ''}</span>
         </div>
         <Input.TextArea
@@ -1851,7 +1851,7 @@ function LMMarkDrawer({ employee, onClose, onSubmit }: LMMarkDrawerProps) {
           status={!isReadOnly && !overallRemarks.trim() ? 'warning' : undefined}
         />
         {!isReadOnly && (
-          <div style={{ fontSize: 11, color: '#9ca3af', marginTop: 6 }}>Required before submitting review.</div>
+          <div style={{ fontSize: 11, color: 'var(--color-text-disabled)', marginTop: 6 }}>Required before submitting review.</div>
         )}
       </div>
     </Drawer>
@@ -1912,23 +1912,23 @@ function HRMarkDrawer({ employee, onClose, onSubmit }: HRMarkDrawerProps) {
       width={960}
       title={
         <Space size={10}>
-          <div style={{ width: 36, height: 36, borderRadius: 10, background: '#ede9fe', border: '1px solid #c4b5fd', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ width: 36, height: 36, borderRadius: 10, background: 'rgba(124, 58, 237, 0.13)', border: '1px solid #c4b5fd', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <FileTextOutlined style={{ color: '#6d28d9', fontSize: 17 }} />
           </div>
           <div>
-            <div style={{ fontWeight: 700, fontSize: 15, color: '#111827' }}>
+            <div style={{ fontWeight: 700, fontSize: 15, color: 'var(--color-text-primary)' }}>
               {isReadOnly ? 'View HR Review' : 'HR Review'}
             </div>
-            <div style={{ fontSize: 11, color: '#9ca3af' }}>{employee.name} · {employee.employeeCode} · {employee.periodLabel}</div>
+            <div style={{ fontSize: 11, color: 'var(--color-text-disabled)' }}>{employee.name} · {employee.employeeCode} · {employee.periodLabel}</div>
           </div>
         </Space>
       }
-      styles={{ body: { background: CLR_BG, padding: '16px 20px' }, header: { background: '#fff', borderBottom: '1px solid #e5e7eb' } }}
+      styles={{ body: { background: CLR_BG, padding: '16px 20px' }, header: { background: 'var(--color-bg-surface)', borderBottom: '1px solid var(--color-border)' } }}
       footer={
         !isReadOnly ? (
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 8 }}>
             <Space size={6}>
-              <Text style={{ fontSize: 12, color: '#6b7280' }}>{filledKPIs} / {totalKPIs} scored</Text>
+              <Text style={{ fontSize: 12, color: 'var(--color-text-tertiary)' }}>{filledKPIs} / {totalKPIs} scored</Text>
               {filledKPIs > 0 && <Text style={{ fontSize: 12, fontWeight: 700, color: scoreColor(weightedScore) }}>· Weighted: {weightedScore}%</Text>}
             </Space>
             <Space>
@@ -1943,27 +1943,27 @@ function HRMarkDrawer({ employee, onClose, onSubmit }: HRMarkDrawerProps) {
         )
       }
     >
-      <div style={{ background: '#fff', border: `1px solid ${CLR_BORDER}`, borderRadius: 12, padding: '12px 14px', marginBottom: 14 }}>
-        <div style={{ fontSize: 11, color: '#6b7280', fontWeight: 700, marginBottom: 8, letterSpacing: '0.04em' }}>EVALUATION OVERVIEW</div>
+      <div style={{ background: 'var(--color-bg-surface)', border: `1px solid ${CLR_BORDER}`, borderRadius: 12, padding: '12px 14px', marginBottom: 14 }}>
+        <div style={{ fontSize: 11, color: 'var(--color-text-tertiary)', fontWeight: 700, marginBottom: 8, letterSpacing: '0.04em' }}>EVALUATION OVERVIEW</div>
         <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-          <div style={{ flex: 1, minWidth: 120, background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: 10, padding: '10px 12px' }}>
-            <div style={{ fontSize: 10, fontWeight: 700, color: '#6b7280', marginBottom: 4 }}>SELF %</div>
+          <div style={{ flex: 1, minWidth: 120, background: 'var(--color-status-approved-bg)', border: '1px solid #bbf7d0', borderRadius: 10, padding: '10px 12px' }}>
+            <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--color-text-tertiary)', marginBottom: 4 }}>SELF %</div>
             <div style={{ fontSize: 22, fontWeight: 900, color: scoreColor(selfTotal), lineHeight: 1.1 }}>{selfTotal}%</div>
             <Tag style={{ marginTop: 5, borderRadius: 999, fontSize: 10, border: 'none', background: scoreBadge(selfTotal).bg, color: scoreBadge(selfTotal).color, fontWeight: 700, padding: '0 8px' }}>
               {scoreBadge(selfTotal).label}
             </Tag>
           </div>
 
-          <div style={{ flex: 1, minWidth: 120, background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: 10, padding: '10px 12px' }}>
-            <div style={{ fontSize: 10, fontWeight: 700, color: '#6b7280', marginBottom: 4 }}>LM %</div>
+          <div style={{ flex: 1, minWidth: 120, background: 'var(--color-status-info-bg)', border: '1px solid #bfdbfe', borderRadius: 10, padding: '10px 12px' }}>
+            <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--color-text-tertiary)', marginBottom: 4 }}>LM %</div>
             <div style={{ fontSize: 22, fontWeight: 900, color: scoreColor(lmTotal), lineHeight: 1.1 }}>{lmTotal}%</div>
             <Tag style={{ marginTop: 5, borderRadius: 999, fontSize: 10, border: 'none', background: scoreBadge(lmTotal).bg, color: scoreBadge(lmTotal).color, fontWeight: 700, padding: '0 8px' }}>
               {scoreBadge(lmTotal).label}
             </Tag>
           </div>
 
-          <div style={{ flex: 1, minWidth: 120, background: hrHasScore ? '#faf5ff' : '#f9fafb', border: `1px solid ${hrHasScore ? '#ddd6fe' : '#e5e7eb'}`, borderRadius: 10, padding: '10px 12px' }}>
-            <div style={{ fontSize: 10, fontWeight: 700, color: '#6b7280', marginBottom: 4 }}>HR %</div>
+          <div style={{ flex: 1, minWidth: 120, background: hrHasScore ? 'var(--color-status-info-bg)' : 'var(--color-bg-subtle)', border: `1px solid ${hrHasScore ? 'rgba(124, 58, 237, 0.22)' : 'var(--color-border)'}`, borderRadius: 10, padding: '10px 12px' }}>
+            <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--color-text-tertiary)', marginBottom: 4 }}>HR %</div>
             {hrHasScore ? (
               <>
                 <div style={{ fontSize: 22, fontWeight: 900, color: scoreColor(hrTotal), lineHeight: 1.1 }}>{hrTotal}%</div>
@@ -1972,12 +1972,12 @@ function HRMarkDrawer({ employee, onClose, onSubmit }: HRMarkDrawerProps) {
                 </Tag>
               </>
             ) : (
-              <div style={{ fontSize: 13, fontWeight: 600, color: '#9ca3af', marginTop: 6 }}>Not scored yet</div>
+              <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--color-text-disabled)', marginTop: 6 }}>Not scored yet</div>
             )}
           </div>
 
-          <div style={{ flex: 1, minWidth: 120, background: avgTotal !== null ? 'linear-gradient(135deg, #fef3c7 0%, #fef9ee 100%)' : '#f9fafb', border: `1px solid ${avgTotal !== null ? '#fde68a' : '#e5e7eb'}`, borderRadius: 10, padding: '10px 12px' }}>
-            <div style={{ fontSize: 10, fontWeight: 700, color: '#6b7280', marginBottom: 4 }}>EVAL. AVG %</div>
+          <div style={{ flex: 1, minWidth: 120, background: avgTotal !== null ? 'linear-gradient(135deg, #fef3c7 0%, #fef9ee 100%)' : 'var(--color-bg-subtle)', border: `1px solid ${avgTotal !== null ? 'rgba(253, 230, 138, 0.4)' : 'var(--color-border)'}`, borderRadius: 10, padding: '10px 12px' }}>
+            <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--color-text-tertiary)', marginBottom: 4 }}>EVAL. AVG %</div>
             {avgTotal !== null ? (
               <>
                 <div style={{ fontSize: 22, fontWeight: 900, color: scoreColor(avgTotal), lineHeight: 1.1 }}>{avgTotal}%</div>
@@ -1986,7 +1986,7 @@ function HRMarkDrawer({ employee, onClose, onSubmit }: HRMarkDrawerProps) {
                 </Tag>
               </>
             ) : (
-              <div style={{ fontSize: 13, fontWeight: 600, color: '#9ca3af', marginTop: 6 }}>Pending HR score</div>
+              <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--color-text-disabled)', marginTop: 6 }}>Pending HR score</div>
             )}
           </div>
         </div>
@@ -1996,12 +1996,12 @@ function HRMarkDrawer({ employee, onClose, onSubmit }: HRMarkDrawerProps) {
         {groups.map(group => (
           <Panel
             key={group.id}
-            style={{ background: '#fff', border: `1px solid ${CLR_BORDER}`, borderRadius: 12, overflow: 'hidden', marginBottom: 0 }}
+            style={{ background: 'var(--color-bg-surface)', border: `1px solid ${CLR_BORDER}`, borderRadius: 12, overflow: 'hidden', marginBottom: 0 }}
             header={
               <Space size={8}>
                 <div style={{ width: 3, height: 14, background: '#6d28d9', borderRadius: 2 }} />
-                <Text style={{ fontSize: 12, fontWeight: 700, color: '#111827' }}>{group.name}</Text>
-                <Tag style={{ borderRadius: 999, fontSize: 10, border: '1px solid #ddd6fe', background: '#f5f3ff', color: '#6d28d9', fontWeight: 600 }}>{group.code}</Tag>
+                <Text style={{ fontSize: 12, fontWeight: 700, color: 'var(--color-text-primary)' }}>{group.name}</Text>
+                <Tag style={{ borderRadius: 999, fontSize: 10, border: '1px solid #ddd6fe', background: 'rgba(124, 58, 237, 0.09)', color: '#6d28d9', fontWeight: 600 }}>{group.code}</Tag>
               </Space>
             }
           >
@@ -2012,27 +2012,27 @@ function HRMarkDrawer({ employee, onClose, onSubmit }: HRMarkDrawerProps) {
                 const lmMark   = employee.lmMarkings.find(m => m.subKPIId === kpi.id);
                 const scored   = hrMark?.score !== null && hrMark?.score !== undefined;
                 return (
-                  <div key={kpi.id} style={{ border: `1px solid ${scored ? '#ddd6fe' : '#e5e7eb'}`, borderLeft: `3px solid ${scored ? '#6d28d9' : '#d1d5db'}`, borderRadius: 10, padding: '12px 14px', background: scored ? '#faf5ff' : '#fafafa' }}>
+                  <div key={kpi.id} style={{ border: `1px solid ${scored ? 'rgba(124, 58, 237, 0.22)' : 'var(--color-border)'}`, borderLeft: `3px solid ${scored ? '#6d28d9' : 'var(--color-border)'}`, borderRadius: 10, padding: '12px 14px', background: scored ? 'var(--color-status-info-bg)' : 'var(--color-bg-subtle)' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 10 }}>
                       <div>
                         <Space size={6}>
-                          <div style={{ fontSize: 10, background: '#f3f4f6', color: '#6b7280', borderRadius: 4, padding: '1px 6px', fontWeight: 700 }}>{idx + 1}</div>
-                          <Text style={{ fontSize: 13, fontWeight: 700, color: '#111827' }}>{kpi.name}</Text>
+                          <div style={{ fontSize: 10, background: 'var(--color-bg-subtle)', color: 'var(--color-text-tertiary)', borderRadius: 4, padding: '1px 6px', fontWeight: 700 }}>{idx + 1}</div>
+                          <Text style={{ fontSize: 13, fontWeight: 700, color: 'var(--color-text-primary)' }}>{kpi.name}</Text>
                         </Space>
-                        <div style={{ fontSize: 11, color: '#9ca3af', marginTop: 3, marginLeft: 20 }}>{kpi.measurementCriteria}</div>
+                        <div style={{ fontSize: 11, color: 'var(--color-text-disabled)', marginTop: 3, marginLeft: 20 }}>{kpi.measurementCriteria}</div>
                       </div>
-                      <Tag style={{ borderRadius: 999, fontSize: 10, border: 'none', background: '#f3f4f6', color: '#374151', fontWeight: 600 }}>Wt: {kpi.weight}%</Tag>
+                      <Tag style={{ borderRadius: 999, fontSize: 10, border: 'none', background: 'var(--color-bg-subtle)', color: 'var(--color-text-secondary)', fontWeight: 600 }}>Wt: {kpi.weight}%</Tag>
                     </div>
 
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 10 }}>
-                      <div style={{ background: '#f0f9ff', border: '1px solid #bae6fd', borderRadius: 8, padding: '9px 10px' }}>
+                      <div style={{ background: 'var(--color-status-info-bg)', border: '1px solid #bae6fd', borderRadius: 8, padding: '9px 10px' }}>
                         <div style={{ fontSize: 10, fontWeight: 700, color: '#0369a1', marginBottom: 2 }}>EMPLOYEE MARK</div>
                         <div style={{ fontSize: 12, color: '#1e40af' }}>
                           Score: <strong>{selfMark?.score ?? '—'}/{kpi.markOutOf}</strong>
                         </div>
                         <div style={{ fontSize: 11, color: '#1e3a8a', marginTop: 3 }}>{selfMark?.remarks || 'No remarks'}</div>
                       </div>
-                      <div style={{ background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: 8, padding: '9px 10px' }}>
+                      <div style={{ background: 'var(--color-status-info-bg)', border: '1px solid #bfdbfe', borderRadius: 8, padding: '9px 10px' }}>
                         <div style={{ fontSize: 10, fontWeight: 700, color: '#1d4ed8', marginBottom: 2 }}>LINE MANAGER MARK</div>
                         <div style={{ fontSize: 12, color: '#1e40af' }}>
                           Score: <strong>{lmMark?.score ?? '—'}/{kpi.markOutOf}</strong>
@@ -2073,8 +2073,8 @@ function HRMarkDrawer({ employee, onClose, onSubmit }: HRMarkDrawerProps) {
         ))}
       </Collapse>
 
-      <div style={{ background: '#fff', border: `1px solid ${isReadOnly ? CLR_BORDER : '#ddd6fe'}`, borderRadius: 12, padding: '16px 18px', marginTop: 14 }}>
-        <div style={{ fontSize: 12, fontWeight: 700, color: '#374151', marginBottom: 8 }}>
+      <div style={{ background: 'var(--color-bg-surface)', border: `1px solid ${isReadOnly ? CLR_BORDER : 'rgba(124, 58, 237, 0.22)'}`, borderRadius: 12, padding: '16px 18px', marginTop: 14 }}>
+        <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--color-text-secondary)', marginBottom: 8 }}>
           HR Overall Remarks <span style={{ color: '#dc2626', fontSize: 11 }}>{!isReadOnly ? '*' : ''}</span>
         </div>
         <Input.TextArea
@@ -2089,11 +2089,11 @@ function HRMarkDrawer({ employee, onClose, onSubmit }: HRMarkDrawerProps) {
           status={!isReadOnly && !overallRemarks.trim() ? 'warning' : undefined}
         />
         {!isReadOnly && (
-          <div style={{ fontSize: 11, color: '#9ca3af', marginTop: 6 }}>Required before submitting HR review.</div>
+          <div style={{ fontSize: 11, color: 'var(--color-text-disabled)', marginTop: 6 }}>Required before submitting HR review.</div>
         )}
       </div>
 
-      <div style={{ marginTop: 10, fontSize: 11, color: pct === 100 ? '#059669' : '#6b7280', fontWeight: 600 }}>
+      <div style={{ marginTop: 10, fontSize: 11, color: pct === 100 ? '#059669' : 'var(--color-text-tertiary)', fontWeight: 600 }}>
         Completion: {filledKPIs}/{totalKPIs} KPI scored ({pct}%)
       </div>
     </Drawer>
@@ -2243,17 +2243,17 @@ function HRDecisionModal({ employee, open, onClose, onSendForApproval, mode, onA
     >
       <div style={{ marginBottom: 10 }}>
         {employee.decisionApprovalStatus === 'Pending' && (
-          <Tag style={{ border: 'none', borderRadius: 999, background: '#fef3c7', color: '#92400e', fontWeight: 700 }}>Decision Approval: Pending</Tag>
+          <Tag style={{ border: 'none', borderRadius: 999, background: 'var(--color-status-pending-bg)', color: '#d97706', fontWeight: 700 }}>Decision Approval: Pending</Tag>
         )}
         {employee.decisionApprovalStatus === 'Approved' && (
-          <Tag style={{ border: 'none', borderRadius: 999, background: '#d1fae5', color: '#065f46', fontWeight: 700 }}>Decision Approval: Approved</Tag>
+          <Tag style={{ border: 'none', borderRadius: 999, background: 'var(--color-status-approved-bg)', color: 'var(--color-primary-dark)', fontWeight: 700 }}>Decision Approval: Approved</Tag>
         )}
         {employee.decisionApprovalStatus === 'Rejected' && (
-          <Tag style={{ border: 'none', borderRadius: 999, background: '#fee2e2', color: '#991b1b', fontWeight: 700 }}>Decision Approval: Rejected</Tag>
+          <Tag style={{ border: 'none', borderRadius: 999, background: 'var(--color-status-rejected-bg)', color: '#991b1b', fontWeight: 700 }}>Decision Approval: Rejected</Tag>
         )}
       </div>
       {mode === 'hr' && employee.decisionApprovalStatus === 'Rejected' && employee.decisionApprovalRemarks && (
-        <div style={{ marginBottom: 10, background: '#fff1f2', border: '1px solid #fecdd3', borderRadius: 8, padding: '8px 10px' }}>
+        <div style={{ marginBottom: 10, background: 'var(--color-status-rejected-bg)', border: '1px solid #fecdd3', borderRadius: 8, padding: '8px 10px' }}>
           <div style={{ fontSize: 11, fontWeight: 700, color: '#991b1b', marginBottom: 2 }}>Reject Reason</div>
           <div style={{ fontSize: 12, color: '#be123c' }}>{employee.decisionApprovalRemarks}</div>
         </div>
@@ -2261,28 +2261,28 @@ function HRDecisionModal({ employee, open, onClose, onSendForApproval, mode, onA
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,minmax(120px,1fr))', gap: 10, marginBottom: 14 }}>
         {[
-          { label: 'Self', score: selfTotal, bg: '#f0fdf4' },
-          { label: 'Line Manager', score: lmTotal, bg: '#eff6ff' },
-          { label: 'HR', score: hrTotal, bg: '#faf5ff' },
-          { label: 'Achievement Level', score: overall, bg: '#fef9c3' },
+          { label: 'Self', score: selfTotal, bg: 'var(--color-status-approved-bg)' },
+          { label: 'Line Manager', score: lmTotal, bg: 'var(--color-status-info-bg)' },
+          { label: 'HR', score: hrTotal, bg: 'var(--color-status-info-bg)' },
+          { label: 'Achievement Level', score: overall, bg: 'var(--color-status-pending-bg)' },
         ].map(card => (
-          <div key={card.label} style={{ background: card.bg, border: '1px solid #e5e7eb', borderRadius: 8, padding: '10px 12px' }}>
-            <div style={{ fontSize: 10, color: '#6b7280', fontWeight: 700 }}>{card.label.toUpperCase()}</div>
+          <div key={card.label} style={{ background: card.bg, border: '1px solid var(--color-border)', borderRadius: 8, padding: '10px 12px' }}>
+            <div style={{ fontSize: 10, color: 'var(--color-text-tertiary)', fontWeight: 700 }}>{card.label.toUpperCase()}</div>
             <div style={{ marginTop: 3, fontSize: 20, fontWeight: 900, color: scoreColor(card.score) }}>{card.score}%</div>
             <Tag style={{ marginTop: 4, borderRadius: 999, border: 'none', background: scoreBadge(card.score).bg, color: scoreBadge(card.score).color, fontSize: 10, fontWeight: 700 }}>{scoreBadge(card.score).label}</Tag>
           </div>
         ))}
       </div>
 
-      <div style={{ maxHeight: 220, overflowY: 'auto', marginBottom: 14, border: '1px solid #e5e7eb', borderRadius: 10, padding: 10 }}>
+      <div style={{ maxHeight: 220, overflowY: 'auto', marginBottom: 14, border: '1px solid var(--color-border)', borderRadius: 10, padding: 10 }}>
         {employee.subKPIs.map((kpi, idx) => {
           const selfMark = employee.selfMarkings.find(m => m.subKPIId === kpi.id);
           const lmMark = employee.lmMarkings.find(m => m.subKPIId === kpi.id);
           const hrMark = employee.hrMarkings.find(m => m.subKPIId === kpi.id);
           return (
-            <div key={kpi.id} style={{ padding: '8px 6px', borderBottom: idx < employee.subKPIs.length - 1 ? '1px solid #f3f4f6' : undefined }}>
-              <div style={{ fontWeight: 700, fontSize: 12, color: '#111827' }}>{kpi.name}</div>
-              <div style={{ fontSize: 11, color: '#6b7280', marginTop: 2 }}>
+            <div key={kpi.id} style={{ padding: '8px 6px', borderBottom: idx < employee.subKPIs.length - 1 ? '1px solid var(--color-border)' : undefined }}>
+              <div style={{ fontWeight: 700, fontSize: 12, color: 'var(--color-text-primary)' }}>{kpi.name}</div>
+              <div style={{ fontSize: 11, color: 'var(--color-text-tertiary)', marginTop: 2 }}>
                 Emp: {selfMark?.score ?? '—'}/{kpi.markOutOf} | LM: {lmMark?.score ?? '—'}/{kpi.markOutOf} | HR: {hrMark?.score ?? '—'}/{kpi.markOutOf}
               </div>
             </div>
@@ -2291,7 +2291,7 @@ function HRDecisionModal({ employee, open, onClose, onSendForApproval, mode, onA
       </div>
 
       {employee.appraisalType === 'Confirmation' ? (
-        <div style={{ border: '1px solid #e5e7eb', borderRadius: 10, padding: 12 }}>
+        <div style={{ border: '1px solid var(--color-border)', borderRadius: 10, padding: 12 }}>
           <FieldLabel>Decision Type</FieldLabel>
           <Space wrap style={{ marginBottom: 10 }}>
             {(['Confirmation', 'Extend', 'Separation'] as HRConfirmationAction[]).map(v => (
@@ -2322,7 +2322,7 @@ function HRDecisionModal({ employee, open, onClose, onSendForApproval, mode, onA
                 <FieldLabel>Pay Scale</FieldLabel>
                 <Select value={decision.payScale} onChange={v => setPatch({ payScale: v })} options={PAY_SCALE_OPTIONS.map(v => ({ value: v, label: v }))} />
                 {decision.payScale && (
-                  <div style={{ marginTop: 4, fontSize: 11, color: '#6b7280' }}>
+                  <div style={{ marginTop: 4, fontSize: 11, color: 'var(--color-text-tertiary)' }}>
                     Range: {PAY_SCALE_RANGES[decision.payScale]}
                   </div>
                 )}
@@ -2351,7 +2351,7 @@ function HRDecisionModal({ employee, open, onClose, onSendForApproval, mode, onA
                 <Col span={8}>
                   <FieldLabel>Increment %</FieldLabel>
                   <InputNumber value={decision.incrementPercent} onChange={v => setPatch({ incrementPercent: Number(v) || undefined })} min={0} max={100} style={{ width: '100%' }} />
-                  <div style={{ marginTop: 4, fontSize: 11, color: '#6b7280' }}>Recommended: {recommendedIncrementPct}%</div>
+                  <div style={{ marginTop: 4, fontSize: 11, color: 'var(--color-text-tertiary)' }}>Recommended: {recommendedIncrementPct}%</div>
                 </Col>
               )}
               <Col span={8}>
@@ -2388,14 +2388,14 @@ function HRDecisionModal({ employee, open, onClose, onSendForApproval, mode, onA
           {decision.confirmationAction === 'Separation' && (
             <Row gutter={12}>
               <Col span={24}>
-                <FieldLabel>Effective Date <span style={{ fontSize: 10, color: '#9ca3af', fontWeight: 400 }}>(Optional)</span></FieldLabel>
+                <FieldLabel>Effective Date <span style={{ fontSize: 10, color: 'var(--color-text-disabled)', fontWeight: 400 }}>(Optional)</span></FieldLabel>
                 <Input type="date" value={decision.effectiveDate ?? ''} onChange={e => setPatch({ effectiveDate: e.target.value || undefined })} style={{ maxWidth: 220 }} />
               </Col>
             </Row>
           )}
         </div>
       ) : (
-        <div style={{ border: '1px solid #e5e7eb', borderRadius: 10, padding: 12 }}>
+        <div style={{ border: '1px solid var(--color-border)', borderRadius: 10, padding: 12 }}>
           <FieldLabel>Decision Type</FieldLabel>
           <Space wrap style={{ marginBottom: 10 }}>
             {(['Appraisal', 'Separation'] as HRAppraisalAction[]).map(v => (
@@ -2427,7 +2427,7 @@ function HRDecisionModal({ employee, open, onClose, onSendForApproval, mode, onA
                   <FieldLabel>Pay Scale</FieldLabel>
                   <Select value={decision.payScale} onChange={v => setPatch({ payScale: v })} options={PAY_SCALE_OPTIONS.map(v => ({ value: v, label: v }))} />
                   {decision.payScale && (
-                    <div style={{ marginTop: 4, fontSize: 11, color: '#6b7280' }}>
+                    <div style={{ marginTop: 4, fontSize: 11, color: 'var(--color-text-tertiary)' }}>
                       Range: {PAY_SCALE_RANGES[decision.payScale]}
                     </div>
                   )}
@@ -2453,7 +2453,7 @@ function HRDecisionModal({ employee, open, onClose, onSendForApproval, mode, onA
                   <Col span={8}>
                     <FieldLabel>Increment %</FieldLabel>
                     <InputNumber value={decision.incrementPercent} onChange={v => setPatch({ incrementPercent: Number(v) || undefined })} min={0} max={100} style={{ width: '100%' }} />
-                    <div style={{ marginTop: 4, fontSize: 11, color: '#6b7280' }}>Recommended: {recommendedIncrementPct}%</div>
+                    <div style={{ marginTop: 4, fontSize: 11, color: 'var(--color-text-tertiary)' }}>Recommended: {recommendedIncrementPct}%</div>
                   </Col>
                 )}
               </Row>
@@ -2465,15 +2465,15 @@ function HRDecisionModal({ employee, open, onClose, onSendForApproval, mode, onA
                 <Col span={12}>
                   <FieldLabel>
                     Next Appraisal Date
-                    <span style={{ marginLeft: 6, fontSize: 10, fontWeight: 400, color: '#059669', background: '#d1fae5', borderRadius: 999, padding: '1px 7px' }}>Auto-set</span>
+                    <span style={{ marginLeft: 6, fontSize: 10, fontWeight: 400, color: '#059669', background: 'var(--color-status-approved-bg)', borderRadius: 999, padding: '1px 7px' }}>Auto-set</span>
                   </FieldLabel>
                   <Input
                     type="date"
                     value={decision.nextAppraisalDate ?? ''}
                     readOnly
-                    style={{ background: '#f0fdf4', borderColor: '#a7f3d0', color: '#065f46', cursor: 'default' }}
+                    style={{ background: 'var(--color-status-approved-bg)', borderColor: '#a7f3d0', color: 'var(--color-primary-dark)', cursor: 'default' }}
                   />
-                  <div style={{ fontSize: 10, color: '#6b7280', marginTop: 3 }}>Auto-calculated: 1 year from period end</div>
+                  <div style={{ fontSize: 10, color: 'var(--color-text-tertiary)', marginTop: 3 }}>Auto-calculated: 1 year from period end</div>
                 </Col>
               </Row>
             </>
@@ -2482,7 +2482,7 @@ function HRDecisionModal({ employee, open, onClose, onSendForApproval, mode, onA
           {decision.appraisalAction === 'Separation' && (
             <Row gutter={12}>
               <Col span={24}>
-                <FieldLabel>Effective Date <span style={{ fontSize: 10, color: '#9ca3af', fontWeight: 400 }}>(Optional)</span></FieldLabel>
+                <FieldLabel>Effective Date <span style={{ fontSize: 10, color: 'var(--color-text-disabled)', fontWeight: 400 }}>(Optional)</span></FieldLabel>
                 <Input type="date" value={decision.effectiveDate ?? ''} onChange={e => setPatch({ effectiveDate: e.target.value || undefined })} style={{ maxWidth: 220 }} />
               </Col>
             </Row>
@@ -2648,7 +2648,7 @@ function ApprovalsPage({ open, approvals, onClose, onLMSubmit, onHRSubmit, onHRD
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             <Button icon={<ArrowLeftOutlined />} onClick={onClose} style={{ borderRadius: 8 }}>Back</Button>
             <div>
-              <Title level={3} style={{ margin: 0, color: '#1f2937' }}>
+              <Title level={3} style={{ margin: 0, color: 'var(--color-text-secondary)' }}>
                 Approvals
                 <Text style={{ marginLeft: 10, color: CLR_PRIMARY, fontSize: 16, fontWeight: 500 }}>
                   {activeTab === 'lm' ? 'Line Manager Review' : activeTab === 'hr' ? 'HR Review & Decision' : 'Decision Approval'}
@@ -2664,17 +2664,17 @@ function ApprovalsPage({ open, approvals, onClose, onLMSubmit, onHRSubmit, onHRD
             </div>
           </div>
           <Space size={8}>
-            <div style={{ background: '#fef3c7', border: '1px solid #fde68a', borderRadius: 8, padding: '6px 14px', fontSize: 12, fontWeight: 700, color: '#92400e' }}>
+            <div style={{ background: 'var(--color-status-pending-bg)', border: '1px solid #fde68a', borderRadius: 8, padding: '6px 14px', fontSize: 12, fontWeight: 700, color: '#d97706' }}>
               {activeTab === 'decision-approval' ? `${decisionPending} Pending` : `${pending.length} Pending`}
             </div>
-            <div style={{ background: '#d1fae5', border: '1px solid #6ee7b7', borderRadius: 8, padding: '6px 14px', fontSize: 12, fontWeight: 700, color: '#065f46' }}>
+            <div style={{ background: 'var(--color-status-approved-bg)', border: '1px solid #6ee7b7', borderRadius: 8, padding: '6px 14px', fontSize: 12, fontWeight: 700, color: 'var(--color-primary-dark)' }}>
               {activeTab === 'decision-approval' ? `${decisionDone} Processed` : `${submitted.length} Submitted`}
             </div>
           </Space>
         </div>
       </div>
 
-      <div style={{ background: '#fff', border: `1px solid ${CLR_BORDER}`, borderRadius: 12, padding: '10px 12px', marginBottom: 12 }}>
+      <div style={{ background: 'var(--color-bg-surface)', border: `1px solid ${CLR_BORDER}`, borderRadius: 12, padding: '10px 12px', marginBottom: 12 }}>
         <Tabs
           activeKey={activeTab}
           onChange={k => {
@@ -2689,7 +2689,7 @@ function ApprovalsPage({ open, approvals, onClose, onLMSubmit, onHRSubmit, onHRD
                 <Space size={6}>
                   <StarOutlined />
                   Line manager
-                  <span style={{ background: '#f3f4f6', borderRadius: 999, padding: '1px 7px', fontSize: 11, fontWeight: 700 }}>
+                  <span style={{ background: 'var(--color-bg-subtle)', borderRadius: 999, padding: '1px 7px', fontSize: 11, fontWeight: 700 }}>
                     {approvals.filter(a => a.lmStatus === 'Pending').length}
                   </span>
                 </Space>
@@ -2701,7 +2701,7 @@ function ApprovalsPage({ open, approvals, onClose, onLMSubmit, onHRSubmit, onHRD
                 <Space size={6}>
                   <FileTextOutlined />
                   HR
-                  <span style={{ background: '#f3f4f6', borderRadius: 999, padding: '1px 7px', fontSize: 11, fontWeight: 700 }}>
+                  <span style={{ background: 'var(--color-bg-subtle)', borderRadius: 999, padding: '1px 7px', fontSize: 11, fontWeight: 700 }}>
                     {approvals.filter(a => a.hrStatus === 'Pending').length}
                   </span>
                 </Space>
@@ -2713,7 +2713,7 @@ function ApprovalsPage({ open, approvals, onClose, onLMSubmit, onHRSubmit, onHRD
                 <Space size={6}>
                   <SafetyCertificateOutlined />
                   Decision approval
-                  <span style={{ background: '#f3f4f6', borderRadius: 999, padding: '1px 7px', fontSize: 11, fontWeight: 700 }}>
+                  <span style={{ background: 'var(--color-bg-subtle)', borderRadius: 999, padding: '1px 7px', fontSize: 11, fontWeight: 700 }}>
                     {decisionPending}
                   </span>
                 </Space>
@@ -2724,13 +2724,13 @@ function ApprovalsPage({ open, approvals, onClose, onLMSubmit, onHRSubmit, onHRD
       </div>
 
       {/* Search + filters toolbar */}
-      <div style={{ background: '#fff', border: `1px solid ${CLR_BORDER}`, borderRadius: 12, padding: '12px 16px', marginBottom: 14 }}>
+      <div style={{ background: 'var(--color-bg-surface)', border: `1px solid ${CLR_BORDER}`, borderRadius: 12, padding: '12px 16px', marginBottom: 14 }}>
         <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
           <Input
             value={searchQ}
             onChange={e => setSearchQ(e.target.value)}
             placeholder="Search by name, code or designation"
-            prefix={<UserOutlined style={{ color: '#9ca3af' }} />}
+            prefix={<UserOutlined style={{ color: 'var(--color-text-disabled)' }} />}
             allowClear
             style={{ width: 260, borderRadius: 8, borderColor: CLR_BORDER }}
           />
@@ -2760,13 +2760,13 @@ function ApprovalsPage({ open, approvals, onClose, onLMSubmit, onHRSubmit, onHRD
             {(['All', 'Appraisal', 'Confirmation'] as const).map(t => (
               <Button key={t} size="small" type={filterType === t ? 'primary' : 'default'}
                 onClick={() => setFilterType(t)}
-                style={{ borderRadius: 999, ...(filterType !== t ? { borderColor: CLR_BORDER, color: '#6b7280' } : {}) }}>
+                style={{ borderRadius: 999, ...(filterType !== t ? { borderColor: CLR_BORDER, color: 'var(--color-text-tertiary)' } : {}) }}>
                 {t === 'All' ? 'All Types' : t === 'Appraisal' ? '⬟ Appraisal' : '✦ Confirmation'}
               </Button>
             ))}
           </div>
           {(searchQ || filterStatus !== 'All' || filterType !== 'All' || decisionFilter !== 'All') && (
-            <Button size="small" onClick={resetFilters} style={{ borderRadius: 999, borderColor: '#fca5a5', color: '#dc2626' }}>
+            <Button size="small" onClick={resetFilters} style={{ borderRadius: 999, borderColor: 'var(--color-status-rejected-bg)', color: '#dc2626' }}>
               Reset
             </Button>
           )}
@@ -2780,7 +2780,7 @@ function ApprovalsPage({ open, approvals, onClose, onLMSubmit, onHRSubmit, onHRD
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
 
           {decisionRows.map(emp => (
-            <div key={emp.id} style={{ background: '#fff', border: `1px solid ${CLR_BORDER}`, borderRadius: 12, padding: '12px 14px' }}>
+            <div key={emp.id} style={{ background: 'var(--color-bg-surface)', border: `1px solid ${CLR_BORDER}`, borderRadius: 12, padding: '12px 14px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 10 }}>
                 <div>
                   <Text strong>{emp.name} ({emp.employeeCode})</Text>
@@ -2791,15 +2791,15 @@ function ApprovalsPage({ open, approvals, onClose, onLMSubmit, onHRSubmit, onHRD
                 </Space>
               </div>
               <div style={{ marginTop: 8 }}>
-                {emp.decisionApprovalStatus === 'Pending' && <Tag style={{ border: 'none', borderRadius: 999, background: '#fef3c7', color: '#92400e' }}>Pending Approval</Tag>}
-                {emp.decisionApprovalStatus === 'Approved' && <Tag style={{ border: 'none', borderRadius: 999, background: '#d1fae5', color: '#065f46' }}>Approved</Tag>}
-                {emp.decisionApprovalStatus === 'Rejected' && <Tag style={{ border: 'none', borderRadius: 999, background: '#fee2e2', color: '#991b1b' }}>Rejected</Tag>}
+                {emp.decisionApprovalStatus === 'Pending' && <Tag style={{ border: 'none', borderRadius: 999, background: 'var(--color-status-pending-bg)', color: '#d97706' }}>Pending Approval</Tag>}
+                {emp.decisionApprovalStatus === 'Approved' && <Tag style={{ border: 'none', borderRadius: 999, background: 'var(--color-status-approved-bg)', color: 'var(--color-primary-dark)' }}>Approved</Tag>}
+                {emp.decisionApprovalStatus === 'Rejected' && <Tag style={{ border: 'none', borderRadius: 999, background: 'var(--color-status-rejected-bg)', color: '#991b1b' }}>Rejected</Tag>}
               </div>
             </div>
           ))}
 
           {decisionRows.length === 0 && (
-            <div style={{ textAlign: 'center', padding: '60px 0', color: '#9ca3af' }}>
+            <div style={{ textAlign: 'center', padding: '60px 0', color: 'var(--color-text-disabled)' }}>
               <Text type="secondary" style={{ fontSize: 14 }}>No decision requests found.</Text>
             </div>
           )}
@@ -2822,18 +2822,18 @@ function ApprovalsPage({ open, approvals, onClose, onLMSubmit, onHRSubmit, onHRD
           const hrCanMark = emp.lmStatus === 'Submitted' || emp.hrStatus === 'Submitted';
 
           return (
-            <div key={emp.id} style={{ background: '#fff', border: `1px solid ${isPending ? (isUrgent ? '#fca5a5' : '#fde68a') : CLR_BORDER}`, borderRadius: 14, overflow: 'hidden', boxShadow: '0 1px 4px rgba(0,0,0,0.04)' }}>
+            <div key={emp.id} style={{ background: 'var(--color-bg-surface)', border: `1px solid ${isPending ? (isUrgent ? 'var(--color-status-rejected-bg)' : 'rgba(253, 230, 138, 0.4)') : CLR_BORDER}`, borderRadius: 14, overflow: 'hidden', boxShadow: '0 1px 4px rgba(0,0,0,0.04)' }}>
               {/* Header row */}
-              <div style={{ background: isPending ? (isUrgent ? '#fff5f5' : '#fffbeb') : 'linear-gradient(90deg,#d1fae5,#ecfdf5)', borderBottom: `1px solid ${isPending ? (isUrgent ? '#fca5a5' : '#fde68a') : '#a7f3d0'}`, padding: '12px 18px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 10 }}>
+              <div style={{ background: isPending ? (isUrgent ? 'var(--color-status-rejected-bg)' : 'var(--color-status-pending-bg)') : 'linear-gradient(90deg,#d1fae5,#ecfdf5)', borderBottom: `1px solid ${isPending ? (isUrgent ? 'var(--color-status-rejected-bg)' : 'rgba(253, 230, 138, 0.4)') : '#a7f3d0'}`, padding: '12px 18px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 10 }}>
                 <Space size={12}>
                   <Avatar size={38} style={{ background: emp.avatarColor, fontWeight: 700, fontSize: 13 }}>
                     {emp.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
                   </Avatar>
                   <div>
                     <Space size={8} style={{ marginBottom: 2 }}>
-                      <Text strong style={{ fontSize: 14, color: '#111827' }}>{emp.name}</Text>
+                      <Text strong style={{ fontSize: 14, color: 'var(--color-text-primary)' }}>{emp.name}</Text>
                       <Text type="secondary" style={{ fontSize: 11 }}>{emp.employeeCode}</Text>
-                      <Tag style={{ borderRadius: 999, fontSize: 10, fontWeight: 700, paddingInline: 8, border: 'none', background: isConf ? '#e0f2fe' : '#ede9fe', color: isConf ? '#0369a1' : '#6d28d9' }}>
+                      <Tag style={{ borderRadius: 999, fontSize: 10, fontWeight: 700, paddingInline: 8, border: 'none', background: isConf ? 'var(--color-status-info-bg)' : 'rgba(124, 58, 237, 0.13)', color: isConf ? '#0369a1' : '#6d28d9' }}>
                         {isConf ? '✦ Confirmation' : '⬟ Appraisal'}
                       </Tag>
                     </Space>
@@ -2914,16 +2914,16 @@ function ApprovalsPage({ open, approvals, onClose, onLMSubmit, onHRSubmit, onHRD
               {/* Body row */}
               <div style={{ padding: '12px 18px', display: 'flex', gap: 24, flexWrap: 'wrap', alignItems: 'center' }}>
                 <div style={{ minWidth: 200 }}>
-                  <Text style={{ fontSize: 10, color: '#9ca3af', fontWeight: 700 }}>PERIOD</Text>
-                  <div style={{ fontSize: 13, fontWeight: 700, color: '#111827' }}>{emp.periodLabel}</div>
+                  <Text style={{ fontSize: 10, color: 'var(--color-text-disabled)', fontWeight: 700 }}>PERIOD</Text>
+                  <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--color-text-primary)' }}>{emp.periodLabel}</div>
                   <Text type="secondary" style={{ fontSize: 11 }}>{emp.periodFrom} → {emp.periodTo}</Text>
                 </div>
                 <div>
-                  <Text style={{ fontSize: 10, color: '#9ca3af', fontWeight: 700 }}>LM DEADLINE</Text>
+                  <Text style={{ fontSize: 10, color: 'var(--color-text-disabled)', fontWeight: 700 }}>LM DEADLINE</Text>
                   <div style={{ marginTop: 2 }}>
                     <Space size={4}>
-                      <CalendarOutlined style={{ fontSize: 11, color: daysLeft < 0 ? '#dc2626' : isUrgent ? '#d97706' : '#6b7280' }} />
-                      <Text style={{ fontSize: 12, fontWeight: 700, color: daysLeft < 0 ? '#dc2626' : isUrgent ? '#d97706' : '#374151' }}>
+                      <CalendarOutlined style={{ fontSize: 11, color: daysLeft < 0 ? '#dc2626' : isUrgent ? '#d97706' : 'var(--color-text-tertiary)' }} />
+                      <Text style={{ fontSize: 12, fontWeight: 700, color: daysLeft < 0 ? '#dc2626' : isUrgent ? '#d97706' : 'var(--color-text-secondary)' }}>
                         {daysLeft < 0 ? `Overdue ${Math.abs(daysLeft)}d` : daysLeft === 0 ? 'Due today' : `${daysLeft}d left · ${emp.lmDeadline}`}
                       </Text>
                       {isUrgent && <WarningOutlined style={{ fontSize: 10, color: '#d97706' }} />}
@@ -2931,11 +2931,11 @@ function ApprovalsPage({ open, approvals, onClose, onLMSubmit, onHRSubmit, onHRD
                   </div>
                 </div>
                 <div>
-                  <Text style={{ fontSize: 10, color: '#9ca3af', fontWeight: 700 }}>KPIs</Text>
-                  <div style={{ fontSize: 13, fontWeight: 700, color: '#374151', marginTop: 2 }}>{emp.subKPIs.length} assigned</div>
+                  <Text style={{ fontSize: 10, color: 'var(--color-text-disabled)', fontWeight: 700 }}>KPIs</Text>
+                  <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--color-text-secondary)', marginTop: 2 }}>{emp.subKPIs.length} assigned</div>
                 </div>
                 <div>
-                  <Text style={{ fontSize: 10, color: '#9ca3af', fontWeight: 700 }}>SELF SCORE</Text>
+                  <Text style={{ fontSize: 10, color: 'var(--color-text-disabled)', fontWeight: 700 }}>SELF SCORE</Text>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 2 }}>
                     <Text style={{ fontSize: 16, fontWeight: 800, color: scoreColor(selfScore) }}>{selfScore}%</Text>
                     <Tag style={{ borderRadius: 999, fontSize: 10, border: 'none', background: scoreBadge(selfScore).bg, color: scoreBadge(selfScore).color, fontWeight: 600, margin: 0 }}>{scoreBadge(selfScore).label}</Tag>
@@ -2943,7 +2943,7 @@ function ApprovalsPage({ open, approvals, onClose, onLMSubmit, onHRSubmit, onHRD
                 </div>
                 {!isPending && (
                   <div>
-                    <Text style={{ fontSize: 10, color: '#9ca3af', fontWeight: 700 }}>{activeTab === 'lm' ? 'LM SCORE' : 'HR SCORE'}</Text>
+                    <Text style={{ fontSize: 10, color: 'var(--color-text-disabled)', fontWeight: 700 }}>{activeTab === 'lm' ? 'LM SCORE' : 'HR SCORE'}</Text>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 2 }}>
                       <Text style={{ fontSize: 16, fontWeight: 800, color: scoreColor(activeTab === 'lm' ? lmScore : hrScore) }}>{activeTab === 'lm' ? lmScore : hrScore}%</Text>
                       <Tag style={{ borderRadius: 999, fontSize: 10, border: 'none', background: scoreBadge(activeTab === 'lm' ? lmScore : hrScore).bg, color: scoreBadge(activeTab === 'lm' ? lmScore : hrScore).color, fontWeight: 600, margin: 0 }}>{scoreBadge(activeTab === 'lm' ? lmScore : hrScore).label}</Tag>
@@ -2952,7 +2952,7 @@ function ApprovalsPage({ open, approvals, onClose, onLMSubmit, onHRSubmit, onHRD
                 )}
                 {activeTab === 'hr' && emp.lmStatus === 'Submitted' && (
                   <div>
-                    <Text style={{ fontSize: 10, color: '#9ca3af', fontWeight: 700 }}>LM SCORE</Text>
+                    <Text style={{ fontSize: 10, color: 'var(--color-text-disabled)', fontWeight: 700 }}>LM SCORE</Text>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 2 }}>
                       <Text style={{ fontSize: 16, fontWeight: 800, color: scoreColor(lmScore) }}>{lmScore}%</Text>
                       <Tag style={{ borderRadius: 999, fontSize: 10, border: 'none', background: scoreBadge(lmScore).bg, color: scoreBadge(lmScore).color, fontWeight: 600, margin: 0 }}>{scoreBadge(lmScore).label}</Tag>
@@ -2961,26 +2961,26 @@ function ApprovalsPage({ open, approvals, onClose, onLMSubmit, onHRSubmit, onHRD
                 )}
                 <div style={{ marginLeft: 'auto' }}>
                   {isPending ? (
-                    <Tag icon={<ClockCircleOutlined />} style={{ borderRadius: 999, fontSize: 11, fontWeight: 700, paddingInline: 10, border: 'none', background: '#fef3c7', color: '#92400e' }}>
+                    <Tag icon={<ClockCircleOutlined />} style={{ borderRadius: 999, fontSize: 11, fontWeight: 700, paddingInline: 10, border: 'none', background: 'var(--color-status-pending-bg)', color: '#d97706' }}>
                       {activeTab === 'lm' ? 'Pending Review' : 'Pending HR Review'}
                     </Tag>
                   ) : (
-                    <Tag icon={<CheckCircleOutlined />} style={{ borderRadius: 999, fontSize: 11, fontWeight: 700, paddingInline: 10, border: 'none', background: '#d1fae5', color: '#065f46' }}>
+                    <Tag icon={<CheckCircleOutlined />} style={{ borderRadius: 999, fontSize: 11, fontWeight: 700, paddingInline: 10, border: 'none', background: 'var(--color-status-approved-bg)', color: 'var(--color-primary-dark)' }}>
                       {activeTab === 'lm' ? 'Review Submitted' : 'HR Review Submitted'}
                     </Tag>
                   )}
                   {activeTab === 'hr' && emp.hrStatus === 'Submitted' && emp.decisionApprovalStatus === 'Pending' && (
-                    <Tag style={{ marginLeft: 6, border: 'none', borderRadius: 999, background: '#fef3c7', color: '#92400e', fontWeight: 700 }}>
+                    <Tag style={{ marginLeft: 6, border: 'none', borderRadius: 999, background: 'var(--color-status-pending-bg)', color: '#d97706', fontWeight: 700 }}>
                       Decision Pending Approval
                     </Tag>
                   )}
                   {activeTab === 'hr' && emp.hrStatus === 'Submitted' && emp.decisionApprovalStatus === 'Approved' && (
-                    <Tag style={{ marginLeft: 6, border: 'none', borderRadius: 999, background: '#d1fae5', color: '#065f46', fontWeight: 700 }}>
+                    <Tag style={{ marginLeft: 6, border: 'none', borderRadius: 999, background: 'var(--color-status-approved-bg)', color: 'var(--color-primary-dark)', fontWeight: 700 }}>
                       Decision Approved{emp.decisionMailSent ? ' · Email Sent' : ''}
                     </Tag>
                   )}
                   {activeTab === 'hr' && emp.hrStatus === 'Submitted' && emp.decisionApprovalStatus === 'Rejected' && (
-                    <Tag style={{ marginLeft: 6, border: 'none', borderRadius: 999, background: '#fee2e2', color: '#991b1b', fontWeight: 700 }}>
+                    <Tag style={{ marginLeft: 6, border: 'none', borderRadius: 999, background: 'var(--color-status-rejected-bg)', color: '#991b1b', fontWeight: 700 }}>
                       Decision Rejected
                     </Tag>
                   )}
@@ -2992,7 +2992,7 @@ function ApprovalsPage({ open, approvals, onClose, onLMSubmit, onHRSubmit, onHRD
       </div>
 
       {displayed.length === 0 && (
-        <div style={{ textAlign: 'center', padding: '60px 0', color: '#9ca3af' }}>
+        <div style={{ textAlign: 'center', padding: '60px 0', color: 'var(--color-text-disabled)' }}>
           <CheckCircleOutlined style={{ fontSize: 40, display: 'block', marginBottom: 12 }} />
           <Text type="secondary" style={{ fontSize: 14 }}>No results for the current filters.</Text>
         </div>
@@ -3075,7 +3075,7 @@ function AppraisalCard({ record, onMark, onView }: AppraisalCardProps) {
 
   return (
     <div style={{
-      background: CLR_CARD, border: `1px solid ${canMark ? '#fde68a' : CLR_BORDER}`,
+      background: CLR_CARD, border: `1px solid ${canMark ? 'rgba(253, 230, 138, 0.4)' : CLR_BORDER}`,
       borderRadius: 14, overflow: 'hidden',
       boxShadow: '0 1px 6px rgba(0,0,0,0.04)', transition: 'box-shadow 0.2s',
     }}
@@ -3089,7 +3089,7 @@ function AppraisalCard({ record, onMark, onView }: AppraisalCardProps) {
           : record.status === 'Completed'
           ? 'linear-gradient(90deg, #d1fae5 0%, #ecfdf5 100%)'
           : CLR_PRIMARY_L,
-        borderBottom: `1px solid ${canMark ? '#fde68a' : CLR_BORDER}`,
+        borderBottom: `1px solid ${canMark ? 'rgba(253, 230, 138, 0.4)' : CLR_BORDER}`,
         padding: '14px 20px',
         display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 10,
       }}>
@@ -3099,7 +3099,7 @@ function AppraisalCard({ record, onMark, onView }: AppraisalCardProps) {
             <StatusTag status={record.status} />
           </Space>
           <div>
-            <Text style={{ fontSize: 15, fontWeight: 800, color: '#111827', display: 'block' }}>
+            <Text style={{ fontSize: 15, fontWeight: 800, color: 'var(--color-text-primary)', display: 'block' }}>
               {record.periodLabel}
             </Text>
             <Text type="secondary" style={{ fontSize: 11 }}>
@@ -3135,25 +3135,25 @@ function AppraisalCard({ record, onMark, onView }: AppraisalCardProps) {
         {/* Deadline row */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 8 }}>
           <Space size={6}>
-            <ClockCircleOutlined style={{ color: '#9ca3af', fontSize: 12 }} />
-            <Text style={{ fontSize: 12, color: '#6b7280', fontWeight: 600 }}>Self-marking deadline:</Text>
+            <ClockCircleOutlined style={{ color: 'var(--color-text-disabled)', fontSize: 12 }} />
+            <Text style={{ fontSize: 12, color: 'var(--color-text-tertiary)', fontWeight: 600 }}>Self-marking deadline:</Text>
             <DeadlineBadge dateStr={record.selfDeadline} status={record.status} />
           </Space>
           <Space size={4}>
-            <AimOutlined style={{ fontSize: 12, color: '#9ca3af' }} />
+            <AimOutlined style={{ fontSize: 12, color: 'var(--color-text-disabled)' }} />
             <Text type="secondary" style={{ fontSize: 12 }}>{record.subKPIs.length} KPIs assigned</Text>
           </Space>
         </div>
 
         {/* Pipeline */}
         <div>
-          <div style={{ fontSize: 10, fontWeight: 700, color: '#9ca3af', letterSpacing: '0.05em', marginBottom: 6 }}>
+          <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--color-text-disabled)', letterSpacing: '0.05em', marginBottom: 6 }}>
             EVALUATION PIPELINE
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 8 }}>
             <PipelinePills steps={record.pipeline} />
             <Space size={6}>
-              <Text style={{ fontSize: 11, color: '#9ca3af' }}>{doneSteps}/{totalSteps} done</Text>
+              <Text style={{ fontSize: 11, color: 'var(--color-text-disabled)' }}>{doneSteps}/{totalSteps} done</Text>
               <Progress
                 type="circle"
                 percent={progress}
@@ -3168,13 +3168,13 @@ function AppraisalCard({ record, onMark, onView }: AppraisalCardProps) {
 
         {/* Score summary if completed / in review */}
         {record.status !== 'Pending Self' && (
-          <div style={{ borderTop: '1px solid #f3f4f6', paddingTop: 10, display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+          <div style={{ borderTop: '1px solid var(--color-border)', paddingTop: 10, display: 'flex', gap: 12, flexWrap: 'wrap' }}>
             {record.pipeline
               .filter(s => s.status === 'Submitted')
               .map(step => {
                 const markings = record.evalMarkings[step.role] ?? [];
                 const ws = calcWeightedScore(record.subKPIs, markings);
-                const rc = ROLE_COLORS[step.role] ?? { color: '#6b7280', bg: '#f3f4f6' };
+                const rc = ROLE_COLORS[step.role] ?? { color: 'var(--color-text-tertiary)', bg: 'var(--color-bg-subtle)' };
                 return (
                   <div key={step.role} style={{
                     display: 'flex', alignItems: 'center', gap: 6,
@@ -3300,9 +3300,9 @@ export default function MyAppraisalPage() {
   const syncedViewTarget = viewTarget ? (records.find(r => r.id === viewTarget.id) ?? null) : null;
 
   const statCards = [
-    { label: 'Pending Self',  value: pending.length,   color: '#d97706', bg: '#fffbeb', border: '#fde68a', icon: <ClockCircleOutlined /> },
-    { label: 'In Review',     value: inReview.length,  color: '#7c3aed', bg: '#f5f3ff', border: '#ddd6fe', icon: <EyeOutlined /> },
-    { label: 'Completed',     value: completed.length, color: '#059669', bg: '#d1fae5', border: '#6ee7b7', icon: <CheckCircleOutlined /> },
+    { label: 'Pending Self',  value: pending.length,   color: '#d97706', bg: 'var(--color-status-pending-bg)', border: 'rgba(253, 230, 138, 0.4)', icon: <ClockCircleOutlined /> },
+    { label: 'In Review',     value: inReview.length,  color: '#7c3aed', bg: 'rgba(124, 58, 237, 0.09)', border: 'rgba(124, 58, 237, 0.22)', icon: <EyeOutlined /> },
+    { label: 'Completed',     value: completed.length, color: '#059669', bg: 'var(--color-status-approved-bg)', border: 'var(--color-status-approved-bg)', icon: <CheckCircleOutlined /> },
     { label: 'Total KPIs',    value: records.reduce((s, r) => s + r.subKPIs.length, 0), color: CLR_PRIMARY, bg: CLR_PRIMARY_L, border: CLR_BORDER, icon: <AimOutlined /> },
   ];
 
@@ -3330,7 +3330,7 @@ export default function MyAppraisalPage() {
       <div style={{ marginBottom: 18 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 10 }}>
           <div>
-            <Title level={3} style={{ margin: 0, color: '#1f2937' }}>
+            <Title level={3} style={{ margin: 0, color: 'var(--color-text-secondary)' }}>
               My Appraisal
               <Text style={{ marginLeft: 10, color: CLR_PRIMARY, fontSize: 18, fontWeight: 500 }}>Overview</Text>
             </Title>
@@ -3345,7 +3345,7 @@ export default function MyAppraisalPage() {
           >
             Approvals
             {approvalAttentionCount > 0 && (
-              <Tag style={{ marginLeft: 6, borderRadius: 999, fontSize: 10, fontWeight: 700, border: 'none', background: '#fef3c7', color: '#92400e', padding: '0 6px' }}>
+              <Tag style={{ marginLeft: 6, borderRadius: 999, fontSize: 10, fontWeight: 700, border: 'none', background: 'var(--color-status-pending-bg)', color: '#d97706', padding: '0 6px' }}>
                 {approvalAttentionCount}
               </Tag>
             )}
@@ -3358,12 +3358,12 @@ export default function MyAppraisalPage() {
         {statCards.map(s => (
           <Col key={s.label} xs={12} sm={6}>
             <div style={{ background: s.bg, border: `1px solid ${s.border}`, borderRadius: 12, padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 10 }}>
-              <div style={{ width: 36, height: 36, borderRadius: 10, background: '#fff', border: `1px solid ${s.border}`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: s.color, fontSize: 17 }}>
+              <div style={{ width: 36, height: 36, borderRadius: 10, background: 'var(--color-bg-surface)', border: `1px solid ${s.border}`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: s.color, fontSize: 17 }}>
                 {s.icon}
               </div>
               <div>
                 <div style={{ fontSize: 20, fontWeight: 800, color: s.color, lineHeight: 1.1 }}>{s.value}</div>
-                <div style={{ fontSize: 11, color: '#6b7280', fontWeight: 600 }}>{s.label}</div>
+                <div style={{ fontSize: 11, color: 'var(--color-text-tertiary)', fontWeight: 600 }}>{s.label}</div>
               </div>
             </div>
           </Col>
@@ -3375,8 +3375,8 @@ export default function MyAppraisalPage() {
         <section style={{ marginBottom: 20 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
             <div style={{ width: 3, height: 14, background: '#d97706', borderRadius: 2 }} />
-            <Text style={{ fontSize: 13, fontWeight: 700, color: '#92400e' }}>ACTION REQUIRED</Text>
-            <Tag style={{ borderRadius: 999, fontSize: 10, border: 'none', background: '#fef3c7', color: '#92400e', fontWeight: 700 }}>
+            <Text style={{ fontSize: 13, fontWeight: 700, color: '#d97706' }}>ACTION REQUIRED</Text>
+            <Tag style={{ borderRadius: 999, fontSize: 10, border: 'none', background: 'var(--color-status-pending-bg)', color: '#d97706', fontWeight: 700 }}>
               {pending.length}
             </Tag>
           </div>
@@ -3396,7 +3396,7 @@ export default function MyAppraisalPage() {
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
             <div style={{ width: 3, height: 14, background: '#7c3aed', borderRadius: 2 }} />
             <Text style={{ fontSize: 13, fontWeight: 700, color: '#5b21b6' }}>IN REVIEW</Text>
-            <Tag style={{ borderRadius: 999, fontSize: 10, border: 'none', background: '#ede9fe', color: '#5b21b6', fontWeight: 700 }}>
+            <Tag style={{ borderRadius: 999, fontSize: 10, border: 'none', background: 'rgba(124, 58, 237, 0.13)', color: '#5b21b6', fontWeight: 700 }}>
               {inReview.length}
             </Tag>
           </div>
@@ -3415,8 +3415,8 @@ export default function MyAppraisalPage() {
         <section style={{ marginBottom: 20 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
             <div style={{ width: 3, height: 14, background: '#059669', borderRadius: 2 }} />
-            <Text style={{ fontSize: 13, fontWeight: 700, color: '#065f46' }}>COMPLETED</Text>
-            <Tag style={{ borderRadius: 999, fontSize: 10, border: 'none', background: '#d1fae5', color: '#065f46', fontWeight: 700 }}>
+            <Text style={{ fontSize: 13, fontWeight: 700, color: 'var(--color-primary-dark)' }}>COMPLETED</Text>
+            <Tag style={{ borderRadius: 999, fontSize: 10, border: 'none', background: 'var(--color-status-approved-bg)', color: 'var(--color-primary-dark)', fontWeight: 700 }}>
               {completed.length}
             </Tag>
           </div>
@@ -3432,7 +3432,7 @@ export default function MyAppraisalPage() {
       )}
 
       {records.length === 0 && (
-        <div style={{ textAlign: 'center', padding: '60px 0', color: '#9ca3af' }}>
+        <div style={{ textAlign: 'center', padding: '60px 0', color: 'var(--color-text-disabled)' }}>
           <TrophyOutlined style={{ fontSize: 40, display: 'block', marginBottom: 12 }} />
           <Text type="secondary" style={{ fontSize: 15 }}>No appraisal cycles assigned yet.</Text>
         </div>

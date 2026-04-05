@@ -113,10 +113,10 @@ export function PFApprovalsListView({ requests, onApproveReject, onBulkApprove, 
       key: 'employee',
       render: (_, rec) => (
         <div>
-          <div style={{ fontWeight: 600, fontSize: 13, color: '#111827' }}>{rec.employeeName}</div>
-          <div style={{ fontSize: 11, color: '#6b7280' }}>ID: {rec.employeeId}</div>
-          <div style={{ fontSize: 11, color: '#6b7280' }}>Department: {rec.department}</div>
-          <div style={{ fontSize: 11, color: '#6b7280' }}>Designation: {rec.designation}</div>
+          <div style={{ fontWeight: 600, fontSize: 13, color: 'var(--color-text-primary)' }}>{rec.employeeName}</div>
+          <div style={{ fontSize: 11, color: 'var(--color-text-tertiary)' }}>ID: {rec.employeeId}</div>
+          <div style={{ fontSize: 11, color: 'var(--color-text-tertiary)' }}>Department: {rec.department}</div>
+          <div style={{ fontSize: 11, color: 'var(--color-text-tertiary)' }}>Designation: {rec.designation}</div>
         </div>
       ),
     },
@@ -125,14 +125,14 @@ export function PFApprovalsListView({ requests, onApproveReject, onBulkApprove, 
       dataIndex: 'initiateDate',
       key: 'initiateDate',
       width: 130,
-      render: v => <span style={{ fontSize: 13, color: '#374151' }}>{v}</span>,
+      render: v => <span style={{ fontSize: 13, color: 'var(--color-text-secondary)' }}>{v}</span>,
     },
     {
       title: 'Loan Amount',
       dataIndex: 'loanAmount',
       key: 'loanAmount',
       width: 140,
-      render: v => <span style={{ fontSize: 13, color: '#111827', fontWeight: 500 }}>{v.toLocaleString()} BDT</span>,
+      render: v => <span style={{ fontSize: 13, color: 'var(--color-text-primary)', fontWeight: 500 }}>{v.toLocaleString()} BDT</span>,
     },
     {
       title: 'Status',
@@ -159,7 +159,7 @@ export function PFApprovalsListView({ requests, onApproveReject, onBulkApprove, 
               <CheckCircleOutlined style={{ fontSize: 12 }} /> Approve/Reject
             </button>
           ) : (
-            <button className="action-link" style={{ color: '#6b7280' }} onClick={() => onApproveReject(rec)}>
+            <button className="action-link" style={{ color: 'var(--color-text-tertiary)' }} onClick={() => onApproveReject(rec)}>
               <EyeOutlined style={{ fontSize: 12 }} /> View
             </button>
           )}
@@ -179,7 +179,7 @@ export function PFApprovalsListView({ requests, onApproveReject, onBulkApprove, 
       <div className="filter-bar" style={{ padding: '16px 18px' }}>
         <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'center', marginBottom: 10 }}>
           <Input
-            prefix={<SearchOutlined style={{ color: '#9ca3af' }} />}
+            prefix={<SearchOutlined style={{ color: 'var(--color-text-disabled)' }} />}
             placeholder="Search by Employee Name, ID"
             value={search}
             onChange={e => setSearch(e.target.value)}
@@ -219,7 +219,7 @@ export function PFApprovalsListView({ requests, onApproveReject, onBulkApprove, 
       {/* Sort + Table */}
       <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 8 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <span style={{ fontSize: 12, color: '#6b7280' }}>Sort by</span>
+          <span style={{ fontSize: 12, color: 'var(--color-text-tertiary)' }}>Sort by</span>
           <Select value={sortBy} onChange={setSortBy} style={{ width: 160 }} options={SORT_OPTIONS} />
         </div>
       </div>
@@ -231,7 +231,7 @@ export function PFApprovalsListView({ requests, onApproveReject, onBulkApprove, 
           columns={columns}
           pagination={{ pageSize: 10, showTotal: t => `Total ${t} records`, size: 'small' }}
           rowSelection={{ selectedRowKeys, onChange: setSelectedRowKeys }}
-          locale={{ emptyText: <div style={{ padding: '40px 0', color: '#9ca3af', fontSize: 13 }}>No approval requests found</div> }}
+          locale={{ emptyText: <div style={{ padding: '40px 0', color: 'var(--color-text-disabled)', fontSize: 13 }}>No approval requests found</div> }}
           size="middle"
         />
       </div>

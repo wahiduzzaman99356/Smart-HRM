@@ -67,22 +67,22 @@ export function LoanMyListView({ requests, onCreateNew, onView, onCancel }: Prop
       dataIndex: 'initiateDate',
       key: 'initiateDate',
       width: 140,
-      render: v => <span style={{ fontSize: 13, color: '#374151' }}>{v}</span>,
+      render: v => <span style={{ fontSize: 13, color: 'var(--color-text-secondary)' }}>{v}</span>,
     },
     {
       title: 'Type',
       dataIndex: 'type',
       key: 'type',
       width: 140,
-      render: (v: LoanType) => <span style={{ fontSize: 13, color: '#374151' }}>{v}</span>,
+      render: (v: LoanType) => <span style={{ fontSize: 13, color: 'var(--color-text-secondary)' }}>{v}</span>,
     },
     {
       title: 'Amount',
       key: 'amount',
       width: 150,
       render: (_, rec) => (
-        <span style={{ fontSize: 13, color: '#111827', fontWeight: 500 }}>
-          {rec.amount.toLocaleString()}<span style={{ fontSize: 11, color: '#6b7280', marginLeft: 2 }}>BDT</span>
+        <span style={{ fontSize: 13, color: 'var(--color-text-primary)', fontWeight: 500 }}>
+          {rec.amount.toLocaleString()}<span style={{ fontSize: 11, color: 'var(--color-text-tertiary)', marginLeft: 2 }}>BDT</span>
         </span>
       ),
     },
@@ -91,7 +91,7 @@ export function LoanMyListView({ requests, onCreateNew, onView, onCancel }: Prop
       dataIndex: 'installmentNumber',
       key: 'installmentNumber',
       width: 180,
-      render: v => <span style={{ fontSize: 13, color: '#374151' }}>{v}</span>,
+      render: v => <span style={{ fontSize: 13, color: 'var(--color-text-secondary)' }}>{v}</span>,
     },
     {
       title: 'Status',
@@ -115,7 +115,7 @@ export function LoanMyListView({ requests, onCreateNew, onView, onCancel }: Prop
         <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
           <button
             onClick={() => onView(rec)}
-            style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', fontSize: 13, color: '#0d9488', fontWeight: 600, textDecoration: 'underline', textAlign: 'left' }}
+            style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', fontSize: 13, color: 'var(--color-primary)', fontWeight: 600, textDecoration: 'underline', textAlign: 'left' }}
           >
             View
           </button>
@@ -141,7 +141,7 @@ export function LoanMyListView({ requests, onCreateNew, onView, onCancel }: Prop
   return (
     <div style={{ padding: '24px 28px', height: '100%', overflowY: 'auto' }}>
       {/* Filter Bar */}
-      <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 10, padding: '16px 18px', marginBottom: 18 }}>
+      <div style={{ background: 'var(--color-bg-surface)', border: '1px solid var(--color-border)', borderRadius: 10, padding: '16px 18px', marginBottom: 18 }}>
         <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'center' }}>
           <DatePicker.RangePicker
             value={dateRange}
@@ -165,7 +165,7 @@ export function LoanMyListView({ requests, onCreateNew, onView, onCancel }: Prop
             allowClear
             options={STATUS_OPTIONS}
           />
-          <Button type="primary" onClick={handleSearch} style={{ background: '#0d9488', borderColor: '#0d9488', borderRadius: 8 }}>Search</Button>
+          <Button type="primary" onClick={handleSearch} style={{ background: 'var(--color-primary)', borderColor: 'var(--color-primary)', borderRadius: 8 }}>Search</Button>
           <Button onClick={handleReset} style={{ borderRadius: 8 }}>Reset</Button>
           <div style={{ marginLeft: 'auto' }}>
             <Button
@@ -180,13 +180,13 @@ export function LoanMyListView({ requests, onCreateNew, onView, onCancel }: Prop
       </div>
 
       {/* Table */}
-      <div style={{ background: '#fff', borderRadius: 10, border: '1px solid #e5e7eb', overflow: 'hidden' }}>
+      <div style={{ background: 'var(--color-bg-surface)', borderRadius: 10, border: '1px solid var(--color-border)', overflow: 'hidden' }}>
         <Table
           rowKey="id"
           dataSource={filtered}
           columns={columns}
           pagination={{ pageSize: 10, showTotal: t => `Total ${t} records`, size: 'small' }}
-          locale={{ emptyText: <div style={{ padding: '40px 0', color: '#9ca3af', fontSize: 13 }}>No loan requests found</div> }}
+          locale={{ emptyText: <div style={{ padding: '40px 0', color: 'var(--color-text-disabled)', fontSize: 13 }}>No loan requests found</div> }}
           size="middle"
         />
       </div>

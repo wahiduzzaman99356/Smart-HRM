@@ -32,3 +32,6 @@ coverage/
 tmpclaude-*
 tmp_write.js
 /.claude/
+
+# Dev utility scripts (one-off automation, not part of the app)
+scripts/fix-colors.mjs

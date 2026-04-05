@@ -108,7 +108,7 @@ const INITIAL_JOB_POSTINGS: JobPosting[] = [
 // ─── Status config ────────────────────────────────────────────────────────────
 const STATUS_DOT: Record<JobStatus, string> = {
   Published: '#059669',
-  Draft:     '#6b7280',
+  Draft:     'var(--color-text-tertiary)',
   'On-Going': '#0ea5e9',
   Closed:    '#d97706',
   Rejected:  '#dc2626',
@@ -210,7 +210,7 @@ export default function JobPostingsPage() {
 
   const columns: ColumnsType<JobPosting> = [
     {
-      title: <span style={{ fontSize: 11, color: '#9ca3af', fontWeight: 700, letterSpacing: '0.04em' }}>JOB DETAILS</span>,
+      title: <span style={{ fontSize: 11, color: 'var(--color-text-disabled)', fontWeight: 700, letterSpacing: '0.04em' }}>JOB DETAILS</span>,
       key: 'details',
       width: 420,
       render: (_, r) => {
@@ -225,7 +225,7 @@ export default function JobPostingsPage() {
             <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
               <span
                 onClick={() => navigate(`/recruitment/job-postings/${r.mrfId}`, { state: { posting: r } })}
-                style={{ fontWeight: 700, fontSize: 14, color: '#0f766e', lineHeight: 1.3, cursor: 'pointer', textDecoration: 'underline', textDecorationStyle: 'dotted', textUnderlineOffset: 3 }}
+                style={{ fontWeight: 700, fontSize: 14, color: 'var(--color-primary)', lineHeight: 1.3, cursor: 'pointer', textDecoration: 'underline', textDecorationStyle: 'dotted', textUnderlineOffset: 3 }}
               >
                 {r.designation}
               </span>
@@ -233,9 +233,9 @@ export default function JobPostingsPage() {
                 flexShrink: 0,
                 fontSize: 10, fontWeight: 700, letterSpacing: '0.05em',
                 padding: '2px 8px', borderRadius: 20,
-                background: r.typeOfRequisition === 'Replacement' ? '#fff7ed' : '#f0fdf4',
+                background: r.typeOfRequisition === 'Replacement' ? 'rgba(249, 115, 22, 0.10)' : 'var(--color-status-approved-bg)',
                 color:      r.typeOfRequisition === 'Replacement' ? '#c2410c'  : '#15803d',
-                border: `1px solid ${r.typeOfRequisition === 'Replacement' ? '#fed7aa' : '#bbf7d0'}`,
+                border: `1px solid ${r.typeOfRequisition === 'Replacement' ? 'rgba(251, 146, 60, 0.22)' : 'var(--color-status-approved-bg)'}`,
                 marginTop: 2,
               }}>
                 {r.typeOfRequisition.toUpperCase()}
@@ -243,42 +243,42 @@ export default function JobPostingsPage() {
             </div>
 
             {/* Row 2 — Dept · Employment · MRF ref */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, color: '#6b7280', flexWrap: 'wrap' }}>
-              <SolutionOutlined style={{ fontSize: 11, color: '#9ca3af' }} />
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, color: 'var(--color-text-tertiary)', flexWrap: 'wrap' }}>
+              <SolutionOutlined style={{ fontSize: 11, color: 'var(--color-text-disabled)' }} />
               <span>{r.department}</span>
-              <span style={{ color: '#d1d5db' }}>·</span>
+              <span style={{ color: 'var(--color-text-disabled)' }}>·</span>
               <span>{r.employmentType}</span>
-              <span style={{ color: '#d1d5db' }}>·</span>
-              <span style={{ color: '#9ca3af', fontSize: 11 }}>MRF: {r.mrfRef}</span>
+              <span style={{ color: 'var(--color-text-disabled)' }}>·</span>
+              <span style={{ color: 'var(--color-text-disabled)', fontSize: 11 }}>MRF: {r.mrfRef}</span>
             </div>
 
             {/* Row 3 — Location · Vacancies · Gender */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 12, color: '#6b7280', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 12, color: 'var(--color-text-tertiary)', flexWrap: 'wrap' }}>
               <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
-                <EnvironmentOutlined style={{ fontSize: 11, color: '#9ca3af' }} />
+                <EnvironmentOutlined style={{ fontSize: 11, color: 'var(--color-text-disabled)' }} />
                 {r.workLocation}
               </span>
-              <span style={{ color: '#d1d5db' }}>·</span>
+              <span style={{ color: 'var(--color-text-disabled)' }}>·</span>
               <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
-                <TeamOutlined style={{ fontSize: 11, color: '#9ca3af' }} />
+                <TeamOutlined style={{ fontSize: 11, color: 'var(--color-text-disabled)' }} />
                 {r.vacancyNumber} {r.vacancyNumber === '1' ? 'vacancy' : 'vacancies'}
               </span>
-              <span style={{ color: '#d1d5db' }}>·</span>
+              <span style={{ color: 'var(--color-text-disabled)' }}>·</span>
               <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
-                <UserOutlined style={{ fontSize: 11, color: '#9ca3af' }} />
+                <UserOutlined style={{ fontSize: 11, color: 'var(--color-text-disabled)' }} />
                 {r.gender}
               </span>
             </div>
 
             {/* Row 4 — Experience · Education */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 12, color: '#6b7280', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 12, color: 'var(--color-text-tertiary)', flexWrap: 'wrap' }}>
               <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
-                <ThunderboltOutlined style={{ fontSize: 11, color: '#9ca3af' }} />
+                <ThunderboltOutlined style={{ fontSize: 11, color: 'var(--color-text-disabled)' }} />
                 {expLabel}
               </span>
-              <span style={{ color: '#d1d5db' }}>·</span>
+              <span style={{ color: 'var(--color-text-disabled)' }}>·</span>
               <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
-                <BookOutlined style={{ fontSize: 11, color: '#9ca3af' }} />
+                <BookOutlined style={{ fontSize: 11, color: 'var(--color-text-disabled)' }} />
                 {r.educationQualification}
               </span>
             </div>
@@ -289,8 +289,8 @@ export default function JobPostingsPage() {
                 <span key={s} style={{
                   fontSize: 11, fontWeight: 600,
                   padding: '1px 8px', borderRadius: 4,
-                  background: '#f1f5f9', color: '#475569',
-                  border: '1px solid #e2e8f0',
+                  background: 'var(--color-bg-subtle)', color: 'var(--color-text-secondary)',
+                  border: '1px solid var(--color-border)',
                 }}>
                   {s}
                 </span>
@@ -300,8 +300,8 @@ export default function JobPostingsPage() {
                   <span style={{
                     fontSize: 11, fontWeight: 600,
                     padding: '1px 8px', borderRadius: 4,
-                    background: '#f1f5f9', color: '#94a3b8',
-                    border: '1px solid #e2e8f0', cursor: 'default',
+                    background: 'var(--color-bg-subtle)', color: 'var(--color-text-tertiary)',
+                    border: '1px solid var(--color-border)', cursor: 'default',
                   }}>
                     +{r.skillsRequired.length - 4}
                   </span>
@@ -310,12 +310,12 @@ export default function JobPostingsPage() {
             </div>
 
             {/* Row 6 — Dates */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 11, color: '#9ca3af', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 11, color: 'var(--color-text-disabled)', flexWrap: 'wrap' }}>
               <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
                 <CalendarOutlined style={{ fontSize: 10 }} />
                 Published: {r.initiateDate}
               </span>
-              <span style={{ color: '#d1d5db' }}>·</span>
+              <span style={{ color: 'var(--color-text-disabled)' }}>·</span>
               <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
                 <ClockCircleOutlined style={{ fontSize: 10 }} />
                 Deadline: {r.etaDate}
@@ -327,7 +327,7 @@ export default function JobPostingsPage() {
       },
     },
     {
-      title: <span style={{ fontSize: 11, color: '#9ca3af', fontWeight: 700, letterSpacing: '0.04em' }}>PIPELINE</span>,
+      title: <span style={{ fontSize: 11, color: 'var(--color-text-disabled)', fontWeight: 700, letterSpacing: '0.04em' }}>PIPELINE</span>,
       key: 'pipeline',
       width: 160,
       render: (_, r) => {
@@ -342,8 +342,8 @@ export default function JobPostingsPage() {
               fontSize: 12,
               fontWeight: 600,
               padding: '3px 10px',
-              color: '#0f766e',
-              background: '#f0fdfa',
+              color: 'var(--color-primary)',
+              background: 'var(--color-primary-tint)',
               borderColor: '#99f6e4',
               cursor: 'pointer',
             }}
@@ -360,7 +360,7 @@ export default function JobPostingsPage() {
               padding: '4px 10px',
               fontSize: 12,
               fontWeight: 600,
-              color: '#0f766e',
+              color: 'var(--color-primary)',
               cursor: 'pointer',
               fontFamily: 'inherit',
             }}
@@ -371,46 +371,46 @@ export default function JobPostingsPage() {
       },
     },
     {
-      title: <span style={{ fontSize: 11, color: '#9ca3af', fontWeight: 700, letterSpacing: '0.04em' }}>APPLICATIONS</span>,
+      title: <span style={{ fontSize: 11, color: 'var(--color-text-disabled)', fontWeight: 700, letterSpacing: '0.04em' }}>APPLICATIONS</span>,
       key: 'applications',
       align: 'center',
       width: 120,
       render: (_, r) => (
-        <span style={{ fontSize: 15, fontWeight: 700, color: r.applications > 0 ? '#111827' : '#d1d5db' }}>
+        <span style={{ fontSize: 15, fontWeight: 700, color: r.applications > 0 ? 'var(--color-text-primary)' : 'var(--color-border)' }}>
           {r.applications || '—'}
         </span>
       ),
     },
     {
-      title: <span style={{ fontSize: 11, color: '#9ca3af', fontWeight: 700, letterSpacing: '0.04em' }}>MATCHED</span>,
+      title: <span style={{ fontSize: 11, color: 'var(--color-text-disabled)', fontWeight: 700, letterSpacing: '0.04em' }}>MATCHED</span>,
       key: 'matched',
       align: 'center',
       width: 90,
       render: (_, r) => (
-        <span style={{ fontSize: 15, fontWeight: 700, color: r.matched > 0 ? '#111827' : '#d1d5db' }}>
+        <span style={{ fontSize: 15, fontWeight: 700, color: r.matched > 0 ? 'var(--color-text-primary)' : 'var(--color-border)' }}>
           {r.matched || '—'}
         </span>
       ),
     },
     {
-      title: <span style={{ fontSize: 11, color: '#9ca3af', fontWeight: 700, letterSpacing: '0.04em' }}>SHORT LISTED</span>,
+      title: <span style={{ fontSize: 11, color: 'var(--color-text-disabled)', fontWeight: 700, letterSpacing: '0.04em' }}>SHORT LISTED</span>,
       key: 'shortListed',
       align: 'center',
       width: 110,
       render: (_, r) => (
-        <span style={{ fontSize: 15, fontWeight: 700, color: r.shortListed > 0 ? '#0f766e' : '#d1d5db' }}>
+        <span style={{ fontSize: 15, fontWeight: 700, color: r.shortListed > 0 ? 'var(--color-primary)' : 'var(--color-border)' }}>
           {r.shortListed || '—'}
         </span>
       ),
     },
     {
-      title: <span style={{ fontSize: 11, color: '#9ca3af', fontWeight: 700, letterSpacing: '0.04em' }}>STATUS</span>,
+      title: <span style={{ fontSize: 11, color: 'var(--color-text-disabled)', fontWeight: 700, letterSpacing: '0.04em' }}>STATUS</span>,
       key: 'status',
       width: 120,
       render: (_, r) => <StatusBadge status={r.status} />,
     },
     {
-      title: <span style={{ fontSize: 11, color: '#9ca3af', fontWeight: 700, letterSpacing: '0.04em' }}>ACTIONS</span>,
+      title: <span style={{ fontSize: 11, color: 'var(--color-text-disabled)', fontWeight: 700, letterSpacing: '0.04em' }}>ACTIONS</span>,
       key: 'actions',
       align: 'center',
       width: 64,
@@ -454,7 +454,7 @@ export default function JobPostingsPage() {
             size="small"
             icon={<MoreOutlined style={{ fontSize: 18 }} />}
             style={{
-              color: '#9ca3af',
+              color: 'var(--color-text-disabled)',
               borderRadius: 6,
               width: 32,
               height: 32,
@@ -496,7 +496,7 @@ export default function JobPostingsPage() {
         <div>
           <div className="filter-label">SEARCH</div>
           <Input
-            prefix={<SearchOutlined style={{ color: '#9ca3af' }} />}
+            prefix={<SearchOutlined style={{ color: 'var(--color-text-disabled)' }} />}
             placeholder="Job title, department, MRF ref..."
             value={draft.search}
             onChange={e => setDraft(p => ({ ...p, search: e.target.value }))}
@@ -511,7 +511,7 @@ export default function JobPostingsPage() {
           <Button
             icon={<FilterOutlined />}
             onClick={() => setShowFilters(v => !v)}
-            style={showFilters ? { borderColor: '#94a3b8', color: '#334155' } : {}}
+            style={showFilters ? { borderColor: 'var(--color-text-tertiary)', color: 'var(--color-text-secondary)' } : {}}
           >
             Filters
           </Button>
@@ -525,7 +525,7 @@ export default function JobPostingsPage() {
       {showFilters && (
         <div style={{
           padding: '16px 20px',
-          background: '#f8fafc',
+          background: 'var(--color-bg-subtle)',
           border: '1px solid #e8edf3',
           borderLeft: '3px solid #cbd5e1',
           borderRadius: '0 0 8px 8px',
@@ -535,12 +535,12 @@ export default function JobPostingsPage() {
           {/* Panel header */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
             <Space size={8} align="center">
-              <FilterOutlined style={{ color: '#64748b' }} />
-              <span style={{ fontWeight: 700, fontSize: 12, letterSpacing: '0.07em', color: '#374151', textTransform: 'uppercase' }}>
+              <FilterOutlined style={{ color: 'var(--color-text-tertiary)' }} />
+              <span style={{ fontWeight: 700, fontSize: 12, letterSpacing: '0.07em', color: 'var(--color-text-secondary)', textTransform: 'uppercase' }}>
                 Advanced Filtering
               </span>
             </Space>
-            <Button type="link" size="small" onClick={handleReset} icon={<ReloadOutlined />} style={{ color: '#64748b', padding: 0, fontSize: 12 }}>
+            <Button type="link" size="small" onClick={handleReset} icon={<ReloadOutlined />} style={{ color: 'var(--color-text-tertiary)', padding: 0, fontSize: 12 }}>
               Reset All Filters
             </Button>
           </div>
@@ -548,7 +548,7 @@ export default function JobPostingsPage() {
           <Row gutter={[12, 12]} align="bottom">
             {/* Department */}
             <Col flex="1 1 160px">
-              <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.06em', color: '#6b7280', marginBottom: 6, textTransform: 'uppercase' }}>Department</div>
+              <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.06em', color: 'var(--color-text-tertiary)', marginBottom: 6, textTransform: 'uppercase' }}>Department</div>
               <Select
                 placeholder="All Departments"
                 style={{ width: '100%' }}
@@ -567,7 +567,7 @@ export default function JobPostingsPage() {
 
             {/* Employment Type */}
             <Col flex="1 1 160px">
-              <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.06em', color: '#6b7280', marginBottom: 6, textTransform: 'uppercase' }}>Employment Type</div>
+              <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.06em', color: 'var(--color-text-tertiary)', marginBottom: 6, textTransform: 'uppercase' }}>Employment Type</div>
               <Select
                 placeholder="All Types"
                 style={{ width: '100%' }}
@@ -585,7 +585,7 @@ export default function JobPostingsPage() {
 
             {/* Work Location */}
             <Col flex="1 1 160px">
-              <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.06em', color: '#6b7280', marginBottom: 6, textTransform: 'uppercase' }}>Work Location</div>
+              <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.06em', color: 'var(--color-text-tertiary)', marginBottom: 6, textTransform: 'uppercase' }}>Work Location</div>
               <Select
                 placeholder="All Locations"
                 style={{ width: '100%' }}
@@ -602,7 +602,7 @@ export default function JobPostingsPage() {
 
             {/* Pipeline */}
             <Col flex="1 1 140px">
-              <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.06em', color: '#6b7280', marginBottom: 6, textTransform: 'uppercase' }}>Pipeline</div>
+              <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.06em', color: 'var(--color-text-tertiary)', marginBottom: 6, textTransform: 'uppercase' }}>Pipeline</div>
               <Select
                 placeholder="All"
                 style={{ width: '100%' }}
@@ -618,7 +618,7 @@ export default function JobPostingsPage() {
 
             {/* Published Date Range */}
             <Col flex="2 1 240px">
-              <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.06em', color: '#6b7280', marginBottom: 6, textTransform: 'uppercase' }}>Published Date</div>
+              <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.06em', color: 'var(--color-text-tertiary)', marginBottom: 6, textTransform: 'uppercase' }}>Published Date</div>
               <RangePicker
                 value={draft.dateRange}
                 onChange={v => setDraft(p => ({ ...p, dateRange: v }))}
@@ -660,8 +660,8 @@ export default function JobPostingsPage() {
                 padding: '6px 14px',
                 borderRadius: 10,
                 border: isActive ? '1.5px solid #0f766e' : '1.5px solid #d8e7e5',
-                background: isActive ? '#f0fdfa' : '#ffffff',
-                color: isActive ? '#0f766e' : '#374151',
+                background: isActive ? 'var(--color-primary-tint)' : 'var(--color-bg-surface)',
+                color: isActive ? 'var(--color-primary)' : 'var(--color-text-secondary)',
                 fontWeight: isActive ? 700 : 500,
                 fontSize: 13,
                 fontFamily: 'inherit',
@@ -681,8 +681,8 @@ export default function JobPostingsPage() {
                   fontSize: 11,
                   fontWeight: 700,
                   padding: '0 5px',
-                  background: isActive ? '#0f766e' : '#e5e7eb',
-                  color: isActive ? '#ffffff' : '#6b7280',
+                  background: isActive ? 'var(--color-primary)' : 'var(--color-border)',
+                  color: isActive ? 'var(--color-bg-surface)' : 'var(--color-text-tertiary)',
                 }}
               >
                 {count}

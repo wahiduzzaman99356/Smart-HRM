@@ -691,7 +691,7 @@ export default function EvaluationPage() {
   if (viewMode !== 'list' && selectedBundle) {
     const isReadOnly = viewMode === 'view';
     return (
-      <div style={{ padding: '16px 20px', background: '#eef5f4', minHeight: '100%', height: '100%', overflowY: 'auto' }}>
+      <div style={{ padding: '16px 20px', background: 'var(--color-bg-subtle)', minHeight: '100%', height: '100%', overflowY: 'auto' }}>
         <div style={{ background: HEADER_BG, borderRadius: 16, padding: '14px 16px', marginBottom: 14, color: '#fff', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
           <Space>
             <Button icon={<ArrowLeftOutlined />} onClick={() => { setViewMode('list'); setSelectedEmployeeId(null); }} style={{ borderRadius: 10 }}>Back</Button>
@@ -700,7 +700,7 @@ export default function EvaluationPage() {
               <Text style={{ color: '#dcf5f1', fontSize: 12 }}>{selectedBundle.emp.name} · {selectedBundle.emp.employeeId} · {selectedBundle.emp.designation}</Text>
             </div>
           </Space>
-          <Tag style={{ borderRadius: 20, paddingInline: 12, borderColor: '#99f6e4', background: '#0f766e', color: '#d1fae5', fontWeight: 700 }}>
+          <Tag style={{ borderRadius: 20, paddingInline: 12, borderColor: '#99f6e4', background: 'var(--color-primary)', color: 'var(--color-status-approved-bg)', fontWeight: 700 }}>
             {formGroupedRows.length} Main KPI Area{formGroupedRows.length > 1 ? 's' : ''}
           </Tag>
         </div>
@@ -718,14 +718,14 @@ export default function EvaluationPage() {
         )}
 
         {formGroupedRows.map(group => (
-          <Card key={group.areaId} bordered={false} style={{ marginBottom: 14, borderRadius: 14, background: '#fff', border: '1px solid #d9ebe8' }}
+          <Card key={group.areaId} bordered={false} style={{ marginBottom: 14, borderRadius: 14, background: 'var(--color-bg-surface)', border: '1px solid #d9ebe8' }}
             title={<Space size={10}><Tag color="blue" style={{ margin: 0, fontFamily: 'monospace' }}>{group.areaCode}</Tag><Text strong>{group.areaName}</Text></Space>}
           >
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               {group.rows.map(row => {
                 const line = lineInputs[row.subKPIId] ?? { subKPIId: row.subKPIId, markValue: 0, remarks: '' };
                 return (
-                  <div key={row.subKPIId} style={{ border: '1px solid #d8e7e5', borderRadius: 12, padding: '12px 14px', background: '#fcfffe' }}>
+                  <div key={row.subKPIId} style={{ border: '1px solid var(--color-border)', borderRadius: 12, padding: '12px 14px', background: 'var(--color-bg-surface)' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', gap: 10, flexWrap: 'wrap', marginBottom: 8 }}>
                       <div>
                         <Space size={8} wrap>
@@ -738,13 +738,13 @@ export default function EvaluationPage() {
                     </div>
                     <div style={{ display: 'grid', gridTemplateColumns: '220px 1fr', gap: 10, alignItems: 'start' }}>
                       <div>
-                        <Text style={{ fontSize: 12, color: '#475569', display: 'block', marginBottom: 4 }}>Mark Value</Text>
+                        <Text style={{ fontSize: 12, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 4 }}>Mark Value</Text>
                         <InputNumber value={line.markValue} min={0} max={row.markOutOf} disabled={isReadOnly}
                           onChange={v => updateLineInput(row.subKPIId, { markValue: v ?? 0 })}
                           style={{ width: '100%' }} addonAfter={`/ ${row.markOutOf}`} />
                       </div>
                       <div>
-                        <Text style={{ fontSize: 12, color: '#475569', display: 'block', marginBottom: 4 }}>Remarks</Text>
+                        <Text style={{ fontSize: 12, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 4 }}>Remarks</Text>
                         <Input.TextArea value={line.remarks} disabled={isReadOnly}
                           onChange={e => updateLineInput(row.subKPIId, { remarks: e.target.value })}
                           autoSize={{ minRows: 1, maxRows: 3 }} placeholder="Write observation for this Sub KPI" />
@@ -771,7 +771,7 @@ export default function EvaluationPage() {
   // Main list page
   // ─────────────────────────────────────────────────────────────────────────
   return (
-    <div style={{ padding: '16px 20px', background: '#eef5f4', minHeight: '100%', height: '100%', overflowY: 'auto' }}>
+    <div style={{ padding: '16px 20px', background: 'var(--color-bg-subtle)', minHeight: '100%', height: '100%', overflowY: 'auto' }}>
 
       {/* ── Page header (teal, always) ── */}
       <div style={{ background: HEADER_BG, borderRadius: 16, padding: '16px 18px', marginBottom: 14, color: '#fff' }}>
@@ -792,7 +792,7 @@ export default function EvaluationPage() {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, minmax(160px, 1fr))', gap: 10, marginBottom: 14 }}>
           <Card bordered={false} style={{ borderRadius: 12, background: CARD_BG }}>
             <Text type="secondary">Employees</Text>
-            <Title level={3} style={{ margin: 0, color: '#0f766e' }}>{stats.total}</Title>
+            <Title level={3} style={{ margin: 0, color: 'var(--color-primary)' }}>{stats.total}</Title>
           </Card>
           <Card bordered={false} style={{ borderRadius: 12, background: CARD_BG }}>
             <Text type="secondary">Pending KPI</Text>
@@ -814,8 +814,8 @@ export default function EvaluationPage() {
         <Card bordered={false} style={{ borderRadius: 14, marginBottom: 14 }}>
           <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
             <Input value={searchQ} onChange={e => setSearchQ(e.target.value)} placeholder="Search employee name or code"
-              prefix={<SearchOutlined style={{ color: '#64748b' }} />}
-              style={{ width: 240, borderColor: '#a7e3d9', borderRadius: 10 }} />
+              prefix={<SearchOutlined style={{ color: 'var(--color-text-tertiary)' }} />}
+              style={{ width: 240, borderColor: 'var(--color-border)', borderRadius: 10 }} />
             <Select value={filterDept} onChange={setFilterDept} style={{ width: 180 }}>
               <Option value="all">All Departments</Option>
               {departmentOptions.map(v => <Option key={v} value={v}>{v}</Option>)}
@@ -829,7 +829,7 @@ export default function EvaluationPage() {
               {designationOptions.map(v => <Option key={v} value={v}>{v}</Option>)}
             </Select>
             <Button onClick={() => { setSearchQ(''); setFilterDept('all'); setFilterSection('all'); setFilterDesignation('all'); }}
-              style={{ borderRadius: 10, borderColor: '#c7ddda', color: '#94a3b8' }}>
+              style={{ borderRadius: 10, borderColor: '#c7ddda', color: 'var(--color-text-tertiary)' }}>
               Reset
             </Button>
           </div>
@@ -837,7 +837,7 @@ export default function EvaluationPage() {
       )}
 
       {/* ── Main card with tabs ── */}
-      <Card bordered={false} style={{ borderRadius: 14, background: '#f7fbfa' }}>
+      <Card bordered={false} style={{ borderRadius: 14, background: 'var(--color-bg-subtle)' }}>
 
         {/* Tab buttons */}
         <div style={{ display: 'flex', gap: 8, marginBottom: 12, flexWrap: 'wrap', alignItems: 'center' }}>
@@ -891,7 +891,7 @@ export default function EvaluationPage() {
         title={null}
         open={myEvalModalOpen}
         onCancel={() => setMyEvalModalOpen(false)}
-        footer={<Button onClick={() => setMyEvalModalOpen(false)} style={{ borderRadius: 10, borderColor: '#a7e3d9', color: '#0f766e' }}>Close</Button>}
+        footer={<Button onClick={() => setMyEvalModalOpen(false)} style={{ borderRadius: 10, borderColor: 'var(--color-border)', color: 'var(--color-primary)' }}>Close</Button>}
         width={820}
         styles={{ body: { padding: 0 } }}
       >
@@ -918,25 +918,25 @@ function MyEvaluationPanel({ mergedSlots, stats, period, year, onPeriodChange, o
   return (
     <div>
       {/* Evaluator info */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12, background: '#eef8f6', borderRadius: 12, padding: '10px 14px', marginBottom: 14, border: '1px solid #a7e3d9' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, background: 'var(--color-primary-tint)', borderRadius: 12, padding: '10px 14px', marginBottom: 14, border: '1px solid var(--color-border)' }}>
         <Avatar size={40} style={{ background: ME_EVALUATOR.avatarColor, fontWeight: 700, flexShrink: 0 }}>
           {initials(ME_EVALUATOR.name)}
         </Avatar>
         <div>
-          <Text style={{ fontSize: 11, color: '#0f766e', display: 'block' }}>Line Manager (Evaluating You)</Text>
-          <Text strong style={{ color: '#1f2937' }}>{ME_EVALUATOR.name}</Text>
+          <Text style={{ fontSize: 11, color: 'var(--color-primary)', display: 'block' }}>Line Manager (Evaluating You)</Text>
+          <Text strong style={{ color: 'var(--color-text-secondary)' }}>{ME_EVALUATOR.name}</Text>
           <Text type="secondary" style={{ fontSize: 12, marginLeft: 8 }}>{ME_EVALUATOR.designation} · {ME_EVALUATOR.code}</Text>
         </div>
       </div>
 
       {/* Period filter row */}
       <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap', marginBottom: 14 }}>
-        <CalendarOutlined style={{ color: '#0f766e' }} />
+        <CalendarOutlined style={{ color: 'var(--color-primary)' }} />
         {PERIOD_TYPES.map(p => (
           <Button key={p} size="small"
             type={period === p ? 'primary' : 'default'}
             onClick={() => onPeriodChange(p)}
-            style={{ borderRadius: 999, ...(period === p ? {} : { borderColor: '#a7e3d9', color: '#0f766e' }) }}
+            style={{ borderRadius: 999, ...(period === p ? {} : { borderColor: 'var(--color-border)', color: 'var(--color-primary)' }) }}
           >{p}</Button>
         ))}
         <Divider type="vertical" />
@@ -950,40 +950,40 @@ function MyEvaluationPanel({ mergedSlots, stats, period, year, onPeriodChange, o
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, minmax(140px, 1fr))', gap: 10, marginBottom: 16 }}>
 
           {/* Latest */}
-          <Card bordered={false} style={{ borderRadius: 12, background: '#eef8f6', border: '1px solid #a7e3d9' }}>
+          <Card bordered={false} style={{ borderRadius: 12, background: 'var(--color-primary-tint)', border: '1px solid var(--color-border)' }}>
             <Text type="secondary" style={{ fontSize: 11 }}>Latest Score</Text>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 2 }}>
               <Title level={3} style={{ margin: 0, color: stats.latest.achievementColor }}>{stats.latest.achievementPct}%</Title>
               {stats.trend > 0 && <Tooltip title={`+${stats.trend}% vs previous`}><RiseOutlined style={{ color: '#059669', fontSize: 16 }} /></Tooltip>}
               {stats.trend < 0 && <Tooltip title={`${stats.trend}% vs previous`}><FallOutlined style={{ color: '#dc2626', fontSize: 16 }} /></Tooltip>}
-              {stats.trend === 0 && stats.prev && <Tooltip title="No change vs previous"><MinusOutlined style={{ color: '#94a3b8', fontSize: 14 }} /></Tooltip>}
+              {stats.trend === 0 && stats.prev && <Tooltip title="No change vs previous"><MinusOutlined style={{ color: 'var(--color-text-tertiary)', fontSize: 14 }} /></Tooltip>}
             </div>
             <Tag color={stats.latest.achievementTagColor} style={{ marginTop: 4, fontSize: 10 }}>{stats.latest.achievementLevel}</Tag>
           </Card>
 
           {/* Average */}
-          <Card bordered={false} style={{ borderRadius: 12, background: '#eff6ff', border: '1px solid #bfdbfe' }}>
+          <Card bordered={false} style={{ borderRadius: 12, background: 'var(--color-status-info-bg)', border: '1px solid #bfdbfe' }}>
             <Text type="secondary" style={{ fontSize: 11 }}>Period Average</Text>
             <Title level={3} style={{ margin: 0, color: '#0284c7', marginTop: 2 }}>{stats.avg}%</Title>
             <div style={{ marginTop: 4 }}><Progress percent={stats.avg} size="small" showInfo={false} strokeColor="#0284c7" /></div>
           </Card>
 
           {/* Best */}
-          <Card bordered={false} style={{ borderRadius: 12, background: '#f0fdf4', border: '1px solid #bbf7d0' }}>
+          <Card bordered={false} style={{ borderRadius: 12, background: 'var(--color-status-approved-bg)', border: '1px solid #bbf7d0' }}>
             <Text type="secondary" style={{ fontSize: 11 }}>Best Period</Text>
             <Title level={3} style={{ margin: 0, color: '#059669', marginTop: 2 }}>{stats.best.achievementPct}%</Title>
             <Text type="secondary" style={{ fontSize: 11 }}>{stats.best.periodLabel}</Text>
           </Card>
 
           {/* Gaps */}
-          <Card bordered={false} style={{ borderRadius: 12, background: stats.notMarkedCount > 0 ? '#fffbeb' : '#f0fdf4', border: `1px solid ${stats.notMarkedCount > 0 ? '#fde68a' : '#bbf7d0'}` }}>
+          <Card bordered={false} style={{ borderRadius: 12, background: stats.notMarkedCount > 0 ? 'var(--color-status-pending-bg)' : 'var(--color-status-approved-bg)', border: `1px solid ${stats.notMarkedCount > 0 ? 'rgba(253, 230, 138, 0.4)' : 'var(--color-status-approved-bg)'}` }}>
             <Text type="secondary" style={{ fontSize: 11 }}>Not Marked</Text>
             <Title level={3} style={{ margin: 0, color: stats.notMarkedCount > 0 ? '#d97706' : '#059669', marginTop: 2 }}>{stats.notMarkedCount}</Title>
             <Text type="secondary" style={{ fontSize: 11 }}>gap{stats.notMarkedCount !== 1 ? 's' : ''} detected</Text>
           </Card>
         </div>
       ) : (
-        <div style={{ textAlign: 'center', padding: '24px 0', color: '#94a3b8' }}>
+        <div style={{ textAlign: 'center', padding: '24px 0', color: 'var(--color-text-tertiary)' }}>
           <LineChartOutlined style={{ fontSize: 32, marginBottom: 8, display: 'block' }} />
           <Text type="secondary">No evaluation records found for {period} · {year}</Text>
         </div>
@@ -1002,9 +1002,9 @@ function MyEvaluationPanel({ mergedSlots, stats, period, year, onPeriodChange, o
             // ── Not Marked slot ──
             if (!record) {
               return (
-                <div key={slot.periodStart} style={{ border: '1px solid #fde68a', borderRadius: 12, padding: '12px 16px', background: '#fffbeb', display: 'flex', gap: 16, alignItems: 'center', flexWrap: 'wrap' }}>
+                <div key={slot.periodStart} style={{ border: '1px solid #fde68a', borderRadius: 12, padding: '12px 16px', background: 'var(--color-status-pending-bg)', display: 'flex', gap: 16, alignItems: 'center', flexWrap: 'wrap' }}>
                   <div style={{ minWidth: 160 }}>
-                    <Text strong style={{ fontSize: 14, color: '#92400e' }}>{slot.periodLabel}</Text>
+                    <Text strong style={{ fontSize: 14, color: '#d97706' }}>{slot.periodLabel}</Text>
                     <div>
                       <Text type="secondary" style={{ fontSize: 11 }}>
                         {slot.periodStart === slot.periodEnd ? slot.periodStart : `${slot.periodStart} → ${slot.periodEnd}`}
@@ -1029,13 +1029,13 @@ function MyEvaluationPanel({ mergedSlots, stats, period, year, onPeriodChange, o
             const diff       = prevRecord ? record.achievementPct - prevRecord.achievementPct : null;
 
             return (
-              <div key={record.id} style={{ border: `1px solid ${isLatest ? '#8dd3c8' : '#d9ebe8'}`, borderRadius: 12, padding: '14px 16px', background: isLatest ? '#eef8f6' : '#fff', display: 'flex', gap: 16, alignItems: 'center', flexWrap: 'wrap' }}>
+              <div key={record.id} style={{ border: `1px solid ${isLatest ? '#8dd3c8' : '#d9ebe8'}`, borderRadius: 12, padding: '14px 16px', background: isLatest ? 'var(--color-primary-tint)' : 'var(--color-bg-surface)', display: 'flex', gap: 16, alignItems: 'center', flexWrap: 'wrap' }}>
                 {/* Period info */}
                 <div style={{ minWidth: 160 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
                     <Text strong style={{ fontSize: 14 }}>{record.periodLabel}</Text>
                     {isLatest && (
-                      <Tag style={{ margin: 0, background: '#e6f7f4', borderColor: '#8dd3c8', color: '#0f766e', fontSize: 10, borderRadius: 999 }}>Latest</Tag>
+                      <Tag style={{ margin: 0, background: 'var(--color-primary-tint)', borderColor: '#8dd3c8', color: 'var(--color-primary)', fontSize: 10, borderRadius: 999 }}>Latest</Tag>
                     )}
                   </div>
                   <Text type="secondary" style={{ fontSize: 11 }}>
@@ -1053,7 +1053,7 @@ function MyEvaluationPanel({ mergedSlots, stats, period, year, onPeriodChange, o
                       <Text type="secondary" style={{ fontSize: 12 }}>({record.totalMark}/{record.totalOutOf})</Text>
                       {diff !== null && diff > 0  && <Tooltip title={`+${diff}% vs previous`}><RiseOutlined style={{ color: '#059669' }} /></Tooltip>}
                       {diff !== null && diff < 0  && <Tooltip title={`${diff}% vs previous`}><FallOutlined style={{ color: '#dc2626' }} /></Tooltip>}
-                      {diff !== null && diff === 0 && <Tooltip title="Same as previous"><MinusOutlined style={{ color: '#94a3b8' }} /></Tooltip>}
+                      {diff !== null && diff === 0 && <Tooltip title="Same as previous"><MinusOutlined style={{ color: 'var(--color-text-tertiary)' }} /></Tooltip>}
                     </Space>
                   </div>
                   <Progress percent={record.achievementPct} size="small" strokeColor={record.achievementColor} showInfo={false} />
@@ -1061,7 +1061,7 @@ function MyEvaluationPanel({ mergedSlots, stats, period, year, onPeriodChange, o
 
                 {/* Action */}
                 <Button icon={<EyeOutlined />} onClick={() => onViewDetail(record.id)}
-                  style={{ borderRadius: 8, flexShrink: 0, borderColor: '#a7e3d9', color: '#0f766e' }}>
+                  style={{ borderRadius: 8, flexShrink: 0, borderColor: 'var(--color-border)', color: 'var(--color-primary)' }}>
                   View Details
                 </Button>
               </div>
@@ -1080,7 +1080,7 @@ function MyEvalDetailModal({ record }: { record: MyEvalRecord }) {
       title: 'Sub KPI', width: 200,
       render: (_: unknown, row) => (
         <div>
-          <Tag style={{ fontFamily: 'monospace', fontSize: 11, margin: 0, color: '#0f766e', borderColor: '#8dd3c8', background: '#e6f7f4' }}>{row.subKPICode}</Tag>
+          <Tag style={{ fontFamily: 'monospace', fontSize: 11, margin: 0, color: 'var(--color-primary)', borderColor: '#8dd3c8', background: 'var(--color-primary-tint)' }}>{row.subKPICode}</Tag>
           <div><Text strong style={{ fontSize: 13 }}>{row.subKPIName}</Text></div>
           <Text type="secondary" style={{ fontSize: 11 }}>{row.measurementCriteria}</Text>
         </div>
@@ -1111,7 +1111,7 @@ function MyEvalDetailModal({ record }: { record: MyEvalRecord }) {
     },
     {
       title: 'Wt.', dataIndex: 'weight', width: 50, align: 'center' as const,
-      render: (v: number) => <Tag style={{ color: '#0f766e', borderColor: '#8dd3c8', background: '#e6f7f4' }}>{v}</Tag>,
+      render: (v: number) => <Tag style={{ color: 'var(--color-primary)', borderColor: '#8dd3c8', background: 'var(--color-primary-tint)' }}>{v}</Tag>,
     },
     {
       title: 'Remarks', dataIndex: 'remarks',
@@ -1147,7 +1147,7 @@ function MyEvalDetailModal({ record }: { record: MyEvalRecord }) {
           <div style={{ background: 'linear-gradient(120deg, #f0fdf4 0%, #ecfdf5 100%)', border: '1px solid #6ee7b7', borderRadius: 12, padding: '14px 18px', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 14 }}>
             <div style={{ fontSize: 36, lineHeight: 1 }}>🎉</div>
             <div>
-              <div style={{ fontWeight: 800, fontSize: 15, color: '#065f46' }}>Congratulations!</div>
+              <div style={{ fontWeight: 800, fontSize: 15, color: 'var(--color-primary-dark)' }}>Congratulations!</div>
               <div style={{ fontSize: 13, color: '#047857', marginTop: 2 }}>
                 Your outstanding performance has earned you a <strong>+{ar!.incrementPct}% salary increment</strong> effective from {ar!.effectiveDate}.
               </div>
@@ -1157,10 +1157,10 @@ function MyEvalDetailModal({ record }: { record: MyEvalRecord }) {
 
         {/* ── No increment notice ── */}
         {noIncrement && (
-          <div style={{ background: '#fffbeb', border: '1px solid #fde68a', borderRadius: 12, padding: '12px 18px', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 14 }}>
+          <div style={{ background: 'var(--color-status-pending-bg)', border: '1px solid #fde68a', borderRadius: 12, padding: '12px 18px', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 14 }}>
             <div style={{ fontSize: 32, lineHeight: 1 }}>📋</div>
             <div>
-              <div style={{ fontWeight: 700, fontSize: 14, color: '#92400e' }}>No Increment This Cycle</div>
+              <div style={{ fontWeight: 700, fontSize: 14, color: '#d97706' }}>No Increment This Cycle</div>
               <div style={{ fontSize: 13, color: '#b45309', marginTop: 2 }}>
                 Based on this appraisal result, no salary increment has been awarded for this review period. Continue improving to unlock future increments.
               </div>
@@ -1170,10 +1170,10 @@ function MyEvalDetailModal({ record }: { record: MyEvalRecord }) {
 
         {/* Evaluator + score summary */}
         <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', marginBottom: 16 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, background: '#eef8f6', borderRadius: 10, padding: '10px 14px', flex: 1, minWidth: 200, border: '1px solid #a7e3d9' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'var(--color-primary-tint)', borderRadius: 10, padding: '10px 14px', flex: 1, minWidth: 200, border: '1px solid var(--color-border)' }}>
             <Avatar size={36} style={{ background: record.evaluatorAvatarColor, fontWeight: 700 }}>{initials(record.evaluatedBy)}</Avatar>
             <div>
-              <Text style={{ fontSize: 11, color: '#0f766e', display: 'block' }}>Evaluated by</Text>
+              <Text style={{ fontSize: 11, color: 'var(--color-primary)', display: 'block' }}>Evaluated by</Text>
               <Text strong>{record.evaluatedBy}</Text>
               <Text type="secondary" style={{ fontSize: 11, marginLeft: 6 }}>{record.evaluatorDesignation} · {record.evaluatorCode}</Text>
             </div>
@@ -1184,12 +1184,12 @@ function MyEvalDetailModal({ record }: { record: MyEvalRecord }) {
               <Text type="secondary" style={{ fontSize: 12 }}>Achievement</Text>
               {ar && (
                 <div style={{ marginTop: 6, display: 'flex', flexDirection: 'column', gap: 2 }}>
-                  <Text style={{ fontSize: 11, color: '#6b7280' }}>
-                    Basic: <strong style={{ color: '#111827' }}>৳{ar.newBasic.toLocaleString()}</strong>
+                  <Text style={{ fontSize: 11, color: 'var(--color-text-tertiary)' }}>
+                    Basic: <strong style={{ color: 'var(--color-text-primary)' }}>৳{ar.newBasic.toLocaleString()}</strong>
                     {ar.incrementPct > 0 && <Text type="secondary" style={{ fontSize: 10 }}> (was ৳{ar.previousBasic.toLocaleString()})</Text>}
                   </Text>
-                  <Text style={{ fontSize: 11, color: '#6b7280' }}>
-                    Gross: <strong style={{ color: '#111827' }}>৳{ar.newGross.toLocaleString()}</strong>
+                  <Text style={{ fontSize: 11, color: 'var(--color-text-tertiary)' }}>
+                    Gross: <strong style={{ color: 'var(--color-text-primary)' }}>৳{ar.newGross.toLocaleString()}</strong>
                     {ar.incrementPct > 0 && <Text type="secondary" style={{ fontSize: 10 }}> (was ৳{ar.previousGross.toLocaleString()})</Text>}
                   </Text>
                 </div>
@@ -1208,27 +1208,27 @@ function MyEvalDetailModal({ record }: { record: MyEvalRecord }) {
         {/* ── Salary Increment card (yearly appraisal with result) ── */}
         {ar && (
           <div style={{
-            background: hasIncrement ? 'linear-gradient(120deg, #f0fdfa 0%, #ecfdf5 100%)' : '#fafafa',
-            border: `1px solid ${hasIncrement ? '#6ee7b7' : '#e5e7eb'}`,
+            background: hasIncrement ? 'linear-gradient(120deg, #f0fdfa 0%, #ecfdf5 100%)' : 'var(--color-bg-subtle)',
+            border: `1px solid ${hasIncrement ? 'var(--color-status-approved-bg)' : 'var(--color-border)'}`,
             borderRadius: 12, padding: '14px 18px', marginBottom: 16,
           }}>
-            <Text strong style={{ fontSize: 12, color: hasIncrement ? '#059669' : '#6b7280', display: 'block', marginBottom: 10, letterSpacing: '0.04em' }}>
+            <Text strong style={{ fontSize: 12, color: hasIncrement ? '#059669' : 'var(--color-text-tertiary)', display: 'block', marginBottom: 10, letterSpacing: '0.04em' }}>
               {hasIncrement ? '✓ SALARY INCREMENT' : 'SALARY REVIEW'}
             </Text>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
               <div>
                 <Text type="secondary" style={{ fontSize: 11 }}>PERCENTAGE INCREASE</Text>
-                <div style={{ fontWeight: 800, fontSize: 20, color: hasIncrement ? '#059669' : '#6b7280', marginTop: 2 }}>
+                <div style={{ fontWeight: 800, fontSize: 20, color: hasIncrement ? '#059669' : 'var(--color-text-tertiary)', marginTop: 2 }}>
                   {hasIncrement ? `+${ar.incrementPct}%` : 'No Increment'}
                 </div>
               </div>
               <div>
                 <Text type="secondary" style={{ fontSize: 11 }}>EFFECTIVE DATE</Text>
-                <div style={{ fontWeight: 700, fontSize: 14, color: '#111827', marginTop: 2 }}>{ar.effectiveDate}</div>
+                <div style={{ fontWeight: 700, fontSize: 14, color: 'var(--color-text-primary)', marginTop: 2 }}>{ar.effectiveDate}</div>
               </div>
               <div>
                 <Text type="secondary" style={{ fontSize: 11 }}>NEXT APPRAISAL DATE</Text>
-                <div style={{ fontWeight: 700, fontSize: 14, color: '#0f766e', marginTop: 2 }}>{ar.nextAppraisalDate}</div>
+                <div style={{ fontWeight: 700, fontSize: 14, color: 'var(--color-primary)', marginTop: 2 }}>{ar.nextAppraisalDate}</div>
               </div>
             </div>
           </div>
@@ -1237,7 +1237,7 @@ function MyEvalDetailModal({ record }: { record: MyEvalRecord }) {
         {/* KPI items */}
         <div style={{ marginBottom: 14 }}>
           <Text strong style={{ fontSize: 13, display: 'block', marginBottom: 8 }}>
-            <TrophyOutlined style={{ marginRight: 6, color: '#0f766e' }} />KPI Breakdown
+            <TrophyOutlined style={{ marginRight: 6, color: 'var(--color-primary)' }} />KPI Breakdown
           </Text>
           <Table
             dataSource={record.items}
@@ -1251,7 +1251,7 @@ function MyEvalDetailModal({ record }: { record: MyEvalRecord }) {
               const totalOutOf = pageData.reduce((s, r) => s + r.markOutOf, 0);
               const { color }  = getAchievementMeta(Math.round((totalMark / totalOutOf) * 100));
               return (
-                <Table.Summary.Row style={{ background: '#f7fbfa' }}>
+                <Table.Summary.Row style={{ background: 'var(--color-bg-subtle)' }}>
                   <Table.Summary.Cell index={0} colSpan={2}><Text strong>Total</Text></Table.Summary.Cell>
                   <Table.Summary.Cell index={1} align="center">
                     <Text strong style={{ color }}>{totalMark}<Text type="secondary">/{totalOutOf}</Text></Text>
@@ -1264,11 +1264,11 @@ function MyEvalDetailModal({ record }: { record: MyEvalRecord }) {
         </div>
 
         {/* Overall feedback */}
-        <div style={{ background: '#f7fbfa', borderRadius: 10, padding: '12px 14px', border: '1px solid #a7e3d9' }}>
-          <Text strong style={{ fontSize: 12, color: '#0f766e', display: 'block', marginBottom: 6 }}>
+        <div style={{ background: 'var(--color-bg-subtle)', borderRadius: 10, padding: '12px 14px', border: '1px solid var(--color-border)' }}>
+          <Text strong style={{ fontSize: 12, color: 'var(--color-primary)', display: 'block', marginBottom: 6 }}>
             Overall Feedback from {record.evaluatedBy}
           </Text>
-          <Text style={{ fontSize: 13, color: '#334155', lineHeight: 1.6 }}>{record.overallFeedback}</Text>
+          <Text style={{ fontSize: 13, color: 'var(--color-text-secondary)', lineHeight: 1.6 }}>{record.overallFeedback}</Text>
         </div>
       </div>
     </div>

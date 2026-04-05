@@ -27,15 +27,15 @@ import { getSeparationTimeline } from '@/features/offboarding/components/separat
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 function colHead(label: string) {
   return (
-    <span style={{ fontSize: 11, fontWeight: 600, color: '#9ca3af', letterSpacing: '0.05em' }}>
+    <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--color-text-disabled)', letterSpacing: '0.05em' }}>
       {label}
     </span>
   );
 }
 
 const AVATAR_COLORS = [
-  '#0d9488', '#3b82f6', '#f59e0b', '#8b5cf6',
-  '#10b981', '#64748b', '#ef4444', '#ec4899',
+  'var(--color-primary)', '#3b82f6', '#f59e0b', '#8b5cf6',
+  '#10b981', 'var(--color-text-tertiary)', '#ef4444', '#ec4899',
 ];
 function avatarColor(name: string) {
   let h = 0;
@@ -48,12 +48,12 @@ function initials(name: string) {
 
 // ─── Status badge ─────────────────────────────────────────────────────────────
 const STATUS_CFG: Record<SepStatus, { bg: string; text: string; dot: string }> = {
-  'Pending':     { bg: '#fffbeb', text: '#d97706', dot: '#f59e0b' },
-  'In Progress': { bg: '#eff6ff', text: '#2563eb', dot: '#3b82f6' },
-  'Completed':   { bg: '#f0fdf4', text: '#059669', dot: '#22c55e' },
-  'On Hold':     { bg: '#f9fafb', text: '#6b7280', dot: '#9ca3af' },
-  'Cancelled':   { bg: '#fef2f2', text: '#dc2626', dot: '#ef4444' },
-  'Rejected':    { bg: '#fef2f2', text: '#b91c1c', dot: '#ef4444' },
+  'Pending':     { bg: 'var(--color-status-pending-bg)',  text: '#d97706', dot: '#f59e0b' },
+  'In Progress': { bg: 'rgba(37, 99, 235, 0.12)',          text: '#2563eb', dot: '#3b82f6' },
+  'Completed':   { bg: 'var(--color-status-approved-bg)', text: '#059669', dot: '#22c55e' },
+  'On Hold':     { bg: 'var(--color-status-draft-bg)',    text: 'var(--color-text-tertiary)', dot: 'var(--color-text-disabled)' },
+  'Cancelled':   { bg: 'var(--color-status-rejected-bg)', text: '#dc2626', dot: '#ef4444' },
+  'Rejected':    { bg: 'var(--color-status-rejected-bg)', text: '#b91c1c', dot: '#ef4444' },
 };
 
 function StatusBadge({ status }: { status: SepStatus }) {
@@ -73,10 +73,10 @@ function StatusBadge({ status }: { status: SepStatus }) {
 
 // ─── Employment status badge ──────────────────────────────────────────────────
 const EMP_CFG: Record<EmpStatus, { bg: string; text: string; dot: string }> = {
-  Permanent:    { bg: '#f0fdf4', text: '#059669', dot: '#22c55e' },
-  Contractual:  { bg: '#eff6ff', text: '#2563eb', dot: '#3b82f6' },
-  Probationary: { bg: '#fffbeb', text: '#d97706', dot: '#f59e0b' },
-  Intern:       { bg: '#faf5ff', text: '#7c3aed', dot: '#a78bfa' },
+  Permanent:    { bg: 'var(--color-status-approved-bg)', text: '#059669', dot: '#22c55e' },
+  Contractual:  { bg: 'rgba(37, 99, 235, 0.12)',          text: '#2563eb', dot: '#3b82f6' },
+  Probationary: { bg: 'var(--color-status-pending-bg)',  text: '#d97706', dot: '#f59e0b' },
+  Intern:       { bg: 'rgba(124, 58, 237, 0.12)',          text: '#7c3aed', dot: '#a78bfa' },
 };
 
 function EmpStatusBadge({ status }: { status: EmpStatus }) {
@@ -101,8 +101,8 @@ function ModeTag({ mode }: { mode: SepMode }) {
       display: 'inline-block',
       padding: '2px 10px', borderRadius: 6,
       fontSize: 12, fontWeight: 500,
-      color: '#374151', background: '#f9fafb',
-      border: '1px solid #e5e7eb', whiteSpace: 'nowrap',
+      color: 'var(--color-text-secondary)', background: 'var(--color-bg-subtle)',
+      border: '1px solid var(--color-border)', whiteSpace: 'nowrap',
     }}>
       {mode}
     </span>
@@ -323,8 +323,8 @@ export default function SeparationRequestsPage() {
             {initials(r.empName)}
           </Avatar>
           <div>
-            <div style={{ fontWeight: 600, fontSize: 13, color: '#111827' }}>{r.empName}</div>
-            <div style={{ fontSize: 11, color: '#9ca3af', marginTop: 1 }}>{r.empId}</div>
+            <div style={{ fontWeight: 600, fontSize: 13, color: 'var(--color-text-primary)' }}>{r.empName}</div>
+            <div style={{ fontSize: 11, color: 'var(--color-text-disabled)', marginTop: 1 }}>{r.empId}</div>
           </div>
         </div>
       ),
@@ -334,21 +334,21 @@ export default function SeparationRequestsPage() {
       dataIndex: 'department',
       key: 'department',
       width: 120,
-      render: v => <span style={{ fontSize: 13, color: '#374151' }}>{v}</span>,
+      render: v => <span style={{ fontSize: 13, color: 'var(--color-text-secondary)' }}>{v}</span>,
     },
     {
       title: colHead('SECTION'),
       dataIndex: 'section',
       key: 'section',
       width: 150,
-      render: v => <span style={{ fontSize: 13, color: '#374151' }}>{v}</span>,
+      render: v => <span style={{ fontSize: 13, color: 'var(--color-text-secondary)' }}>{v}</span>,
     },
     {
       title: colHead('DESIGNATION'),
       dataIndex: 'designation',
       key: 'designation',
       width: 170,
-      render: v => <span style={{ fontSize: 13, color: '#374151' }}>{v}</span>,
+      render: v => <span style={{ fontSize: 13, color: 'var(--color-text-secondary)' }}>{v}</span>,
     },
     {
       title: colHead('DATE OF JOINING'),
@@ -356,7 +356,7 @@ export default function SeparationRequestsPage() {
       key: 'dateOfJoining',
       width: 130,
       sorter: (a, b) => a.dateOfJoining.localeCompare(b.dateOfJoining),
-      render: v => <span style={{ fontSize: 13, color: '#4b5563' }}>{v}</span>,
+      render: v => <span style={{ fontSize: 13, color: 'var(--color-text-secondary)' }}>{v}</span>,
     },
     {
       title: colHead('RESIGNATION SUBMISSION DATE'),
@@ -367,8 +367,8 @@ export default function SeparationRequestsPage() {
         const [date, time] = v.split('; ');
         return (
           <div>
-            <div style={{ fontSize: 13, fontWeight: 500, color: '#374151' }}>{date}</div>
-            {time && <div style={{ fontSize: 11, color: '#9ca3af', marginTop: 1 }}>{time}</div>}
+          <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--color-text-secondary)' }}>{date}</div>
+          {time && <div style={{ fontSize: 11, color: 'var(--color-text-disabled)', marginTop: 1 }}>{time}</div>}
           </div>
         );
       },
@@ -378,7 +378,7 @@ export default function SeparationRequestsPage() {
       dataIndex: 'dateOfSeparation',
       key: 'dateOfSeparation',
       width: 210,
-      render: v => <span style={{ fontSize: 13, color: '#4b5563' }}>{v}</span>,
+      render: v => <span style={{ fontSize: 13, color: 'var(--color-text-secondary)' }}>{v}</span>,
     },
     {
       title: colHead('NOTICE PERIOD'),
@@ -386,7 +386,7 @@ export default function SeparationRequestsPage() {
       key: 'noticePeriod',
       width: 110,
       align: 'center',
-      render: v => <span style={{ fontSize: 13, fontWeight: 600, color: '#374151' }}>{v}d</span>,
+      render: v => <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--color-text-secondary)' }}>{v}d</span>,
     },
     {
       title: colHead('DURATION'),
@@ -394,8 +394,8 @@ export default function SeparationRequestsPage() {
       key: 'duration',
       width: 180,
       render: (v: string | undefined) => v
-        ? <span style={{ fontSize: 12, color: '#374151' }}>{v}</span>
-        : <span style={{ fontSize: 12, color: '#9ca3af' }}>—</span>,
+        ? <span style={{ fontSize: 12, color: 'var(--color-text-secondary)' }}>{v}</span>
+        : <span style={{ fontSize: 12, color: 'var(--color-text-disabled)' }}>—</span>,
     },
     {
       title: colHead('EMPLOYMENT STATUS'),
@@ -425,8 +425,8 @@ export default function SeparationRequestsPage() {
       width: 160,
       render: (v: { name: string; id: string }) => (
         <div>
-          <div style={{ fontSize: 13, fontWeight: 500, color: '#374151' }}>{v.name}</div>
-          <div style={{ fontSize: 11, color: '#9ca3af', marginTop: 1 }}>{v.id}</div>
+            <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--color-text-secondary)' }}>{v.name}</div>
+          <div style={{ fontSize: 11, color: 'var(--color-text-disabled)', marginTop: 1 }}>{v.id}</div>
         </div>
       ),
     },
@@ -439,7 +439,7 @@ export default function SeparationRequestsPage() {
         v ? (
           <Tooltip title={v}>
             <span style={{
-              fontSize: 12, color: '#6b7280',
+              fontSize: 12, color: 'var(--color-text-tertiary)',
               display: '-webkit-box',
               WebkitLineClamp: 2,
               WebkitBoxOrient: 'vertical',
@@ -449,7 +449,7 @@ export default function SeparationRequestsPage() {
             </span>
           </Tooltip>
         ) : (
-          <span style={{ fontSize: 12, color: '#d1d5db' }}>—</span>
+          <span style={{ fontSize: 12, color: 'var(--color-text-disabled)' }}>—</span>
         ),
     },
     {
@@ -476,8 +476,8 @@ export default function SeparationRequestsPage() {
                 { type: 'divider' },
                 {
                   key: 'approve-reject',
-                  icon: <SwapOutlined style={{ color: '#0f766e' }} />,
-                  label: <span style={{ color: '#0f766e', fontWeight: 600 }}>Approve / Reject</span>,
+                  icon: <SwapOutlined style={{ color: 'var(--color-primary)' }} />,
+                  label: <span style={{ color: 'var(--color-primary)', fontWeight: 600 }}>Approve / Reject</span>,
                   disabled: r.status !== 'Pending',
                   onClick: () => openDetail(r, 'decision'),
                 },
@@ -509,7 +509,7 @@ export default function SeparationRequestsPage() {
               size="small"
               icon={<MoreOutlined style={{ fontSize: 18 }} />}
               style={{
-                color: '#9ca3af', borderRadius: 6,
+                color: 'var(--color-text-disabled)', borderRadius: 6,
                 width: 32, height: 32,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 padding: 0,
@@ -547,7 +547,7 @@ export default function SeparationRequestsPage() {
         <div>
           <div className="filter-label">SEARCH</div>
           <Input
-            prefix={<SearchOutlined style={{ color: '#9ca3af' }} />}
+            prefix={<SearchOutlined style={{ color: 'var(--color-text-disabled)' }} />}
             placeholder="Search by Employee Name, ID..."
             value={draft.search}
             onChange={e => setDraft(p => ({ ...p, search: e.target.value }))}
@@ -560,7 +560,7 @@ export default function SeparationRequestsPage() {
           <Button
             icon={<FilterOutlined />}
             onClick={() => setShowFilters(v => !v)}
-            style={showFilters ? { borderColor: '#94a3b8', color: '#334155' } : {}}
+            style={showFilters ? { borderColor: 'var(--color-border-strong)', color: 'var(--color-text-secondary)' } : {}}
           >
             Filters
           </Button>
@@ -572,27 +572,27 @@ export default function SeparationRequestsPage() {
       {showFilters && (
         <div style={{
           padding: '16px 20px',
-          background: '#f8fafc',
-          border: '1px solid #e8edf3',
-          borderLeft: '3px solid #cbd5e1',
+          background: 'var(--color-bg-subtle)',
+          border: '1px solid var(--color-border)',
+          borderLeft: '3px solid var(--color-border-strong)',
           borderRadius: '0 0 8px 8px',
           marginTop: -8,
           marginBottom: 16,
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
             <Space size={8} align="center">
-              <FilterOutlined style={{ color: '#64748b' }} />
-              <span style={{ fontWeight: 700, fontSize: 12, letterSpacing: '0.07em', color: '#374151', textTransform: 'uppercase' }}>
+              <FilterOutlined style={{ color: 'var(--color-text-tertiary)' }} />
+              <span style={{ fontWeight: 700, fontSize: 12, letterSpacing: '0.07em', color: 'var(--color-text-secondary)', textTransform: 'uppercase' }}>
                 Advanced Filtering
               </span>
             </Space>
-            <Button type="link" size="small" onClick={handleReset} icon={<ReloadOutlined />} style={{ color: '#64748b', padding: 0, fontSize: 12 }}>
+            <Button type="link" size="small" onClick={handleReset} icon={<ReloadOutlined />} style={{ color: 'var(--color-text-tertiary)', padding: 0, fontSize: 12 }}>
               Reset All Filters
             </Button>
           </div>
           <Row gutter={[12, 12]} align="bottom">
             <Col flex="1 1 160px">
-              <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.06em', color: '#6b7280', marginBottom: 6, textTransform: 'uppercase' }}>Department</div>
+              <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.06em', color: 'var(--color-text-tertiary)', marginBottom: 6, textTransform: 'uppercase' }}>Department</div>
               <Select
                 placeholder="All Departments"
                 style={{ width: '100%' }}
@@ -603,7 +603,7 @@ export default function SeparationRequestsPage() {
               />
             </Col>
             <Col flex="1 1 150px">
-              <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.06em', color: '#6b7280', marginBottom: 6, textTransform: 'uppercase' }}>Employment Status</div>
+              <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.06em', color: 'var(--color-text-tertiary)', marginBottom: 6, textTransform: 'uppercase' }}>Employment Status</div>
               <Select
                 placeholder="All"
                 style={{ width: '100%' }}
@@ -614,7 +614,7 @@ export default function SeparationRequestsPage() {
               />
             </Col>
             <Col flex="1 1 180px">
-              <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.06em', color: '#6b7280', marginBottom: 6, textTransform: 'uppercase' }}>Mode of Separation</div>
+              <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.06em', color: 'var(--color-text-tertiary)', marginBottom: 6, textTransform: 'uppercase' }}>Mode of Separation</div>
               <Select
                 placeholder="All Modes"
                 style={{ width: '100%' }}
@@ -647,9 +647,9 @@ export default function SeparationRequestsPage() {
               style={{
                 display: 'inline-flex', alignItems: 'center', gap: 6,
                 padding: '6px 14px', borderRadius: 10,
-                border: isActive ? '1.5px solid #0f766e' : '1.5px solid #E5E7EB',
-                background: isActive ? '#f0fdfa' : '#ffffff',
-                color: isActive ? '#0f766e' : '#374151',
+                border: isActive ? '1.5px solid var(--color-primary)' : '1.5px solid var(--color-border)',
+                background: isActive ? 'var(--color-primary-tint)' : 'var(--color-bg-surface)',
+                color: isActive ? 'var(--color-primary)' : 'var(--color-text-secondary)',
                 fontWeight: isActive ? 700 : 500,
                 fontSize: 13, fontFamily: 'inherit', cursor: 'pointer',
                 transition: 'border-color 0.15s, background 0.15s, color 0.15s',
@@ -660,15 +660,15 @@ export default function SeparationRequestsPage() {
                 display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                 minWidth: 20, height: 20, borderRadius: 10,
                 fontSize: 11, fontWeight: 700, padding: '0 5px',
-                background: isActive ? '#0f766e' : '#e5e7eb',
-                color: isActive ? '#ffffff' : '#6b7280',
+                background: isActive ? 'var(--color-primary)' : 'var(--color-bg-base)',
+                color: isActive ? 'var(--color-bg-surface)' : 'var(--color-text-tertiary)',
               }}>
                 {count}
               </span>
             </button>
           );
         })}
-        <span style={{ marginLeft: 'auto', fontSize: 12, color: '#9ca3af' }}>
+        <span style={{ marginLeft: 'auto', fontSize: 12, color: 'var(--color-text-disabled)' }}>
           {data.length} result{data.length !== 1 ? 's' : ''}
         </span>
       </div>
@@ -697,8 +697,8 @@ export default function SeparationRequestsPage() {
         />
         <div style={{
           display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-          padding: '10px 16px', borderTop: '1px solid #f3f4f6',
-          fontSize: 12, color: '#6b7280',
+          padding: '10px 16px', borderTop: '1px solid var(--color-border)',
+          fontSize: 12, color: 'var(--color-text-tertiary)',
         }}>
           <span>Showing {data.length} of {requests.length} requests</span>
           <span>{selectedKeys.length} selected</span>

@@ -100,7 +100,7 @@ export default function MyShiftPage() {
       {!isFormView && (
         <div
           style={{
-            background: '#fff',
+            background: 'var(--color-bg-surface)',
             borderBottom: '1px solid var(--color-border)',
             padding: '14px 28px',
             display: 'flex',
@@ -127,9 +127,9 @@ export default function MyShiftPage() {
                   style={{
                     padding: '6px 18px',
                     borderRadius: 8,
-                    border: `1.5px solid ${isActive ? '#0f766e' : '#bdd6d2'}`,
-                    background: isActive ? '#f0fdfa' : '#fff',
-                    color: isActive ? '#0f766e' : '#374151',
+                    border: `1.5px solid ${isActive ? 'var(--color-primary)' : '#bdd6d2'}`,
+                    background: isActive ? 'var(--color-primary-tint)' : 'var(--color-bg-surface)',
+                    color: isActive ? 'var(--color-primary)' : 'var(--color-text-secondary)',
                     fontSize: 13,
                     fontWeight: isActive ? 600 : 400,
                     cursor: 'pointer',
@@ -168,7 +168,7 @@ export default function MyShiftPage() {
       )}
 
       {/* ── Content ────────────────────────────────────────────────────────── */}
-      <div style={{ flex: 1, overflow: 'hidden', background: '#F8FAFC' }}>
+      <div style={{ flex: 1, overflow: 'hidden', background: 'var(--color-bg-subtle)' }}>
         {/* MY SHIFT TAB */}
         {activeTab === 'my-shift' && <MyShiftTab />}
 

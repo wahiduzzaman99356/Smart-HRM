@@ -473,7 +473,7 @@ export function AppLayout({ children }: AppLayoutProps) {
                   size={34}
                   icon={<UserOutlined />}
                   style={{
-                    background: 'linear-gradient(135deg, #0d9488 0%, #0f766e 100%)',
+                    background: 'linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%)',
                     flexShrink: 0,
                   }}
                 />

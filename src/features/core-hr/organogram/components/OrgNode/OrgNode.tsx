@@ -44,7 +44,7 @@ export function OrgNode({
   const isHighlighted = !!highlightDept && data.department === highlightDept;
   const isDimmed      = !!highlightDept && !!data.department && !isHighlighted;
 
-  const btnColor = theme?.border ?? '#64748b';
+  const btnColor = theme?.border ?? 'var(--color-text-tertiary)';
 
   // ── Card style ──────────────────────────────────────────────────────────────
   const card: CSSProperties = {
@@ -56,22 +56,22 @@ export function OrgNode({
     ...(empty
       ? {
           border: '2px dashed #cbd5e1',
-          background: '#f8fafc',
+          background: 'var(--color-bg-subtle)',
           boxShadow: 'none',
         }
       : sep
       ? {
           border: `1px solid #fca5a544`,
           borderLeft: `4px solid #ef4444`,
-          background: '#fff5f5',
+          background: 'var(--color-status-rejected-bg)',
           boxShadow: isHighlighted
             ? '0 0 0 2.5px #ef444455, 0 4px 14px rgba(0,0,0,0.1)'
             : '0 1px 4px rgba(239,68,68,0.12)',
         }
       : {
-          border: `1px solid ${theme?.border ?? '#e2e8f0'}22`,
-          borderLeft: `4px solid ${theme?.border ?? '#e2e8f0'}`,
-          background: isHighlighted && theme ? theme.lightBg : '#ffffff',
+          border: `1px solid ${theme?.border ?? 'var(--color-border)'}22`,
+          borderLeft: `4px solid ${theme?.border ?? 'var(--color-border)'}`,
+          background: isHighlighted && theme ? theme.lightBg : 'var(--color-bg-surface)',
           boxShadow: isHighlighted
             ? `0 0 0 2.5px ${theme?.border}55, 0 4px 14px rgba(0,0,0,0.1)`
             : '0 1px 4px rgba(0,0,0,0.07)',
@@ -94,8 +94,8 @@ export function OrgNode({
   const avatar = (() => {
     if (empty) {
       return (
-        <div style={{ ...avatarBase, background: '#e2e8f0' }}>
-          <UserOutlined style={{ fontSize: 16, color: '#94a3b8' }} />
+        <div style={{ ...avatarBase, background: 'var(--color-border)' }}>
+          <UserOutlined style={{ fontSize: 16, color: 'var(--color-text-tertiary)' }} />
         </div>
       );
     }
@@ -108,7 +108,7 @@ export function OrgNode({
             border: `2px dashed ${theme?.avatarBg}60`,
           }}
         >
-          <UserAddOutlined style={{ fontSize: 14, color: theme?.avatarBg ?? '#64748b' }} />
+          <UserAddOutlined style={{ fontSize: 14, color: theme?.avatarBg ?? 'var(--color-text-tertiary)' }} />
         </div>
       );
     }
@@ -117,7 +117,7 @@ export function OrgNode({
       <div
         style={{
           ...avatarBase,
-          background: sep ? '#fca5a5' : theme?.avatarBg ?? '#94a3b8',
+          background: sep ? 'var(--color-status-rejected-bg)' : theme?.avatarBg ?? 'var(--color-text-tertiary)',
           color: '#fff',
           fontSize: 13,
           fontWeight: 700,
@@ -159,7 +159,7 @@ export function OrgNode({
               height: 24,
               borderRadius: '50%',
               border: `2px solid ${btnColor}`,
-              background: '#fff',
+              background: 'var(--color-bg-surface)',
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
@@ -192,7 +192,7 @@ export function OrgNode({
             style={{
               fontSize: 12,
               fontWeight: 700,
-              color: empty ? '#94a3b8' : sep ? '#b91c1c' : '#1e293b',
+              color: empty ? 'var(--color-text-tertiary)' : sep ? '#b91c1c' : '#1e293b',
               whiteSpace: 'nowrap',
               overflow: 'hidden',
               textOverflow: 'ellipsis',
@@ -202,7 +202,7 @@ export function OrgNode({
             {primaryLine}
           </div>
           {empIdLine && (
-            <div style={{ fontSize: 10, color: '#94a3b8', lineHeight: 1.3, marginTop: 1 }}>
+            <div style={{ fontSize: 10, color: 'var(--color-text-tertiary)', lineHeight: 1.3, marginTop: 1 }}>
               {empIdLine}
             </div>
           )}
@@ -210,7 +210,7 @@ export function OrgNode({
             <div
               style={{
                 fontSize: 11,
-                color: empty ? '#cbd5e1' : '#64748b',
+                color: empty ? 'var(--color-border)' : 'var(--color-text-tertiary)',
                 marginTop: 2,
                 whiteSpace: 'nowrap',
                 overflow: 'hidden',
@@ -228,7 +228,7 @@ export function OrgNode({
       <div
         style={{
           height: 1,
-          background: empty ? '#f1f5f9' : sep ? '#fca5a520' : `${theme?.border ?? '#e2e8f0'}18`,
+          background: empty ? 'var(--color-bg-subtle)' : sep ? '#fca5a520' : `${theme?.border ?? 'var(--color-border)'}18`,
         }}
       />
 
@@ -253,7 +253,7 @@ export function OrgNode({
                 margin: 0,
                 background: `${theme?.avatarBg}12`,
                 borderColor: `${theme?.avatarBg}28`,
-                color: theme?.avatarBg ?? '#64748b',
+                color: theme?.avatarBg ?? 'var(--color-text-tertiary)',
                 borderRadius: 4,
                 maxWidth: 100,
                 overflow: 'hidden',
@@ -317,18 +317,18 @@ export function OrgNode({
               e.currentTarget.style.background = `${btnColor}28`;
             }}
             onMouseLeave={e => {
-              e.currentTarget.style.background = empty ? '#f0fdfa' : `${btnColor}10`;
+              e.currentTarget.style.background = empty ? 'var(--color-primary-tint)' : `${btnColor}10`;
             }}
             style={{
               border: 'none',
-              background: empty ? '#f0fdfa' : `${btnColor}10`,
+              background: empty ? 'var(--color-primary-tint)' : `${btnColor}10`,
               borderRadius: 7,
               cursor: 'pointer',
               padding: '3px 8px',
               display: 'flex',
               alignItems: 'center',
               gap: 4,
-              color: empty ? '#0d9488' : btnColor,
+              color: empty ? 'var(--color-primary)' : btnColor,
               fontSize: 11,
               fontWeight: 600,
               transition: 'background 0.15s',

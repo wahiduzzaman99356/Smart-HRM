@@ -120,7 +120,7 @@ const INITIAL_DATA: EmployeeClearance[] = [
 ];
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
-const AVATAR_COLORS = ['#0d9488', '#3b82f6', '#f59e0b', '#8b5cf6', '#10b981', '#64748b', '#ef4444', '#ec4899'];
+const AVATAR_COLORS = ['var(--color-primary)', '#3b82f6', '#f59e0b', '#8b5cf6', '#10b981', 'var(--color-text-tertiary)', '#ef4444', '#ec4899'];
 function avatarColor(n: string) {
   let h = 0; for (const c of n) h = (h * 31 + c.charCodeAt(0)) & 0xffffffff;
   return AVATAR_COLORS[Math.abs(h) % AVATAR_COLORS.length];
@@ -147,27 +147,27 @@ const isPdf   = (m: string) => m === 'application/pdf';
 
 // ─── Design tokens (inline) ───────────────────────────────────────────────────
 const C = {
-  primary:   '#0f766e',
-  pDark:     '#115e59',
-  pLight:    '#f0fdfa',
-  pMid:      '#ccfbf1',
+  primary:   'var(--color-primary)',
+  pDark:     'var(--color-primary-dark)',
+  pLight:    'var(--color-primary-tint)',
+  pMid:      'var(--color-status-approved-bg)',
   success:   '#059669',
-  sBg:       '#f0fdf4',
-  sBorder:   '#bbf7d0',
+  sBg:       'var(--color-status-approved-bg)',
+  sBorder:   'var(--color-status-approved-bg)',
   warning:   '#d97706',
-  wBg:       '#fffbeb',
-  wBorder:   '#fde68a',
+  wBg:       'var(--color-status-pending-bg)',
+  wBorder:   'rgba(253, 230, 138, 0.4)',
   danger:    '#dc2626',
-  dBg:       '#fef2f2',
-  dBorder:   '#fecaca',
-  border:    '#d8e7e5',
+  dBg:       'var(--color-status-rejected-bg)',
+  dBorder:   'var(--color-status-rejected-bg)',
+  border:    'var(--color-border)',
   borderStr: '#bdd6d2',
-  bg:        '#F8FAFC',
-  surface:   '#ffffff',
-  t1:        '#111827',
-  t2:        '#374151',
-  t3:        '#6b7280',
-  t4:        '#9ca3af',
+  bg:        'var(--color-bg-subtle)',
+  surface:   'var(--color-bg-surface)',
+  t1: 'var(--color-text-primary)',
+  t2: 'var(--color-text-secondary)',
+  t3: 'var(--color-text-tertiary)',
+  t4: 'var(--color-text-disabled)',
 };
 
 // ─── Status Badge ─────────────────────────────────────────────────────────────
@@ -278,10 +278,10 @@ function AttachmentList({ attachments, readonly, onRemove, onPreview }: {
         <div key={att.uid} style={{
           display: 'flex', alignItems: 'center', gap: 8,
           padding: '5px 8px', borderRadius: 6,
-          background: '#f8fafc', border: `1px solid ${C.border}`,
+          background: 'var(--color-bg-subtle)', border: `1px solid ${C.border}`,
         }}>
           <div
-            style={{ width: 26, height: 26, borderRadius: 4, overflow: 'hidden', flexShrink: 0, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f3f4f6' }}
+            style={{ width: 26, height: 26, borderRadius: 4, overflow: 'hidden', flexShrink: 0, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--color-bg-subtle)' }}
             onClick={() => onPreview(att)}
           >
             {isImage(att.mimeType)
@@ -335,7 +335,7 @@ function DeptCard({
   const headerBg  = isSubmitted ? C.sBg     : isFlagged ? C.dBg     : C.surface;
   const borderClr = isSubmitted ? C.sBorder : isFlagged ? C.dBorder : C.border;
   const barColor  = isSubmitted ? '#22c55e' : isFlagged ? '#ef4444' : C.primary;
-  const cntBg     = isSubmitted ? '#d1fae5' : isFlagged ? '#fee2e2' : '#f3f4f6';
+  const cntBg     = isSubmitted ? 'var(--color-status-approved-bg)' : isFlagged ? 'var(--color-status-rejected-bg)' : 'var(--color-bg-subtle)';
   const cntClr    = isSubmitted ? C.success : isFlagged ? C.danger  : C.t3;
 
   const handleFlag = () => {
@@ -377,12 +377,12 @@ function DeptCard({
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 5, flexShrink: 0, marginTop: 1 }}>
             {isSubmitted && (
-              <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 20, background: '#d1fae5', color: C.success }}>
+              <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 20, background: 'var(--color-status-approved-bg)', color: C.success }}>
                 Submitted
               </span>
             )}
             {isFlagged && (
-              <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 20, background: '#fee2e2', color: C.danger }}>
+              <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 20, background: 'var(--color-status-rejected-bg)', color: C.danger }}>
                 Flagged
               </span>
             )}
@@ -396,7 +396,7 @@ function DeptCard({
         </div>
 
         {/* ── Progress bar ── */}
-        <div style={{ height: 4, background: '#f1f5f9' }}>
+        <div style={{ height: 4, background: 'var(--color-bg-subtle)' }}>
           <div style={{ height: '100%', width: `${pct}%`, background: barColor, transition: 'width 0.35s ease' }} />
         </div>
 
@@ -410,7 +410,7 @@ function DeptCard({
                 <div key={item.id} style={{
                   display: 'flex', alignItems: 'center', gap: 8,
                   padding: '6px 10px', borderRadius: 6,
-                  background: item.checked ? '#f0fdf4' : '#fafafa',
+                  background: item.checked ? 'var(--color-status-approved-bg)' : 'var(--color-bg-subtle)',
                   transition: 'background 0.15s',
                 }}>
                   <Checkbox
@@ -449,7 +449,7 @@ function DeptCard({
                 onChange={e => { if (!isLocked) { onUpdateRemarks(e.target.value); if (e.target.value.trim()) setFlagError(false); } }}
                 readOnly={isLocked}
                 status={flagError && !dept.remarks.trim() ? 'error' : undefined}
-                style={{ resize: 'none', fontSize: 12, background: isLocked ? '#f8fafc' : C.surface, color: C.t2 }}
+                style={{ resize: 'none', fontSize: 12, background: isLocked ? 'var(--color-bg-subtle)' : C.surface, color: C.t2 }}
               />
               {flagError && !dept.remarks.trim() && (
                 <div style={{ fontSize: 11, color: C.danger, marginTop: 4, display: 'flex', alignItems: 'center', gap: 4 }}>
@@ -642,7 +642,7 @@ function EmployeeCard({
         </div>
 
         {/* ── Progress bar ── */}
-        <div style={{ height: 5, background: '#f1f5f9' }}>
+        <div style={{ height: 5, background: 'var(--color-bg-subtle)' }}>
           <div style={{ height: '100%', width: `${stats.pct}%`, background: progressColor, transition: 'width 0.5s ease' }} />
         </div>
 
@@ -663,11 +663,11 @@ function EmployeeCard({
                 flexWrap: 'wrap',
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                  <div style={{ width: 38, height: 38, borderRadius: '50%', background: '#d1fae5', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <div style={{ width: 38, height: 38, borderRadius: '50%', background: 'var(--color-status-approved-bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                     <CheckCircleFilled style={{ color: C.success, fontSize: 20 }} />
                   </div>
                   <div>
-                    <div style={{ fontWeight: 700, fontSize: 13, color: '#065f46' }}>
+                    <div style={{ fontWeight: 700, fontSize: 13, color: 'var(--color-primary-dark)' }}>
                       All {emp.depts.length} departments have confirmed clearance
                     </div>
                     <div style={{ fontSize: 12, color: C.success, marginTop: 2 }}>
@@ -710,7 +710,7 @@ function EmployeeCard({
 
             {/* Global remarks & attachments */}
             <div style={{
-              background: '#f8fafc',
+              background: 'var(--color-bg-subtle)',
               border: `1px solid ${C.border}`,
               borderRadius: 10,
               padding: '16px 18px',
@@ -767,7 +767,7 @@ function EmployeeCard({
           <div style={{ padding: '10px 18px 14px', display: 'flex', flexWrap: 'wrap', gap: 5 }}>
             {emp.depts.map(dept => {
               const dotClr = dept.status === 'Submitted' ? '#22c55e' : dept.status === 'Flagged' ? '#ef4444' : '#f59e0b';
-              const pillBg = dept.status === 'Submitted' ? '#f0fdf4' : dept.status === 'Flagged' ? '#fef2f2' : '#fffbeb';
+              const pillBg = dept.status === 'Submitted' ? 'var(--color-status-approved-bg)' : dept.status === 'Flagged' ? 'var(--color-status-rejected-bg)' : 'var(--color-status-pending-bg)';
               const pillBdr = dept.status === 'Submitted' ? C.sBorder : dept.status === 'Flagged' ? C.dBorder : C.wBorder;
               return (
                 <span key={dept.id} style={{
@@ -930,7 +930,7 @@ export default function ClearanceManagementPage() {
           <div className="filter-label">SEARCH</div>
           <Input
             allowClear
-            prefix={<SearchOutlined style={{ color: '#9ca3af' }} />}
+            prefix={<SearchOutlined style={{ color: 'var(--color-text-disabled)' }} />}
             placeholder="Search by employee name or ID…"
             value={draft.search}
             onChange={e => setDraft(p => ({ ...p, search: e.target.value }))}
@@ -942,7 +942,7 @@ export default function ClearanceManagementPage() {
           <Button
             icon={<FilterOutlined />}
             onClick={() => setShowFilters(v => !v)}
-            style={showFilters ? { borderColor: '#94a3b8', color: '#334155' } : {}}
+            style={showFilters ? { borderColor: 'var(--color-text-tertiary)', color: 'var(--color-text-secondary)' } : {}}
           >
             Filters
           </Button>
@@ -954,7 +954,7 @@ export default function ClearanceManagementPage() {
       {showFilters && (
         <div style={{
           padding: '16px 20px',
-          background: '#f8fafc',
+          background: 'var(--color-bg-subtle)',
           border: '1px solid #e8edf3',
           borderLeft: '3px solid #cbd5e1',
           borderRadius: '0 0 8px 8px',
@@ -963,18 +963,18 @@ export default function ClearanceManagementPage() {
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
             <Space size={8} align="center">
-              <FilterOutlined style={{ color: '#64748b' }} />
-              <span style={{ fontWeight: 700, fontSize: 12, letterSpacing: '0.07em', color: '#374151', textTransform: 'uppercase' }}>
+              <FilterOutlined style={{ color: 'var(--color-text-tertiary)' }} />
+              <span style={{ fontWeight: 700, fontSize: 12, letterSpacing: '0.07em', color: 'var(--color-text-secondary)', textTransform: 'uppercase' }}>
                 Advanced Filtering
               </span>
             </Space>
-            <Button type="link" size="small" onClick={handleReset} icon={<ReloadOutlined />} style={{ color: '#64748b', padding: 0, fontSize: 12 }}>
+            <Button type="link" size="small" onClick={handleReset} icon={<ReloadOutlined />} style={{ color: 'var(--color-text-tertiary)', padding: 0, fontSize: 12 }}>
               Reset All Filters
             </Button>
           </div>
           <Row gutter={[12, 12]} align="bottom">
             <Col flex="1 1 180px">
-              <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.06em', color: '#6b7280', marginBottom: 6, textTransform: 'uppercase' }}>Department</div>
+              <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.06em', color: 'var(--color-text-tertiary)', marginBottom: 6, textTransform: 'uppercase' }}>Department</div>
               <Select
                 allowClear
                 placeholder="All Departments"
@@ -985,7 +985,7 @@ export default function ClearanceManagementPage() {
               />
             </Col>
             <Col flex="2 1 260px">
-              <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.06em', color: '#6b7280', marginBottom: 6, textTransform: 'uppercase' }}>Clearance Date Range</div>
+              <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.06em', color: 'var(--color-text-tertiary)', marginBottom: 6, textTransform: 'uppercase' }}>Clearance Date Range</div>
               <DatePicker.RangePicker
                 value={draft.dateRange}
                 onChange={v => setDraft(p => ({ ...p, dateRange: (v && v[0] && v[1]) ? [v[0], v[1]] : null }))}
@@ -1019,7 +1019,7 @@ export default function ClearanceManagementPage() {
                 marginLeft: 6, display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                 minWidth: 18, height: 18, borderRadius: 9, padding: '0 4px',
                 fontSize: 10, fontWeight: 700,
-                background: isActive ? C.primary : '#e5e7eb',
+                background: isActive ? C.primary : 'var(--color-border)',
                 color:      isActive ? '#fff'     : C.t3,
                 verticalAlign: 'middle',
               }}>

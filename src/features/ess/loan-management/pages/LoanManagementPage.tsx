@@ -84,13 +84,13 @@ export default function LoanManagementPage() {
 
   // ─── Render ───────────────────────────────────────────────────────────────────
   return (
-    <div style={{ height: '100%', display: 'flex', flexDirection: 'column', background: '#eef4f5' }}>
+    <div style={{ height: '100%', display: 'flex', flexDirection: 'column', background: 'var(--color-bg-subtle)' }}>
       {/* ── Page Header with Tab Switcher ────────────────────────────────────── */}
       {!isFormView && (
         <div
           style={{
-            background: '#fff',
-            borderBottom: '1px solid #e5e7eb',
+            background: 'var(--color-bg-surface)',
+            borderBottom: '1px solid var(--color-border)',
             padding: '14px 28px',
             display: 'flex',
             alignItems: 'center',
@@ -104,8 +104,8 @@ export default function LoanManagementPage() {
               <DollarOutlined style={{ color: '#fff', fontSize: 16 }} />
             </div>
             <div>
-              <div style={{ fontSize: 15, fontWeight: 700, color: '#111827', lineHeight: 1.2 }}>Loan Management</div>
-              <div style={{ fontSize: 11, color: '#6b7280' }}>Loan & Advance Salary Request</div>
+              <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--color-text-primary)', lineHeight: 1.2 }}>Loan Management</div>
+              <div style={{ fontSize: 11, color: 'var(--color-text-tertiary)' }}>Loan & Advance Salary Request</div>
             </div>
           </div>
 
@@ -121,9 +121,9 @@ export default function LoanManagementPage() {
                   style={{
                     padding: '6px 20px',
                     borderRadius: 8,
-                    border: `1.5px solid ${isActive ? '#0d9488' : '#d1d5db'}`,
-                    background: isActive ? '#e0f2f1' : '#fff',
-                    color: isActive ? '#0f766e' : '#374151',
+                    border: `1.5px solid ${isActive ? 'var(--color-primary)' : 'var(--color-border)'}`,
+                    background: isActive ? 'var(--color-primary-tint)' : 'var(--color-bg-surface)',
+                    color: isActive ? 'var(--color-primary)' : 'var(--color-text-secondary)',
                     fontSize: 13,
                     fontWeight: isActive ? 600 : 400,
                     cursor: 'pointer',

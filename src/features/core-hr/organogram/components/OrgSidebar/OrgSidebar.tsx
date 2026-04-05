@@ -28,12 +28,12 @@ export function OrgSidebar({ employeeCount, vacantCount, filters, departments, o
           <div style={{ width:28, height:28, borderRadius:8, background:'linear-gradient(135deg,#0d9488,#0f766e)', display:'flex', alignItems:'center', justifyContent:'center' }}>
             <ApartmentOutlined style={{ color:'#fff', fontSize:14 }} />
           </div>
-          <span style={{ fontWeight:700, fontSize:14, color:'#111827' }}>Organogram</span>
+          <span style={{ fontWeight:700, fontSize:14, color: 'var(--color-text-primary)' }}>Organogram</span>
         </div>
 
         {/* Stats row */}
         <div style={{ display:'flex', gap:8 }}>
-          <StatCard icon={<TeamOutlined style={{ color:'#0d9488' }} />} value={employeeCount} label="Employees" color="#0d9488" />
+          <StatCard icon={<TeamOutlined style={{ color: 'var(--color-primary)' }} />} value={employeeCount} label="Employees" color="#0d9488" />
           <StatCard icon={<Badge dot color="orange" />} value={vacantCount} label="Vacant" color="#f59e0b" />
         </div>
       </div>
@@ -44,7 +44,7 @@ export function OrgSidebar({ employeeCount, vacantCount, filters, departments, o
         <div>
           <Label>Find & Highlight</Label>
           <Input
-            prefix={<SearchOutlined style={{ color:'#9ca3af' }} />}
+            prefix={<SearchOutlined style={{ color: 'var(--color-text-disabled)' }} />}
             placeholder="Search name or designation…"
             value={filters.search}
             onChange={e => onFiltersChange({ search: e.target.value })}
@@ -93,7 +93,7 @@ export function OrgSidebar({ employeeCount, vacantCount, filters, departments, o
         <Button
           block
           onClick={onReset}
-          style={{ borderRadius:8, borderColor:'#e2e8f0', color:'#64748b', fontSize:12 }}
+          style={{ borderRadius:8, borderColor: 'var(--color-border)', color: 'var(--color-text-tertiary)', fontSize:12 }}
         >
           Reset All Filters
         </Button>
@@ -106,21 +106,21 @@ function StatCard({ icon: _icon, value, label, color }: { icon: ReactNode; value
   return (
     <div style={{ flex:1, border:'1px solid #f0f0f0', borderRadius:10, padding:'8px 10px', textAlign:'center' }}>
       <div style={{ fontSize:20, fontWeight:700, color }}>{value}</div>
-      <div style={{ fontSize:10, color:'#9ca3af', letterSpacing:0.3, marginTop:1 }}>{label.toUpperCase()}</div>
+      <div style={{ fontSize:10, color: 'var(--color-text-disabled)', letterSpacing:0.3, marginTop:1 }}>{label.toUpperCase()}</div>
     </div>
   );
 }
 
 function Label({ children }: { children: ReactNode }) {
-  return <p style={{ fontSize:10, fontWeight:700, color:'#94a3b8', letterSpacing:0.7, margin:0 }}>{children}</p>;
+  return <p style={{ fontSize:10, fontWeight:700, color: 'var(--color-text-tertiary)', letterSpacing:0.7, margin:0 }}>{children}</p>;
 }
 
-function ToggleRow({ label, checked, onChange, accent = '#0d9488' }: { label: string; checked: boolean; onChange: (v: boolean) => void; accent?: string }) {
+function ToggleRow({ label, checked, onChange, accent = 'var(--color-primary)' }: { label: string; checked: boolean; onChange: (v: boolean) => void; accent?: string }) {
   return (
     <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between' }}>
       <div style={{ display:'flex', alignItems:'center', gap:6 }}>
-        <div style={{ width:6, height:6, borderRadius:'50%', background: checked ? accent : '#d1d5db', flexShrink:0 }} />
-        <span style={{ fontSize:12, color:'#374151' }}>{label}</span>
+        <div style={{ width:6, height:6, borderRadius:'50%', background: checked ? accent : 'var(--color-border)', flexShrink:0 }} />
+        <span style={{ fontSize:12, color: 'var(--color-text-secondary)' }}>{label}</span>
       </div>
       <Switch size="small" checked={checked} onChange={onChange} style={checked ? { background: accent } : {}} />
     </div>

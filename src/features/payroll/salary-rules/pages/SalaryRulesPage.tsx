@@ -222,7 +222,7 @@ export default function SalaryRulesPage() {
           <Button
             type="text"
             size="small"
-            icon={<MoreOutlined style={{ fontSize: 16, color: '#94a3b8' }} />}
+            icon={<MoreOutlined style={{ fontSize: 16, color: 'var(--color-text-tertiary)' }} />}
           />
         </Dropdown>
       ),
@@ -234,8 +234,8 @@ export default function SalaryRulesPage() {
     height: 32,
     border: 'none',
     borderRadius: 8,
-    background: activeTab === status ? '#e2e8f0' : 'transparent',
-    color: activeTab === status ? '#0f172a' : '#475569',
+    background: activeTab === status ? 'var(--color-border)' : 'transparent',
+    color: activeTab === status ? '#0f172a' : 'var(--color-text-secondary)',
     fontWeight: 600,
     cursor: 'pointer',
     display: 'inline-flex',
@@ -289,7 +289,7 @@ export default function SalaryRulesPage() {
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: 4,
-                background: '#f1f5f9',
+                background: 'var(--color-bg-subtle)',
                 border: '1px solid var(--color-border)',
                 borderRadius: 10,
                 padding: 4,
@@ -327,7 +327,7 @@ export default function SalaryRulesPage() {
       >
         <div style={{ display: 'flex', flexDirection: 'column', gap: 14, paddingTop: 6 }}>
           <div>
-            <div style={{ marginBottom: 6, fontSize: 12, fontWeight: 700, color: '#4b5563' }}>* SALARY RULES TYPE</div>
+            <div style={{ marginBottom: 6, fontSize: 12, fontWeight: 700, color: 'var(--color-text-secondary)' }}>* SALARY RULES TYPE</div>
             <Input
               placeholder="e.g. Basic Salary"
               value={form.name}
@@ -336,7 +336,7 @@ export default function SalaryRulesPage() {
           </div>
 
           <div>
-            <div style={{ marginBottom: 6, fontSize: 12, fontWeight: 700, color: '#4b5563' }}>* CODE</div>
+            <div style={{ marginBottom: 6, fontSize: 12, fontWeight: 700, color: 'var(--color-text-secondary)' }}>* CODE</div>
             <Input
               placeholder="e.g. BS"
               value={form.code}
@@ -345,7 +345,7 @@ export default function SalaryRulesPage() {
           </div>
 
           <div>
-            <div style={{ marginBottom: 6, fontSize: 12, fontWeight: 700, color: '#4b5563' }}>DESCRIPTION (OPTIONAL)</div>
+            <div style={{ marginBottom: 6, fontSize: 12, fontWeight: 700, color: 'var(--color-text-secondary)' }}>DESCRIPTION (OPTIONAL)</div>
             <Input.TextArea
               rows={4}
               placeholder="Brief details about the payroll rule..."
@@ -366,10 +366,10 @@ export default function SalaryRulesPage() {
       >
         {statusModal.rule && (
           <div>
-            <p style={{ marginBottom: 16, color: '#374151', fontSize: 13 }}>
+            <p style={{ marginBottom: 16, color: 'var(--color-text-secondary)', fontSize: 13 }}>
               <strong>{statusModal.rule.name}</strong> ({statusModal.rule.code})
             </p>
-            <div style={{ marginBottom: 8, fontSize: 12, fontWeight: 600, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+            <div style={{ marginBottom: 8, fontSize: 12, fontWeight: 600, color: 'var(--color-text-tertiary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
               Set status to
             </div>
             <Radio.Group

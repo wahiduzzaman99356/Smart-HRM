@@ -40,26 +40,26 @@ interface SeparationDetailModalProps {
 }
 
 const UI = {
-  border: '#d8e7e5',
+  border: 'var(--color-border)',
   danger: '#dc2626',
-  dangerBg: '#fef2f2',
-  dangerBorder: '#fecaca',
-  muted: '#6b7280',
+  dangerBg: 'var(--color-status-rejected-bg)',
+  dangerBorder: 'var(--color-status-rejected-bg)',
+  muted: 'var(--color-text-tertiary)',
   navy: '#1e3a5f',
   navyDark: '#152d4a',
-  primary: '#0f766e',
-  primaryBg: '#f0fdfa',
-  soft: '#9ca3af',
+  primary: 'var(--color-primary)',
+  primaryBg: 'var(--color-primary-tint)',
+  soft: 'var(--color-text-disabled)',
   success: '#059669',
-  successBg: '#f0fdf4',
-  successBorder: '#bbf7d0',
-  surface: '#ffffff',
-  surfaceMuted: '#f8fafc',
-  text: '#111827',
-  textSecondary: '#374151',
+  successBg: 'var(--color-status-approved-bg)',
+  successBorder: 'var(--color-status-approved-bg)',
+  surface: 'var(--color-bg-surface)',
+  surfaceMuted: 'var(--color-bg-subtle)',
+  text: 'var(--color-text-primary)',
+  textSecondary: 'var(--color-text-secondary)',
   warning: '#d97706',
-  warningBg: '#fffbeb',
-  warningBorder: '#fde68a',
+  warningBg: 'var(--color-status-pending-bg)',
+  warningBorder: 'rgba(253, 230, 138, 0.4)',
 };
 
 const STATUS_META: Record<SepStatus, { background: string; color: string; border: string }> = {
@@ -69,9 +69,9 @@ const STATUS_META: Record<SepStatus, { background: string; color: string; border
     border: UI.warningBorder,
   },
   'In Progress': {
-    background: '#eff6ff',
+    background: 'var(--color-status-info-bg)',
     color: '#2563eb',
-    border: '#bfdbfe',
+    border: 'rgba(59, 130, 246, 0.22)',
   },
   Completed: {
     background: UI.successBg,
@@ -79,9 +79,9 @@ const STATUS_META: Record<SepStatus, { background: string; color: string; border
     border: UI.successBorder,
   },
   'On Hold': {
-    background: '#f9fafb',
+    background: 'var(--color-bg-subtle)',
     color: UI.textSecondary,
-    border: '#d1d5db',
+    border: 'var(--color-border)',
   },
   Cancelled: {
     background: UI.dangerBg,
@@ -355,9 +355,9 @@ export function SeparationDetailModal({
               borderRadius: 999,
               fontSize: 12,
               fontWeight: 600,
-              background: '#f1f5f9',
+              background: 'var(--color-bg-subtle)',
               color: UI.textSecondary,
-              border: '1px solid #e2e8f0',
+              border: '1px solid var(--color-border)',
             }}>
               {record.modeOfSeparation}
             </span>
@@ -370,9 +370,9 @@ export function SeparationDetailModal({
                 borderRadius: 999,
                 fontSize: 12,
                 fontWeight: 600,
-                background: '#f1f5f9',
+                background: 'var(--color-bg-subtle)',
                 color: UI.muted,
-                border: '1px solid #e2e8f0',
+                border: '1px solid var(--color-border)',
               }}>
                 <ClockCircleOutlined style={{ fontSize: 11 }} />
                 {daysLeftLabel}
@@ -522,8 +522,8 @@ export function SeparationDetailModal({
                 const isDone = index < progress.currentStep;
                 const isCurrent = index === progress.currentStep;
                 const background = isCurrent ? `${progress.accent}12` : 'transparent';
-                const circleBackground = isCurrent ? progress.accent : isDone ? `${progress.accent}20` : '#e5e7eb';
-                const circleColor = isCurrent ? '#ffffff' : isDone ? progress.accent : UI.muted;
+                const circleBackground = isCurrent ? progress.accent : isDone ? `${progress.accent}20` : 'var(--color-border)';
+                const circleColor = isCurrent ? 'var(--color-bg-surface)' : isDone ? progress.accent : UI.muted;
 
                 return (
                   <div key={step} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '8px 12px', borderRadius: 10, background }}>
@@ -697,7 +697,7 @@ export function SeparationDetailModal({
                   }}
                   placeholder="Enter rejection remarks..."
                   status={remarksError ? 'error' : undefined}
-                  style={{ resize: 'none', background: '#ffffff' }}
+                  style={{ resize: 'none', background: 'var(--color-bg-surface)' }}
                 />
                 {remarksError && (
                   <div style={{ fontSize: 12, color: UI.danger, marginTop: 6 }}>

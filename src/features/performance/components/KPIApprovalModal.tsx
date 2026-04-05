@@ -27,7 +27,7 @@ const { TextArea } = Input;
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 const AVATAR_COLORS = [
-  '#ef4444', '#0f766e', '#7c3aed', '#f59e0b', '#ec4899',
+  '#ef4444', 'var(--color-primary)', '#7c3aed', '#f59e0b', '#ec4899',
   '#0891b2', '#65a30d', '#ea580c', '#6366f1', '#0284c7',
 ];
 function initials(name: string) {
@@ -36,9 +36,9 @@ function initials(name: string) {
 
 function ChangeTypeTag({ type }: { type: KPIChangeDetail['type'] }) {
   const map = {
-    added:    { bg: '#f0fdf4', border: '#bbf7d0', color: '#15803d', icon: <PlusCircleOutlined />,  label: 'Added'    },
-    removed:  { bg: '#fff1f2', border: '#fecdd3', color: '#be123c', icon: <MinusCircleOutlined />, label: 'Removed'  },
-    modified: { bg: '#fefce8', border: '#fde68a', color: '#92400e', icon: <EditOutlined />,        label: 'Modified' },
+    added:    { bg: 'var(--color-status-approved-bg)', border: 'var(--color-status-approved-bg)', color: 'var(--color-status-approved)', icon: <PlusCircleOutlined />,  label: 'Added'    },
+    removed:  { bg: 'var(--color-status-rejected-bg)', border: 'var(--color-status-rejected-bg)', color: '#be123c', icon: <MinusCircleOutlined />, label: 'Removed'  },
+    modified: { bg: 'var(--color-status-pending-bg)', border: 'rgba(253, 230, 138, 0.4)', color: '#d97706', icon: <EditOutlined />,        label: 'Modified' },
   }[type];
   return (
     <Tag icon={map.icon} style={{ background: map.bg, borderColor: map.border, color: map.color, borderRadius: 6, fontSize: 11, fontWeight: 600 }}>
@@ -49,9 +49,9 @@ function ChangeTypeTag({ type }: { type: KPIChangeDetail['type'] }) {
 
 function StatusBadge({ status }: { status: KPIChangeRequest['status'] }) {
   const map = {
-    Pending:  { bg: '#fefce8', border: '#fde68a', color: '#92400e', icon: <ClockCircleOutlined />,  label: 'Pending'  },
-    Approved: { bg: '#f0fdf4', border: '#bbf7d0', color: '#15803d', icon: <CheckCircleOutlined />,  label: 'Approved' },
-    Rejected: { bg: '#fff1f2', border: '#fecdd3', color: '#be123c', icon: <StopOutlined />,          label: 'Rejected' },
+    Pending:  { bg: 'var(--color-status-pending-bg)', border: 'rgba(253, 230, 138, 0.4)', color: '#d97706', icon: <ClockCircleOutlined />,  label: 'Pending'  },
+    Approved: { bg: 'var(--color-status-approved-bg)', border: 'var(--color-status-approved-bg)', color: 'var(--color-status-approved)', icon: <CheckCircleOutlined />,  label: 'Approved' },
+    Rejected: { bg: 'var(--color-status-rejected-bg)', border: 'var(--color-status-rejected-bg)', color: '#be123c', icon: <StopOutlined />,          label: 'Rejected' },
   }[status];
   return (
     <Tag icon={map.icon} style={{ background: map.bg, borderColor: map.border, color: map.color, borderRadius: 6, fontSize: 11, fontWeight: 600 }}>
@@ -68,17 +68,17 @@ function ChangeDiffRow({ change }: { change: KPIChangeDetail }) {
         padding: '10px 14px',
         borderRadius: 8,
         marginBottom: 6,
-        background: change.type === 'added' ? '#f0fdf4' : change.type === 'removed' ? '#fff1f2' : '#fefce8',
-        border: `1px solid ${change.type === 'added' ? '#bbf7d0' : change.type === 'removed' ? '#fecdd3' : '#fde68a'}`,
+        background: change.type === 'added' ? 'var(--color-status-approved-bg)' : change.type === 'removed' ? 'var(--color-status-rejected-bg)' : 'var(--color-status-pending-bg)',
+        border: `1px solid ${change.type === 'added' ? 'var(--color-status-approved-bg)' : change.type === 'removed' ? 'var(--color-status-rejected-bg)' : 'rgba(253, 230, 138, 0.4)'}`,
       }}
     >
       <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
         <ChangeTypeTag type={change.type} />
         <div style={{ flex: 1 }}>
-          <Text strong style={{ fontSize: 13, color: '#111827', display: 'block' }}>
+          <Text strong style={{ fontSize: 13, color: 'var(--color-text-primary)', display: 'block' }}>
             {change.subKPICode} — {change.subKPIName}
           </Text>
-          <Text style={{ fontSize: 11, color: '#6b7280' }}>
+          <Text style={{ fontSize: 11, color: 'var(--color-text-tertiary)' }}>
             {change.mainKPICode} · {change.mainKPIAreaName}
           </Text>
 
@@ -88,24 +88,24 @@ function ChangeDiffRow({ change }: { change: KPIChangeDetail }) {
               {/* Weight */}
               {change.newWeight !== undefined && (
                 <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                  <Text style={{ fontSize: 11, color: '#9ca3af' }}>Weight:</Text>
+                  <Text style={{ fontSize: 11, color: 'var(--color-text-disabled)' }}>Weight:</Text>
                   {change.type === 'modified' && change.prevWeight !== undefined && (
                     <>
-                      <Text style={{ fontSize: 11, color: '#9ca3af', textDecoration: 'line-through' }}>{change.prevWeight}%</Text>
-                      <Text style={{ fontSize: 11, color: '#6b7280' }}>→</Text>
+                      <Text style={{ fontSize: 11, color: 'var(--color-text-disabled)', textDecoration: 'line-through' }}>{change.prevWeight}%</Text>
+                      <Text style={{ fontSize: 11, color: 'var(--color-text-tertiary)' }}>→</Text>
                     </>
                   )}
-                  <Text style={{ fontSize: 12, fontWeight: 700, color: '#0f766e' }}>{change.newWeight}%</Text>
+                  <Text style={{ fontSize: 12, fontWeight: 700, color: 'var(--color-primary)' }}>{change.newWeight}%</Text>
                 </div>
               )}
               {/* Operator */}
               {change.newOperator !== undefined && (
                 <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                  <Text style={{ fontSize: 11, color: '#9ca3af' }}>Operator:</Text>
+                  <Text style={{ fontSize: 11, color: 'var(--color-text-disabled)' }}>Operator:</Text>
                   {change.type === 'modified' && change.prevOperator !== undefined && (
                     <>
-                      <Text style={{ fontSize: 11, color: '#9ca3af', textDecoration: 'line-through' }}>{change.prevOperator}</Text>
-                      <Text style={{ fontSize: 11, color: '#6b7280' }}>→</Text>
+                      <Text style={{ fontSize: 11, color: 'var(--color-text-disabled)', textDecoration: 'line-through' }}>{change.prevOperator}</Text>
+                      <Text style={{ fontSize: 11, color: 'var(--color-text-tertiary)' }}>→</Text>
                     </>
                   )}
                   <Text style={{ fontSize: 12, fontWeight: 700, color: '#0284c7' }}>{change.newOperator}</Text>
@@ -114,11 +114,11 @@ function ChangeDiffRow({ change }: { change: KPIChangeDetail }) {
               {/* Target */}
               {change.newTargetValue !== undefined && (
                 <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                  <Text style={{ fontSize: 11, color: '#9ca3af' }}>Target:</Text>
+                  <Text style={{ fontSize: 11, color: 'var(--color-text-disabled)' }}>Target:</Text>
                   {change.type === 'modified' && change.prevTargetValue !== undefined && (
                     <>
-                      <Text style={{ fontSize: 11, color: '#9ca3af', textDecoration: 'line-through' }}>{change.prevTargetValue}</Text>
-                      <Text style={{ fontSize: 11, color: '#6b7280' }}>→</Text>
+                      <Text style={{ fontSize: 11, color: 'var(--color-text-disabled)', textDecoration: 'line-through' }}>{change.prevTargetValue}</Text>
+                      <Text style={{ fontSize: 11, color: 'var(--color-text-tertiary)' }}>→</Text>
                     </>
                   )}
                   <Text style={{ fontSize: 12, fontWeight: 700, color: '#7c3aed' }}>{change.newTargetValue}</Text>
@@ -153,8 +153,8 @@ function RequestCard({ req, onApprove, onReject, isReadOnly }: RequestCardProps)
     <>
       <div
         style={{
-          background: '#fff',
-          border: `1.5px solid ${req.status === 'Pending' ? '#fde68a' : req.status === 'Approved' ? '#bbf7d0' : '#fecdd3'}`,
+          background: 'var(--color-bg-surface)',
+          border: `1.5px solid ${req.status === 'Pending' ? 'rgba(253, 230, 138, 0.4)' : req.status === 'Approved' ? 'var(--color-status-approved-bg)' : 'var(--color-status-rejected-bg)'}`,
           borderRadius: 12,
           marginBottom: 12,
           overflow: 'hidden',
@@ -175,17 +175,17 @@ function RequestCard({ req, onApprove, onReject, isReadOnly }: RequestCardProps)
 
           <div style={{ flex: 1 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-              <Text strong style={{ fontSize: 14, color: '#111827' }}>{req.employeeName}</Text>
+              <Text strong style={{ fontSize: 14, color: 'var(--color-text-primary)' }}>{req.employeeName}</Text>
               <StatusBadge status={req.status} />
             </div>
-            <Text style={{ fontSize: 11, color: '#9ca3af' }}>
+            <Text style={{ fontSize: 11, color: 'var(--color-text-disabled)' }}>
               {req.employeeDesignation} · {req.employeeDepartment} · {req.employeeSection}
             </Text>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 4, flexWrap: 'wrap' }}>
-              <span style={{ fontSize: 11, color: '#6b7280', display: 'flex', alignItems: 'center', gap: 4 }}>
+              <span style={{ fontSize: 11, color: 'var(--color-text-tertiary)', display: 'flex', alignItems: 'center', gap: 4 }}>
                 <UserOutlined style={{ fontSize: 10 }} /> {req.requestedBy}
               </span>
-              <span style={{ fontSize: 11, color: '#6b7280', display: 'flex', alignItems: 'center', gap: 4 }}>
+              <span style={{ fontSize: 11, color: 'var(--color-text-tertiary)', display: 'flex', alignItems: 'center', gap: 4 }}>
                 <CalendarOutlined style={{ fontSize: 10 }} /> {new Date(req.requestedAt).toLocaleString()}
               </span>
             </div>
@@ -195,21 +195,21 @@ function RequestCard({ req, onApprove, onReject, isReadOnly }: RequestCardProps)
           <div style={{ display: 'flex', gap: 6, flexShrink: 0, alignItems: 'center' }}>
             {addedCount > 0 && (
               <Tooltip title={`${addedCount} Sub KPI(s) added`}>
-                <Tag style={{ background: '#f0fdf4', borderColor: '#bbf7d0', color: '#15803d', borderRadius: 6, fontWeight: 700, fontSize: 11, cursor: 'default' }}>
+                <Tag style={{ background: 'var(--color-status-approved-bg)', borderColor: 'var(--color-status-approved-bg)', color: 'var(--color-status-approved)', borderRadius: 6, fontWeight: 700, fontSize: 11, cursor: 'default' }}>
                   +{addedCount}
                 </Tag>
               </Tooltip>
             )}
             {removedCount > 0 && (
               <Tooltip title={`${removedCount} Sub KPI(s) removed`}>
-                <Tag style={{ background: '#fff1f2', borderColor: '#fecdd3', color: '#be123c', borderRadius: 6, fontWeight: 700, fontSize: 11, cursor: 'default' }}>
+                <Tag style={{ background: 'var(--color-status-rejected-bg)', borderColor: 'var(--color-status-rejected-bg)', color: '#be123c', borderRadius: 6, fontWeight: 700, fontSize: 11, cursor: 'default' }}>
                   -{removedCount}
                 </Tag>
               </Tooltip>
             )}
             {modifiedCount > 0 && (
               <Tooltip title={`${modifiedCount} Sub KPI(s) modified`}>
-                <Tag style={{ background: '#fefce8', borderColor: '#fde68a', color: '#92400e', borderRadius: 6, fontWeight: 700, fontSize: 11, cursor: 'default' }}>
+                <Tag style={{ background: 'var(--color-status-pending-bg)', borderColor: 'rgba(253, 230, 138, 0.4)', color: '#d97706', borderRadius: 6, fontWeight: 700, fontSize: 11, cursor: 'default' }}>
                   ~{modifiedCount}
                 </Tag>
               </Tooltip>
@@ -218,7 +218,7 @@ function RequestCard({ req, onApprove, onReject, isReadOnly }: RequestCardProps)
               size="small"
               icon={<EyeOutlined />}
               onClick={() => setExpanded(e => !e)}
-              style={{ borderRadius: 7, fontSize: 11, color: '#0f766e', borderColor: '#a7e3d9', background: '#f0fdf9' }}
+              style={{ borderRadius: 7, fontSize: 11, color: 'var(--color-primary)', borderColor: 'var(--color-border)', background: 'var(--color-primary-tint)' }}
             >
               {expanded ? 'Hide' : 'View'} Details
             </Button>
@@ -227,8 +227,8 @@ function RequestCard({ req, onApprove, onReject, isReadOnly }: RequestCardProps)
 
         {/* Expanded diff */}
         {expanded && (
-          <div style={{ padding: '0 16px 14px', borderTop: '1px solid #f3f4f6' }}>
-            <Text style={{ fontSize: 11, fontWeight: 700, color: '#6b7280', letterSpacing: 0.8, display: 'block', margin: '12px 0 8px' }}>
+          <div style={{ padding: '0 16px 14px', borderTop: '1px solid var(--color-border)' }}>
+            <Text style={{ fontSize: 11, fontWeight: 700, color: 'var(--color-text-tertiary)', letterSpacing: 0.8, display: 'block', margin: '12px 0 8px' }}>
               CHANGES ({req.changes.length})
             </Text>
             {req.changes.map((change, idx) => (
@@ -237,15 +237,15 @@ function RequestCard({ req, onApprove, onReject, isReadOnly }: RequestCardProps)
 
             {/* Reviewer info for non-pending */}
             {req.status !== 'Pending' && (req.reviewedBy || req.remarks) && (
-              <div style={{ marginTop: 12, padding: '10px 14px', background: '#f9fafb', borderRadius: 8, border: '1px solid #e5e7eb' }}>
+              <div style={{ marginTop: 12, padding: '10px 14px', background: 'var(--color-bg-subtle)', borderRadius: 8, border: '1px solid var(--color-border)' }}>
                 {req.reviewedBy && (
-                  <Text style={{ fontSize: 12, color: '#374151', display: 'block' }}>
+                  <Text style={{ fontSize: 12, color: 'var(--color-text-secondary)', display: 'block' }}>
                     <TeamOutlined style={{ marginRight: 6 }} />
                     <strong>Reviewed by:</strong> {req.reviewedBy} · {req.reviewedAt ? new Date(req.reviewedAt).toLocaleString() : ''}
                   </Text>
                 )}
                 {req.remarks && (
-                  <Text style={{ fontSize: 12, color: req.status === 'Rejected' ? '#be123c' : '#374151', display: 'block', marginTop: 4 }}>
+                  <Text style={{ fontSize: 12, color: req.status === 'Rejected' ? '#be123c' : 'var(--color-text-secondary)', display: 'block', marginTop: 4 }}>
                     <strong>Remarks:</strong> {req.remarks}
                   </Text>
                 )}
@@ -259,8 +259,8 @@ function RequestCard({ req, onApprove, onReject, isReadOnly }: RequestCardProps)
           <div
             style={{
               padding: '10px 16px',
-              borderTop: '1px solid #f3f4f6',
-              background: '#fafafa',
+              borderTop: '1px solid var(--color-border)',
+              background: 'var(--color-bg-subtle)',
               display: 'flex', justifyContent: 'flex-end', gap: 8,
             }}
           >
@@ -269,8 +269,8 @@ function RequestCard({ req, onApprove, onReject, isReadOnly }: RequestCardProps)
               icon={<CloseOutlined />}
               onClick={() => setRejectModal(true)}
               style={{
-                borderRadius: 8, borderColor: '#fecdd3', color: '#dc2626',
-                background: '#fff5f5', fontWeight: 600,
+                borderRadius: 8, borderColor: 'var(--color-status-rejected-bg)', color: '#dc2626',
+                background: 'var(--color-status-rejected-bg)', fontWeight: 600,
               }}
             >
               Reject
@@ -280,7 +280,7 @@ function RequestCard({ req, onApprove, onReject, isReadOnly }: RequestCardProps)
               type="primary"
               icon={<CheckOutlined />}
               onClick={() => onApprove(req.id)}
-              style={{ borderRadius: 8, background: '#0f766e', borderColor: '#0f766e', fontWeight: 600 }}
+              style={{ borderRadius: 8, background: 'var(--color-primary)', borderColor: 'var(--color-primary)', fontWeight: 600 }}
             >
               Approve
             </Button>
@@ -321,13 +321,13 @@ function RequestCard({ req, onApprove, onReject, isReadOnly }: RequestCardProps)
         styles={{ body: { paddingTop: 8 } }}
       >
         <div style={{ marginBottom: 8 }}>
-          <Text style={{ fontSize: 13, color: '#374151' }}>
+          <Text style={{ fontSize: 13, color: 'var(--color-text-secondary)' }}>
             You are rejecting the KPI change request for&nbsp;
             <strong>{req.employeeName}</strong> ({req.employeeDesignation}).
           </Text>
         </div>
         <div>
-          <Text style={{ fontSize: 12, color: '#6b7280', display: 'block', marginBottom: 6 }}>
+          <Text style={{ fontSize: 12, color: 'var(--color-text-tertiary)', display: 'block', marginBottom: 6 }}>
             Rejection remarks <span style={{ color: '#dc2626' }}>*</span>
           </Text>
           <TextArea
@@ -443,10 +443,10 @@ export default function KPIApprovalModal({
             <CheckCircleOutlined style={{ color: '#fff', fontSize: 16 }} />
           </div>
           <div>
-            <div style={{ fontSize: 15, fontWeight: 700, color: '#111827', lineHeight: 1.2 }}>
+            <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--color-text-primary)', lineHeight: 1.2 }}>
               KPI Change Approvals
             </div>
-            <div style={{ fontSize: 11, color: '#6b7280', fontWeight: 400 }}>
+            <div style={{ fontSize: 11, color: 'var(--color-text-tertiary)', fontWeight: 400 }}>
               Review and action employee KPI change requests
             </div>
           </div>
@@ -457,8 +457,8 @@ export default function KPIApprovalModal({
       }
       width={720}
       styles={{
-        header: { borderBottom: '1px solid #e5e7eb', padding: '14px 20px' },
-        body: { padding: 0, background: '#f9fafb' },
+        header: { borderBottom: '1px solid var(--color-border)', padding: '14px 20px' },
+        body: { padding: 0, background: 'var(--color-bg-subtle)' },
       }}
       closeIcon={<CloseOutlined style={{ fontSize: 14 }} />}
     >
@@ -467,17 +467,17 @@ export default function KPIApprovalModal({
         style={{
           padding: '14px 20px 16px',
           background: 'linear-gradient(180deg, #ffffff 0%, #f8fcfb 100%)',
-          borderBottom: '1px solid #e5e7eb',
+          borderBottom: '1px solid var(--color-border)',
         }}
       >
         {/* Label row */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
-          <FilterOutlined style={{ color: '#0f766e', fontSize: 13 }} />
-          <span style={{ fontSize: 11, fontWeight: 700, color: '#6b7280', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
+          <FilterOutlined style={{ color: 'var(--color-primary)', fontSize: 13 }} />
+          <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--color-text-tertiary)', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
             Filter Requests
           </span>
           {hasActiveFilters && (
-            <Tag style={{ background: '#e6f7f4', borderColor: '#a7e3d9', color: '#0f766e', borderRadius: 99, fontSize: 10, fontWeight: 700, padding: '0 8px', marginLeft: 4 }}>
+            <Tag style={{ background: 'var(--color-primary-tint)', borderColor: 'var(--color-border)', color: 'var(--color-primary)', borderRadius: 99, fontSize: 10, fontWeight: 700, padding: '0 8px', marginLeft: 4 }}>
               Filtered
             </Tag>
           )}
@@ -490,7 +490,7 @@ export default function KPIApprovalModal({
           showSearch
           optionFilterProp="label"
           placeholder={
-            <span style={{ color: '#9ca3af' }}>
+            <span style={{ color: 'var(--color-text-disabled)' }}>
               <SearchOutlined style={{ marginRight: 6 }} />
               Select employee(s)…
             </span>
@@ -512,15 +512,15 @@ export default function KPIApprovalModal({
                 <Avatar
                   size={22}
                   style={{
-                    background: opt.avatarColor ?? '#0f766e',
+                    background: opt.avatarColor ?? 'var(--color-primary)',
                     fontSize: 9, fontWeight: 700, borderRadius: 6, flexShrink: 0,
                   }}
                 >
                   {opt.label.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2)}
                 </Avatar>
                 <div style={{ lineHeight: 1.3 }}>
-                  <div style={{ fontSize: 12, fontWeight: 600, color: '#111827' }}>{opt.label}</div>
-                  <div style={{ fontSize: 10, color: '#9ca3af' }}>{opt.desig} · {opt.dept}</div>
+                  <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--color-text-primary)' }}>{opt.label}</div>
+                  <div style={{ fontSize: 10, color: 'var(--color-text-disabled)' }}>{opt.desig} · {opt.dept}</div>
                 </div>
               </div>
             </Select.Option>
@@ -577,9 +577,9 @@ export default function KPIApprovalModal({
             onClick={handleReset}
             style={{
               borderRadius: 8,
-              borderColor: '#d1d5db',
-              color: '#6b7280',
-              background: '#fff',
+              borderColor: 'var(--color-border)',
+              color: 'var(--color-text-tertiary)',
+              background: 'var(--color-bg-surface)',
               fontWeight: 600,
               fontSize: 12,
             }}
@@ -593,7 +593,7 @@ export default function KPIApprovalModal({
             style={{
               borderRadius: 8,
               background: 'linear-gradient(135deg, #0f766e 0%, #0d9488 100%)',
-              borderColor: '#0f766e',
+              borderColor: 'var(--color-primary)',
               fontWeight: 600,
               fontSize: 12,
               boxShadow: '0 2px 6px rgba(15,118,110,0.25)',
@@ -605,7 +605,7 @@ export default function KPIApprovalModal({
       </div>
 
       {/* Tabs */}
-      <div style={{ background: '#fff', borderBottom: '1px solid #e5e7eb', paddingInline: 20 }}>
+      <div style={{ background: 'var(--color-bg-surface)', borderBottom: '1px solid var(--color-border)', paddingInline: 20 }}>
         <Tabs
           activeKey={activeTab}
           onChange={k => setActiveTab(k as typeof activeTab)}
@@ -618,7 +618,7 @@ export default function KPIApprovalModal({
                   <ClockCircleOutlined style={{ color: '#f59e0b' }} />
                   Pending
                   {pendingCount > 0 && (
-                    <span style={{ background: '#fef3c7', color: '#92400e', borderRadius: 99, padding: '1px 7px', fontSize: 11, fontWeight: 700 }}>
+                    <span style={{ background: 'var(--color-status-pending-bg)', color: '#d97706', borderRadius: 99, padding: '1px 7px', fontSize: 11, fontWeight: 700 }}>
                       {pendingCount}
                     </span>
                   )}
@@ -632,7 +632,7 @@ export default function KPIApprovalModal({
                   <CheckCircleOutlined style={{ color: '#16a34a' }} />
                   Approved
                   {approvedCount > 0 && (
-                    <span style={{ background: '#dcfce7', color: '#166534', borderRadius: 99, padding: '1px 7px', fontSize: 11, fontWeight: 700 }}>
+                    <span style={{ background: 'var(--color-status-approved-bg)', color: '#166534', borderRadius: 99, padding: '1px 7px', fontSize: 11, fontWeight: 700 }}>
                       {approvedCount}
                     </span>
                   )}
@@ -646,7 +646,7 @@ export default function KPIApprovalModal({
                   <StopOutlined style={{ color: '#dc2626' }} />
                   Rejected
                   {rejectedCount > 0 && (
-                    <span style={{ background: '#fee2e2', color: '#991b1b', borderRadius: 99, padding: '1px 7px', fontSize: 11, fontWeight: 700 }}>
+                    <span style={{ background: 'var(--color-status-rejected-bg)', color: '#991b1b', borderRadius: 99, padding: '1px 7px', fontSize: 11, fontWeight: 700 }}>
                       {rejectedCount}
                     </span>
                   )}
@@ -658,7 +658,7 @@ export default function KPIApprovalModal({
               label: (
                 <Space size={6}>
                   All Requests
-                  <span style={{ background: '#f3f4f6', color: '#374151', borderRadius: 99, padding: '1px 7px', fontSize: 11, fontWeight: 700 }}>
+                  <span style={{ background: 'var(--color-bg-subtle)', color: 'var(--color-text-secondary)', borderRadius: 99, padding: '1px 7px', fontSize: 11, fontWeight: 700 }}>
                     {requests.length}
                   </span>
                 </Space>
@@ -674,7 +674,7 @@ export default function KPIApprovalModal({
           <Empty
             image={Empty.PRESENTED_IMAGE_SIMPLE}
             description={
-              <Text style={{ color: '#9ca3af' }}>
+              <Text style={{ color: 'var(--color-text-disabled)' }}>
                 {activeTab === 'Pending' ? 'No pending requests' : `No ${activeTab.toLowerCase()} requests`}
               </Text>
             }
@@ -697,19 +697,19 @@ export default function KPIApprovalModal({
         style={{
           padding: '10px 20px',
           background: 'linear-gradient(180deg, #f8fcfb 0%, #fff 100%)',
-          borderTop: '1px solid #e5e7eb',
+          borderTop: '1px solid var(--color-border)',
           display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap',
         }}
       >
-        <Text style={{ fontSize: 12, color: '#6b7280' }}>
+        <Text style={{ fontSize: 12, color: 'var(--color-text-tertiary)' }}>
           Total: <strong>{requests.length}</strong>
         </Text>
         <Divider type="vertical" />
-        <Text style={{ fontSize: 12, color: '#92400e' }}>
+        <Text style={{ fontSize: 12, color: '#d97706' }}>
           Pending: <strong>{pendingCount}</strong>
         </Text>
         <Divider type="vertical" />
-        <Text style={{ fontSize: 12, color: '#15803d' }}>
+        <Text style={{ fontSize: 12, color: 'var(--color-status-approved)' }}>
           Approved: <strong>{approvedCount}</strong>
         </Text>
         <Divider type="vertical" />
@@ -719,7 +719,7 @@ export default function KPIApprovalModal({
         {hasActiveFilters && (
           <>
             <Divider type="vertical" />
-            <Text style={{ fontSize: 12, color: '#0f766e', fontWeight: 600 }}>
+            <Text style={{ fontSize: 12, color: 'var(--color-primary)', fontWeight: 600 }}>
               Showing: <strong>{filtered.length}</strong> matched
             </Text>
           </>

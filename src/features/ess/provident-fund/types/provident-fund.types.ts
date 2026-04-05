@@ -104,10 +104,10 @@ export const INITIAL_PF_REQUESTS: PFLoanRequest[] = [
 // ─── Helpers ───────────────────────────────────────────────────────────────────
 
 export const STATUS_STYLE: Record<PFLoanStatus, { color: string; bg: string; border: string }> = {
-  'To Approve': { color: '#92400e', bg: '#fef3c7', border: '#fcd34d' },
-  'Approved':   { color: '#065f46', bg: '#d1fae5', border: '#6ee7b7' },
-  'Rejected':   { color: '#991b1b', bg: '#fee2e2', border: '#fca5a5' },
-  'Cancelled':  { color: '#374151', bg: '#f3f4f6', border: '#d1d5db' },
+  'To Approve': { color: '#d97706', bg: 'var(--color-status-pending-bg)', border: 'rgba(252, 211, 77, 0.45)' },
+  'Approved':   { color: 'var(--color-primary-dark)', bg: 'var(--color-status-approved-bg)', border: 'var(--color-status-approved-bg)' },
+  'Rejected':   { color: '#991b1b', bg: 'var(--color-status-rejected-bg)', border: 'var(--color-status-rejected-bg)' },
+  'Cancelled':  { color: 'var(--color-text-secondary)', bg: 'var(--color-bg-subtle)', border: 'var(--color-border)' },
 };
 
 let _counter = 2;

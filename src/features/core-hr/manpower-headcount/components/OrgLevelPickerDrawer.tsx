@@ -109,7 +109,7 @@ function buildFromOrgTree(
           bordered={false}
           style={{
             marginLeft: 6, fontSize: 10, padding: '0 5px',
-            background: '#eff6ff', color: '#0d9488',
+            background: 'var(--color-status-info-bg)', color: 'var(--color-primary)',
           }}
         >
           {deptLabel}
@@ -216,8 +216,8 @@ export function OrgLevelPickerDrawer({ open, onClose, onSelect }: Props) {
     <Drawer
       title={
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <ApartmentOutlined style={{ color: '#0d9488' }} />
-          <span style={{ fontWeight: 700, fontSize: 14, color: '#111827' }}>
+          <ApartmentOutlined style={{ color: 'var(--color-primary)' }} />
+          <span style={{ fontWeight: 700, fontSize: 14, color: 'var(--color-text-primary)' }}>
             Select Organization Level
           </span>
         </div>
@@ -233,9 +233,9 @@ export function OrgLevelPickerDrawer({ open, onClose, onSelect }: Props) {
     >
       {!isConfigured && (
         <div style={{
-          background: '#fffbeb', border: '1px solid #fcd34d',
+          background: 'var(--color-status-pending-bg)', border: '1px solid #fcd34d',
           borderRadius: 8, padding: '8px 12px',
-          fontSize: 12, color: '#92400e', marginBottom: 10,
+          fontSize: 12, color: '#d97706', marginBottom: 10,
         }}>
           Organogram not yet configured — showing master designation list.
           Configure it in <strong>Core HR › Organogram</strong> first.
@@ -243,7 +243,7 @@ export function OrgLevelPickerDrawer({ open, onClose, onSelect }: Props) {
       )}
 
       <Input
-        prefix={<SearchOutlined style={{ color: '#9ca3af' }} />}
+        prefix={<SearchOutlined style={{ color: 'var(--color-text-disabled)' }} />}
         placeholder="Search department or designation…"
         value={search}
         onChange={e => setSearch(e.target.value)}

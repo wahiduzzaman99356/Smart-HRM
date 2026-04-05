@@ -44,10 +44,10 @@ const LABEL: React.CSSProperties = {
   marginBottom: 6, letterSpacing: '0.04em',
 };
 const SUBLABEL: React.CSSProperties = {
-  fontSize: 10, fontWeight: 600, color: '#9ca3af', marginBottom: 4,
+  fontSize: 10, fontWeight: 600, color: 'var(--color-text-disabled)', marginBottom: 4,
 };
 const SUMMARY_ROW: React.CSSProperties = {
-  fontSize: 10, color: '#64748b', fontWeight: 600,
+  fontSize: 10, color: 'var(--color-text-tertiary)', fontWeight: 600,
 };
 
 // ─── Qualification lookup ─────────────────────────────────────────────────────
@@ -180,7 +180,7 @@ function RichTextEditor({
   return (
     <div
       style={{
-        border: `1px solid ${focused ? '#0f766e' : '#d9d9d9'}`,
+        border: `1px solid ${focused ? 'var(--color-primary)' : '#d9d9d9'}`,
         borderRadius: 8,
         overflow: 'hidden',
         transition: 'border-color 0.2s',
@@ -190,7 +190,7 @@ function RichTextEditor({
     >
       <div style={{
         display: 'flex', gap: 2, padding: '5px 8px',
-        borderBottom: '1px solid #f0f0f0', background: '#fafafa', flexWrap: 'wrap',
+        borderBottom: '1px solid #f0f0f0', background: 'var(--color-bg-subtle)', flexWrap: 'wrap',
       }}>
         {TOOLS.map((t, i) => (
           <Tooltip key={i} title={t.title} placement="top">
@@ -200,7 +200,7 @@ function RichTextEditor({
               icon={t.icon}
               onMouseDown={e => { e.preventDefault(); exec(t.cmd); }}
               style={{
-                width: 26, height: 26, padding: 0, color: '#6b7280',
+                width: 26, height: 26, padding: 0, color: 'var(--color-text-tertiary)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}
             />
@@ -215,7 +215,7 @@ function RichTextEditor({
         data-placeholder={placeholder}
         style={{
           minHeight: 96, padding: '8px 12px',
-          outline: 'none', fontSize: 13, color: '#374151', lineHeight: 1.7,
+          outline: 'none', fontSize: 13, color: 'var(--color-text-secondary)', lineHeight: 1.7,
         }}
       />
     </div>
@@ -373,10 +373,10 @@ export function RequisitionForm({
       {/* ── Header ────────────────────────────────────────────────────────── */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
         <div>
-          <h1 style={{ fontSize: 16, fontWeight: 700, color: '#111827', margin: 0 }}>
+          <h1 style={{ fontSize: 16, fontWeight: 700, color: 'var(--color-text-primary)', margin: 0 }}>
             {isAction ? `Review Requisition — ${request?.id}` : 'Manpower Requisition Form'}
           </h1>
-          <p style={{ fontSize: 13, color: '#6b7280', margin: '4px 0 0' }}>
+          <p style={{ fontSize: 13, color: 'var(--color-text-tertiary)', margin: '4px 0 0' }}>
             {isAction
               ? 'Review and action the manpower requisition request.'
               : 'Fill in details to create a new manpower requisition.'}
@@ -386,13 +386,13 @@ export function RequisitionForm({
           type="link"
           icon={<LeftOutlined style={{ fontSize: 12 }} />}
           onClick={onBack}
-          style={{ color: '#0f766e', fontWeight: 600, padding: 0, fontSize: 13 }}
+          style={{ color: 'var(--color-primary)', fontWeight: 600, padding: 0, fontSize: 13 }}
         >
           Back to List
         </Button>
       </div>
 
-      <div style={{ background: '#fff', border: '1px solid var(--color-border)', borderRadius: 10, padding: '20px 24px' }}>
+      <div style={{ background: 'var(--color-bg-surface)', border: '1px solid var(--color-border)', borderRadius: 10, padding: '20px 24px' }}>
 
         {/* ── 1. Date / Org Level / Ref No ──────────────────────────────── */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.6fr 1fr', gap: 12, marginBottom: 14 }}>
@@ -415,7 +415,7 @@ export function RequisitionForm({
                 onClick={() => setPickerOpen(true)}
                 style={{
                   height: 36, borderRadius: 7, fontWeight: 600,
-                  color: '#0f766e', borderColor: '#bfdbfe', background: '#eff6ff',
+                  color: 'var(--color-primary)', borderColor: 'rgba(59, 130, 246, 0.22)', background: 'var(--color-status-info-bg)',
                   fontSize: 12, flexShrink: 0,
                 }}
               >
@@ -425,8 +425,8 @@ export function RequisitionForm({
                 flex: 1, border: '1px solid var(--color-border)', borderRadius: 7,
                 padding: '0 12px', fontSize: 13, height: 36,
                 display: 'flex', alignItems: 'center',
-                color: data.selectedLevel ? '#111827' : '#9ca3af',
-                background: '#fafafa', fontWeight: data.selectedLevel ? 500 : 400,
+                color: data.selectedLevel ? 'var(--color-text-primary)' : 'var(--color-text-disabled)',
+                background: 'var(--color-bg-subtle)', fontWeight: data.selectedLevel ? 500 : 400,
                 overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
               }}>
                 {data.selectedLevel || 'No level selected — click SELECT LEVEL'}
@@ -479,7 +479,7 @@ export function RequisitionForm({
                 >
                   Replacement
                 </Checkbox>
-                <span style={{ fontSize: 11, color: '#6b7280' }}>Vacancy: {requiredVacancy}</span>
+                <span style={{ fontSize: 11, color: 'var(--color-text-tertiary)' }}>Vacancy: {requiredVacancy}</span>
               </div>
               <div>
                 <div style={SUBLABEL}>SELECT EMPLOYEE*</div>
@@ -499,14 +499,14 @@ export function RequisitionForm({
           <div style={{
             minWidth: 184, display: 'flex', flexDirection: 'column',
             justifyContent: 'center', gap: 5,
-            background: '#f8fafc', border: '1px solid var(--color-border)',
+            background: 'var(--color-bg-subtle)', border: '1px solid var(--color-border)',
             borderRadius: 8, padding: '12px 14px',
           }}>
-            <div style={SUMMARY_ROW}>Total in Dept: <strong style={{ color: '#111827' }}>34</strong></div>
-            <div style={SUMMARY_ROW}>In This Position: <strong style={{ color: '#111827' }}>5</strong></div>
+            <div style={SUMMARY_ROW}>Total in Dept: <strong style={{ color: 'var(--color-text-primary)' }}>34</strong></div>
+            <div style={SUMMARY_ROW}>In This Position: <strong style={{ color: 'var(--color-text-primary)' }}>5</strong></div>
             <div style={{ ...SUMMARY_ROW, color: '#059669' }}>Remaining HC: <strong>7</strong></div>
             <div style={{ ...SUMMARY_ROW, color: '#059669' }}>Separation: <strong>8</strong></div>
-            <div style={{ fontSize: 14, color: '#0f766e', fontWeight: 800, marginTop: 3 }}>
+            <div style={{ fontSize: 14, color: 'var(--color-primary)', fontWeight: 800, marginTop: 3 }}>
               Required: {requiredVacancy}
             </div>
           </div>
@@ -724,7 +724,7 @@ export function RequisitionForm({
                   <div style={SUBLABEL}>
                     Input CGPA / GPA
                     {rowQualInfo && (
-                      <span style={{ color: '#6b7280', fontWeight: 500, marginLeft: 6 }}>
+                      <span style={{ color: 'var(--color-text-tertiary)', fontWeight: 500, marginLeft: 6 }}>
                         out of {rowQualInfo.outOf}
                       </span>
                     )}
@@ -759,7 +759,7 @@ export function RequisitionForm({
           {/* Readable education preview */}
           {eduPreviewParts.length > 0 && (
             <div style={{
-              background: '#f0f9ff', border: '1px solid #bae6fd',
+              background: 'var(--color-status-info-bg)', border: '1px solid #bae6fd',
               borderRadius: 6, padding: '6px 12px',
               fontSize: 12, color: '#0369a1', fontWeight: 500,
             }}>
@@ -839,8 +839,8 @@ export function RequisitionForm({
             <Button
               icon={<UploadOutlined />}
               style={{
-                borderRadius: 7, background: '#eff6ff',
-                borderColor: '#bfdbfe', color: '#0f766e', fontWeight: 600, height: 34,
+                borderRadius: 7, background: 'var(--color-status-info-bg)',
+                borderColor: 'rgba(59, 130, 246, 0.22)', color: 'var(--color-primary)', fontWeight: 600, height: 34,
               }}
             >
               Click to Attach Files
@@ -854,15 +854,15 @@ export function RequisitionForm({
                   key={file.uid}
                   style={{
                     display: 'flex', alignItems: 'center', gap: 10,
-                    background: '#f8fafc', border: '1px solid #e2e8f0',
-                    borderRadius: 7, padding: '6px 12px', fontSize: 13, color: '#374151',
+                    background: 'var(--color-bg-subtle)', border: '1px solid var(--color-border)',
+                    borderRadius: 7, padding: '6px 12px', fontSize: 13, color: 'var(--color-text-secondary)',
                   }}
                 >
                   <UploadOutlined style={{ color: 'var(--color-primary)', fontSize: 14, flexShrink: 0 }} />
                   <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     {file.name}
                   </span>
-                  <span style={{ fontSize: 11, color: '#9ca3af', flexShrink: 0 }}>
+                  <span style={{ fontSize: 11, color: 'var(--color-text-disabled)', flexShrink: 0 }}>
                     {file.size ? `${(file.size / 1024).toFixed(1)} KB` : ''}
                   </span>
                   <Tooltip title="View file">
@@ -958,8 +958,8 @@ export function RequisitionForm({
         width={760}
         title={
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <FileOutlined style={{ color: '#0f766e' }} />
-            <span style={{ fontWeight: 700, fontSize: 14, color: '#111827' }}>
+            <FileOutlined style={{ color: 'var(--color-primary)' }} />
+            <span style={{ fontWeight: 700, fontSize: 14, color: 'var(--color-text-primary)' }}>
               {viewingFile?.name}
             </span>
           </div>
@@ -975,7 +975,7 @@ export function RequisitionForm({
 
           if (!url) {
             return (
-              <div style={{ textAlign: 'center', color: '#9ca3af', padding: '40px 0' }}>
+              <div style={{ textAlign: 'center', color: 'var(--color-text-disabled)', padding: '40px 0' }}>
                 Preview not available.
               </div>
             );
@@ -1000,8 +1000,8 @@ export function RequisitionForm({
           }
           return (
             <div style={{ textAlign: 'center', padding: '40px 0' }}>
-              <FileOutlined style={{ fontSize: 48, color: '#0f766e', marginBottom: 12 }} />
-              <div style={{ fontSize: 14, color: '#374151', marginBottom: 16 }}>{viewingFile.name}</div>
+              <FileOutlined style={{ fontSize: 48, color: 'var(--color-primary)', marginBottom: 12 }} />
+              <div style={{ fontSize: 14, color: 'var(--color-text-secondary)', marginBottom: 16 }}>{viewingFile.name}</div>
               <Button type="primary" href={url} target="_blank" rel="noopener noreferrer">
                 Open File
               </Button>

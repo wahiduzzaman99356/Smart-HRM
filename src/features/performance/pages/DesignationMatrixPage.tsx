@@ -371,10 +371,10 @@ export default function DesignationMatrixPage() {
   ];
 
   return (
-    <div style={{ padding: '16px 20px', background: '#eef6f5', minHeight: '100%', height: '100%', overflowY: 'auto' }}>
+    <div style={{ padding: '16px 20px', background: 'var(--color-primary-tint)', minHeight: '100%', height: '100%', overflowY: 'auto' }}>
       <div style={{ marginBottom: 12 }}>
         <Title level={3} style={{ margin: 0, color: '#0f2f35' }}>
-          <ReconciliationOutlined style={{ marginRight: 8, color: '#0f766e' }} />Designation Matrix
+          <ReconciliationOutlined style={{ marginRight: 8, color: 'var(--color-primary)' }} />Designation Matrix
           <Text style={{ marginLeft: 10, color: '#67a8a0', fontSize: 16, fontWeight: 600 }}>Coverage Overview</Text>
         </Title>
       </div>
@@ -418,7 +418,7 @@ export default function DesignationMatrixPage() {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 12, marginBottom: 12 }}>
           <Card bordered={false} style={{ borderRadius: 12, background: '#f8fffd', border: '1px solid #caeee8' }}>
             <Text type="secondary" style={{ fontSize: 11, letterSpacing: 1 }}>TOTAL SUB KPIs</Text>
-            <Title level={2} style={{ margin: '2px 0 0', color: '#0f766e' }}>{weightedItems.length}</Title>
+            <Title level={2} style={{ margin: '2px 0 0', color: 'var(--color-primary)' }}>{weightedItems.length}</Title>
             <Text type="secondary">{employeeCount} employees in selected scope</Text>
           </Card>
           <Card bordered={false} style={{ borderRadius: 12, background: '#fffbf2', border: '1px solid #f5d28f' }}>
@@ -432,7 +432,7 @@ export default function DesignationMatrixPage() {
           <Card
             key={group.areaId}
             bordered={false}
-            style={{ borderRadius: 14, marginBottom: 12, background: '#ffffff', border: '1px solid #d7e9e5' }}
+            style={{ borderRadius: 14, marginBottom: 12, background: 'var(--color-bg-surface)', border: '1px solid #d7e9e5' }}
             title={
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
                 <Space size={8} wrap>
@@ -441,7 +441,7 @@ export default function DesignationMatrixPage() {
                   <Tag color="cyan">{group.rows.length} Sub KPIs</Tag>
                 </Space>
                 <Space>
-                  <Text strong style={{ color: '#0f766e' }}>Weight: {group.areaWeight.toFixed(1)}%</Text>
+                  <Text strong style={{ color: 'var(--color-primary)' }}>Weight: {group.areaWeight.toFixed(1)}%</Text>
                   <Button type="primary" icon={<PlusOutlined />} onClick={() => openSubKpiSetupInNewTab(group)}>
                     Add Sub KPI
                   </Button>
@@ -461,7 +461,7 @@ export default function DesignationMatrixPage() {
         ))}
 
         {grouped.length === 0 && (
-          <div style={{ padding: '24px 0', textAlign: 'center', color: '#94a3b8' }}>
+          <div style={{ padding: '24px 0', textAlign: 'center', color: 'var(--color-text-tertiary)' }}>
             No designation-wise KPI coverage found for selected filters and tab.
           </div>
         )}

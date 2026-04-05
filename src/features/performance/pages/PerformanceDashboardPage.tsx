@@ -30,10 +30,10 @@ const { Title, Text } = Typography;
 const { Panel } = Collapse;
 
 // ─── Design tokens ─────────────────────────────────────────────────────────────
-const P  = '#0f766e';
-const PL = '#eef8f6';
-const PB = '#a7e3d9';
-const BG = '#eef5f4';
+const P  = 'var(--color-primary)';
+const PL = 'var(--color-primary-tint)';
+const PB = 'var(--color-border)';
+const BG = 'var(--color-bg-subtle)';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 type PeriodFilter = 'Yearly' | 'Monthly' | 'Weekly' | 'Daily';
@@ -100,25 +100,25 @@ interface KPIDetailRow {
 
 // ─── Color helpers ────────────────────────────────────────────────────────────
 const PERSP_COLORS: Record<string, { bg: string; color: string; bar: string }> = {
-  'Financial':         { bg: '#eff6ff', color: '#1d4ed8', bar: '#3b82f6' },
-  'Customer':          { bg: '#f0fdf4', color: '#065f46', bar: '#10b981' },
-  'Internal Process':  { bg: '#fffbeb', color: '#92400e', bar: '#f59e0b' },
-  'Learning & Growth': { bg: '#faf5ff', color: '#5b21b6', bar: '#8b5cf6' },
+  'Financial':         { bg: 'var(--color-status-info-bg)', color: '#1d4ed8', bar: '#3b82f6' },
+  'Customer':          { bg: 'var(--color-status-approved-bg)', color: 'var(--color-primary-dark)', bar: '#10b981' },
+  'Internal Process':  { bg: 'var(--color-status-pending-bg)', color: '#d97706', bar: '#f59e0b' },
+  'Learning & Growth': { bg: 'var(--color-status-info-bg)', color: '#5b21b6', bar: '#8b5cf6' },
 };
 
 function scoreColor(s: number) {
   if (s >= 85) return '#059669';
-  if (s >= 70) return '#0f766e';
+  if (s >= 70) return 'var(--color-primary)';
   if (s >= 55) return '#d97706';
   return '#dc2626';
 }
 
 function scoreBadge(s: number): { label: string; color: string; bg: string } {
-  if (s >= 85) return { label: 'Outstanding', color: '#059669', bg: '#d1fae5' };
-  if (s >= 70) return { label: 'Excellent',   color: '#0f766e', bg: '#ccfbf1' };
-  if (s >= 55) return { label: 'Good',        color: '#0284c7', bg: '#dbeafe' };
-  if (s >= 40) return { label: 'Average',     color: '#d97706', bg: '#fef3c7' };
-  return              { label: 'Below Avg',   color: '#dc2626', bg: '#fee2e2' };
+  if (s >= 85) return { label: 'Outstanding', color: '#059669', bg: 'var(--color-status-approved-bg)' };
+  if (s >= 70) return { label: 'Excellent',   color: 'var(--color-primary)', bg: 'var(--color-status-approved-bg)' };
+  if (s >= 55) return { label: 'Good',        color: '#0284c7', bg: 'var(--color-status-info-bg)' };
+  if (s >= 40) return { label: 'Average',     color: '#d97706', bg: 'var(--color-status-pending-bg)' };
+  return              { label: 'Below Avg',   color: '#dc2626', bg: 'var(--color-status-rejected-bg)' };
 }
 
 // ─── Mock data generators ─────────────────────────────────────────────────────
@@ -320,7 +320,7 @@ function SvgBarChart({ data, showEvaluators = false }: { data: BarDataPoint[]; s
   const groupPad = (groupW - barW * seriesCount - (seriesCount - 1) * 4) / 2;
 
   const SERIES = [
-    { key: 'selfScore' as const,    color: '#0f766e', label: 'Self' },
+    { key: 'selfScore' as const,    color: 'var(--color-primary)', label: 'Self' },
     { key: 'lmScore' as const,      color: '#0284c7', label: 'LM' },
     { key: 'hrScore' as const,      color: '#7c3aed', label: 'HR' },
   ];
@@ -382,7 +382,7 @@ function SvgBarChart({ data, showEvaluators = false }: { data: BarDataPoint[]; s
         {(activeSeries as { key: string; color: string; label: string }[]).map(s => (
           <div key={s.key} style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
             <div style={{ width: 10, height: 10, borderRadius: 2, background: s.color }} />
-            <Text style={{ fontSize: 11, color: '#6b7280' }}>{s.label}</Text>
+            <Text style={{ fontSize: 11, color: 'var(--color-text-tertiary)' }}>{s.label}</Text>
           </div>
         ))}
       </div>
@@ -480,7 +480,7 @@ function SvgLineChart({ data }: { data: TrendPoint[] }) {
         {LINES.map(l => (
           <div key={l.key} style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
             <div style={{ width: 16, height: 2, background: l.color, borderRadius: 1 }} />
-            <Text style={{ fontSize: 11, color: '#6b7280' }}>{l.label}</Text>
+            <Text style={{ fontSize: 11, color: 'var(--color-text-tertiary)' }}>{l.label}</Text>
           </div>
         ))}
       </div>
@@ -549,20 +549,20 @@ function EvalCompBar({ label, self, lm, hr, color }: { label: string; self: numb
   return (
     <div style={{ marginBottom: 14 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 5 }}>
-        <Text style={{ fontSize: 12, fontWeight: 700, color: '#374151' }}>{label}</Text>
+        <Text style={{ fontSize: 12, fontWeight: 700, color: 'var(--color-text-secondary)' }}>{label}</Text>
         <Space size={6}>
           <Tag style={{ borderRadius: 999, fontSize: 10, border: 'none', background: scoreBadge(avg).bg, color: scoreBadge(avg).color, fontWeight: 700, margin: 0 }}>{avg}%</Tag>
         </Space>
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
         {[
-          { role: 'Self',  val: self,  c: '#0f766e' },
+          { role: 'Self',  val: self,  c: 'var(--color-primary)' },
           { role: 'LM',    val: lm,    c: '#0284c7' },
           { role: 'HR',    val: hr,    c: '#7c3aed' },
         ].map(({ role, val, c }) => (
           <div key={role} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <Text style={{ fontSize: 10, color: '#9ca3af', minWidth: 24 }}>{role}</Text>
-            <div style={{ flex: 1, height: 6, background: '#f3f4f6', borderRadius: 3, overflow: 'hidden' }}>
+            <Text style={{ fontSize: 10, color: 'var(--color-text-disabled)', minWidth: 24 }}>{role}</Text>
+            <div style={{ flex: 1, height: 6, background: 'var(--color-bg-subtle)', borderRadius: 3, overflow: 'hidden' }}>
               <div style={{ width: `${val}%`, height: '100%', background: c, borderRadius: 3, transition: 'width 0.4s ease' }} />
             </div>
             <Text style={{ fontSize: 10, color: c, fontWeight: 700, minWidth: 28, textAlign: 'right' }}>{val}%</Text>
@@ -578,11 +578,11 @@ function StatCard({ icon, label, value, sub, color, bg, border, trend }:
   { icon: React.ReactNode; label: string; value: string | number; sub?: string; color: string; bg: string; border: string; trend?: { delta: number; up: boolean } }) {
   return (
     <div style={{ background: bg, border: `1px solid ${border}`, borderRadius: 12, padding: '12px 14px', display: 'flex', alignItems: 'flex-start', gap: 12 }}>
-      <div style={{ width: 40, height: 40, borderRadius: 10, background: '#fff', border: `1px solid ${border}`, display: 'flex', alignItems: 'center', justifyContent: 'center', color, fontSize: 18, flexShrink: 0 }}>
+      <div style={{ width: 40, height: 40, borderRadius: 10, background: 'var(--color-bg-surface)', border: `1px solid ${border}`, display: 'flex', alignItems: 'center', justifyContent: 'center', color, fontSize: 18, flexShrink: 0 }}>
         {icon}
       </div>
       <div style={{ flex: 1 }}>
-        <div style={{ fontSize: 10, fontWeight: 700, color: '#9ca3af', letterSpacing: '0.05em', marginBottom: 2 }}>{label}</div>
+        <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--color-text-disabled)', letterSpacing: '0.05em', marginBottom: 2 }}>{label}</div>
         <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
           <div style={{ fontSize: 20, fontWeight: 900, color, lineHeight: 1.1 }}>{value}</div>
           {trend && (
@@ -592,7 +592,7 @@ function StatCard({ icon, label, value, sub, color, bg, border, trend }:
             </div>
           )}
         </div>
-        {sub && <div style={{ fontSize: 11, color: '#6b7280', marginTop: 2 }}>{sub}</div>}
+        {sub && <div style={{ fontSize: 11, color: 'var(--color-text-tertiary)', marginTop: 2 }}>{sub}</div>}
       </div>
     </div>
   );
@@ -630,8 +630,8 @@ function SubKPIBarChart({ kpiDetails }: SubKPIBarProps) {
           style={{
             border: 'none', cursor: 'pointer', borderRadius: 999, padding: '4px 12px',
             fontSize: 11, fontWeight: 700,
-            background: activeArea === null ? P : '#f3f4f6',
-            color: activeArea === null ? '#fff' : '#6b7280',
+            background: activeArea === null ? P : 'var(--color-bg-subtle)',
+            color: activeArea === null ? '#fff' : 'var(--color-text-tertiary)',
           }}
         >All Areas</button>
         {grouped.map(g => {
@@ -668,7 +668,7 @@ function SubKPIBarChart({ kpiDetails }: SubKPIBarProps) {
           const barW = Math.min(18, (groupW * 0.8) / barCount);
           const groupPad = (groupW - barW * barCount - 3 * 2) / 2;
           const SERIES = [
-            { key: 'selfScore' as const, color: '#0f766e', label: 'Self' },
+            { key: 'selfScore' as const, color: 'var(--color-primary)', label: 'Self' },
             { key: 'lmScore'  as const, color: '#0284c7', label: 'LM' },
             { key: 'hrScore'  as const, color: '#7c3aed', label: 'HR' },
             { key: 'avgScore' as const, color: '#d97706', label: 'Avg' },
@@ -680,8 +680,8 @@ function SubKPIBarChart({ kpiDetails }: SubKPIBarProps) {
                 <Tag style={{ borderRadius: 999, fontSize: 10, fontWeight: 700, border: 'none', background: pc.bar, color: '#fff', margin: 0 }}>
                   {group.code}
                 </Tag>
-                <Text style={{ fontSize: 12, fontWeight: 700, color: '#111827' }}>{group.name}</Text>
-                <Tag style={{ borderRadius: 999, fontSize: 9, fontWeight: 600, border: 'none', background: '#fff', color: pc.color, margin: 0, marginLeft: 'auto' }}>
+                <Text style={{ fontSize: 12, fontWeight: 700, color: 'var(--color-text-primary)' }}>{group.name}</Text>
+                <Tag style={{ borderRadius: 999, fontSize: 9, fontWeight: 600, border: 'none', background: 'var(--color-bg-surface)', color: pc.color, margin: 0, marginLeft: 'auto' }}>
                   {group.perspective}
                 </Tag>
               </div>
@@ -692,7 +692,7 @@ function SubKPIBarChart({ kpiDetails }: SubKPIBarProps) {
                     const y = mt + cH - (g / 100) * cH;
                     return (
                       <g key={g}>
-                        <line x1={0} y1={y} x2={W} y2={y} stroke={g === 0 ? '#d1d5db' : '#e5e7eb'} strokeWidth={g === 0 ? 1.5 : 0.8} />
+                        <line x1={0} y1={y} x2={W} y2={y} stroke={g === 0 ? 'var(--color-border)' : 'var(--color-border)'} strokeWidth={g === 0 ? 1.5 : 0.8} />
                         <text x={W - mr + 2} y={y + 3} fontSize={8} fill="#9ca3af" textAnchor="start">{g}</text>
                       </g>
                     );
@@ -746,7 +746,7 @@ function SubKPIBarChart({ kpiDetails }: SubKPIBarProps) {
                 {SERIES.map(s => (
                   <div key={s.key} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                     <div style={{ width: 9, height: 9, borderRadius: 2, background: s.color }} />
-                    <Text style={{ fontSize: 10, color: '#6b7280' }}>{s.label}</Text>
+                    <Text style={{ fontSize: 10, color: 'var(--color-text-tertiary)' }}>{s.label}</Text>
                   </div>
                 ))}
                 <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
@@ -805,8 +805,8 @@ export default function PerformanceDashboardPage() {
       counts[r.achievementLevel] = (counts[r.achievementLevel] ?? 0) + 1;
     });
     const levels = ['Outstanding', 'Excellent', 'Good', 'Average', 'Below Avg'];
-    const colors  = ['#059669', '#0f766e', '#0284c7', '#d97706', '#dc2626'];
-    const bgs     = ['#d1fae5', '#ccfbf1', '#dbeafe', '#fef3c7', '#fee2e2'];
+    const colors  = ['#059669', 'var(--color-primary)', '#0284c7', '#d97706', '#dc2626'];
+    const bgs     = ['var(--color-status-approved-bg)', 'var(--color-status-approved-bg)', 'var(--color-status-info-bg)', 'var(--color-status-pending-bg)', 'var(--color-status-rejected-bg)'];
     return levels.map((l, i) => ({ label: l, value: counts[l] ?? 0, color: colors[i], bg: bgs[i] }));
   }, [periodRecords]);
 
@@ -869,8 +869,8 @@ export default function PerformanceDashboardPage() {
       width: 220,
       render: (_, row) => (
         <div>
-          <div style={{ fontSize: 11, color: '#9ca3af', fontWeight: 700 }}>{row.kpiCode}</div>
-          <Text style={{ fontSize: 12, fontWeight: 700, color: '#111827' }}>{row.kpiName}</Text>
+          <div style={{ fontSize: 11, color: 'var(--color-text-disabled)', fontWeight: 700 }}>{row.kpiCode}</div>
+          <Text style={{ fontSize: 12, fontWeight: 700, color: 'var(--color-text-primary)' }}>{row.kpiName}</Text>
         </div>
       ),
     },
@@ -896,14 +896,14 @@ export default function PerformanceDashboardPage() {
       title: 'Wt.',
       dataIndex: 'weight',
       width: 50,
-      render: (v: number) => <Text style={{ fontSize: 12, color: '#6b7280' }}>{v}%</Text>,
+      render: (v: number) => <Text style={{ fontSize: 12, color: 'var(--color-text-tertiary)' }}>{v}%</Text>,
     },
     {
       title: 'Self',
       dataIndex: 'selfScore',
       width: 70,
       align: 'center',
-      render: (v: number) => <Text style={{ fontSize: 13, fontWeight: 800, color: '#0f766e' }}>{v}%</Text>,
+      render: (v: number) => <Text style={{ fontSize: 13, fontWeight: 800, color: 'var(--color-primary)' }}>{v}%</Text>,
     },
     {
       title: 'LM',
@@ -946,10 +946,10 @@ export default function PerformanceDashboardPage() {
       width: 100,
       render: (s: string) => {
         const cfg = {
-          Completed: { color: '#065f46', bg: '#d1fae5', icon: <CheckCircleOutlined /> },
-          'In Review': { color: '#5b21b6', bg: '#ede9fe', icon: <ClockCircleOutlined /> },
-          Pending: { color: '#92400e', bg: '#fef3c7', icon: <ClockCircleOutlined /> },
-        }[s] ?? { color: '#6b7280', bg: '#f3f4f6', icon: <ClockCircleOutlined /> };
+          Completed: { color: 'var(--color-primary-dark)', bg: 'var(--color-status-approved-bg)', icon: <CheckCircleOutlined /> },
+          'In Review': { color: '#5b21b6', bg: 'rgba(124, 58, 237, 0.13)', icon: <ClockCircleOutlined /> },
+          Pending: { color: '#d97706', bg: 'var(--color-status-pending-bg)', icon: <ClockCircleOutlined /> },
+        }[s] ?? { color: 'var(--color-text-tertiary)', bg: 'var(--color-bg-subtle)', icon: <ClockCircleOutlined /> };
         return <Tag icon={cfg.icon} style={{ borderRadius: 999, fontSize: 10, fontWeight: 700, border: 'none', background: cfg.bg, color: cfg.color }}>{s}</Tag>;
       },
     },
@@ -959,14 +959,14 @@ export default function PerformanceDashboardPage() {
     <div style={{ padding: '16px 20px', background: BG, height: '100%', overflowY: 'auto', boxSizing: 'border-box' }}>
 
       {/* ── Page Header + Toolbar ── */}
-      <div style={{ background: '#fff', border: `1px solid ${PB}`, borderRadius: 14, padding: '16px 20px', marginBottom: 16 }}>
+      <div style={{ background: 'var(--color-bg-surface)', border: `1px solid ${PB}`, borderRadius: 14, padding: '16px 20px', marginBottom: 16 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 14 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             <div style={{ width: 40, height: 40, borderRadius: 10, background: PL, border: `1px solid ${PB}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <RiseOutlined style={{ color: P, fontSize: 19 }} />
             </div>
             <div>
-              <Title level={4} style={{ margin: 0, color: '#111827' }}>Performance Dashboard</Title>
+              <Title level={4} style={{ margin: 0, color: 'var(--color-text-primary)' }}>Performance Dashboard</Title>
               <Text type="secondary" style={{ fontSize: 12 }}>KPI achievement tracking · appraisal overview · trend analysis</Text>
             </div>
           </div>
@@ -982,7 +982,7 @@ export default function PerformanceDashboardPage() {
               onBlur={() => setEmpSearch('')}
               filterOption={false}
               style={{ width: '100%', maxWidth: 280 }}
-              suffixIcon={<SearchOutlined style={{ color: '#9ca3af' }} />}
+              suffixIcon={<SearchOutlined style={{ color: 'var(--color-text-disabled)' }} />}
               placeholder="Search employee…"
               optionLabelProp="label"
               popupMatchSelectWidth={280}
@@ -994,8 +994,8 @@ export default function PerformanceDashboardPage() {
                       {e.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
                     </Avatar>
                     <div style={{ overflow: 'hidden' }}>
-                      <div style={{ fontSize: 12, fontWeight: 700, color: '#111827', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{e.name}</div>
-                      <div style={{ fontSize: 10, color: '#9ca3af', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{e.designation} · {e.code}</div>
+                      <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--color-text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{e.name}</div>
+                      <div style={{ fontSize: 10, color: 'var(--color-text-disabled)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{e.designation} · {e.code}</div>
                     </div>
                   </div>
                 </Select.Option>
@@ -1003,7 +1003,7 @@ export default function PerformanceDashboardPage() {
             </Select>
 
             {/* Period Filter */}
-            <div style={{ display: 'flex', background: '#f3f4f6', borderRadius: 10, padding: 3, gap: 2, flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', background: 'var(--color-bg-subtle)', borderRadius: 10, padding: 3, gap: 2, flexWrap: 'wrap' }}>
               {(['Daily', 'Weekly', 'Monthly', 'Yearly'] as PeriodFilter[]).map(p => (
                 <button
                   key={p}
@@ -1012,7 +1012,7 @@ export default function PerformanceDashboardPage() {
                     border: 'none', cursor: 'pointer', borderRadius: 8, padding: '5px 14px',
                     fontSize: 12, fontWeight: 700,
                     background: periodFilter === p ? P : 'transparent',
-                    color: periodFilter === p ? '#fff' : '#6b7280',
+                    color: periodFilter === p ? '#fff' : 'var(--color-text-tertiary)',
                     transition: 'all 0.15s',
                   }}
                 >
@@ -1058,9 +1058,9 @@ export default function PerformanceDashboardPage() {
             <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.7)', fontWeight: 700, letterSpacing: '0.06em' }}>TREND</div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 4, justifyContent: 'center', marginTop: 4 }}>
               {trendDelta >= 0
-                ? <ArrowUpOutlined style={{ color: '#6ee7b7', fontSize: 18 }} />
-                : <ArrowDownOutlined style={{ color: '#fca5a5', fontSize: 18 }} />}
-              <div style={{ fontSize: 22, fontWeight: 800, color: trendDelta >= 0 ? '#6ee7b7' : '#fca5a5' }}>
+                ? <ArrowUpOutlined style={{ color: 'var(--color-status-approved-bg)', fontSize: 18 }} />
+                : <ArrowDownOutlined style={{ color: 'var(--color-status-rejected-bg)', fontSize: 18 }} />}
+              <div style={{ fontSize: 22, fontWeight: 800, color: trendDelta >= 0 ? 'var(--color-status-approved-bg)' : 'var(--color-status-rejected-bg)' }}>
                 {trendDelta >= 0 ? '+' : ''}{trendDelta}%
               </div>
             </div>
@@ -1084,7 +1084,7 @@ export default function PerformanceDashboardPage() {
             sub={scoreBadge(avgOverall).label}
             color={scoreColor(avgOverall)}
             bg={scoreBadge(avgOverall).bg}
-            border={avgOverall >= 70 ? PB : '#fde68a'}
+            border={avgOverall >= 70 ? PB : 'rgba(253, 230, 138, 0.4)'}
             trend={{ delta: Math.abs(trendDelta), up: trendDelta >= 0 }}
           />
         </Col>
@@ -1127,11 +1127,11 @@ export default function PerformanceDashboardPage() {
       <Row gutter={[12, 12]} style={{ marginBottom: 12 }}>
         {/* Evaluator Bar Chart */}
         <Col xs={24} lg={15}>
-          <div style={{ background: '#fff', border: `1px solid ${PB}`, borderRadius: 14, padding: '16px 18px', height: '100%', overflowX: 'hidden' }}>
+          <div style={{ background: 'var(--color-bg-surface)', border: `1px solid ${PB}`, borderRadius: 14, padding: '16px 18px', height: '100%', overflowX: 'hidden' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
               <Space size={8}>
                 <div style={{ width: 3, height: 14, background: P, borderRadius: 2 }} />
-                <Text style={{ fontSize: 13, fontWeight: 700, color: '#111827' }}>Score Over Time</Text>
+                <Text style={{ fontSize: 13, fontWeight: 700, color: 'var(--color-text-primary)' }}>Score Over Time</Text>
                 <Tag style={{ borderRadius: 999, fontSize: 10, border: `1px solid ${PB}`, background: PL, color: P, fontWeight: 600 }}>{periodFilter}</Tag>
               </Space>
               <Text type="secondary" style={{ fontSize: 11 }}>Last {barData.length} {periodFilter.toLowerCase()} periods</Text>
@@ -1142,18 +1142,18 @@ export default function PerformanceDashboardPage() {
 
         {/* Achievement Distribution Donut */}
         <Col xs={24} lg={9}>
-          <div style={{ background: '#fff', border: `1px solid ${PB}`, borderRadius: 14, padding: '16px 18px', height: '100%' }}>
+          <div style={{ background: 'var(--color-bg-surface)', border: `1px solid ${PB}`, borderRadius: 14, padding: '16px 18px', height: '100%' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
               <div style={{ width: 3, height: 14, background: '#059669', borderRadius: 2 }} />
-              <Text style={{ fontSize: 13, fontWeight: 700, color: '#111827' }}>Achievement Distribution</Text>
+              <Text style={{ fontSize: 13, fontWeight: 700, color: 'var(--color-text-primary)' }}>Achievement Distribution</Text>
             </div>
             <DonutChart slices={achieveDist} total={periodRecords.length} />
 
             <div style={{ marginTop: 14, padding: '10px 12px', background: PL, borderRadius: 10, border: `1px solid ${PB}` }}>
-              <div style={{ fontSize: 10, color: '#6b7280', fontWeight: 700, marginBottom: 4 }}>BEST PERFORMANCE</div>
+              <div style={{ fontSize: 10, color: 'var(--color-text-tertiary)', fontWeight: 700, marginBottom: 4 }}>BEST PERFORMANCE</div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                 <TrophyOutlined style={{ color: '#d97706', fontSize: 14 }} />
-                <Text style={{ fontSize: 12, fontWeight: 700, color: '#111827' }}>
+                <Text style={{ fontSize: 12, fontWeight: 700, color: 'var(--color-text-primary)' }}>
                   {achieveDist[0].value + achieveDist[1].value} Outstanding/Excellent records
                 </Text>
               </div>
@@ -1166,11 +1166,11 @@ export default function PerformanceDashboardPage() {
       <Row gutter={[12, 12]} style={{ marginBottom: 12 }}>
         {/* Line Trend Chart */}
         <Col xs={24} lg={14}>
-          <div style={{ background: '#fff', border: `1px solid ${PB}`, borderRadius: 14, padding: '16px 18px', overflowX: 'hidden' }}>
+          <div style={{ background: 'var(--color-bg-surface)', border: `1px solid ${PB}`, borderRadius: 14, padding: '16px 18px', overflowX: 'hidden' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
               <Space size={8}>
                 <div style={{ width: 3, height: 14, background: '#0284c7', borderRadius: 2 }} />
-                <Text style={{ fontSize: 13, fontWeight: 700, color: '#111827' }}>Performance Trend</Text>
+                <Text style={{ fontSize: 13, fontWeight: 700, color: 'var(--color-text-primary)' }}>Performance Trend</Text>
               </Space>
               <Space size={8}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
@@ -1189,10 +1189,10 @@ export default function PerformanceDashboardPage() {
 
         {/* KPI Area Breakdown */}
         <Col xs={24} lg={10}>
-          <div style={{ background: '#fff', border: `1px solid ${PB}`, borderRadius: 14, padding: '16px 18px', height: '100%' }}>
+          <div style={{ background: 'var(--color-bg-surface)', border: `1px solid ${PB}`, borderRadius: 14, padding: '16px 18px', height: '100%' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
               <div style={{ width: 3, height: 14, background: '#d97706', borderRadius: 2 }} />
-              <Text style={{ fontSize: 13, fontWeight: 700, color: '#111827' }}>KPI Area Breakdown</Text>
+              <Text style={{ fontSize: 13, fontWeight: 700, color: 'var(--color-text-primary)' }}>KPI Area Breakdown</Text>
               <Text type="secondary" style={{ fontSize: 11, marginLeft: 'auto' }}>Latest Period</Text>
             </div>
             {latestRecord.areas.map(area => {
@@ -1206,12 +1206,12 @@ export default function PerformanceDashboardPage() {
                         {area.areaCode}
                       </Tag>
                       <div style={{ maxWidth: 'calc(100% - 60px)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                        <Text style={{ fontSize: 11, color: '#374151', fontWeight: 600 }}>{area.areaName}</Text>
+                        <Text style={{ fontSize: 11, color: 'var(--color-text-secondary)', fontWeight: 600 }}>{area.areaName}</Text>
                       </div>
                     </Space>
                     <Text style={{ fontSize: 13, fontWeight: 800, color: scoreColor(avg), minWidth: 38, textAlign: 'right' }}>{avg}%</Text>
                   </div>
-                  <div style={{ height: 6, background: '#f3f4f6', borderRadius: 3, overflow: 'hidden' }}>
+                  <div style={{ height: 6, background: 'var(--color-bg-subtle)', borderRadius: 3, overflow: 'hidden' }}>
                     <div style={{ width: `${avg}%`, height: '100%', background: pc.bar, borderRadius: 3, transition: 'width 0.4s ease' }} />
                   </div>
                 </div>
@@ -1222,10 +1222,10 @@ export default function PerformanceDashboardPage() {
       </Row>
 
       {/* ── Evaluator Comparison ── */}
-      <div style={{ background: '#fff', border: `1px solid ${PB}`, borderRadius: 14, padding: '16px 18px', marginBottom: 12 }}>
+      <div style={{ background: 'var(--color-bg-surface)', border: `1px solid ${PB}`, borderRadius: 14, padding: '16px 18px', marginBottom: 12 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
           <div style={{ width: 3, height: 14, background: '#7c3aed', borderRadius: 2 }} />
-          <Text style={{ fontSize: 13, fontWeight: 700, color: '#111827' }}>Evaluator Comparison — By KPI Area</Text>
+          <Text style={{ fontSize: 13, fontWeight: 700, color: 'var(--color-text-primary)' }}>Evaluator Comparison — By KPI Area</Text>
           <Text type="secondary" style={{ fontSize: 11, marginLeft: 'auto' }}>(Self · Line Manager · HR)</Text>
         </div>
         <Row gutter={[16, 8]}>
@@ -1247,10 +1247,10 @@ export default function PerformanceDashboardPage() {
       </div>
 
       {/* ── Sub KPI Bar Chart ── */}
-      <div style={{ background: '#fff', border: `1px solid ${PB}`, borderRadius: 14, padding: '16px 18px', marginBottom: 12 }}>
+      <div style={{ background: 'var(--color-bg-surface)', border: `1px solid ${PB}`, borderRadius: 14, padding: '16px 18px', marginBottom: 12 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
           <div style={{ width: 3, height: 14, background: '#d97706', borderRadius: 2 }} />
-          <Text style={{ fontSize: 13, fontWeight: 700, color: '#111827' }}>Sub KPI Performance — by Main KPI Area</Text>
+          <Text style={{ fontSize: 13, fontWeight: 700, color: 'var(--color-text-primary)' }}>Sub KPI Performance — by Main KPI Area</Text>
           <Text type="secondary" style={{ fontSize: 11, marginLeft: 'auto' }}>Self · LM · HR · Avg vs Target</Text>
         </div>
         <Text type="secondary" style={{ fontSize: 11, marginBottom: 12, display: 'block' }}>
@@ -1260,24 +1260,24 @@ export default function PerformanceDashboardPage() {
       </div>
 
       {/* ── KPI Records Table ── */}
-      <div style={{ background: '#fff', border: `1px solid ${PB}`, borderRadius: 14, padding: '16px 18px' }}>
+      <div style={{ background: 'var(--color-bg-surface)', border: `1px solid ${PB}`, borderRadius: 14, padding: '16px 18px' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14, flexWrap: 'wrap', gap: 10 }}>
           <Space size={8}>
             <div style={{ width: 3, height: 14, background: P, borderRadius: 2 }} />
-            <Text style={{ fontSize: 13, fontWeight: 700, color: '#111827' }}>KPI Performance Records</Text>
+            <Text style={{ fontSize: 13, fontWeight: 700, color: 'var(--color-text-primary)' }}>KPI Performance Records</Text>
             <Tag style={{ borderRadius: 999, fontSize: 10, border: `1px solid ${PB}`, background: PL, color: P, fontWeight: 700 }}>
               {kpiTableData.length} items
             </Tag>
           </Space>
           <Space size={8} wrap>
             {[
-              { label: 'Self', color: '#0f766e', bg: PL },
-              { label: 'Line Manager', color: '#0284c7', bg: '#dbeafe' },
-              { label: 'HR', color: '#7c3aed', bg: '#ede9fe' },
+              { label: 'Self', color: 'var(--color-primary)', bg: PL },
+              { label: 'Line Manager', color: '#0284c7', bg: 'var(--color-status-info-bg)' },
+              { label: 'HR', color: '#7c3aed', bg: 'rgba(124, 58, 237, 0.13)' },
             ].map(r => (
               <div key={r.label} style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
                 <div style={{ width: 8, height: 8, borderRadius: 2, background: r.color }} />
-                <Text style={{ fontSize: 11, color: '#6b7280' }}>{r.label}</Text>
+                <Text style={{ fontSize: 11, color: 'var(--color-text-tertiary)' }}>{r.label}</Text>
               </div>
             ))}
           </Space>

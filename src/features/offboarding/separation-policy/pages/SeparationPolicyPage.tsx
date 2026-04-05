@@ -87,7 +87,7 @@ const MODES: SepModeData[] = [
     employeeType: 'All Employees',
     iconEl: <StopOutlined />,
     iconColor: '#dc2626',
-    iconBg: '#fef2f2',
+    iconBg: 'var(--color-status-rejected-bg)',
     probationDays: 0,
     confirmedDays: 0,
     note: 'Immediate — no notice required',
@@ -105,7 +105,7 @@ const MODES: SepModeData[] = [
     employeeType: null,
     iconEl: <WarningOutlined />,
     iconColor: '#d97706',
-    iconBg: '#fffbeb',
+    iconBg: 'var(--color-status-pending-bg)',
     probationDays: 60,
     confirmedDays: 120,
     note: 'Requires written notice and supporting documentation.',
@@ -122,7 +122,7 @@ const MODES: SepModeData[] = [
     employeeType: 'All Employees',
     iconEl: <ExportOutlined />,
     iconColor: '#ea580c',
-    iconBg: '#fff7ed',
+    iconBg: 'rgba(249, 115, 22, 0.10)',
     probationDays: 30,
     confirmedDays: 60,
     note: 'Employee must submit a formal written resignation.',
@@ -139,7 +139,7 @@ const MODES: SepModeData[] = [
     employeeType: null,
     iconEl: <MedicineBoxOutlined />,
     iconColor: '#7c3aed',
-    iconBg: '#f5f3ff',
+    iconBg: 'rgba(124, 58, 237, 0.09)',
     probationDays: 0,
     confirmedDays: 0,
     note: 'Medical certification from an approved practitioner required.',
@@ -156,7 +156,7 @@ const MODES: SepModeData[] = [
     employeeType: 'All Employees',
     iconEl: <AlertOutlined />,
     iconColor: '#dc2626',
-    iconBg: '#fef2f2',
+    iconBg: 'var(--color-status-rejected-bg)',
     probationDays: 0,
     confirmedDays: 0,
     note: 'Triggered after continuous unauthorized absence beyond the threshold.',
@@ -172,8 +172,8 @@ const MODES: SepModeData[] = [
     noticePeriod: 30,
     employeeType: null,
     iconEl: <ScissorOutlined />,
-    iconColor: '#6b7280',
-    iconBg: '#f9fafb',
+    iconColor: 'var(--color-text-tertiary)',
+    iconBg: 'var(--color-bg-subtle)',
     probationDays: 15,
     confirmedDays: 30,
     note: 'Statutory retrenchment benefits and dues apply.',
@@ -190,7 +190,7 @@ const MODES: SepModeData[] = [
     employeeType: 'All Employees',
     iconEl: <TrophyOutlined />,
     iconColor: '#d97706',
-    iconBg: '#fffbeb',
+    iconBg: 'var(--color-status-pending-bg)',
     probationDays: 90,
     confirmedDays: 90,
     note: 'Retirement benefits, gratuity, and provident fund apply.',
@@ -206,8 +206,8 @@ const MODES: SepModeData[] = [
     noticePeriod: 'Immediate',
     employeeType: 'All Employees',
     iconEl: <HeartOutlined />,
-    iconColor: '#6b7280',
-    iconBg: '#f9fafb',
+    iconColor: 'var(--color-text-tertiary)',
+    iconBg: 'var(--color-bg-subtle)',
     probationDays: 0,
     confirmedDays: 0,
     note: 'All dues and settlement to be made to legal heirs.',
@@ -224,7 +224,7 @@ const MODES: SepModeData[] = [
     employeeType: null,
     iconEl: <SwapOutlined />,
     iconColor: '#2563eb',
-    iconBg: '#eff6ff',
+    iconBg: 'var(--color-status-info-bg)',
     probationDays: 0,
     confirmedDays: 0,
     note: 'Employee status is restored on completion of the deputation period.',
@@ -240,8 +240,8 @@ const MODES: SepModeData[] = [
     noticePeriod: 15,
     employeeType: 'All Employees',
     iconEl: <FileTextOutlined />,
-    iconColor: '#6b7280',
-    iconBg: '#f9fafb',
+    iconColor: 'var(--color-text-tertiary)',
+    iconBg: 'var(--color-bg-subtle)',
     probationDays: 0,
     confirmedDays: 15,
     note: 'Contract naturally expires on the stipulated end date.',
@@ -258,7 +258,7 @@ const MODES: SepModeData[] = [
     employeeType: 'All Employees',
     iconEl: <UsergroupAddOutlined />,
     iconColor: '#d97706',
-    iconBg: '#fffbeb',
+    iconBg: 'var(--color-status-pending-bg)',
     probationDays: 0,
     confirmedDays: 30,
     note: 'Requires signed agreement from both parties prior to processing.',
@@ -275,7 +275,7 @@ const MODES: SepModeData[] = [
     employeeType: null,
     iconEl: <TeamOutlined />,
     iconColor: '#2563eb',
-    iconBg: '#eff6ff',
+    iconBg: 'var(--color-status-info-bg)',
     probationDays: 15,
     confirmedDays: 30,
     note: 'Severance pay is applicable as per company policy.',
@@ -355,7 +355,7 @@ function SortableDeptCard({
         transition,
         opacity: isDragging ? 0.45 : 1,
         zIndex: isDragging ? 10 : 'auto',
-        background: '#ffffff',
+        background: 'var(--color-bg-surface)',
         border: isDragging ? '1.5px solid #0f766e' : '1.5px solid #e5e7eb',
         borderRadius: 12,
         padding: '14px 16px',
@@ -376,11 +376,11 @@ function SortableDeptCard({
             style={{
               display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
               width: 20, height: 24, marginRight: 6, flexShrink: 0,
-              color: '#d1d5db', cursor: 'grab', touchAction: 'none',
+              color: 'var(--color-text-disabled)', cursor: 'grab', touchAction: 'none',
               transition: 'color 0.12s',
             }}
-            onMouseEnter={e => (e.currentTarget.style.color = '#9ca3af')}
-            onMouseLeave={e => (e.currentTarget.style.color = '#d1d5db')}
+            onMouseEnter={e => (e.currentTarget.style.color = 'var(--color-text-disabled)')}
+            onMouseLeave={e => (e.currentTarget.style.color = 'var(--color-border)')}
           >
             <HolderOutlined style={{ fontSize: 14 }} />
           </span>
@@ -390,15 +390,15 @@ function SortableDeptCard({
         <span style={{
           display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
           width: 24, height: 24, borderRadius: '50%',
-          background: '#f1f5f9', color: '#475569',
+          background: 'var(--color-bg-subtle)', color: 'var(--color-text-secondary)',
           fontSize: 11, fontWeight: 700, flexShrink: 0, marginRight: 10, marginTop: 1,
         }}>
           {dept.order}
         </span>
 
         <div style={{ flex: 1 }}>
-          <div style={{ fontWeight: 700, fontSize: 13, color: '#111827' }}>{dept.name}</div>
-          <div style={{ fontSize: 11, color: '#9ca3af', marginTop: 1 }}>{dept.category}</div>
+          <div style={{ fontWeight: 700, fontSize: 13, color: 'var(--color-text-primary)' }}>{dept.name}</div>
+          <div style={{ fontSize: 11, color: 'var(--color-text-disabled)', marginTop: 1 }}>{dept.category}</div>
         </div>
 
         <div style={{ display: 'flex', gap: 2 }}>
@@ -406,12 +406,12 @@ function SortableDeptCard({
             onClick={() => onEdit(dept)}
             style={{
               background: 'none', border: 'none', cursor: 'pointer',
-              color: '#9ca3af', padding: '3px 5px', borderRadius: 5,
+              color: 'var(--color-text-disabled)', padding: '3px 5px', borderRadius: 5,
               display: 'flex', alignItems: 'center', lineHeight: 1,
               transition: 'color 0.12s',
             }}
-            onMouseEnter={e => (e.currentTarget.style.color = '#374151')}
-            onMouseLeave={e => (e.currentTarget.style.color = '#9ca3af')}
+            onMouseEnter={e => (e.currentTarget.style.color = 'var(--color-text-secondary)')}
+            onMouseLeave={e => (e.currentTarget.style.color = 'var(--color-text-disabled)')}
           >
             <EditOutlined style={{ fontSize: 12 }} />
           </button>
@@ -426,12 +426,12 @@ function SortableDeptCard({
             <button
               style={{
                 background: 'none', border: 'none', cursor: 'pointer',
-                color: '#9ca3af', padding: '3px 5px', borderRadius: 5,
+                color: 'var(--color-text-disabled)', padding: '3px 5px', borderRadius: 5,
                 display: 'flex', alignItems: 'center', lineHeight: 1,
                 transition: 'color 0.12s',
               }}
               onMouseEnter={e => (e.currentTarget.style.color = '#dc2626')}
-              onMouseLeave={e => (e.currentTarget.style.color = '#9ca3af')}
+              onMouseLeave={e => (e.currentTarget.style.color = 'var(--color-text-disabled)')}
             >
               <DeleteOutlined style={{ fontSize: 12 }} />
             </button>
@@ -446,9 +446,9 @@ function SortableDeptCard({
             key={i}
             style={{
               padding: '2px 8px', borderRadius: 4,
-              background: '#f1f5f9', color: '#475569',
+              background: 'var(--color-bg-subtle)', color: 'var(--color-text-secondary)',
               fontSize: 11, fontWeight: 500,
-              border: '1px solid #e2e8f0',
+              border: '1px solid var(--color-border)',
             }}
           >
             {item}
@@ -478,10 +478,10 @@ function SectionHeader({
       paddingBottom: 14, marginBottom: 20,
       borderBottom: '1.5px solid #e5e7eb',
     }}>
-      <span style={{ color: '#6b7280', fontSize: 14, display: 'flex', alignItems: 'center' }}>{icon}</span>
+      <span style={{ color: 'var(--color-text-tertiary)', fontSize: 14, display: 'flex', alignItems: 'center' }}>{icon}</span>
       <span style={{
         fontSize: 11, fontWeight: 700, letterSpacing: '0.08em',
-        color: '#374151', textTransform: 'uppercase',
+        color: 'var(--color-text-secondary)', textTransform: 'uppercase',
       }}>
         {title}
       </span>
@@ -489,7 +489,7 @@ function SectionHeader({
         <span style={{
           display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
           minWidth: 22, height: 18, borderRadius: 9,
-          background: '#e5e7eb', color: '#6b7280',
+          background: 'var(--color-bg-subtle)', color: 'var(--color-text-tertiary)',
           fontSize: 11, fontWeight: 700, padding: '0 6px',
         }}>
           {count}
@@ -527,7 +527,7 @@ function NoticeBadge({ period }: { period: number | 'Immediate' }) {
   return (
     <span style={{
       display: 'inline-flex', alignItems: 'center', gap: 4,
-      fontSize: 11, color: '#6b7280', fontWeight: 500,
+      fontSize: 11, color: 'var(--color-text-tertiary)', fontWeight: 500,
     }}>
       <ClockCircleOutlined style={{ fontSize: 11 }} />
       {period === 'Immediate' ? 'Immediate' : `${period} days`}
@@ -540,7 +540,7 @@ function EmpTypeBadge({ type }: { type: string }) {
     <span style={{
       display: 'inline-flex', alignItems: 'center',
       padding: '2px 8px', borderRadius: 4,
-      background: '#f1f5f9', color: '#475569',
+      background: 'var(--color-bg-subtle)', color: 'var(--color-text-secondary)',
       fontSize: 10, fontWeight: 600, letterSpacing: '0.03em',
     }}>
       {type}
@@ -594,8 +594,8 @@ export default function SeparationPolicyPage() {
       noticePeriod: values.confirmedDays === 0 ? 'Immediate' : values.confirmedDays,
       employeeType: values.availableForAll ? 'All Employees' : null,
       iconEl: <FileTextOutlined />,
-      iconColor: '#6b7280',
-      iconBg: '#f9fafb',
+      iconColor: 'var(--color-text-tertiary)',
+      iconBg: 'var(--color-bg-subtle)',
       probationDays: values.probationDays,
       confirmedDays: values.confirmedDays,
       note: values.noticeNote,
@@ -706,7 +706,7 @@ export default function SeparationPolicyPage() {
                 onClick={() => setSelectedModeId(isSelected ? null : mode.id)}
                 style={{
                   position: 'relative',
-                  background: '#ffffff',
+                  background: 'var(--color-bg-surface)',
                   border: isSelected ? `2px solid #0f766e` : '1.5px solid #e5e7eb',
                   borderRadius: 12,
                   padding: '14px 14px 12px',
@@ -724,12 +724,12 @@ export default function SeparationPolicyPage() {
                     onClick={() => openEditMode(mode)}
                     style={{
                       background: 'none', border: 'none', cursor: 'pointer',
-                      color: '#9ca3af', padding: '3px 5px', borderRadius: 5,
+                      color: 'var(--color-text-disabled)', padding: '3px 5px', borderRadius: 5,
                       display: 'flex', alignItems: 'center', lineHeight: 1,
                       transition: 'color 0.12s',
                     }}
-                    onMouseEnter={e => (e.currentTarget.style.color = '#374151')}
-                    onMouseLeave={e => (e.currentTarget.style.color = '#9ca3af')}
+                    onMouseEnter={e => (e.currentTarget.style.color = 'var(--color-text-secondary)')}
+                    onMouseLeave={e => (e.currentTarget.style.color = 'var(--color-text-disabled)')}
                   >
                     <EditOutlined style={{ fontSize: 12 }} />
                   </button>
@@ -744,12 +744,12 @@ export default function SeparationPolicyPage() {
                     <button
                       style={{
                         background: 'none', border: 'none', cursor: 'pointer',
-                        color: '#9ca3af', padding: '3px 5px', borderRadius: 5,
+                        color: 'var(--color-text-disabled)', padding: '3px 5px', borderRadius: 5,
                         display: 'flex', alignItems: 'center', lineHeight: 1,
                         transition: 'color 0.12s',
                       }}
                       onMouseEnter={e => (e.currentTarget.style.color = '#dc2626')}
-                      onMouseLeave={e => (e.currentTarget.style.color = '#9ca3af')}
+                      onMouseLeave={e => (e.currentTarget.style.color = 'var(--color-text-disabled)')}
                     >
                       <DeleteOutlined style={{ fontSize: 12 }} />
                     </button>
@@ -761,10 +761,10 @@ export default function SeparationPolicyPage() {
 
                 {/* Content */}
                 <div style={{ marginTop: 10 }}>
-                  <div style={{ fontWeight: 700, fontSize: 13, color: '#111827', marginBottom: 3, paddingRight: 36 }}>
+                  <div style={{ fontWeight: 700, fontSize: 13, color: 'var(--color-text-primary)', marginBottom: 3, paddingRight: 36 }}>
                     {mode.name}
                   </div>
-                  <div style={{ fontSize: 11, color: '#6b7280', lineHeight: 1.4, marginBottom: 10 }}>
+                  <div style={{ fontSize: 11, color: 'var(--color-text-tertiary)', lineHeight: 1.4, marginBottom: 10 }}>
                     {mode.description}
                   </div>
                 </div>
@@ -782,7 +782,7 @@ export default function SeparationPolicyPage() {
         {/* ── Selected mode detail panel ─────────────────────────────────────── */}
         {selectedMode && (
           <div style={{
-            background: '#ffffff',
+            background: 'var(--color-bg-surface)',
             border: '1.5px solid #e5e7eb',
             borderRadius: 12,
             padding: '20px 24px',
@@ -792,13 +792,13 @@ export default function SeparationPolicyPage() {
             <div style={{ display: 'flex', alignItems: 'flex-start', gap: 14, marginBottom: 16 }}>
               <ModeIconBadge mode={selectedMode} />
               <div style={{ flex: 1 }}>
-                <div style={{ fontWeight: 700, fontSize: 15, color: '#111827' }}>{selectedMode.name}</div>
-                <div style={{ fontSize: 12, color: '#6b7280', marginTop: 2 }}>{selectedMode.description}</div>
+                <div style={{ fontWeight: 700, fontSize: 15, color: 'var(--color-text-primary)' }}>{selectedMode.name}</div>
+                <div style={{ fontSize: 12, color: 'var(--color-text-tertiary)', marginTop: 2 }}>{selectedMode.description}</div>
                 {selectedMode.employeeType && (
                   <span style={{
                     display: 'inline-flex', alignItems: 'center',
                     marginTop: 8, padding: '3px 10px', borderRadius: 20,
-                    background: '#1e293b', color: '#ffffff',
+                    background: '#1e293b', color: 'var(--color-bg-surface)',
                     fontSize: 11, fontWeight: 600, letterSpacing: '0.03em',
                   }}>
                     Available for {selectedMode.employeeType}
@@ -817,37 +817,37 @@ export default function SeparationPolicyPage() {
             {/* Notice period boxes */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 2fr', gap: 12, marginBottom: 20 }}>
               <div style={{
-                background: '#f8fafc', border: '1px solid #e5e7eb', borderRadius: 8,
+                background: 'var(--color-bg-subtle)', border: '1px solid var(--color-border)', borderRadius: 8,
                 padding: '10px 14px',
               }}>
-                <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', color: '#9ca3af', textTransform: 'uppercase', marginBottom: 4 }}>
+                <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', color: 'var(--color-text-disabled)', textTransform: 'uppercase', marginBottom: 4 }}>
                   Probation
                 </div>
-                <div style={{ fontSize: 15, fontWeight: 700, color: '#111827', display: 'flex', alignItems: 'center', gap: 4 }}>
-                  <ClockCircleOutlined style={{ fontSize: 13, color: '#9ca3af' }} />
+                <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--color-text-primary)', display: 'flex', alignItems: 'center', gap: 4 }}>
+                  <ClockCircleOutlined style={{ fontSize: 13, color: 'var(--color-text-disabled)' }} />
                   {selectedMode.probationDays === 0 ? '0 days' : `${selectedMode.probationDays} days`}
                 </div>
               </div>
               <div style={{
-                background: '#f8fafc', border: '1px solid #e5e7eb', borderRadius: 8,
+                background: 'var(--color-bg-subtle)', border: '1px solid var(--color-border)', borderRadius: 8,
                 padding: '10px 14px',
               }}>
-                <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', color: '#9ca3af', textTransform: 'uppercase', marginBottom: 4 }}>
+                <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', color: 'var(--color-text-disabled)', textTransform: 'uppercase', marginBottom: 4 }}>
                   Confirmed
                 </div>
-                <div style={{ fontSize: 15, fontWeight: 700, color: '#111827', display: 'flex', alignItems: 'center', gap: 4 }}>
-                  <ClockCircleOutlined style={{ fontSize: 13, color: '#9ca3af' }} />
+                <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--color-text-primary)', display: 'flex', alignItems: 'center', gap: 4 }}>
+                  <ClockCircleOutlined style={{ fontSize: 13, color: 'var(--color-text-disabled)' }} />
                   {selectedMode.confirmedDays === 0 ? '0 days' : `${selectedMode.confirmedDays} days`}
                 </div>
               </div>
               <div style={{
-                background: '#f8fafc', border: '1px solid #e5e7eb', borderRadius: 8,
+                background: 'var(--color-bg-subtle)', border: '1px solid var(--color-border)', borderRadius: 8,
                 padding: '10px 14px',
               }}>
-                <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', color: '#9ca3af', textTransform: 'uppercase', marginBottom: 4 }}>
+                <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', color: 'var(--color-text-disabled)', textTransform: 'uppercase', marginBottom: 4 }}>
                   Note
                 </div>
-                <div style={{ fontSize: 13, color: '#374151', fontWeight: 500 }}>{selectedMode.note}</div>
+                <div style={{ fontSize: 13, color: 'var(--color-text-secondary)', fontWeight: 500 }}>{selectedMode.note}</div>
               </div>
             </div>
 
@@ -855,15 +855,15 @@ export default function SeparationPolicyPage() {
             <div>
               <div style={{
                 fontSize: 10, fontWeight: 700, letterSpacing: '0.08em',
-                color: '#9ca3af', textTransform: 'uppercase', marginBottom: 10,
+                color: 'var(--color-text-disabled)', textTransform: 'uppercase', marginBottom: 10,
               }}>
                 Policy Rules
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
                 {selectedMode.policyRules.map((rule, i) => (
                   <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
-                    <CheckCircleOutlined style={{ fontSize: 13, color: '#0f766e', marginTop: 1, flexShrink: 0 }} />
-                    <span style={{ fontSize: 13, color: '#374151', lineHeight: 1.5 }}>{rule}</span>
+                    <CheckCircleOutlined style={{ fontSize: 13, color: 'var(--color-primary)', marginTop: 1, flexShrink: 0 }} />
+                    <span style={{ fontSize: 13, color: 'var(--color-text-secondary)', lineHeight: 1.5 }}>{rule}</span>
                   </div>
                 ))}
               </div>
@@ -883,7 +883,7 @@ export default function SeparationPolicyPage() {
           addLabel="Add Department"
           onAdd={() => setAddDeptOpen(true)}
         />
-        <p style={{ fontSize: 12, color: '#6b7280', marginTop: -12, marginBottom: 16 }}>
+        <p style={{ fontSize: 12, color: 'var(--color-text-tertiary)', marginTop: -12, marginBottom: 16 }}>
           Employees must obtain clearance from the following departments through the Handover Report prior to release:
         </p>
 
@@ -924,7 +924,7 @@ export default function SeparationPolicyPage() {
         />
 
         <div style={{
-          background: '#ffffff',
+          background: 'var(--color-bg-surface)',
           border: '1.5px solid #e5e7eb',
           borderRadius: 12,
           padding: '20px 24px',
@@ -935,11 +935,11 @@ export default function SeparationPolicyPage() {
               onClick={() => setEditExitInterviewOpen(true)}
               style={{
                 background: 'none', border: 'none', cursor: 'pointer',
-                color: '#9ca3af', padding: '4px 6px', borderRadius: 5,
+                color: 'var(--color-text-disabled)', padding: '4px 6px', borderRadius: 5,
                 display: 'flex', alignItems: 'center', transition: 'color 0.12s',
               }}
-              onMouseEnter={e => (e.currentTarget.style.color = '#374151')}
-              onMouseLeave={e => (e.currentTarget.style.color = '#9ca3af')}
+              onMouseEnter={e => (e.currentTarget.style.color = 'var(--color-text-secondary)')}
+              onMouseLeave={e => (e.currentTarget.style.color = 'var(--color-text-disabled)')}
             >
               <EditOutlined style={{ fontSize: 13 }} />
             </button>
@@ -950,11 +950,11 @@ export default function SeparationPolicyPage() {
               }}
               style={{
                 background: 'none', border: 'none', cursor: 'pointer',
-                color: '#9ca3af', padding: '4px 6px', borderRadius: 5,
+                color: 'var(--color-text-disabled)', padding: '4px 6px', borderRadius: 5,
                 display: 'flex', alignItems: 'center', transition: 'color 0.12s',
               }}
               onMouseEnter={e => (e.currentTarget.style.color = '#dc2626')}
-              onMouseLeave={e => (e.currentTarget.style.color = '#9ca3af')}
+              onMouseLeave={e => (e.currentTarget.style.color = 'var(--color-text-disabled)')}
             >
               <DeleteOutlined style={{ fontSize: 13 }} />
             </button>
@@ -962,7 +962,7 @@ export default function SeparationPolicyPage() {
 
           <div
             className="policy-content-preview"
-            style={{ paddingRight: 52, fontSize: 13, color: '#374151', lineHeight: 1.65 }}
+            style={{ paddingRight: 52, fontSize: 13, color: 'var(--color-text-secondary)', lineHeight: 1.65 }}
             dangerouslySetInnerHTML={{ __html: exitInterviewHtml }}
           />
         </div>
@@ -1027,7 +1027,7 @@ export default function SeparationPolicyPage() {
         />
 
         <div style={{
-          background: '#ffffff',
+          background: 'var(--color-bg-surface)',
           border: '1.5px solid #e5e7eb',
           borderRadius: 12,
           padding: '20px 24px',
@@ -1038,11 +1038,11 @@ export default function SeparationPolicyPage() {
               onClick={() => setEditExperienceCertOpen(true)}
               style={{
                 background: 'none', border: 'none', cursor: 'pointer',
-                color: '#9ca3af', padding: '4px 6px', borderRadius: 5,
+                color: 'var(--color-text-disabled)', padding: '4px 6px', borderRadius: 5,
                 display: 'flex', alignItems: 'center', transition: 'color 0.12s',
               }}
-              onMouseEnter={e => (e.currentTarget.style.color = '#374151')}
-              onMouseLeave={e => (e.currentTarget.style.color = '#9ca3af')}
+              onMouseEnter={e => (e.currentTarget.style.color = 'var(--color-text-secondary)')}
+              onMouseLeave={e => (e.currentTarget.style.color = 'var(--color-text-disabled)')}
             >
               <EditOutlined style={{ fontSize: 13 }} />
             </button>
@@ -1053,11 +1053,11 @@ export default function SeparationPolicyPage() {
               }}
               style={{
                 background: 'none', border: 'none', cursor: 'pointer',
-                color: '#9ca3af', padding: '4px 6px', borderRadius: 5,
+                color: 'var(--color-text-disabled)', padding: '4px 6px', borderRadius: 5,
                 display: 'flex', alignItems: 'center', transition: 'color 0.12s',
               }}
               onMouseEnter={e => (e.currentTarget.style.color = '#dc2626')}
-              onMouseLeave={e => (e.currentTarget.style.color = '#9ca3af')}
+              onMouseLeave={e => (e.currentTarget.style.color = 'var(--color-text-disabled)')}
             >
               <DeleteOutlined style={{ fontSize: 13 }} />
             </button>
@@ -1065,7 +1065,7 @@ export default function SeparationPolicyPage() {
 
           <div
             className="policy-content-preview"
-            style={{ paddingRight: 52, fontSize: 13, color: '#374151', lineHeight: 1.65 }}
+            style={{ paddingRight: 52, fontSize: 13, color: 'var(--color-text-secondary)', lineHeight: 1.65 }}
             dangerouslySetInnerHTML={{ __html: experienceCertHtml }}
           />
         </div>

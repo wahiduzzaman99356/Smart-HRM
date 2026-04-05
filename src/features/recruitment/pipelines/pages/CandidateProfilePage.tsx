@@ -189,9 +189,9 @@ function resultBadge(result: PipelineStageResult) {
     <span style={{
       display: 'inline-flex', alignItems: 'center', gap: 5,
       padding: '3px 10px', borderRadius: 6, fontSize: 11, fontWeight: 700,
-      background: isFail ? '#fef2f2' : '#eef8f7',
-      color:      isFail ? '#dc2626' : '#0f766e',
-      border:     `1px solid ${isFail ? '#fca5a5' : '#99e6de'}`,
+      background: isFail ? 'var(--color-status-rejected-bg)' : 'var(--color-primary-tint)',
+      color:      isFail ? '#dc2626' : 'var(--color-primary)',
+      border:     `1px solid ${isFail ? 'var(--color-status-rejected-bg)' : '#99e6de'}`,
     }}>
       {isFail
         ? <CloseCircleOutlined style={{ fontSize: 11 }} />
@@ -205,10 +205,10 @@ function resultBadge(result: PipelineStageResult) {
 function Section({ number, title, children }: { number: number; title: string; children: React.ReactNode }) {
   return (
     <div style={{
-      background: '#ffffff', border: '1px solid #e2e8f0',
+      background: 'var(--color-bg-surface)', border: '1px solid var(--color-border)',
       borderRadius: 10, padding: '18px 20px',
     }}>
-      <div style={{ fontWeight: 700, fontSize: 13, color: '#111827', marginBottom: 16 }}>
+      <div style={{ fontWeight: 700, fontSize: 13, color: 'var(--color-text-primary)', marginBottom: 16 }}>
         {number}. {title}
       </div>
       {children}
@@ -220,10 +220,10 @@ function Section({ number, title, children }: { number: number; title: string; c
 function Field({ label, value }: { label: string; value: React.ReactNode }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-      <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', color: '#94a3b8', textTransform: 'uppercase' }}>
+      <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', color: 'var(--color-text-tertiary)', textTransform: 'uppercase' }}>
         {label}
       </span>
-      <span style={{ fontSize: 13, color: '#111827', fontWeight: 500 }}>{value}</span>
+      <span style={{ fontSize: 13, color: 'var(--color-text-primary)', fontWeight: 500 }}>{value}</span>
     </div>
   );
 }
@@ -255,12 +255,12 @@ function OverviewTab({ c }: { c: CandidateDetail }) {
       {/* 2. Address Details */}
       <Section number={2} title="Address Details">
         <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
-          <EnvironmentOutlined style={{ color: '#94a3b8', marginTop: 2, fontSize: 13 }} />
+          <EnvironmentOutlined style={{ color: 'var(--color-text-tertiary)', marginTop: 2, fontSize: 13 }} />
           <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-            <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', color: '#94a3b8', textTransform: 'uppercase' }}>
+            <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', color: 'var(--color-text-tertiary)', textTransform: 'uppercase' }}>
               Current Address
             </span>
-            <span style={{ fontSize: 13, color: '#111827', fontWeight: 500 }}>{c.address}</span>
+            <span style={{ fontSize: 13, color: 'var(--color-text-primary)', fontWeight: 500 }}>{c.address}</span>
           </div>
         </div>
       </Section>
@@ -271,23 +271,23 @@ function OverviewTab({ c }: { c: CandidateDetail }) {
           {c.workExperience.map((exp, i) => (
             <div key={i} style={{
               display: 'flex', gap: 12, padding: '12px 14px',
-              background: '#f8fafc', borderRadius: 8, border: '1px solid #f1f5f9',
+              background: 'var(--color-bg-subtle)', borderRadius: 8, border: '1px solid #f1f5f9',
             }}>
               <div style={{
                 width: 36, height: 36, borderRadius: 8, flexShrink: 0,
-                background: '#e2e8f0',
+                background: 'var(--color-border)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}>
-                <BankOutlined style={{ color: '#64748b', fontSize: 16 }} />
+                <BankOutlined style={{ color: 'var(--color-text-tertiary)', fontSize: 16 }} />
               </div>
               <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontWeight: 700, fontSize: 13, color: '#111827' }}>{exp.title}</div>
-                <div style={{ fontSize: 12, color: '#6b7280', marginTop: 1 }}>{exp.company}</div>
-                <div style={{ fontSize: 11, color: '#94a3b8', marginTop: 2 }}>
+                <div style={{ fontWeight: 700, fontSize: 13, color: 'var(--color-text-primary)' }}>{exp.title}</div>
+                <div style={{ fontSize: 12, color: 'var(--color-text-tertiary)', marginTop: 1 }}>{exp.company}</div>
+                <div style={{ fontSize: 11, color: 'var(--color-text-tertiary)', marginTop: 2 }}>
                   {exp.from} — {exp.to}
                 </div>
                 {exp.description && (
-                  <div style={{ fontSize: 12, color: '#4b5563', marginTop: 4 }}>{exp.description}</div>
+                  <div style={{ fontSize: 12, color: 'var(--color-text-secondary)', marginTop: 4 }}>{exp.description}</div>
                 )}
               </div>
             </div>
@@ -301,26 +301,26 @@ function OverviewTab({ c }: { c: CandidateDetail }) {
           {c.education.map((edu, i) => (
             <div key={i} style={{
               display: 'flex', gap: 12, padding: '12px 14px',
-              background: '#f8fafc', borderRadius: 8, border: '1px solid #f1f5f9',
+              background: 'var(--color-bg-subtle)', borderRadius: 8, border: '1px solid #f1f5f9',
             }}>
               <div style={{
                 width: 36, height: 36, borderRadius: 8, flexShrink: 0,
-                background: '#e2e8f0',
+                background: 'var(--color-border)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}>
-                <ReadOutlined style={{ color: '#64748b', fontSize: 16 }} />
+                <ReadOutlined style={{ color: 'var(--color-text-tertiary)', fontSize: 16 }} />
               </div>
               <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontWeight: 700, fontSize: 13, color: '#111827' }}>{edu.degree}</div>
-                <div style={{ fontSize: 12, color: '#6b7280', marginTop: 1 }}>{edu.university}</div>
-                <div style={{ fontSize: 11, color: '#94a3b8', marginTop: 2 }}>
+                <div style={{ fontWeight: 700, fontSize: 13, color: 'var(--color-text-primary)' }}>{edu.degree}</div>
+                <div style={{ fontSize: 12, color: 'var(--color-text-tertiary)', marginTop: 1 }}>{edu.university}</div>
+                <div style={{ fontSize: 11, color: 'var(--color-text-tertiary)', marginTop: 2 }}>
                   {edu.from} — {edu.to}
                 </div>
                 {edu.gpa && (
                   <span style={{
                     display: 'inline-block', marginTop: 6,
                     fontSize: 10, fontWeight: 700, padding: '2px 8px',
-                    background: '#f0fdf4', color: '#15803d',
+                    background: 'var(--color-status-approved-bg)', color: 'var(--color-status-approved)',
                     border: '1px solid #86efac', borderRadius: 4,
                   }}>
                     {edu.gpa}
@@ -330,14 +330,14 @@ function OverviewTab({ c }: { c: CandidateDetail }) {
             </div>
           ))}
           <div>
-            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', color: '#94a3b8', textTransform: 'uppercase', marginBottom: 8 }}>
+            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', color: 'var(--color-text-tertiary)', textTransform: 'uppercase', marginBottom: 8 }}>
               Skills
             </div>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
               {c.skills.map(skill => (
                 <span key={skill} style={{
                   fontSize: 12, fontWeight: 600, padding: '4px 12px', borderRadius: 6,
-                  background: '#f0fdfa', color: '#0f766e', border: '1px solid #99e6de',
+                  background: 'var(--color-primary-tint)', color: 'var(--color-primary)', border: '1px solid #99e6de',
                 }}>
                   {skill}
                 </span>
@@ -363,14 +363,14 @@ function OverviewTab({ c }: { c: CandidateDetail }) {
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <LinkedinOutlined style={{ color: '#0284c7', fontSize: 16 }} />
             <a href={`https://${c.linkedin}`} target="_blank" rel="noreferrer"
-              style={{ fontSize: 13, color: '#0f766e', textDecoration: 'none', fontWeight: 500 }}>
+              style={{ fontSize: 13, color: 'var(--color-primary)', textDecoration: 'none', fontWeight: 500 }}>
               {c.linkedin}
             </a>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <GithubOutlined style={{ color: '#374151', fontSize: 16 }} />
+            <GithubOutlined style={{ color: 'var(--color-text-secondary)', fontSize: 16 }} />
             <a href={`https://${c.github}`} target="_blank" rel="noreferrer"
-              style={{ fontSize: 13, color: '#0f766e', textDecoration: 'none', fontWeight: 500 }}>
+              style={{ fontSize: 13, color: 'var(--color-primary)', textDecoration: 'none', fontWeight: 500 }}>
               {c.github}
             </a>
           </div>
@@ -379,29 +379,29 @@ function OverviewTab({ c }: { c: CandidateDetail }) {
 
       {/* 7. AI Match Analysis */}
       <div style={{
-        background: '#ffffff', border: '1px solid #e2e8f0',
+        background: 'var(--color-bg-surface)', border: '1px solid var(--color-border)',
         borderRadius: 10, padding: '18px 20px',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 14 }}>
-          <InfoCircleOutlined style={{ color: '#0f766e', fontSize: 14 }} />
-          <span style={{ fontWeight: 700, fontSize: 13, color: '#111827' }}>AI Match Analysis</span>
+          <InfoCircleOutlined style={{ color: 'var(--color-primary)', fontSize: 14 }} />
+          <span style={{ fontWeight: 700, fontSize: 13, color: 'var(--color-text-primary)' }}>AI Match Analysis</span>
         </div>
         <div style={{ marginBottom: 6 }}>
           <span style={{ fontSize: 28, fontWeight: 800, color: '#059669' }}>{c.matchScore}%</span>
-          <span style={{ fontSize: 13, color: '#6b7280', marginLeft: 8 }}>match score</span>
+          <span style={{ fontSize: 13, color: 'var(--color-text-tertiary)', marginLeft: 8 }}>match score</span>
         </div>
-        <div style={{ height: 8, borderRadius: 4, background: '#d1fae5', overflow: 'hidden', marginBottom: 10 }}>
+        <div style={{ height: 8, borderRadius: 4, background: 'var(--color-status-approved-bg)', overflow: 'hidden', marginBottom: 10 }}>
           <div style={{ height: '100%', width: `${c.matchScore}%`, background: '#059669', borderRadius: 4 }} />
         </div>
         <div>
-          <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', color: '#94a3b8', textTransform: 'uppercase', marginBottom: 8 }}>
+          <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', color: 'var(--color-text-tertiary)', textTransform: 'uppercase', marginBottom: 8 }}>
             Matching Skills
           </div>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
             {c.matchedSkills.map(skill => (
               <span key={skill} style={{
                 fontSize: 12, fontWeight: 600, padding: '4px 12px', borderRadius: 6,
-                background: '#f0fdfa', color: '#0f766e', border: '1px solid #99e6de',
+                background: 'var(--color-primary-tint)', color: 'var(--color-primary)', border: '1px solid #99e6de',
               }}>
                 {skill}
               </span>
@@ -412,28 +412,28 @@ function OverviewTab({ c }: { c: CandidateDetail }) {
 
       {/* 8. Documents */}
       <div style={{
-        background: '#ffffff', border: '1px solid #e2e8f0',
+        background: 'var(--color-bg-surface)', border: '1px solid var(--color-border)',
         borderRadius: 10, padding: '18px 20px',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 14 }}>
-          <FileTextOutlined style={{ color: '#6b7280', fontSize: 14 }} />
-          <span style={{ fontWeight: 700, fontSize: 13, color: '#111827' }}>Documents</span>
+          <FileTextOutlined style={{ color: 'var(--color-text-tertiary)', fontSize: 14 }} />
+          <span style={{ fontWeight: 700, fontSize: 13, color: 'var(--color-text-primary)' }}>Documents</span>
         </div>
         <div style={{
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          padding: '10px 14px', background: '#f8fafc',
+          padding: '10px 14px', background: 'var(--color-bg-subtle)',
           borderRadius: 8, border: '1px solid #f1f5f9',
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             <div style={{
               width: 36, height: 36, borderRadius: 8,
-              background: '#e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'center',
+              background: 'var(--color-border)', display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>
-              <FileTextOutlined style={{ color: '#64748b', fontSize: 16 }} />
+              <FileTextOutlined style={{ color: 'var(--color-text-tertiary)', fontSize: 16 }} />
             </div>
             <div>
-              <div style={{ fontWeight: 600, fontSize: 13, color: '#111827' }}>Resume / CV</div>
-              <div style={{ fontSize: 11, color: '#94a3b8', marginTop: 1 }}>Uploaded on {c.appliedAt}</div>
+              <div style={{ fontWeight: 600, fontSize: 13, color: 'var(--color-text-primary)' }}>Resume / CV</div>
+              <div style={{ fontSize: 11, color: 'var(--color-text-tertiary)', marginTop: 1 }}>Uploaded on {c.appliedAt}</div>
             </div>
           </div>
           <Button size="small" style={{ fontSize: 12, fontWeight: 600 }}>View</Button>
@@ -452,24 +452,24 @@ function PipelineProgressTab({ c }: { c: CandidateDetail }) {
 
   return (
     <div style={{
-      background: '#ffffff', border: '1px solid #e2e8f0',
+      background: 'var(--color-bg-surface)', border: '1px solid var(--color-border)',
       borderRadius: 10, padding: '20px 22px',
     }}>
-      <div style={{ fontWeight: 700, fontSize: 14, color: '#111827', marginBottom: 16 }}>
+      <div style={{ fontWeight: 700, fontSize: 14, color: 'var(--color-text-primary)', marginBottom: 16 }}>
         Pipeline Progress
       </div>
 
       {/* Header row */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
-        <span style={{ fontSize: 12, color: '#94a3b8', fontWeight: 500 }}>
+        <span style={{ fontSize: 12, color: 'var(--color-text-tertiary)', fontWeight: 500 }}>
           Stage {currentIdx >= 0 ? currentIdx + 1 : '?'} of {total}
         </span>
-        <span style={{ fontSize: 11, fontWeight: 700, color: '#9ca3af', letterSpacing: '0.05em' }}>Result</span>
+        <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--color-text-disabled)', letterSpacing: '0.05em' }}>Result</span>
       </div>
 
       {/* Progress bar */}
-      <div style={{ height: 5, borderRadius: 3, background: '#e2e8f0', overflow: 'hidden', marginBottom: 18 }}>
-        <div style={{ height: '100%', width: `${progress}%`, background: '#0f766e', borderRadius: 3, transition: 'width 0.15s' }} />
+      <div style={{ height: 5, borderRadius: 3, background: 'var(--color-border)', overflow: 'hidden', marginBottom: 18 }}>
+        <div style={{ height: '100%', width: `${progress}%`, background: 'var(--color-primary)', borderRadius: 3, transition: 'width 0.15s' }} />
       </div>
 
       {/* Stage rows */}
@@ -491,9 +491,9 @@ function PipelineProgressTab({ c }: { c: CandidateDetail }) {
                   width: 30, height: 30, borderRadius: '50%',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   fontSize: 12, fontWeight: 800,
-                  background: isCurrent ? '#0f766e' : isPast ? '#d4efeb' : '#f1f5f9',
-                  color:      isCurrent ? '#ffffff' : isPast ? '#0f766e' : '#94a3b8',
-                  border:     isCurrent ? '2px solid #0f766e' : isPast ? '2px solid #99e6de' : '2px solid #e2e8f0',
+                  background: isCurrent ? 'var(--color-primary)' : isPast ? '#d4efeb' : 'var(--color-bg-subtle)',
+                  color:      isCurrent ? 'var(--color-bg-surface)' : isPast ? 'var(--color-primary)' : 'var(--color-text-tertiary)',
+                  border:     isCurrent ? '2px solid #0f766e' : isPast ? '2px solid #99e6de' : '2px solid var(--color-border)',
                 }}>
                   {stage.order}
                 </div>
@@ -501,17 +501,17 @@ function PipelineProgressTab({ c }: { c: CandidateDetail }) {
 
               {/* Content */}
               <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontWeight: 700, fontSize: 13, color: isCurrent ? '#0f766e' : isUpcoming ? '#9ca3af' : '#111827' }}>
+                <div style={{ fontWeight: 700, fontSize: 13, color: isCurrent ? 'var(--color-primary)' : isUpcoming ? 'var(--color-text-disabled)' : 'var(--color-text-primary)' }}>
                   {stage.name}
                 </div>
-                <div style={{ fontSize: 11, color: '#94a3b8', marginTop: 2 }}>
+                <div style={{ fontSize: 11, color: 'var(--color-text-tertiary)', marginTop: 2 }}>
                   Est. {stage.estDays} days · {stage.modules} module{stage.modules !== 1 ? 's' : ''}
                 </div>
                 {isCurrent && (
                   <span style={{
                     display: 'inline-block', marginTop: 6,
                     fontSize: 10, fontWeight: 700, padding: '3px 10px', borderRadius: 20,
-                    background: '#0f766e', color: '#ffffff',
+                    background: 'var(--color-primary)', color: 'var(--color-bg-surface)',
                   }}>
                     Current Stage
                   </span>
@@ -535,10 +535,10 @@ function NotesTab() {
   const [notes, setNotes] = useState('');
   return (
     <div style={{
-      background: '#ffffff', border: '1px solid #e2e8f0',
+      background: 'var(--color-bg-surface)', border: '1px solid var(--color-border)',
       borderRadius: 10, padding: '20px 22px',
     }}>
-      <div style={{ fontWeight: 700, fontSize: 14, color: '#111827', marginBottom: 14 }}>Notes</div>
+      <div style={{ fontWeight: 700, fontSize: 14, color: 'var(--color-text-primary)', marginBottom: 14 }}>Notes</div>
       <Input.TextArea
         placeholder="Add notes about this candidate..."
         value={notes}
@@ -554,20 +554,20 @@ function NotesTab() {
 function JobQATab({ c }: { c: CandidateDetail }) {
   return (
     <div style={{
-      background: '#ffffff', border: '1px solid #e2e8f0',
+      background: 'var(--color-bg-surface)', border: '1px solid var(--color-border)',
       borderRadius: 10, padding: '20px 22px',
     }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 18 }}>
-        <MessageOutlined style={{ color: '#6b7280', fontSize: 14 }} />
-        <span style={{ fontWeight: 700, fontSize: 14, color: '#111827' }}>Job Q&amp;A</span>
+        <MessageOutlined style={{ color: 'var(--color-text-tertiary)', fontSize: 14 }} />
+        <span style={{ fontWeight: 700, fontSize: 14, color: 'var(--color-text-primary)' }}>Job Q&amp;A</span>
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
         {c.jobQA.map((qa, i) => (
           <div key={i}>
-            <div style={{ fontWeight: 700, fontSize: 13, color: '#111827', marginBottom: 5 }}>
+            <div style={{ fontWeight: 700, fontSize: 13, color: 'var(--color-text-primary)', marginBottom: 5 }}>
               Q{i + 1}. {qa.q}
             </div>
-            <div style={{ fontSize: 13, color: '#0f766e', lineHeight: 1.6 }}>
+            <div style={{ fontSize: 13, color: 'var(--color-primary)', lineHeight: 1.6 }}>
               A. {qa.a}
             </div>
           </div>
@@ -608,11 +608,11 @@ export default function CandidateProfilePage() {
   ];
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: '#f8fafc' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: 'var(--color-bg-subtle)' }}>
 
       {/* ── Top bar ──────────────────────────────────────────────────────────── */}
       <div style={{
-        background: '#ffffff', borderBottom: '1px solid #e2e8f0',
+        background: 'var(--color-bg-surface)', borderBottom: '1px solid var(--color-border)',
         padding: '0 20px', height: 52,
         display: 'flex', alignItems: 'center', gap: 14, flexShrink: 0,
       }}>
@@ -620,22 +620,22 @@ export default function CandidateProfilePage() {
           type="text"
           icon={<ArrowLeftOutlined />}
           onClick={handleBack}
-          style={{ color: '#6b7280', padding: '0 6px', height: 28, flexShrink: 0 }}
+          style={{ color: 'var(--color-text-tertiary)', padding: '0 6px', height: 28, flexShrink: 0 }}
         />
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontSize: 11, color: '#94a3b8', lineHeight: 1, marginBottom: 3 }}>
+          <div style={{ fontSize: 11, color: 'var(--color-text-tertiary)', lineHeight: 1, marginBottom: 3 }}>
             <span
               onClick={() => navigate(-1)}
-              style={{ cursor: 'pointer', color: '#6b7280', transition: 'color 0.15s' }}
-              onMouseEnter={e => ((e.currentTarget as HTMLElement).style.color = '#0f766e')}
-              onMouseLeave={e => ((e.currentTarget as HTMLElement).style.color = '#6b7280')}
+              style={{ cursor: 'pointer', color: 'var(--color-text-tertiary)', transition: 'color 0.15s' }}
+              onMouseEnter={e => ((e.currentTarget as HTMLElement).style.color = 'var(--color-primary)')}
+              onMouseLeave={e => ((e.currentTarget as HTMLElement).style.color = 'var(--color-text-tertiary)')}
             >
               {pipelineName}
             </span>
-            <span style={{ margin: '0 5px', color: '#cbd5e1' }}>›</span>
+            <span style={{ margin: '0 5px', color: 'var(--color-border)' }}>›</span>
             <span>Candidates</span>
           </div>
-          <div style={{ fontWeight: 800, fontSize: 15, color: '#111827', lineHeight: 1 }}>
+          <div style={{ fontWeight: 800, fontSize: 15, color: 'var(--color-text-primary)', lineHeight: 1 }}>
             {c.name}
           </div>
         </div>
@@ -655,7 +655,7 @@ export default function CandidateProfilePage() {
 
         {/* Profile header card */}
         <div style={{
-          background: '#ffffff', border: '1px solid #e2e8f0',
+          background: 'var(--color-bg-surface)', border: '1px solid var(--color-border)',
           borderRadius: 12, padding: '20px 24px', marginBottom: 16,
         }}>
           <div style={{ display: 'flex', alignItems: 'flex-start', gap: 18 }}>
@@ -664,7 +664,7 @@ export default function CandidateProfilePage() {
               width: 56, height: 56, borderRadius: '50%', flexShrink: 0,
               background: c.avatarColor,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: 18, fontWeight: 800, color: '#ffffff', letterSpacing: '0.05em',
+              fontSize: 18, fontWeight: 800, color: 'var(--color-bg-surface)', letterSpacing: '0.05em',
               boxShadow: `0 0 0 3px ${c.avatarColor}33`,
             }}>
               {c.initials}
@@ -674,10 +674,10 @@ export default function CandidateProfilePage() {
             <div style={{ flex: 1, minWidth: 0 }}>
               {/* Name + status */}
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-                <span style={{ fontSize: 20, fontWeight: 800, color: '#111827' }}>{c.name}</span>
+                <span style={{ fontSize: 20, fontWeight: 800, color: 'var(--color-text-primary)' }}>{c.name}</span>
                 <span style={{
                   fontSize: 11, fontWeight: 700, padding: '3px 10px', borderRadius: 20,
-                  background: '#f0fdf4', color: '#15803d', border: '1px solid #86efac',
+                  background: 'var(--color-status-approved-bg)', color: 'var(--color-status-approved)', border: '1px solid #86efac',
                 }}>
                   {c.status}
                 </span>
@@ -685,37 +685,37 @@ export default function CandidateProfilePage() {
 
               {/* Contact row */}
               <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '4px 16px', marginBottom: 8 }}>
-                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 12, color: '#6b7280' }}>
-                  <MailOutlined style={{ fontSize: 12, color: '#94a3b8' }} /> {c.email}
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 12, color: 'var(--color-text-tertiary)' }}>
+                  <MailOutlined style={{ fontSize: 12, color: 'var(--color-text-tertiary)' }} /> {c.email}
                 </span>
-                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 12, color: '#6b7280' }}>
-                  <PhoneOutlined style={{ fontSize: 12, color: '#94a3b8' }} /> {c.phone}
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 12, color: 'var(--color-text-tertiary)' }}>
+                  <PhoneOutlined style={{ fontSize: 12, color: 'var(--color-text-tertiary)' }} /> {c.phone}
                 </span>
-                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 12, color: '#6b7280' }}>
-                  <EnvironmentOutlined style={{ fontSize: 12, color: '#94a3b8' }} /> Source: {c.source}
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 12, color: 'var(--color-text-tertiary)' }}>
+                  <EnvironmentOutlined style={{ fontSize: 12, color: 'var(--color-text-tertiary)' }} /> Source: {c.source}
                 </span>
-                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 12, color: '#6b7280' }}>
-                  <CalendarOutlined style={{ fontSize: 12, color: '#94a3b8' }} /> Applied {c.appliedAt}
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 12, color: 'var(--color-text-tertiary)' }}>
+                  <CalendarOutlined style={{ fontSize: 12, color: 'var(--color-text-tertiary)' }} /> Applied {c.appliedAt}
                 </span>
               </div>
 
               {/* Meta row */}
               <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '4px 16px', marginBottom: 10 }}>
-                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 12, color: '#6b7280' }}>
-                  <BankOutlined style={{ fontSize: 12, color: '#94a3b8' }} /> {c.experience} years exp.
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 12, color: 'var(--color-text-tertiary)' }}>
+                  <BankOutlined style={{ fontSize: 12, color: 'var(--color-text-tertiary)' }} /> {c.experience} years exp.
                 </span>
-                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 12, color: '#6b7280' }}>
-                  <ReadOutlined style={{ fontSize: 12, color: '#94a3b8' }} /> {c.degree}
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 12, color: 'var(--color-text-tertiary)' }}>
+                  <ReadOutlined style={{ fontSize: 12, color: 'var(--color-text-tertiary)' }} /> {c.degree}
                 </span>
-                <span style={{ fontSize: 12, color: '#6b7280' }}>
-                  Previously at <strong style={{ color: '#111827' }}>{c.previousCompany}</strong>
+                <span style={{ fontSize: 12, color: 'var(--color-text-tertiary)' }}>
+                  Previously at <strong style={{ color: 'var(--color-text-primary)' }}>{c.previousCompany}</strong>
                 </span>
               </div>
 
               {/* Rating */}
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <Rate disabled defaultValue={c.rating} style={{ fontSize: 16 }} />
-                <span style={{ fontSize: 12, fontWeight: 700, color: '#6b7280' }}>{c.rating}/5</span>
+                <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--color-text-tertiary)' }}>{c.rating}/5</span>
               </div>
             </div>
           </div>
@@ -740,15 +740,15 @@ export default function CandidateProfilePage() {
 
             {/* Quick Actions */}
             <div style={{
-              background: '#ffffff', border: '1px solid #e2e8f0',
+              background: 'var(--color-bg-surface)', border: '1px solid var(--color-border)',
               borderRadius: 10, padding: '16px 16px',
             }}>
-              <div style={{ fontWeight: 700, fontSize: 13, color: '#111827', marginBottom: 14 }}>
+              <div style={{ fontWeight: 700, fontSize: 13, color: 'var(--color-text-primary)', marginBottom: 14 }}>
                 Quick Actions
               </div>
 
               <div style={{ marginBottom: 10 }}>
-                <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', color: '#94a3b8', textTransform: 'uppercase', marginBottom: 6 }}>
+                <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', color: 'var(--color-text-tertiary)', textTransform: 'uppercase', marginBottom: 6 }}>
                   Move to Stage
                 </div>
                 <Select
@@ -761,7 +761,7 @@ export default function CandidateProfilePage() {
               </div>
 
               <div style={{ marginBottom: 14 }}>
-                <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', color: '#94a3b8', textTransform: 'uppercase', marginBottom: 6 }}>
+                <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', color: 'var(--color-text-tertiary)', textTransform: 'uppercase', marginBottom: 6 }}>
                   Status
                 </div>
                 <Select
@@ -785,18 +785,18 @@ export default function CandidateProfilePage() {
 
             {/* Tags */}
             <div style={{
-              background: '#ffffff', border: '1px solid #e2e8f0',
+              background: 'var(--color-bg-surface)', border: '1px solid var(--color-border)',
               borderRadius: 10, padding: '16px 16px',
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 12 }}>
-                <TagsOutlined style={{ color: '#6b7280', fontSize: 13 }} />
-                <span style={{ fontWeight: 700, fontSize: 13, color: '#111827' }}>Tags</span>
+                <TagsOutlined style={{ color: 'var(--color-text-tertiary)', fontSize: 13 }} />
+                <span style={{ fontWeight: 700, fontSize: 13, color: 'var(--color-text-primary)' }}>Tags</span>
               </div>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
                 {c.tags.map(tag => (
                   <span key={tag} style={{
                     fontSize: 11, fontWeight: 600, padding: '3px 10px', borderRadius: 6,
-                    background: '#f1f5f9', color: '#475569', border: '1px solid #e2e8f0',
+                    background: 'var(--color-bg-subtle)', color: 'var(--color-text-secondary)', border: '1px solid var(--color-border)',
                   }}>
                     {tag}
                   </span>
@@ -806,10 +806,10 @@ export default function CandidateProfilePage() {
 
             {/* Assessment Status */}
             <div style={{
-              background: '#ffffff', border: '1px solid #e2e8f0',
+              background: 'var(--color-bg-surface)', border: '1px solid var(--color-border)',
               borderRadius: 10, padding: '16px 16px',
             }}>
-              <div style={{ fontWeight: 700, fontSize: 13, color: '#111827', marginBottom: 12 }}>
+              <div style={{ fontWeight: 700, fontSize: 13, color: 'var(--color-text-primary)', marginBottom: 12 }}>
                 Assessment Status
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>

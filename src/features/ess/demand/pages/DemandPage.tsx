@@ -495,7 +495,7 @@ export default function DemandPage() {
         return (
           <div>
             <div style={{ fontWeight: 600 }}>{employee?.name ?? row.employeeId}</div>
-            <div style={{ fontSize: 12, color: '#6b7280' }}>{employee?.department} | {employee?.designation}</div>
+            <div style={{ fontSize: 12, color: 'var(--color-text-tertiary)' }}>{employee?.department} | {employee?.designation}</div>
           </div>
         );
       },
@@ -535,7 +535,7 @@ export default function DemandPage() {
   const createAssignedAssetRows = getEmployeeAssets(targetEmployeeForCreate.id);
 
   return (
-    <div style={{ height: '100%', overflow: 'hidden', background: '#F8FAFC' }}>
+    <div style={{ height: '100%', overflow: 'hidden', background: 'var(--color-bg-subtle)' }}>
       {view === 'list' && (
         <div style={{ height: '100%', overflowY: 'auto' }}>
           <div className="page-header-row" style={{ padding: '20px 24px 0' }}>
@@ -557,7 +557,7 @@ export default function DemandPage() {
                 placeholder="Demand No"
                 value={fDemandNo}
                 onChange={e => setFDemandNo(e.target.value)}
-                prefix={<SearchOutlined style={{ color: '#94a3b8' }} />}
+                prefix={<SearchOutlined style={{ color: 'var(--color-text-tertiary)' }} />}
                 style={{ width: 170 }}
               />
               <Select
@@ -611,7 +611,7 @@ export default function DemandPage() {
             <div style={fullPageHeader}>
               <div>
                 <h2 style={{ margin: 0, fontSize: 28 }}>New Demand</h2>
-                <p style={{ margin: '6px 0 0', color: '#64748b' }}>Create demand for self or for department. Exchange is available only for already assigned assets.</p>
+                <p style={{ margin: '6px 0 0', color: 'var(--color-text-tertiary)' }}>Create demand for self or for department. Exchange is available only for already assigned assets.</p>
               </div>
               <Button onClick={goList}>Back to List</Button>
             </div>
@@ -690,7 +690,7 @@ export default function DemandPage() {
 
                 <div style={{ marginTop: 18, overflowX: 'auto' }}>
                   <div style={{ ...label, marginBottom: 10 }}>Demand Items*</div>
-                  <div style={{ minWidth: 820, display: 'grid', gridTemplateColumns: '1fr 1.8fr 0.7fr 0.6fr 1.2fr 40px', gap: 8, marginBottom: 8, color: '#64748b', fontSize: 12, fontWeight: 600 }}>
+                  <div style={{ minWidth: 820, display: 'grid', gridTemplateColumns: '1fr 1.8fr 0.7fr 0.6fr 1.2fr 40px', gap: 8, marginBottom: 8, color: 'var(--color-text-tertiary)', fontSize: 12, fontWeight: 600 }}>
                     <div>Group</div>
                     <div>Item</div>
                     <div>Qty</div>
@@ -741,7 +741,7 @@ export default function DemandPage() {
                           danger
                           onClick={() => removeCreateLine(line.id)}
                         />
-                        <div style={{ gridColumn: '1 / span 6', fontSize: 11, color: '#64748b' }}>
+                        <div style={{ gridColumn: '1 / span 6', fontSize: 11, color: 'var(--color-text-tertiary)' }}>
                           {item?.type === 'asset' && exchangeAllowed && targetAssets.length > 0 ? (
                             <span>
                               Exchangeable with current serial(s): {targetAssets.map(asset => asset.serialNo).join(', ')}
@@ -773,7 +773,7 @@ export default function DemandPage() {
 
               <div style={sideCard}>
                 <h3 style={sideTitle}>Assigned Asset</h3>
-                <div style={{ color: '#475569', marginBottom: 8 }}>
+                <div style={{ color: 'var(--color-text-secondary)', marginBottom: 8 }}>
                   {targetEmployeeForCreate.name} ({targetEmployeeForCreate.id})
                 </div>
                 <Table
@@ -804,7 +804,7 @@ export default function DemandPage() {
             <div style={fullPageHeader}>
               <div>
                 <h2 style={{ margin: 0, fontSize: 'clamp(22px, 3vw, 34px)' }}>Demand No: {selectedDemand.demandNo}</h2>
-                <div style={{ color: '#64748b', marginTop: 4 }}>
+                <div style={{ color: 'var(--color-text-tertiary)', marginTop: 4 }}>
                   {selectedDemand.requestedBy} | Needed on {selectedDemand.neededDate} | Store {selectedDemand.store}
                 </div>
               </div>
@@ -852,7 +852,7 @@ export default function DemandPage() {
                 )}
 
                 {isReadOnlyReview && (
-                  <div style={{ marginTop: 16, color: '#475569' }}>
+                  <div style={{ marginTop: 16, color: 'var(--color-text-secondary)' }}>
                     <div><strong>Status:</strong> {selectedDemand.status}</div>
                     {selectedDemand.approvalRemarks && <div><strong>Approval Remark:</strong> {selectedDemand.approvalRemarks}</div>}
                     {selectedDemand.rejectionRemarks && <div><strong>Rejection Remark:</strong> {selectedDemand.rejectionRemarks}</div>}
@@ -907,7 +907,7 @@ export default function DemandPage() {
             <div style={fullPageHeader}>
               <div>
                 <h2 style={{ margin: 0, fontSize: 'clamp(22px, 3vw, 32px)' }}>Assign Items - {selectedDemand.demandNo}</h2>
-                <div style={{ color: '#64748b', marginTop: 4 }}>Provide serial numbers for assets only. Non-asset items do not require serial numbers.</div>
+                <div style={{ color: 'var(--color-text-tertiary)', marginTop: 4 }}>Provide serial numbers for assets only. Non-asset items do not require serial numbers.</div>
               </div>
               <Button onClick={goList}>Back</Button>
             </div>
@@ -1066,13 +1066,13 @@ const listPanel: React.CSSProperties = {
   margin: '0 24px 24px',
   padding: 18,
   borderRadius: 14,
-  border: '1px solid #e2e8f0',
-  background: '#ffffff',
+  border: '1px solid var(--color-border)',
+  background: 'var(--color-bg-surface)',
   boxShadow: '0 10px 30px rgba(15, 23, 42, 0.05)',
 };
 
 const tableCardStyle: React.CSSProperties = {
-  border: '1px solid #e2e8f0',
+  border: '1px solid var(--color-border)',
   borderRadius: 12,
   overflow: 'hidden',
 };
@@ -1093,10 +1093,10 @@ const fullPageHeader: React.CSSProperties = {
 };
 
 const sideCard: React.CSSProperties = {
-  border: '1px solid #e2e8f0',
+  border: '1px solid var(--color-border)',
   borderRadius: 12,
   padding: 12,
-  background: '#ffffff',
+  background: 'var(--color-bg-surface)',
 };
 
 const sideTitle: React.CSSProperties = {
@@ -1117,14 +1117,14 @@ const fullWidthControl: React.CSSProperties = { width: '100%' };
 const label: React.CSSProperties = {
   fontSize: 12,
   fontWeight: 700,
-  color: '#334155',
+  color: 'var(--color-text-secondary)',
   marginBottom: 6,
 };
 
 const tabButton = (active: boolean): React.CSSProperties => ({
   borderRadius: 10,
-  border: `1px solid ${active ? '#2563eb' : '#cbd5e1'}`,
-  background: active ? '#dbeafe' : '#ffffff',
+  border: `1px solid ${active ? '#2563eb' : 'var(--color-border)'}`,
+  background: active ? 'var(--color-status-info-bg)' : 'var(--color-bg-surface)',
   color: '#0f172a',
   padding: '8px 16px',
   cursor: 'pointer',

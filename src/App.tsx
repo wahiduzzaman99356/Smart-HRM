@@ -10,11 +10,21 @@
  * link is clickable without throwing errors during development.
  */
 
-import { ConfigProvider } from 'antd';
+import { ConfigProvider, theme as antTheme } from 'antd';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
-import { Suspense, lazy } from 'react';
+import { Suspense, lazy, useEffect, useState, useMemo } from 'react';
 import { AppLayout } from '@/layouts/AppLayout';
+import { ThemeCenter } from '@/components/ThemeCenter';
+import { useThemeStore } from '@/stores/themeStore';
+import type { FontFamilyMode } from '@/stores/themeStore';
+import { hexToRgb, deriveUIColors } from '@/utils/colorUtils';
+
+const FONT_MAP: Record<FontFamilyMode, string> = {
+  manrope: "'Manrope', 'Nunito Sans', 'Segoe UI', sans-serif",
+  inter:   "'Inter', 'Segoe UI', system-ui, sans-serif",
+  system:  "system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif",
+};
 
 // ── Implemented feature pages ─────────────────────────────────────────────────
 const OrganogramPage = lazy(
@@ -136,7 +146,7 @@ const queryClient = new QueryClient({
 // ── Page-level Suspense fallback ──────────────────────────────────────────────
 function PageLoader() {
   return (
-    <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#9ca3af', fontSize: 14 }}>
+    <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-text-disabled)', fontSize: 14, background: 'var(--color-bg-base)' }}>
       Loading…
     </div>
   );
@@ -152,11 +162,11 @@ function ComingSoon() {
     .join(' › ');
 
   return (
-    <div style={{ height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 12, color: '#9ca3af' }}>
-      <div style={{ width: 64, height: 64, borderRadius: 16, background: '#f3f4f6', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 28 }}>
+    <div style={{ height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 12, color: 'var(--color-text-disabled)', background: 'var(--color-bg-base)' }}>
+      <div style={{ width: 64, height: 64, borderRadius: 16, background: 'var(--color-bg-subtle)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 28 }}>
         🚧
       </div>
-      <div style={{ fontSize: 16, fontWeight: 600, color: '#374151' }}>{label}</div>
+      <div style={{ fontSize: 16, fontWeight: 600, color: 'var(--color-text-secondary)' }}>{label}</div>
       <div style={{ fontSize: 13 }}>This module is under development.</div>
     </div>
   );
@@ -232,114 +242,178 @@ function AppShell() {
   );
 }
 
+// ── Border radius map ─────────────────────────────────────────────────────────
+const BORDER_RADIUS_MAP = { sharp: 4, default: 10, rounded: 16 } as const;
+
 // ── Root ──────────────────────────────────────────────────────────────────────
 function App() {
+  const {
+    mode, primaryColor, primaryDark, primaryLight,
+    borderRadius, density, fontFamily, topbarStyle,
+  } = useThemeStore();
+
+  // Resolve system preference
+  const [osIsDark, setOsIsDark] = useState(
+    () => window.matchMedia('(prefers-color-scheme: dark)').matches,
+  );
+  useEffect(() => {
+    const mq = window.matchMedia('(prefers-color-scheme: dark)');
+    const handler = (e: MediaQueryListEvent) => setOsIsDark(e.matches);
+    mq.addEventListener('change', handler);
+    return () => mq.removeEventListener('change', handler);
+  }, []);
+
+  const isDark = mode === 'dark' || (mode === 'system' && osIsDark);
+
+  // Derive all hue-tinted light-mode UI surface colours from the primary
+  const uiColors = useMemo(() => deriveUIColors(primaryColor), [primaryColor]);
+
+  // Apply data-theme attribute + CSS custom properties
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+  }, [isDark]);
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-topbar', topbarStyle);
+  }, [topbarStyle]);
+
+  useEffect(() => {
+    document.documentElement.style.setProperty('--font-family-base', FONT_MAP[fontFamily]);
+  }, [fontFamily]);
+
+  useEffect(() => {
+    const root = document.documentElement;
+    root.style.setProperty('--color-primary',          primaryColor);
+    root.style.setProperty('--color-primary-dark',     primaryDark);
+    root.style.setProperty('--color-primary-light',    primaryLight);
+    root.style.setProperty('--color-secondary',        primaryColor);
+    root.style.setProperty('--color-accent',           primaryColor);
+    root.style.setProperty('--color-primary-rgb',      hexToRgb(primaryColor));
+    root.style.setProperty('--color-primary-dark-rgb', hexToRgb(primaryDark));
+    // Border colours: hue-tinted in light mode, neutral in dark mode
+    root.style.setProperty('--color-border',        isDark ? '#252f42' : uiColors.border);
+    root.style.setProperty('--color-border-strong', isDark ? '#2d3a52' : uiColors.borderStrong);
+  }, [primaryColor, primaryDark, primaryLight, isDark, uiColors]);
+
+  const br = BORDER_RADIUS_MAP[borderRadius];
+
+  // Compute Ant Design light/dark selection colors from the primary
+  const selectedBg   = isDark ? primaryColor + '28' : primaryLight;
+  const hoverBg      = isDark ? primaryColor + '18' : primaryLight + 'cc';
+  const menuItemColor = isDark ? '#94a3b8' : '#334155';
+
   return (
     <QueryClientProvider client={queryClient}>
       <ConfigProvider
+        componentSize={density === 'compact' ? 'small' : density === 'spacious' ? 'large' : 'middle'}
         theme={{
+          algorithm: isDark ? antTheme.darkAlgorithm : antTheme.defaultAlgorithm,
           token: {
             motionDurationFast: '50ms',
             motionDurationMid:  '50ms',
             motionDurationSlow: '100ms',
-            colorPrimary: '#0f766e',
-            colorSuccess: '#059669',
-            colorWarning: '#d97706',
-            colorError: '#dc2626',
-            colorInfo: '#0284c7',
-            borderRadius: 10,
-            borderRadiusLG: 14,
-            fontFamily: "'Manrope', 'Nunito Sans', 'Segoe UI', sans-serif",
-            fontSize: 13,
-            lineHeight: 1.5,
-            colorBgBase: '#ffffff',
-            colorBgLayout: '#eaf2f2',
-            colorBgContainer: '#ffffff',
-            colorBorder: '#d8e7e5',
-            colorBorderSecondary: '#c7ddda',
-            colorText: '#111827',
-            colorTextSecondary: '#4b5563',
-            boxShadow: '0 10px 30px rgba(15, 40, 38, 0.12)',
-            boxShadowSecondary: '0 6px 18px rgba(15, 40, 38, 0.08)',
-            controlHeight: 34,
+            colorPrimary:       primaryColor,
+            colorSuccess:       '#059669',
+            colorWarning:       '#d97706',
+            colorError:         '#dc2626',
+            colorInfo:          '#0284c7',
+            borderRadius:       br,
+            borderRadiusLG:     br + 4,
+            fontFamily:         FONT_MAP[fontFamily],
+            fontSize:           13,
+            lineHeight:         1.5,
+            colorBgBase:        isDark ? '#0f1117' : '#ffffff',
+            colorBgLayout:      isDark ? '#0f1117' : '#F4F5F8',
+            colorBgContainer:   isDark ? '#161b27' : '#ffffff',
+            colorBorder:        isDark ? '#252f42' : uiColors.border,
+            colorBorderSecondary: isDark ? '#1e2638' : uiColors.borderSecondary,
+            colorText:          isDark ? '#f1f5f9' : '#111827',
+            colorTextSecondary: isDark ? '#94a3b8' : '#4b5563',
+            boxShadow:          isDark
+              ? '0 10px 30px rgba(0,0,0,0.4)'
+              : `0 10px 30px rgba(${hexToRgb(primaryDark)},0.12)`,
+            boxShadowSecondary: isDark
+              ? '0 6px 18px rgba(0,0,0,0.28)'
+              : `0 6px 18px rgba(${hexToRgb(primaryDark)},0.08)`,
+            controlHeight:   34,
             controlHeightSM: 30,
             controlHeightLG: 40,
           },
           components: {
             Button: {
-              borderRadius: 10,
-              fontWeight: 600,
-              controlHeight: 34,
-              controlHeightSM: 30,
-              controlHeightLG: 40,
-              primaryShadow: 'none',
-              defaultBorderColor: '#bdd6d2',
-              defaultHoverColor: '#0f766e',
-              defaultHoverBorderColor: '#0f766e',
-              defaultHoverBg: '#f0fdfa',
+              borderRadius:           br,
+              fontWeight:             600,
+              controlHeight:          34,
+              controlHeightSM:        30,
+              controlHeightLG:        40,
+              primaryShadow:          'none',
+              defaultBorderColor:     isDark ? '#2d3a52' : uiColors.borderStrong,
+              defaultHoverColor:      primaryColor,
+              defaultHoverBorderColor: primaryColor,
+              defaultHoverBg:         isDark ? primaryColor + '18' : primaryLight,
             },
             Table: {
-              cellPaddingBlock: 8,
-              cellPaddingInline: 12,
-              headerBg: '#eef8f7',
-              headerColor: '#374151',
-              headerSortActiveBg: '#d9efec',
-              rowHoverBg: '#f4fbfa',
-              fontSize: 13,
+              cellPaddingBlock:      8,
+              cellPaddingInline:     12,
+              headerBg:              isDark ? '#1a2030' : uiColors.tableHeaderBg,
+              headerColor:           isDark ? '#cbd5e1' : '#374151',
+              headerSortActiveBg:    isDark ? '#1e2638' : uiColors.tableHeaderSortBg,
+              rowHoverBg:            isDark ? '#1e2638' : uiColors.tableRowHoverBg,
+              fontSize:              13,
             },
             Menu: {
-              itemHeight: 34,
-              itemBg: 'transparent',
-              itemColor: '#334155',
-              itemHoverColor: '#115e59',
-              itemSelectedBg: '#d4efeb',
-              itemSelectedColor: '#115e59',
-              itemHoverBg: '#e2f5f2',
-              subMenuItemBg: '#f3f8f7',
-              groupTitleColor: '#64748b',
-              fontSize: 13,
+              itemHeight:         34,
+              itemBg:             'transparent',
+              itemColor:          menuItemColor,
+              itemHoverColor:     primaryDark,
+              itemSelectedBg:     selectedBg,
+              itemSelectedColor:  primaryDark,
+              itemHoverBg:        hoverBg,
+              subMenuItemBg:      isDark ? '#1a2030' : uiColors.menuSubBg,
+              groupTitleColor:    isDark ? '#475569' : '#64748b',
+              fontSize:           13,
             },
             Layout: {
-              siderBg: '#eff8f6',
-              headerBg: '#145a56',
+              siderBg: isDark ? '#161b27' : primaryLight,
+              headerBg: 'transparent',
             },
             Form: {
-              labelFontSize: 12,
-              labelColor: '#374151',
+              labelFontSize:          12,
+              labelColor:             isDark ? '#94a3b8' : '#374151',
               labelRequiredMarkColor: '#dc2626',
             },
             Input: {
-              activeBorderColor: '#0d9488',
-              hoverBorderColor: '#0f766e',
-              colorBgContainer: '#ffffff',
+              activeBorderColor: primaryColor,
+              hoverBorderColor:  primaryColor,
+              colorBgContainer:  isDark ? '#1a2030' : '#ffffff',
             },
             Select: {
-              optionSelectedBg: '#d4efeb',
-              optionActiveBg: '#e2f5f2',
+              optionSelectedBg: selectedBg,
+              optionActiveBg:   hoverBg,
             },
             Modal: {
-              titleFontSize: 15,
+              titleFontSize:  15,
               titleLineHeight: 1.4,
-              borderRadiusLG: 14,
+              borderRadiusLG: br + 4,
             },
             Drawer: {
-              fontSizeLG: 15,
-              colorBgElevated: '#ffffff',
+              fontSizeLG:      15,
+              colorBgElevated: isDark ? '#161b27' : '#ffffff',
             },
-            Popover: {
-              borderRadiusLG: 14,
-            },
-            Dropdown: {
-              borderRadiusLG: 14,
-            },
+            Popover: { borderRadiusLG: br + 4 },
+            Dropdown: { borderRadiusLG: br + 4 },
             Card: {
-              paddingLG: 16,
-              borderRadiusLG: 14,
+              paddingLG:      16,
+              borderRadiusLG: br + 4,
             },
-            Breadcrumb: {
-              itemColor: 'rgba(255, 255, 255, 0.78)',
-              lastItemColor: '#ffffff',
-              separatorColor: 'rgba(255, 255, 255, 0.56)',
+            Breadcrumb: topbarStyle === 'minimal' ? {
+              itemColor:      isDark ? '#94a3b8' : '#6b7280',
+              lastItemColor:  isDark ? '#f1f5f9' : '#111827',
+              separatorColor: isDark ? '#475569' : '#9ca3af',
+            } : {
+              itemColor:      'rgba(255,255,255,0.78)',
+              lastItemColor:  '#ffffff',
+              separatorColor: 'rgba(255,255,255,0.56)',
             },
           },
         }}
@@ -350,6 +424,7 @@ function App() {
             <Route path="/" element={<Navigate to="/core-hr/organogram" replace />} />
             <Route path="/*" element={<AppShell />} />
           </Routes>
+          <ThemeCenter />
         </BrowserRouter>
       </ConfigProvider>
     </QueryClientProvider>

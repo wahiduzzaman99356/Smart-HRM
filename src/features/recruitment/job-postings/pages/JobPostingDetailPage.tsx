@@ -23,18 +23,18 @@ import { AssignPipelineModal } from '../components/AssignPipelineModal';
 // ─── Status config ────────────────────────────────────────────────────────────
 const STATUS_DOT: Record<JobStatus, string> = {
   Published:  '#059669',
-  Draft:      '#6b7280',
+  Draft:      'var(--color-text-tertiary)',
   'On-Going': '#0ea5e9',
   Closed:     '#d97706',
   Rejected:   '#dc2626',
 };
 
 const STATUS_BG: Record<JobStatus, string> = {
-  Published:  '#f0fdf4',
-  Draft:      '#f9fafb',
-  'On-Going': '#f0f9ff',
-  Closed:     '#fffbeb',
-  Rejected:   '#fef2f2',
+  Published:  'var(--color-status-approved-bg)',
+  Draft:      'var(--color-bg-subtle)',
+  'On-Going': 'var(--color-status-info-bg)',
+  Closed:     'var(--color-status-pending-bg)',
+  Rejected:   'var(--color-status-rejected-bg)',
 };
 
 const STATUS_LABEL: Record<JobStatus, string> = {
@@ -48,8 +48,8 @@ const STATUS_LABEL: Record<JobStatus, string> = {
 // ─── Small helpers ────────────────────────────────────────────────────────────
 function MetaItem({ icon, children }: { icon: React.ReactNode; children: React.ReactNode }) {
   return (
-    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 13, color: '#6b7280' }}>
-      <span style={{ color: '#9ca3af', fontSize: 13 }}>{icon}</span>
+    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 13, color: 'var(--color-text-tertiary)' }}>
+      <span style={{ color: 'var(--color-text-disabled)', fontSize: 13 }}>{icon}</span>
       {children}
     </span>
   );
@@ -57,14 +57,14 @@ function MetaItem({ icon, children }: { icon: React.ReactNode; children: React.R
 
 function SectionCard({ title, icon, children }: { title: string; icon?: React.ReactNode; children: React.ReactNode }) {
   return (
-    <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: 10, overflow: 'hidden' }}>
+    <div style={{ background: 'var(--color-bg-surface)', border: '1px solid var(--color-border)', borderRadius: 10, overflow: 'hidden' }}>
       <div style={{
         display: 'flex', alignItems: 'center', gap: 8,
         padding: '12px 20px', borderBottom: '1px solid #f1f5f9',
-        background: '#fafbfc',
+        background: 'var(--color-bg-subtle)',
       }}>
-        {icon && <span style={{ color: '#0f766e', fontSize: 14 }}>{icon}</span>}
-        <span style={{ fontWeight: 700, fontSize: 13, color: '#111827', letterSpacing: '0.02em' }}>{title}</span>
+        {icon && <span style={{ color: 'var(--color-primary)', fontSize: 14 }}>{icon}</span>}
+        <span style={{ fontWeight: 700, fontSize: 13, color: 'var(--color-text-primary)', letterSpacing: '0.02em' }}>{title}</span>
       </div>
       <div style={{ padding: '16px 20px' }}>{children}</div>
     </div>
@@ -74,13 +74,13 @@ function SectionCard({ title, icon, children }: { title: string; icon?: React.Re
 function StatCard({ label, value, color }: { label: string; value: number; color: string }) {
   return (
     <div style={{
-      flex: 1, background: '#ffffff',
-      border: '1px solid #e2e8f0', borderRadius: 10,
+      flex: 1, background: 'var(--color-bg-surface)',
+      border: '1px solid var(--color-border)', borderRadius: 10,
       padding: '20px 24px', textAlign: 'center',
     }}>
       <div style={{
         fontSize: 10, fontWeight: 700, letterSpacing: '0.08em',
-        color: '#9ca3af', textTransform: 'uppercase', marginBottom: 10,
+        color: 'var(--color-text-disabled)', textTransform: 'uppercase', marginBottom: 10,
       }}>
         {label}
       </div>
@@ -102,10 +102,10 @@ export default function JobPostingDetailPage() {
 
   if (!posting) {
     return (
-      <div className="page-shell" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 10, color: '#9ca3af' }}>
-        <FileTextOutlined style={{ fontSize: 36, color: '#d1d5db' }} />
-        <div style={{ fontSize: 14, fontWeight: 600, color: '#374151' }}>Job posting not found</div>
-        <Button type="link" icon={<ArrowLeftOutlined />} onClick={() => navigate('/recruitment/job-postings')} style={{ color: '#0f766e' }}>
+      <div className="page-shell" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 10, color: 'var(--color-text-disabled)' }}>
+        <FileTextOutlined style={{ fontSize: 36, color: 'var(--color-text-disabled)' }} />
+        <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-text-secondary)' }}>Job posting not found</div>
+        <Button type="link" icon={<ArrowLeftOutlined />} onClick={() => navigate('/recruitment/job-postings')} style={{ color: 'var(--color-primary)' }}>
           Back to Job Postings
         </Button>
       </div>
@@ -126,7 +126,7 @@ export default function JobPostingDetailPage() {
           type="text"
           icon={<ArrowLeftOutlined />}
           onClick={() => navigate(-1)}
-          style={{ color: '#6b7280', paddingInline: 6, height: 28, fontSize: 13 }}
+          style={{ color: 'var(--color-text-tertiary)', paddingInline: 6, height: 28, fontSize: 13 }}
         >
           Back to list
         </Button>
@@ -135,11 +135,11 @@ export default function JobPostingDetailPage() {
       <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
 
         {/* ── Job overview card ──────────────────────────────────────────────── */}
-        <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: 10, padding: '20px 24px' }}>
+        <div style={{ background: 'var(--color-bg-surface)', border: '1px solid var(--color-border)', borderRadius: 10, padding: '20px 24px' }}>
 
           {/* Title row */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12, flexWrap: 'wrap' }}>
-            <h2 style={{ margin: 0, fontSize: 22, fontWeight: 800, color: '#111827', lineHeight: 1.2 }}>
+            <h2 style={{ margin: 0, fontSize: 22, fontWeight: 800, color: 'var(--color-text-primary)', lineHeight: 1.2 }}>
               {posting.designation}
             </h2>
             {/* Status badge */}
@@ -157,9 +157,9 @@ export default function JobPostingDetailPage() {
             {/* Requisition type */}
             <span style={{
               padding: '3px 12px', borderRadius: 20, fontSize: 11, fontWeight: 700,
-              background: posting.typeOfRequisition === 'Replacement' ? '#fff7ed' : '#f0fdf4',
+              background: posting.typeOfRequisition === 'Replacement' ? 'rgba(249, 115, 22, 0.10)' : 'var(--color-status-approved-bg)',
               color:      posting.typeOfRequisition === 'Replacement' ? '#c2410c'  : '#15803d',
-              border: `1px solid ${posting.typeOfRequisition === 'Replacement' ? '#fed7aa' : '#bbf7d0'}`,
+              border: `1px solid ${posting.typeOfRequisition === 'Replacement' ? 'rgba(251, 146, 60, 0.22)' : 'var(--color-status-approved-bg)'}`,
             }}>
               {posting.typeOfRequisition}
             </span>
@@ -168,23 +168,23 @@ export default function JobPostingDetailPage() {
           {/* Meta info row */}
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px 20px', alignItems: 'center' }}>
             <MetaItem icon={<BankOutlined />}>{posting.department}</MetaItem>
-            <span style={{ color: '#e2e8f0' }}>|</span>
+            <span style={{ color: 'var(--color-border)' }}>|</span>
             <MetaItem icon={<IdcardOutlined />}>{posting.employmentType}</MetaItem>
-            <span style={{ color: '#e2e8f0' }}>|</span>
+            <span style={{ color: 'var(--color-border)' }}>|</span>
             <MetaItem icon={<EnvironmentOutlined />}>{posting.workLocation}</MetaItem>
-            <span style={{ color: '#e2e8f0' }}>|</span>
-            <MetaItem icon={<SolutionOutlined />}><span style={{ color: '#9ca3af' }}>MRF:</span> {posting.mrfRef}</MetaItem>
-            <span style={{ color: '#e2e8f0' }}>|</span>
+            <span style={{ color: 'var(--color-border)' }}>|</span>
+            <MetaItem icon={<SolutionOutlined />}><span style={{ color: 'var(--color-text-disabled)' }}>MRF:</span> {posting.mrfRef}</MetaItem>
+            <span style={{ color: 'var(--color-border)' }}>|</span>
             <MetaItem icon={<TeamOutlined />}>{posting.vacancyNumber} {posting.vacancyNumber === '1' ? 'vacancy' : 'vacancies'}</MetaItem>
           </div>
 
           {/* Dates */}
           <div style={{ display: 'flex', gap: 20, marginTop: 12, flexWrap: 'wrap' }}>
             <MetaItem icon={<CalendarOutlined />}>
-              <span style={{ color: '#9ca3af' }}>Published:</span> {posting.initiateDate}
+              <span style={{ color: 'var(--color-text-disabled)' }}>Published:</span> {posting.initiateDate}
             </MetaItem>
             <MetaItem icon={<ClockCircleOutlined />}>
-              <span style={{ color: '#9ca3af' }}>Deadline:</span> {posting.etaDate}
+              <span style={{ color: 'var(--color-text-disabled)' }}>Deadline:</span> {posting.etaDate}
             </MetaItem>
           </div>
         </div>
@@ -201,23 +201,23 @@ export default function JobPostingDetailPage() {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 20 }}>
 
             <div>
-              <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', color: '#9ca3af', textTransform: 'uppercase', marginBottom: 6 }}>Experience</div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 600, color: '#374151' }}>
-                <ThunderboltOutlined style={{ color: '#0f766e' }} /> {expLabel}
+              <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', color: 'var(--color-text-disabled)', textTransform: 'uppercase', marginBottom: 6 }}>Experience</div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 600, color: 'var(--color-text-secondary)' }}>
+                <ThunderboltOutlined style={{ color: 'var(--color-primary)' }} /> {expLabel}
               </div>
             </div>
 
             <div>
-              <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', color: '#9ca3af', textTransform: 'uppercase', marginBottom: 6 }}>Education</div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 600, color: '#374151' }}>
-                <BookOutlined style={{ color: '#0f766e' }} /> {posting.educationQualification}
+              <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', color: 'var(--color-text-disabled)', textTransform: 'uppercase', marginBottom: 6 }}>Education</div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 600, color: 'var(--color-text-secondary)' }}>
+                <BookOutlined style={{ color: 'var(--color-primary)' }} /> {posting.educationQualification}
               </div>
             </div>
 
             <div>
-              <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', color: '#9ca3af', textTransform: 'uppercase', marginBottom: 6 }}>Gender</div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 600, color: '#374151' }}>
-                <UserOutlined style={{ color: '#0f766e' }} /> {posting.gender}
+              <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', color: 'var(--color-text-disabled)', textTransform: 'uppercase', marginBottom: 6 }}>Gender</div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 600, color: 'var(--color-text-secondary)' }}>
+                <UserOutlined style={{ color: 'var(--color-primary)' }} /> {posting.gender}
               </div>
             </div>
 
@@ -225,13 +225,13 @@ export default function JobPostingDetailPage() {
 
           {/* Skills */}
           <div style={{ marginTop: 20 }}>
-            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', color: '#9ca3af', textTransform: 'uppercase', marginBottom: 8 }}>Skills Required</div>
+            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', color: 'var(--color-text-disabled)', textTransform: 'uppercase', marginBottom: 8 }}>Skills Required</div>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
               {posting.skillsRequired.map(s => (
                 <Tag key={s} style={{
                   borderRadius: 6, fontSize: 12, fontWeight: 600,
-                  padding: '2px 10px', background: '#f1f5f9',
-                  color: '#334155', border: '1px solid #e2e8f0', margin: 0,
+                  padding: '2px 10px', background: 'var(--color-bg-subtle)',
+                  color: 'var(--color-text-secondary)', border: '1px solid var(--color-border)', margin: 0,
                 }}>
                   {s}
                 </Tag>
@@ -242,8 +242,8 @@ export default function JobPostingDetailPage() {
           {/* Job Responsibility */}
           {posting.jobResponsibility && (
             <div style={{ marginTop: 20 }}>
-              <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', color: '#9ca3af', textTransform: 'uppercase', marginBottom: 8 }}>Job Responsibility</div>
-              <p style={{ margin: 0, fontSize: 13, color: '#374151', lineHeight: 1.6 }}>
+              <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', color: 'var(--color-text-disabled)', textTransform: 'uppercase', marginBottom: 8 }}>Job Responsibility</div>
+              <p style={{ margin: 0, fontSize: 13, color: 'var(--color-text-secondary)', lineHeight: 1.6 }}>
                 {posting.jobResponsibility}
               </p>
             </div>
@@ -260,15 +260,15 @@ export default function JobPostingDetailPage() {
                   background: 'linear-gradient(135deg, #0f766e 0%, #115e59 100%)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                 }}>
-                  <ApartmentOutlined style={{ color: '#ffffff', fontSize: 16 }} />
+                  <ApartmentOutlined style={{ color: 'var(--color-bg-surface)', fontSize: 16 }} />
                 </div>
                 <div>
-                  <div style={{ fontWeight: 700, fontSize: 14, color: '#111827' }}>{assignedPipeline}</div>
-                  <div style={{ fontSize: 12, color: '#6b7280' }}>Active pipeline</div>
+                  <div style={{ fontWeight: 700, fontSize: 14, color: 'var(--color-text-primary)' }}>{assignedPipeline}</div>
+                  <div style={{ fontSize: 12, color: 'var(--color-text-tertiary)' }}>Active pipeline</div>
                 </div>
               </div>
             ) : (
-              <div style={{ fontSize: 13, color: '#6b7280' }}>
+              <div style={{ fontSize: 13, color: 'var(--color-text-tertiary)' }}>
                 No pipeline assigned yet. Assign a pipeline to start tracking candidates.
               </div>
             )}

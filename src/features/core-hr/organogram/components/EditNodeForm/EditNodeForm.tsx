@@ -48,7 +48,7 @@ export function EditNodeForm({
   const isEdit = anchor.mode === 'edit';
 
   const theme       = dept ? DEPT_THEME[dept] : null;
-  const accentColor = theme?.border ?? '#0d9488';
+  const accentColor = theme?.border ?? 'var(--color-primary)';
 
   const designationOpts  = useMemo(() => getDesignationOptions(dept ?? ''), [dept, getDesignationOptions]);
   const designationEmps  = useMemo(
@@ -101,7 +101,7 @@ export function EditNodeForm({
         left,
         top,
         width: W,
-        background: '#ffffff',
+        background: 'var(--color-bg-surface)',
         borderRadius: 16,
         boxShadow: '0 12px 40px rgba(0,0,0,0.16), 0 4px 12px rgba(0,0,0,0.08)',
         border: `1px solid ${accentColor}25`,
@@ -140,13 +140,13 @@ export function EditNodeForm({
               {modeLabel}
             </div>
             {anchor.parentName && (
-              <div style={{ fontSize: 11, color: '#64748b', marginTop: 1 }}>
+              <div style={{ fontSize: 11, color: 'var(--color-text-tertiary)', marginTop: 1 }}>
                 {isAdd ? 'Reports to' : 'Current parent'}:{' '}
                 <span style={{ fontWeight: 600, color: accentColor }}>{anchor.parentName}</span>
               </div>
             )}
             {isEdit && !anchor.parentName && (
-              <div style={{ fontSize: 11, color: '#64748b', marginTop: 1 }}>Root — highest authority</div>
+              <div style={{ fontSize: 11, color: 'var(--color-text-tertiary)', marginTop: 1 }}>Root — highest authority</div>
             )}
           </div>
         </div>
@@ -162,7 +162,7 @@ export function EditNodeForm({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            color: '#64748b',
+            color: 'var(--color-text-tertiary)',
             flexShrink: 0,
           }}
         >
@@ -196,9 +196,9 @@ export function EditNodeForm({
                       flex: 1,
                       padding: '7px 10px',
                       borderRadius: 9,
-                      border: `1.5px solid ${active ? accentColor : '#e2e8f0'}`,
-                      background: active ? `${accentColor}12` : '#f8fafc',
-                      color: active ? accentColor : '#64748b',
+                      border: `1.5px solid ${active ? accentColor : 'var(--color-border)'}`,
+                      background: active ? `${accentColor}12` : 'var(--color-bg-subtle)',
+                      color: active ? accentColor : 'var(--color-text-tertiary)',
                       cursor: 'pointer',
                       fontSize: 12,
                       fontWeight: active ? 600 : 400,
@@ -243,7 +243,7 @@ export function EditNodeForm({
                             width: 9,
                             height: 9,
                             borderRadius: '50%',
-                            background: t?.border ?? '#94a3b8',
+                            background: t?.border ?? 'var(--color-text-tertiary)',
                             flexShrink: 0,
                           }}
                         />
@@ -362,8 +362,8 @@ export function EditNodeForm({
                 return emp ? (
                   <div
                     style={{
-                      background: t?.lightBg ?? '#f8fafc',
-                      border: `1px solid ${t?.border ?? '#e2e8f0'}30`,
+                      background: t?.lightBg ?? 'var(--color-bg-subtle)',
+                      border: `1px solid ${t?.border ?? 'var(--color-border)'}30`,
                       borderRadius: 8,
                       padding: '8px 10px',
                       marginBottom: 10,
@@ -376,7 +376,7 @@ export function EditNodeForm({
                           width: 28,
                           height: 28,
                           borderRadius: '50%',
-                          background: t?.avatarBg ?? '#94a3b8',
+                          background: t?.avatarBg ?? 'var(--color-text-tertiary)',
                           color: '#fff',
                           display: 'flex',
                           alignItems: 'center',
@@ -392,14 +392,14 @@ export function EditNodeForm({
                         <div style={{ fontWeight: 600, color: '#1e293b', fontSize: 12 }}>
                           {emp.label}
                         </div>
-                        <div style={{ color: '#64748b', marginTop: 1 }}>{emp.designation}</div>
+                        <div style={{ color: 'var(--color-text-tertiary)', marginTop: 1 }}>{emp.designation}</div>
                         <Tag
                           style={{
                             marginTop: 4,
                             fontSize: 10,
                             background: `${t?.avatarBg}14`,
                             borderColor: `${t?.avatarBg}30`,
-                            color: t?.avatarBg ?? '#64748b',
+                            color: t?.avatarBg ?? 'var(--color-text-tertiary)',
                             borderRadius: 4,
                           }}
                         >
@@ -435,7 +435,7 @@ export function EditNodeForm({
               <div
                 style={{
                   fontSize: 11,
-                  color: '#94a3b8',
+                  color: 'var(--color-text-tertiary)',
                   marginBottom: 12,
                   lineHeight: 1.5,
                 }}
@@ -477,7 +477,7 @@ export function EditNodeForm({
 
 function FieldLabel({ children }: { children: ReactNode }) {
   return (
-    <span style={{ fontSize: 11, fontWeight: 600, color: '#374151', letterSpacing: 0.2 }}>
+    <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--color-text-secondary)', letterSpacing: 0.2 }}>
       {children}
     </span>
   );

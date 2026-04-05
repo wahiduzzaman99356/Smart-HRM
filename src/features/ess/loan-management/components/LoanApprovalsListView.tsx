@@ -87,17 +87,17 @@ export function LoanApprovalsListView({ requests, onApproveReject, onCreateNew }
       dataIndex: 'initiateDate',
       key: 'initiateDate',
       width: 130,
-      render: v => <span style={{ fontSize: 13, color: '#374151' }}>{v}</span>,
+      render: v => <span style={{ fontSize: 13, color: 'var(--color-text-secondary)' }}>{v}</span>,
     },
     {
       title: 'Employee Details',
       key: 'employee',
       render: (_, rec) => (
         <div>
-          <div style={{ fontWeight: 700, fontSize: 13, color: '#111827' }}>{rec.employeeName}</div>
-          <div style={{ fontSize: 11, color: '#6b7280' }}>ID: {rec.employeeId}</div>
-          <div style={{ fontSize: 11, color: '#6b7280' }}>Department: {rec.department}</div>
-          <div style={{ fontSize: 11, color: '#6b7280' }}>Designation: {rec.designation}</div>
+          <div style={{ fontWeight: 700, fontSize: 13, color: 'var(--color-text-primary)' }}>{rec.employeeName}</div>
+          <div style={{ fontSize: 11, color: 'var(--color-text-tertiary)' }}>ID: {rec.employeeId}</div>
+          <div style={{ fontSize: 11, color: 'var(--color-text-tertiary)' }}>Department: {rec.department}</div>
+          <div style={{ fontSize: 11, color: 'var(--color-text-tertiary)' }}>Designation: {rec.designation}</div>
         </div>
       ),
     },
@@ -106,15 +106,15 @@ export function LoanApprovalsListView({ requests, onApproveReject, onCreateNew }
       dataIndex: 'type',
       key: 'type',
       width: 130,
-      render: (v: LoanType) => <span style={{ fontSize: 13, color: '#374151' }}>{v}</span>,
+      render: (v: LoanType) => <span style={{ fontSize: 13, color: 'var(--color-text-secondary)' }}>{v}</span>,
     },
     {
       title: 'Amount',
       key: 'amount',
       width: 140,
       render: (_, rec) => (
-        <span style={{ fontSize: 13, color: '#111827', fontWeight: 500 }}>
-          {rec.amount.toLocaleString()}<span style={{ fontSize: 11, color: '#6b7280', marginLeft: 2 }}>BDT</span>
+        <span style={{ fontSize: 13, color: 'var(--color-text-primary)', fontWeight: 500 }}>
+          {rec.amount.toLocaleString()}<span style={{ fontSize: 11, color: 'var(--color-text-tertiary)', marginLeft: 2 }}>BDT</span>
         </span>
       ),
     },
@@ -123,7 +123,7 @@ export function LoanApprovalsListView({ requests, onApproveReject, onCreateNew }
       dataIndex: 'installmentNumber',
       key: 'installmentNumber',
       width: 170,
-      render: v => <span style={{ fontSize: 13, color: '#374151' }}>{v}</span>,
+      render: v => <span style={{ fontSize: 13, color: 'var(--color-text-secondary)' }}>{v}</span>,
     },
     {
       title: 'Status',
@@ -147,14 +147,14 @@ export function LoanApprovalsListView({ requests, onApproveReject, onCreateNew }
         <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
           <button
             onClick={() => onApproveReject(rec)}
-            style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', fontSize: 13, color: '#0d9488', fontWeight: 600, textDecoration: 'underline', textAlign: 'left' }}
+            style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', fontSize: 13, color: 'var(--color-primary)', fontWeight: 600, textDecoration: 'underline', textAlign: 'left' }}
           >
             View
           </button>
           {rec.status === 'To Approve' && (
             <button
               onClick={() => onApproveReject(rec)}
-              style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', fontSize: 13, color: '#0d9488', fontWeight: 500, textDecoration: 'underline', textAlign: 'left' }}
+              style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', fontSize: 13, color: 'var(--color-primary)', fontWeight: 500, textDecoration: 'underline', textAlign: 'left' }}
             >
               Approve/Reject
             </button>
@@ -167,11 +167,11 @@ export function LoanApprovalsListView({ requests, onApproveReject, onCreateNew }
   return (
     <div style={{ padding: '24px 28px', height: '100%', overflowY: 'auto' }}>
       {/* Filter Bar */}
-      <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 10, padding: '16px 18px', marginBottom: 18 }}>
+      <div style={{ background: 'var(--color-bg-surface)', border: '1px solid var(--color-border)', borderRadius: 10, padding: '16px 18px', marginBottom: 18 }}>
         {/* Row 1 */}
         <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'center', marginBottom: 10 }}>
           <Input
-            prefix={<SearchOutlined style={{ color: '#9ca3af' }} />}
+            prefix={<SearchOutlined style={{ color: 'var(--color-text-disabled)' }} />}
             placeholder="Search by Employee Name, ID"
             value={search}
             onChange={e => setSearch(e.target.value)}
@@ -235,7 +235,7 @@ export function LoanApprovalsListView({ requests, onApproveReject, onCreateNew }
             allowClear
             options={STATUS_OPTIONS}
           />
-          <Button type="primary" onClick={handleSearch} style={{ background: '#0d9488', borderColor: '#0d9488', borderRadius: 8 }}>Search</Button>
+          <Button type="primary" onClick={handleSearch} style={{ background: 'var(--color-primary)', borderColor: 'var(--color-primary)', borderRadius: 8 }}>Search</Button>
           <Button onClick={handleReset} style={{ borderRadius: 8 }}>Reset</Button>
           <div style={{ marginLeft: 'auto' }}>
             <Button icon={<PlusOutlined />} onClick={onCreateNew} style={{ borderRadius: 8, fontWeight: 500 }}>Create</Button>
@@ -244,13 +244,13 @@ export function LoanApprovalsListView({ requests, onApproveReject, onCreateNew }
       </div>
 
       {/* Table */}
-      <div style={{ background: '#fff', borderRadius: 10, border: '1px solid #e5e7eb', overflow: 'hidden' }}>
+      <div style={{ background: 'var(--color-bg-surface)', borderRadius: 10, border: '1px solid var(--color-border)', overflow: 'hidden' }}>
         <Table
           rowKey="id"
           dataSource={filtered}
           columns={columns}
           pagination={{ pageSize: 10, showTotal: t => `Total ${t} records`, size: 'small' }}
-          locale={{ emptyText: <div style={{ padding: '40px 0', color: '#9ca3af', fontSize: 13 }}>No approval requests found</div> }}
+          locale={{ emptyText: <div style={{ padding: '40px 0', color: 'var(--color-text-disabled)', fontSize: 13 }}>No approval requests found</div> }}
           size="middle"
         />
       </div>

@@ -76,18 +76,18 @@ const INITIAL_PIPELINES: Pipeline[] = [
 // ─── Status badge ─────────────────────────────────────────────────────────────
 const STATUS_STYLE: Record<PipelineStatus, React.CSSProperties> = {
   Active: {
-    background: '#0f766e',
-    color: '#ffffff',
+    background: 'var(--color-primary)',
+    color: 'var(--color-bg-surface)',
     border: 'none',
   },
   Draft: {
-    background: '#f1f5f9',
-    color: '#64748b',
-    border: '1px solid #e2e8f0',
+    background: 'var(--color-bg-subtle)',
+    color: 'var(--color-text-tertiary)',
+    border: '1px solid var(--color-border)',
   },
   Archived: {
-    background: '#fef3c7',
-    color: '#92400e',
+    background: 'var(--color-status-pending-bg)',
+    color: '#d97706',
     border: '1px solid #fde68a',
   },
 };
@@ -116,15 +116,15 @@ function PipelineCard({ pipeline }: { pipeline: Pipeline }) {
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       style={{
-        background: '#ffffff',
-        border: '1px solid #e2e8f0',
+        background: 'var(--color-bg-surface)',
+        border: '1px solid var(--color-border)',
         borderRadius: 12,
         overflow: 'hidden',
         position: 'relative',
         cursor: 'pointer',
         transition: 'border-color 0.12s',
         boxShadow: hovered ? '0 6px 20px rgba(15,118,110,0.10)' : '0 1px 3px rgba(15,30,60,0.06)',
-        borderColor: hovered ? '#99f6e4' : '#e2e8f0',
+        borderColor: hovered ? '#99f6e4' : 'var(--color-border)',
       }}
     >
       {/* Top accent bar */}
@@ -133,8 +133,8 @@ function PipelineCard({ pipeline }: { pipeline: Pipeline }) {
         background: pipeline.status === 'Active'
           ? 'linear-gradient(90deg, #0f766e 0%, #14b8a6 100%)'
           : pipeline.status === 'Draft'
-          ? '#cbd5e1'
-          : '#fcd34d',
+          ? 'var(--color-border)'
+          : 'rgba(252, 211, 77, 0.45)',
       }} />
 
       <div style={{ padding: '18px 20px 20px' }}>
@@ -142,10 +142,10 @@ function PipelineCard({ pipeline }: { pipeline: Pipeline }) {
         {/* Header row — name + action menu */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 4 }}>
           <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontWeight: 700, fontSize: 15, color: '#111827', lineHeight: 1.3, marginBottom: 3 }}>
+            <div style={{ fontWeight: 700, fontSize: 15, color: 'var(--color-text-primary)', lineHeight: 1.3, marginBottom: 3 }}>
               {pipeline.name}
             </div>
-            <div style={{ fontSize: 13, color: '#6b7280' }}>
+            <div style={{ fontSize: 13, color: 'var(--color-text-tertiary)' }}>
               {pipeline.position}
             </div>
           </div>
@@ -153,7 +153,7 @@ function PipelineCard({ pipeline }: { pipeline: Pipeline }) {
             onClick={e => e.stopPropagation()}
             style={{
               background: 'none', border: 'none', cursor: 'pointer',
-              color: '#9ca3af', padding: '2px 4px', borderRadius: 4,
+              color: 'var(--color-text-disabled)', padding: '2px 4px', borderRadius: 4,
               display: 'flex', alignItems: 'center',
               transition: 'color 0.15s',
             }}
@@ -173,27 +173,27 @@ function PipelineCard({ pipeline }: { pipeline: Pipeline }) {
                 height: 4,
                 borderRadius: 2,
                 background: i === 0
-                  ? '#0f766e'
+                  ? 'var(--color-primary)'
                   : i === 1
                   ? '#34d399'
-                  : '#e2e8f0',
+                  : 'var(--color-border)',
               }}
             />
           ))}
         </div>
 
         {/* Stats row */}
-        <div style={{ display: 'flex', gap: 16, fontSize: 12, color: '#6b7280', marginBottom: 16, flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', gap: 16, fontSize: 12, color: 'var(--color-text-tertiary)', marginBottom: 16, flexWrap: 'wrap' }}>
           <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}>
-            <PartitionOutlined style={{ fontSize: 12, color: '#9ca3af' }} />
+            <PartitionOutlined style={{ fontSize: 12, color: 'var(--color-text-disabled)' }} />
             {pipeline.stages.length} stages
           </span>
           <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}>
-            <TeamOutlined style={{ fontSize: 12, color: '#9ca3af' }} />
+            <TeamOutlined style={{ fontSize: 12, color: 'var(--color-text-disabled)' }} />
             {pipeline.candidates} candidates
           </span>
           <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}>
-            <CalendarOutlined style={{ fontSize: 12, color: '#9ca3af' }} />
+            <CalendarOutlined style={{ fontSize: 12, color: 'var(--color-text-disabled)' }} />
             {pipeline.createdAt}
           </span>
         </div>
@@ -202,8 +202,8 @@ function PipelineCard({ pipeline }: { pipeline: Pipeline }) {
         {pipeline.jobPostingTitle && (
           <div style={{
             display: 'inline-flex', alignItems: 'center', gap: 5,
-            fontSize: 11, color: '#0f766e', fontWeight: 600,
-            background: '#f0fdfa', border: '1px solid #99f6e4',
+            fontSize: 11, color: 'var(--color-primary)', fontWeight: 600,
+            background: 'var(--color-primary-tint)', border: '1px solid #99f6e4',
             borderRadius: 6, padding: '3px 8px', marginBottom: 12,
           }}>
             <LinkOutlined style={{ fontSize: 10 }} />
@@ -229,10 +229,10 @@ function PipelineCard({ pipeline }: { pipeline: Pipeline }) {
                     width: 28, height: 28,
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     background: 'none',
-                    border: '1px solid #e2e8f0',
+                    border: '1px solid var(--color-border)',
                     borderRadius: 6,
                     cursor: 'pointer',
-                    color: action === 'delete' ? '#dc2626' : '#6b7280',
+                    color: action === 'delete' ? '#dc2626' : 'var(--color-text-tertiary)',
                     fontSize: 13,
                     transition: 'background 0.15s, border-color 0.15s',
                   }}
@@ -299,7 +299,7 @@ export default function PipelinesPage() {
             type="link"
             icon={<ArrowLeftOutlined />}
             onClick={() => navigate('/recruitment/job-postings')}
-            style={{ padding: 0, fontWeight: 600, color: '#0f766e', fontSize: 13 }}
+            style={{ padding: 0, fontWeight: 600, color: 'var(--color-primary)', fontSize: 13 }}
           >
             Back to Job Postings
           </Button>
@@ -311,18 +311,18 @@ export default function PipelinesPage() {
         <div style={{
           display: 'flex', alignItems: 'center', gap: 10,
           padding: '10px 16px', marginBottom: 20,
-          background: '#f0fdfa', border: '1px solid #99f6e4',
+          background: 'var(--color-primary-tint)', border: '1px solid #99f6e4',
           borderLeft: '3px solid #0f766e', borderRadius: 8,
           fontSize: 13,
         }}>
-          <FileTextOutlined style={{ color: '#0f766e', fontSize: 15 }} />
-          <span style={{ color: '#374151' }}>
+          <FileTextOutlined style={{ color: 'var(--color-primary)', fontSize: 15 }} />
+          <span style={{ color: 'var(--color-text-secondary)' }}>
             Creating pipeline for job posting:
           </span>
-          <span style={{ fontWeight: 700, color: '#0f766e' }}>
+          <span style={{ fontWeight: 700, color: 'var(--color-primary)' }}>
             {contextPostingTitle}
           </span>
-          <span style={{ fontSize: 11, color: '#9ca3af', marginLeft: 4 }}>
+          <span style={{ fontSize: 11, color: 'var(--color-text-disabled)', marginLeft: 4 }}>
             ({contextPostingId})
           </span>
         </div>
@@ -345,7 +345,7 @@ export default function PipelinesPage() {
       {/* ── Search ───────────────────────────────────────────────────────── */}
       <div style={{ marginBottom: 16 }}>
         <Input
-          prefix={<SearchOutlined style={{ color: '#9ca3af' }} />}
+          prefix={<SearchOutlined style={{ color: 'var(--color-text-disabled)' }} />}
           placeholder="Search pipelines by name or position..."
           value={search}
           onChange={e => setSearch(e.target.value)}
@@ -367,8 +367,8 @@ export default function PipelinesPage() {
                 display: 'inline-flex', alignItems: 'center', gap: 6,
                 padding: '6px 14px', borderRadius: 10,
                 border: isActive ? '1.5px solid #0f766e' : '1.5px solid #d8e7e5',
-                background: isActive ? '#f0fdfa' : '#ffffff',
-                color: isActive ? '#0f766e' : '#374151',
+                background: isActive ? 'var(--color-primary-tint)' : 'var(--color-bg-surface)',
+                color: isActive ? 'var(--color-primary)' : 'var(--color-text-secondary)',
                 fontWeight: isActive ? 700 : 500,
                 fontSize: 13, fontFamily: 'inherit', cursor: 'pointer',
                 transition: 'border-color 0.15s, background 0.15s, color 0.15s',
@@ -379,8 +379,8 @@ export default function PipelinesPage() {
                 display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                 minWidth: 20, height: 20, borderRadius: 10,
                 fontSize: 11, fontWeight: 700, padding: '0 5px',
-                background: isActive ? '#0f766e' : '#e5e7eb',
-                color:      isActive ? '#ffffff' : '#6b7280',
+                background: isActive ? 'var(--color-primary)' : 'var(--color-border)',
+                color:      isActive ? 'var(--color-bg-surface)' : 'var(--color-text-tertiary)',
               }}>
                 {count}
               </span>
@@ -393,10 +393,10 @@ export default function PipelinesPage() {
       {filtered.length === 0 ? (
         <div style={{
           display: 'flex', flexDirection: 'column', alignItems: 'center',
-          justifyContent: 'center', gap: 10, padding: '60px 0', color: '#9ca3af',
+          justifyContent: 'center', gap: 10, padding: '60px 0', color: 'var(--color-text-disabled)',
         }}>
-          <PartitionOutlined style={{ fontSize: 36, color: '#d1d5db' }} />
-          <div style={{ fontSize: 14, fontWeight: 600, color: '#374151' }}>No pipelines found</div>
+          <PartitionOutlined style={{ fontSize: 36, color: 'var(--color-text-disabled)' }} />
+          <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-text-secondary)' }}>No pipelines found</div>
           <div style={{ fontSize: 13 }}>Try adjusting your search or create a new pipeline.</div>
         </div>
       ) : (

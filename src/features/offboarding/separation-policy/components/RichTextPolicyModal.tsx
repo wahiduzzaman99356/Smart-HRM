@@ -176,18 +176,18 @@ export function RichTextPolicyModal({
         footer={null}
         title={
           <div style={{ paddingBottom: 4 }}>
-            <div style={{ fontSize: 15, fontWeight: 700, color: '#111827', lineHeight: 1.3 }}>
+            <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--color-text-primary)', lineHeight: 1.3 }}>
               {title}
             </div>
             {subtitle && (
-              <div style={{ fontSize: 12, color: '#6b7280', fontWeight: 400, marginTop: 3 }}>
+              <div style={{ fontSize: 12, color: 'var(--color-text-tertiary)', fontWeight: 400, marginTop: 3 }}>
                 {subtitle}
               </div>
             )}
           </div>
         }
         styles={{
-          header: { borderBottom: '1px solid #e5e7eb', paddingBottom: 14, marginBottom: 0 },
+          header: { borderBottom: '1px solid var(--color-border)', paddingBottom: 14, marginBottom: 0 },
           body: { padding: '20px 24px' },
         }}
       >
@@ -206,7 +206,7 @@ export function RichTextPolicyModal({
         <div style={{
           display: 'flex', justifyContent: 'flex-end', gap: 10,
           paddingTop: 20, marginTop: 20,
-          borderTop: '1px solid #e5e7eb',
+          borderTop: '1px solid var(--color-border)',
         }}>
           <Button onClick={handleCancel} style={{ minWidth: 80 }}>
             Cancel

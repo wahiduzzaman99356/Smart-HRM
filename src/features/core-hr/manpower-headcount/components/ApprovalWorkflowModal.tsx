@@ -11,8 +11,8 @@ import type { HCRequest, ApprovalStep } from '../types/headcount.types';
 function ConnectorLine({ prevAction }: { prevAction: ApprovalStep['action'] }) {
   const color =
     prevAction === 'Approved' ? '#86efac' :
-    prevAction === 'Rejected' ? '#fca5a5' :
-    '#e5e7eb';
+    prevAction === 'Rejected' ? 'var(--color-status-rejected-bg)' :
+    'var(--color-border)';
 
   return (
     <div style={{ width: 2, flex: 1, minHeight: 20, background: color, margin: '3px 0' }} />
@@ -42,8 +42,8 @@ function StepIndicator({ action, stepNumber }: { action: ApprovalStep['action'];
     );
   }
   return (
-    <div style={{ ...base, background: '#f9fafb', border: '1.5px dashed #d1d5db' }}>
-      <span style={{ fontSize: 11, fontWeight: 600, color: '#9ca3af' }}>{stepNumber}</span>
+    <div style={{ ...base, background: 'var(--color-bg-subtle)', border: '1.5px dashed #d1d5db' }}>
+      <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--color-text-disabled)' }}>{stepNumber}</span>
     </div>
   );
 }
@@ -53,9 +53,9 @@ function StepRow({ step, stepNumber, isLast }: { step: ApprovalStep; stepNumber:
   const isPending = step.action === 'Pending';
 
   const statusConfig = {
-    Approved: { label: 'Approved', color: '#059669', bg: '#f0fdf4' },
-    Rejected: { label: 'Rejected', color: '#dc2626', bg: '#fef2f2' },
-    Pending:  { label: 'Awaiting Review', color: '#9ca3af', bg: '#f3f4f6' },
+    Approved: { label: 'Approved', color: '#059669', bg: 'var(--color-status-approved-bg)' },
+    Rejected: { label: 'Rejected', color: '#dc2626', bg: 'var(--color-status-rejected-bg)' },
+    Pending:  { label: 'Awaiting Review', color: 'var(--color-text-disabled)', bg: 'var(--color-bg-subtle)' },
   }[step.action];
 
   return (
@@ -84,10 +84,10 @@ function StepRow({ step, stepNumber, isLast }: { step: ApprovalStep; stepNumber:
         </div>
 
         {/* Approver */}
-        <div style={{ fontSize: 13, fontWeight: 600, color: isPending ? '#9ca3af' : '#111827', lineHeight: 1.4 }}>
+        <div style={{ fontSize: 13, fontWeight: 600, color: isPending ? 'var(--color-text-disabled)' : 'var(--color-text-primary)', lineHeight: 1.4 }}>
           {step.approverName}
           {step.approverId && (
-            <span style={{ fontWeight: 400, color: '#9ca3af', marginLeft: 6, fontSize: 12 }}>
+            <span style={{ fontWeight: 400, color: 'var(--color-text-disabled)', marginLeft: 6, fontSize: 12 }}>
               · ID: {step.approverId}
             </span>
           )}
@@ -95,7 +95,7 @@ function StepRow({ step, stepNumber, isLast }: { step: ApprovalStep; stepNumber:
 
         {/* Timestamp */}
         {step.timestamp && (
-          <div style={{ fontSize: 12, color: '#9ca3af', marginTop: 2 }}>
+          <div style={{ fontSize: 12, color: 'var(--color-text-disabled)', marginTop: 2 }}>
             {step.timestamp}
           </div>
         )}
@@ -106,7 +106,7 @@ function StepRow({ step, stepNumber, isLast }: { step: ApprovalStep; stepNumber:
             display: 'inline-flex',
             alignItems: 'center',
             gap: 4,
-            background: '#fef2f2',
+            background: 'var(--color-status-rejected-bg)',
             border: '1px solid #fecaca',
             borderRadius: 6,
             padding: '4px 10px',
@@ -124,13 +124,13 @@ function StepRow({ step, stepNumber, isLast }: { step: ApprovalStep; stepNumber:
             display: 'flex',
             alignItems: 'flex-start',
             gap: 5,
-            background: '#fffbeb',
+            background: 'var(--color-status-pending-bg)',
             border: '1px solid #fde68a',
             borderRadius: 6,
             padding: '5px 10px',
             marginTop: 6,
             fontSize: 12,
-            color: '#92400e',
+            color: '#d97706',
           }}>
             <span style={{ fontWeight: 600, flexShrink: 0 }}>Note:</span>
             <span>{step.note}</span>
@@ -163,10 +163,10 @@ export function ApprovalWorkflowModal({ request, onClose }: Props) {
       closeIcon={
         <div style={{
           width: 28, height: 28, borderRadius: '50%',
-          background: '#f3f4f6',
+          background: 'var(--color-bg-subtle)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}>
-          <CloseOutlined style={{ color: '#6b7280', fontSize: 11 }} />
+          <CloseOutlined style={{ color: 'var(--color-text-tertiary)', fontSize: 11 }} />
         </div>
       }
       styles={{
@@ -176,10 +176,10 @@ export function ApprovalWorkflowModal({ request, onClose }: Props) {
     >
       {/* Header */}
       <div style={{ marginBottom: 22 }}>
-        <div style={{ fontSize: 15, fontWeight: 700, color: '#111827', lineHeight: 1.3 }}>
+        <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--color-text-primary)', lineHeight: 1.3 }}>
           Approval Workflow
         </div>
-        <div style={{ fontSize: 12, color: '#9ca3af', marginTop: 2 }}>
+        <div style={{ fontSize: 12, color: 'var(--color-text-disabled)', marginTop: 2 }}>
           {completedCount} of {steps.length} steps completed
         </div>
       </div>

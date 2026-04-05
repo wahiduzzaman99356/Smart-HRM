@@ -22,8 +22,8 @@ function StatusBadge({ status }: { status: LoanStatus }) {
 function InfoRow({ label, value }: { label: string; value: React.ReactNode }) {
   return (
     <div style={{ display: 'flex', gap: 12, marginBottom: 12 }}>
-      <span style={{ fontSize: 13, color: '#6b7280', minWidth: 200, flexShrink: 0 }}>{label}</span>
-      <span style={{ fontSize: 13, color: '#111827', fontWeight: 500 }}>{value}</span>
+      <span style={{ fontSize: 13, color: 'var(--color-text-tertiary)', minWidth: 200, flexShrink: 0 }}>{label}</span>
+      <span style={{ fontSize: 13, color: 'var(--color-text-primary)', fontWeight: 500 }}>{value}</span>
     </div>
   );
 }
@@ -46,23 +46,23 @@ export function LoanApproveRejectView({ request, onBack, onApprove, onReject }: 
   };
 
   return (
-    <div style={{ height: '100%', overflowY: 'auto', background: '#eef4f5' }}>
+    <div style={{ height: '100%', overflowY: 'auto', background: 'var(--color-bg-subtle)' }}>
       <div style={{ padding: '24px 28px', maxWidth: 900 }}>
         {/* Back + Title */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
           <button
             onClick={onBack}
-            style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#0d9488', display: 'flex', alignItems: 'center', gap: 4, fontSize: 13, fontWeight: 500 }}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', gap: 4, fontSize: 13, fontWeight: 500 }}
           >
             <ArrowLeftOutlined /> Back
           </button>
-          <h1 style={{ fontSize: 20, fontWeight: 700, color: '#111827', margin: 0 }}>Loan Request Review</h1>
+          <h1 style={{ fontSize: 20, fontWeight: 700, color: 'var(--color-text-primary)', margin: 0 }}>Loan Request Review</h1>
           <StatusBadge status={request.status} />
         </div>
 
         {/* ── Employee Info Card ─────────────────────────────────────────────── */}
-        <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 10, padding: '20px 24px', marginBottom: 16 }}>
-          <div style={{ fontSize: 13, fontWeight: 700, color: '#374151', marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Employee Information</div>
+        <div style={{ background: 'var(--color-bg-surface)', border: '1px solid var(--color-border)', borderRadius: 10, padding: '20px 24px', marginBottom: 16 }}>
+          <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--color-text-secondary)', marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Employee Information</div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 0 }}>
             <InfoRow label="Employee Name"  value={request.employeeName} />
             <InfoRow label="Employee ID"    value={request.employeeId} />
@@ -74,8 +74,8 @@ export function LoanApproveRejectView({ request, onBack, onApprove, onReject }: 
         </div>
 
         {/* ── Loan Details Card ──────────────────────────────────────────────── */}
-        <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 10, padding: '20px 24px', marginBottom: 16 }}>
-          <div style={{ fontSize: 13, fontWeight: 700, color: '#374151', marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Loan Details</div>
+        <div style={{ background: 'var(--color-bg-surface)', border: '1px solid var(--color-border)', borderRadius: 10, padding: '20px 24px', marginBottom: 16 }}>
+          <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--color-text-secondary)', marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Loan Details</div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 0 }}>
             <InfoRow label="Type"                     value={request.type} />
             <InfoRow label="Installment Number"       value={request.installmentNumber} />
@@ -98,8 +98,8 @@ export function LoanApproveRejectView({ request, onBack, onApprove, onReject }: 
 
           {/* Reason */}
           <div style={{ marginTop: 8 }}>
-            <div style={{ fontSize: 13, color: '#6b7280', marginBottom: 6 }}>Reason</div>
-            <div style={{ fontSize: 13, color: '#111827', padding: '10px 14px', background: '#f9fafb', border: '1px solid #e5e7eb', borderRadius: 8 }}>
+            <div style={{ fontSize: 13, color: 'var(--color-text-tertiary)', marginBottom: 6 }}>Reason</div>
+            <div style={{ fontSize: 13, color: 'var(--color-text-primary)', padding: '10px 14px', background: 'var(--color-bg-subtle)', border: '1px solid var(--color-border)', borderRadius: 8 }}>
               {request.reason}
             </div>
           </div>
@@ -107,13 +107,13 @@ export function LoanApproveRejectView({ request, onBack, onApprove, onReject }: 
           {/* Attachment */}
           {request.attachmentName && (
             <div style={{ marginTop: 14 }}>
-              <div style={{ fontSize: 13, color: '#6b7280', marginBottom: 6 }}>Attachment</div>
+              <div style={{ fontSize: 13, color: 'var(--color-text-tertiary)', marginBottom: 6 }}>Attachment</div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '6px 14px', border: '1px solid #e5e7eb', borderRadius: 8, background: '#f9fafb', fontSize: 13, color: '#374151' }}>
-                  <PaperClipOutlined style={{ color: '#0d9488' }} />
+                <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '6px 14px', border: '1px solid var(--color-border)', borderRadius: 8, background: 'var(--color-bg-subtle)', fontSize: 13, color: 'var(--color-text-secondary)' }}>
+                  <PaperClipOutlined style={{ color: 'var(--color-primary)' }} />
                   {request.attachmentName}
                 </div>
-                <button style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 13, color: '#0d9488', fontWeight: 500, textDecoration: 'underline', display: 'flex', alignItems: 'center', gap: 4 }}>
+                <button style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 13, color: 'var(--color-primary)', fontWeight: 500, textDecoration: 'underline', display: 'flex', alignItems: 'center', gap: 4 }}>
                   <EyeOutlined /> View
                 </button>
               </div>
@@ -122,9 +122,9 @@ export function LoanApproveRejectView({ request, onBack, onApprove, onReject }: 
         </div>
 
         {/* ── Remarks + Actions ──────────────────────────────────────────────── */}
-        <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 10, padding: '20px 24px' }}>
+        <div style={{ background: 'var(--color-bg-surface)', border: '1px solid var(--color-border)', borderRadius: 10, padding: '20px 24px' }}>
           <div style={{ marginBottom: 16 }}>
-            <label style={{ fontSize: 13, color: '#374151', fontWeight: 500, display: 'block', marginBottom: 6 }}>
+            <label style={{ fontSize: 13, color: 'var(--color-text-secondary)', fontWeight: 500, display: 'block', marginBottom: 6 }}>
               Remarks <span style={{ fontSize: 12, color: '#dc2626', fontWeight: 400 }}>(required for rejection)</span>
             </label>
             <Input.TextArea
@@ -142,7 +142,7 @@ export function LoanApproveRejectView({ request, onBack, onApprove, onReject }: 
             <Button
               type="primary"
               onClick={handleApprove}
-              style={{ background: '#0d9488', borderColor: '#0d9488', borderRadius: 8, minWidth: 100 }}
+              style={{ background: 'var(--color-primary)', borderColor: 'var(--color-primary)', borderRadius: 8, minWidth: 100 }}
             >
               Approve
             </Button>
