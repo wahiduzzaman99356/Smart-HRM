@@ -27,7 +27,7 @@ const INITIAL_QUESTIONS: Question[] = [
     department: 'Engineering',
     difficulty: 'Easy',
     status: 'active',
-    createdBy: { name: 'Jane Anderson', initials: 'J', color: '#64748b' },
+    createdBy: { name: 'Jane Anderson', initials: 'J', color: 'var(--color-text-tertiary)' },
     createdAt: '2026-03-10',
     performance: { used: 16, successRate: 78 },
   },
@@ -40,7 +40,7 @@ const INITIAL_QUESTIONS: Question[] = [
     department: 'Engineering',
     difficulty: 'Hard',
     status: 'active',
-    createdBy: { name: 'Alex Chen', initials: 'A', color: '#64748b' },
+    createdBy: { name: 'Alex Chen', initials: 'A', color: 'var(--color-text-tertiary)' },
     createdAt: '2026-03-08',
     performance: { used: 7, successRate: 41 },
   },
@@ -53,7 +53,7 @@ const INITIAL_QUESTIONS: Question[] = [
     department: 'Engineering',
     difficulty: 'Easy',
     status: 'draft',
-    createdBy: { name: 'Sarah Smith', initials: 'S', color: '#64748b' },
+    createdBy: { name: 'Sarah Smith', initials: 'S', color: 'var(--color-text-tertiary)' },
     createdAt: '2026-03-14',
     performance: { used: 0, successRate: 0 },
   },
@@ -66,7 +66,7 @@ const INITIAL_QUESTIONS: Question[] = [
     department: 'Engineering',
     difficulty: 'Medium',
     status: 'archived',
-    createdBy: { name: 'Maria Lopez', initials: 'M', color: '#64748b' },
+    createdBy: { name: 'Maria Lopez', initials: 'M', color: 'var(--color-text-tertiary)' },
     createdAt: '2025-12-02',
     performance: { used: 22, successRate: 63 },
   },
@@ -74,13 +74,13 @@ const INITIAL_QUESTIONS: Question[] = [
 
 // ── Style helpers ─────────────────────────────────────────────────────────────
 const TYPE_CONFIG: Record<QuestionType, { color: string; bg: string }> = {
-  MCQ: { color: '#374151', bg: '#f1f5f9' },
-  MULTISELECT: { color: '#374151', bg: '#e2e8f0' },
-  DESCRIPTIVE: { color: '#374151', bg: '#f1f5f9' },
-  TRUE_FALSE: { color: '#374151', bg: '#e2e8f0' },
-  SHORT_QUESTION: { color: '#374151', bg: '#f1f5f9' },
-  LONG_QUESTION: { color: '#374151', bg: '#e2e8f0' },
-  FILE_UPLOAD: { color: '#374151', bg: '#f1f5f9' },
+  MCQ: { color: 'var(--color-text-secondary)', bg: 'var(--color-bg-subtle)' },
+  MULTISELECT: { color: 'var(--color-text-secondary)', bg: 'var(--color-bg-subtle)' },
+  DESCRIPTIVE: { color: 'var(--color-text-secondary)', bg: 'var(--color-bg-subtle)' },
+  TRUE_FALSE: { color: 'var(--color-text-secondary)', bg: 'var(--color-bg-subtle)' },
+  SHORT_QUESTION: { color: 'var(--color-text-secondary)', bg: 'var(--color-bg-subtle)' },
+  LONG_QUESTION: { color: 'var(--color-text-secondary)', bg: 'var(--color-bg-subtle)' },
+  FILE_UPLOAD: { color: 'var(--color-text-secondary)', bg: 'var(--color-bg-subtle)' },
 };
 
 const QUESTION_TYPE_LABELS: Record<QuestionType, string> = {
@@ -94,12 +94,12 @@ const QUESTION_TYPE_LABELS: Record<QuestionType, string> = {
 };
 
 const DIFFICULTY_COLOR: Record<DifficultyLevel, string> = {
-  Easy: '#6ee7b7',
-  Medium: '#fcd34d',
-  Hard: '#fca5a5',
+  Easy: 'var(--color-status-approved-bg)',
+  Medium: 'rgba(252, 211, 77, 0.45)',
+  Hard: 'var(--color-status-rejected-bg)',
 };
 
-const SUCCESS_COLOR = (rate: number) => rate >= 40 ? '#16a34a' : '#6b7280';
+const SUCCESS_COLOR = (rate: number) => rate >= 40 ? '#16a34a' : 'var(--color-text-tertiary)';
 
 const formatOngoingDateTime = (value: Date) => value.toLocaleString('en-GB', {
   day: '2-digit',
@@ -123,9 +123,9 @@ interface StatCardProps {
 function StatCard({ icon, iconBg, accent, tint, value, label }: StatCardProps) {
   return (
     <div style={{
-      background: `linear-gradient(135deg, ${tint} 0%, #ffffff 36%)`,
+      background: `linear-gradient(135deg, ${tint} 0%, var(--color-bg-surface) 36%)`,
       borderRadius: 12,
-      border: '1px solid #e8edf3',
+      border: '1px solid var(--color-border)',
       padding: '20px 24px',
       display: 'flex',
       alignItems: 'center',
@@ -157,7 +157,7 @@ function StatCard({ icon, iconBg, accent, tint, value, label }: StatCardProps) {
         {icon}
       </div>
       <div>
-        <div style={{ fontSize: 28, fontWeight: 700, lineHeight: 1.1, color: '#111827' }}>
+        <div style={{ fontSize: 28, fontWeight: 700, lineHeight: 1.1, color: 'var(--color-text-primary)' }}>
           {typeof value === 'number' ? value.toLocaleString() : value}
         </div>
         <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.07em', color: accent, marginTop: 2, textTransform: 'uppercase' }}>
@@ -183,10 +183,10 @@ function PageNav({ current, total, pageSize, onChange }: PageNavProps) {
     minWidth: 32,
     height: 32,
     padding: '0 10px',
-    border: active ? 'none' : '1px solid #e2e8f0',
+    border: active ? 'none' : '1px solid var(--color-border)',
     borderRadius: 8,
-    background: active ? '#334155' : '#fff',
-    color: active ? '#fff' : '#374151',
+    background: active ? 'var(--color-text-secondary)' : 'var(--color-bg-surface)',
+    color: active ? '#fff' : 'var(--color-text-secondary)',
     fontWeight: active ? 700 : 400,
     cursor: active ? 'default' : 'pointer',
     fontSize: 13,
@@ -509,7 +509,7 @@ export default function QuestionBankPage() {
 
   const columns: TableColumnsType<Question> = [
     {
-      title: <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', color: '#6b7280' }}>QUESTION DETAIL</span>,
+      title: <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', color: 'var(--color-text-tertiary)' }}>QUESTION DETAIL</span>,
       dataIndex: 'text',
       key: 'text',
       width: 310,
@@ -528,13 +528,13 @@ export default function QuestionBankPage() {
             <div style={{ color: '#1e40af', fontWeight: 500, fontSize: 13, lineHeight: 1.4, opacity: 0.85 }}>
               {text.length > 44 ? text.slice(0, 44) + '...' : text}
             </div>
-            <div style={{ fontSize: 11, color: '#94a3b8', marginTop: 2 }}>{record.id}</div>
+            <div style={{ fontSize: 11, color: 'var(--color-text-tertiary)', marginTop: 2 }}>{record.id}</div>
           </div>
         </Tooltip>
       ),
     },
     {
-      title: <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', color: '#6b7280' }}>TYPE / TOPIC</span>,
+      title: <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', color: 'var(--color-text-tertiary)' }}>TYPE / TOPIC</span>,
       key: 'type',
       width: 150,
       render: (_: unknown, record: Question) => (
@@ -555,23 +555,23 @@ export default function QuestionBankPage() {
           >
             {QUESTION_TYPE_LABELS[record.type]}
           </Tag>
-          <div style={{ fontSize: 12, color: '#64748b' }}>{record.topic}</div>
+          <div style={{ fontSize: 12, color: 'var(--color-text-tertiary)' }}>{record.topic}</div>
         </div>
       ),
     },
     {
-      title: <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', color: '#6b7280' }}>TARGET ROLE</span>,
+      title: <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', color: 'var(--color-text-tertiary)' }}>TARGET ROLE</span>,
       key: 'role',
       width: 150,
       render: (_: unknown, record: Question) => (
         <div>
-          <div style={{ fontWeight: 600, fontSize: 13, color: '#111827' }}>{record.targetRole}</div>
-          <div style={{ fontSize: 12, color: '#64748b' }}>{record.department}</div>
+          <div style={{ fontWeight: 600, fontSize: 13, color: 'var(--color-text-primary)' }}>{record.targetRole}</div>
+          <div style={{ fontSize: 12, color: 'var(--color-text-tertiary)' }}>{record.department}</div>
         </div>
       ),
     },
     {
-      title: <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', color: '#6b7280' }}>DIFFICULTY</span>,
+      title: <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', color: 'var(--color-text-tertiary)' }}>DIFFICULTY</span>,
       key: 'difficulty',
       width: 110,
       render: (_: unknown, record: Question) => (
@@ -581,12 +581,12 @@ export default function QuestionBankPage() {
             background: DIFFICULTY_COLOR[record.difficulty],
             display: 'inline-block', flexShrink: 0,
           }} />
-          <span style={{ fontSize: 13, color: '#374151' }}>{record.difficulty}</span>
+          <span style={{ fontSize: 13, color: 'var(--color-text-secondary)' }}>{record.difficulty}</span>
         </Space>
       ),
     },
     {
-      title: <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', color: '#6b7280' }}>CREATED</span>,
+      title: <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', color: 'var(--color-text-tertiary)' }}>CREATED</span>,
       key: 'created',
       width: 170,
       render: (_: unknown, record: Question) => (
@@ -598,20 +598,20 @@ export default function QuestionBankPage() {
             {record.createdBy.initials}
           </Avatar>
           <div>
-            <div style={{ fontWeight: 600, fontSize: 12, color: '#111827' }}>{record.createdBy.name}</div>
-            <div style={{ fontSize: 11, color: '#94a3b8' }}>{record.createdAt}</div>
+            <div style={{ fontWeight: 600, fontSize: 12, color: 'var(--color-text-primary)' }}>{record.createdBy.name}</div>
+            <div style={{ fontSize: 11, color: 'var(--color-text-tertiary)' }}>{record.createdAt}</div>
           </div>
         </Space>
       ),
     },
     {
-      title: <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', color: '#6b7280' }}>PERFORMANCE</span>,
+      title: <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', color: 'var(--color-text-tertiary)' }}>PERFORMANCE</span>,
       key: 'performance',
       width: 130,
       render: (_: unknown, record: Question) => (
         <div style={{ lineHeight: 1.6 }}>
-          <div style={{ fontSize: 12, color: '#374151' }}>Used: <strong>{record.performance.used}</strong></div>
-          <div style={{ fontSize: 12, color: '#374151' }}>
+          <div style={{ fontSize: 12, color: 'var(--color-text-secondary)' }}>Used: <strong>{record.performance.used}</strong></div>
+          <div style={{ fontSize: 12, color: 'var(--color-text-secondary)' }}>
             Success: <span style={{ color: SUCCESS_COLOR(record.performance.successRate), fontWeight: 700 }}>
               {record.performance.successRate}%
             </span>
@@ -620,7 +620,7 @@ export default function QuestionBankPage() {
       ),
     },
     {
-      title: <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', color: '#6b7280' }}>ACTIONS</span>,
+      title: <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', color: 'var(--color-text-tertiary)' }}>ACTIONS</span>,
       key: 'actions',
       width: 60,
       render: (_: unknown, record: Question) => (
@@ -652,7 +652,7 @@ export default function QuestionBankPage() {
           <Button
             type="text"
             size="small"
-            icon={<MoreOutlined style={{ fontSize: 16, color: '#94a3b8' }} />}
+            icon={<MoreOutlined style={{ fontSize: 16, color: 'var(--color-text-tertiary)' }} />}
           />
         </Dropdown>
       ),
@@ -666,7 +666,7 @@ export default function QuestionBankPage() {
   ];
 
   return (
-    <div style={{ padding: 24, background: '#F8FAFC', minHeight: '100%' }}>
+    <div style={{ padding: 24, background: 'var(--color-bg-base)', minHeight: '100%' }}>
 
       {/* ── Page Header ─────────────────────────────────────────────────────── */}
       <div className="page-header-row">
@@ -725,9 +725,9 @@ export default function QuestionBankPage() {
 
       {/* ── Main panel ─────────────────────────────────────────────────────── */}
       <div style={{
-        background: '#fff',
+        background: 'var(--color-bg-surface)',
         borderRadius: 14,
-        border: '1px solid #e2e8f0',
+        border: '1px solid var(--color-border)',
         overflow: 'hidden',
         boxShadow: '0 1px 6px rgba(15,30,60,0.06)',
       }}>
@@ -740,7 +740,7 @@ export default function QuestionBankPage() {
           alignItems: 'center',
           gap: 12,
           flexWrap: 'wrap',
-          borderBottom: '1px solid #f1f5f9',
+          borderBottom: '1px solid var(--color-border)',
         }}>
           {/* Tab buttons */}
           <Space size={4}>
@@ -754,8 +754,8 @@ export default function QuestionBankPage() {
                   border: 'none',
                   cursor: 'pointer',
                   fontWeight: activeTab === key ? 700 : 500,
-                  background: activeTab === key ? '#f1f5f9' : 'transparent',
-                  color: activeTab === key ? '#334155' : '#6b7280',
+                  background: activeTab === key ? 'var(--color-bg-subtle)' : 'transparent',
+                  color: activeTab === key ? 'var(--color-text-secondary)' : 'var(--color-text-tertiary)',
                   fontSize: 13,
                   display: 'inline-flex',
                   alignItems: 'center',
@@ -772,7 +772,7 @@ export default function QuestionBankPage() {
           {/* Action buttons */}
           <Space size={8}>
             <Input
-              prefix={<SearchOutlined style={{ color: '#94a3b8' }} />}
+              prefix={<SearchOutlined style={{ color: 'var(--color-text-tertiary)' }} />}
               placeholder="Search by keyword, subject, ID, or role..."
               value={searchQuery}
               onChange={e => { setSearchQuery(e.target.value); setCurrentPage(1); }}
@@ -782,7 +782,7 @@ export default function QuestionBankPage() {
             <Button
               icon={<FilterOutlined />}
               onClick={() => setShowFilters(v => !v)}
-              style={showFilters ? { borderColor: '#94a3b8', color: '#334155' } : {}}
+              style={showFilters ? { borderColor: 'var(--color-text-tertiary)', color: 'var(--color-text-secondary)' } : {}}
             >
               Filters
             </Button>
@@ -798,25 +798,25 @@ export default function QuestionBankPage() {
         {showFilters && (
           <div style={{
             padding: '16px 20px',
-            background: '#f8fafc',
-            borderBottom: '1px solid #e8edf3',
-            borderLeft: '3px solid #cbd5e1',
+            background: 'var(--color-bg-subtle)',
+            borderBottom: '1px solid var(--color-border)',
+            borderLeft: '3px solid var(--color-border-strong)',
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
               <Space size={8} align="center">
-                <FilterOutlined style={{ color: '#64748b' }} />
-                <span style={{ fontWeight: 700, fontSize: 12, letterSpacing: '0.07em', color: '#374151', textTransform: 'uppercase' }}>
+                <FilterOutlined style={{ color: 'var(--color-text-tertiary)' }} />
+                <span style={{ fontWeight: 700, fontSize: 12, letterSpacing: '0.07em', color: 'var(--color-text-secondary)', textTransform: 'uppercase' }}>
                   Advanced Filtering
                 </span>
               </Space>
-              <Button type="link" size="small" onClick={handleResetFilters} icon={<ReloadOutlined />} style={{ color: '#64748b', padding: 0, fontSize: 12 }}>
+              <Button type="link" size="small" onClick={handleResetFilters} icon={<ReloadOutlined />} style={{ color: 'var(--color-text-tertiary)', padding: 0, fontSize: 12 }}>
                 Reset All Filters
               </Button>
             </div>
 
             <Row gutter={[12, 12]} align="bottom">
               <Col flex="1 1 160px">
-                <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.06em', color: '#6b7280', marginBottom: 6, textTransform: 'uppercase' }}>Subject</div>
+                <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.06em', color: 'var(--color-text-tertiary)', marginBottom: 6, textTransform: 'uppercase' }}>Subject</div>
                 <Select
                   placeholder="All Subjects"
                   style={{ width: '100%' }}
@@ -828,7 +828,7 @@ export default function QuestionBankPage() {
                 </Select>
               </Col>
               <Col flex="1 1 160px">
-                <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.06em', color: '#6b7280', marginBottom: 6, textTransform: 'uppercase' }}>Question Type</div>
+                <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.06em', color: 'var(--color-text-tertiary)', marginBottom: 6, textTransform: 'uppercase' }}>Question Type</div>
                 <Select
                   placeholder="All Types"
                   style={{ width: '100%' }}
@@ -842,7 +842,7 @@ export default function QuestionBankPage() {
                 </Select>
               </Col>
               <Col flex="1 1 160px">
-                <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.06em', color: '#6b7280', marginBottom: 6, textTransform: 'uppercase' }}>Difficulty</div>
+                <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.06em', color: 'var(--color-text-tertiary)', marginBottom: 6, textTransform: 'uppercase' }}>Difficulty</div>
                 <Select
                   placeholder="All Levels"
                   style={{ width: '100%' }}
@@ -856,7 +856,7 @@ export default function QuestionBankPage() {
                 </Select>
               </Col>
               <Col flex="2 1 260px">
-                <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.06em', color: '#6b7280', marginBottom: 6, textTransform: 'uppercase' }}>Date Range</div>
+                <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.06em', color: 'var(--color-text-tertiary)', marginBottom: 6, textTransform: 'uppercase' }}>Date Range</div>
                 <DatePicker.RangePicker
                   style={{ width: '100%', height: 34 }}
                   placeholder={['Start date', 'End date']}
@@ -882,7 +882,7 @@ export default function QuestionBankPage() {
           pagination={false}
           size="middle"
           style={{ minHeight: 240 }}
-          locale={{ emptyText: <div style={{ padding: '32px 0', color: '#9ca3af' }}>No questions found for this filter.</div> }}
+          locale={{ emptyText: <div style={{ padding: '32px 0', color: 'var(--color-text-disabled)' }}>No questions found for this filter.</div> }}
         />
 
         {/* Footer */}
@@ -891,9 +891,9 @@ export default function QuestionBankPage() {
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          borderTop: '1px solid #f1f5f9',
+          borderTop: '1px solid var(--color-border)',
         }}>
-          <Text style={{ fontSize: 12, color: '#6b7280' }}>
+          <Text style={{ fontSize: 12, color: 'var(--color-text-tertiary)' }}>
             Showing {pagedData.length} {pagedData.length !== filteredData.length ? `of ${filteredData.length} ` : ''}entries
           </Text>
           {filteredData.length > PAGE_SIZE && (
@@ -924,23 +924,23 @@ export default function QuestionBankPage() {
         title={(
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingRight: 0 }}>
             <div style={{ flex: 1 }}>
-              <div style={{ fontSize: 20, fontWeight: 700, color: '#111827', lineHeight: 1.2 }}>
+              <div style={{ fontSize: 20, fontWeight: 700, color: 'var(--color-text-primary)', lineHeight: 1.2 }}>
                 {modalMode === 'edit' ? 'Edit Question' : 'Create New Question'}
               </div>
-              <div style={{ fontSize: 12, color: '#9ca3af', marginTop: 2 }}>
+              <div style={{ fontSize: 12, color: 'var(--color-text-disabled)', marginTop: 2 }}>
                 {modalMode === 'edit'
                   ? `Update question details, answers, and metadata${editingQuestionId ? ` (${editingQuestionId})` : ''}.`
                   : 'Configure question details, answers, and metadata.'}
               </div>
             </div>
             <Space size={8} style={{ marginLeft: 'auto' }}>
-              <Button type="primary" size="small" onClick={saveDraft} style={{ backgroundColor: '#6b7280', borderColor: '#6b7280' }}>
+              <Button type="primary" size="small" onClick={saveDraft} style={{ backgroundColor: 'var(--color-text-tertiary)', borderColor: 'var(--color-text-tertiary)' }}>
                 Save as Draft
               </Button>
               <Button
                 type="text"
                 size="small"
-                icon={<CloseOutlined style={{ color: '#94a3b8' }} />}
+                icon={<CloseOutlined style={{ color: 'var(--color-text-tertiary)' }} />}
                 onClick={() => {
                   setCreateOpen(false);
                   setModalMode('create');
@@ -951,12 +951,12 @@ export default function QuestionBankPage() {
           </div>
         )}
       >
-        <div style={{ borderTop: '1px solid #eef2f7' }}>
+        <div style={{ borderTop: '1px solid var(--color-border)' }}>
           <Row gutter={0}>
             <Col xs={24} lg={16}>
               <div style={{ padding: '20px 24px', height: '78vh', overflowY: 'auto' }}>
-                <div style={{ border: '1px solid #e2e8f0', borderRadius: 10, overflow: 'hidden', marginBottom: 18 }}>
-                  <div style={{ height: 40, display: 'flex', alignItems: 'center', gap: 12, padding: '0 12px', borderBottom: '1px solid #f1f5f9', backgroundColor: '#f8fafc', color: '#6b7280' }}>
+                <div style={{ border: '1px solid var(--color-border)', borderRadius: 10, overflow: 'hidden', marginBottom: 18 }}>
+                  <div style={{ height: 40, display: 'flex', alignItems: 'center', gap: 12, padding: '0 12px', borderBottom: '1px solid var(--color-border)', backgroundColor: 'var(--color-bg-subtle)', color: 'var(--color-text-tertiary)' }}>
                     <BoldOutlined style={{ cursor: 'pointer' }} />
                     <ItalicOutlined style={{ cursor: 'pointer' }} />
                     <UnderlineOutlined style={{ cursor: 'pointer' }} />
@@ -984,9 +984,9 @@ export default function QuestionBankPage() {
                             key={item.key}
                             onClick={() => setCreateForm(s => ({ ...s, questionInputMode: item.key }))}
                             style={{
-                              border: active ? '1px solid #6366f1' : '1px solid #d1d5db',
-                              background: active ? '#eef2ff' : '#ffffff',
-                              color: active ? '#3730a3' : '#4b5563',
+                              border: active ? '1px solid #6366f1' : '1px solid var(--color-border)',
+                              background: active ? 'var(--color-status-info-bg)' : 'var(--color-bg-surface)',
+                              color: active ? '#3730a3' : 'var(--color-text-secondary)',
                               borderRadius: 6,
                               padding: '2px 8px',
                               fontSize: 11,
@@ -1007,7 +1007,7 @@ export default function QuestionBankPage() {
                       onChange={e => setCreateForm(s => ({ ...s, questionText: e.target.value }))}
                       placeholder="Type your question statement here..."
                       autoSize={{ minRows: 6, maxRows: 9 }}
-                      style={{ padding: '14px 12px', fontSize: 14, fontStyle: 'italic', color: '#94a3b8' }}
+                      style={{ padding: '14px 12px', fontSize: 14, fontStyle: 'italic', color: 'var(--color-text-tertiary)' }}
                     />
                   )}
 
@@ -1033,11 +1033,11 @@ export default function QuestionBankPage() {
                       )}
 
                       {createForm.questionImageDataUrl && (
-                        <div style={{ marginTop: 10, border: '1px solid #e2e8f0', borderRadius: 8, overflow: 'hidden', maxWidth: 440 }}>
+                        <div style={{ marginTop: 10, border: '1px solid var(--color-border)', borderRadius: 8, overflow: 'hidden', maxWidth: 440 }}>
                           <img
                             src={createForm.questionImageDataUrl}
                             alt="Question"
-                            style={{ width: '100%', display: 'block', objectFit: 'contain', maxHeight: 240, background: '#f8fafc' }}
+                            style={{ width: '100%', display: 'block', objectFit: 'contain', maxHeight: 240, background: 'var(--color-bg-subtle)' }}
                           />
                         </div>
                       )}
@@ -1047,7 +1047,7 @@ export default function QuestionBankPage() {
 
                 {(createForm.questionType === 'MCQ' || createForm.questionType === 'MULTISELECT') && (
                   <>
-                    <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', color: '#64748b', textTransform: 'uppercase', marginBottom: 10 }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', color: 'var(--color-text-tertiary)', textTransform: 'uppercase', marginBottom: 10 }}>
                       {createForm.questionType === 'MCQ' ? 'Single Choice Options' : 'Multi Select Options (Choose All Correct)'}
                     </div>
 
@@ -1109,7 +1109,7 @@ export default function QuestionBankPage() {
                         width: '100%',
                         border: '1px dashed #cbd5e1',
                         borderRadius: 8,
-                        background: '#fff',
+                        background: 'var(--color-bg-surface)',
                         color: '#4f46e5',
                         fontWeight: 600,
                         padding: '10px 12px',
@@ -1124,7 +1124,7 @@ export default function QuestionBankPage() {
 
                 {createForm.questionType === 'TRUE_FALSE' && (
                   <>
-                    <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', color: '#64748b', textTransform: 'uppercase', marginBottom: 10 }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', color: 'var(--color-text-tertiary)', textTransform: 'uppercase', marginBottom: 10 }}>
                       Select Correct Answer
                     </div>
                     <Row gutter={12} style={{ marginBottom: 18 }}>
@@ -1136,13 +1136,13 @@ export default function QuestionBankPage() {
                               onClick={() => setCreateForm(s => ({ ...s, trueFalseAnswer: v }))}
                               style={{
                                 width: '100%',
-                                border: selected ? '1px solid #6366f1' : '1px solid #e2e8f0',
-                                background: selected ? '#eef2ff' : '#fff',
+                                border: selected ? '1px solid #6366f1' : '1px solid var(--color-border)',
+                                background: selected ? 'var(--color-status-info-bg)' : 'var(--color-bg-surface)',
                                 borderRadius: 10,
                                 padding: '16px 12px',
                                 cursor: 'pointer',
                                 fontWeight: selected ? 700 : 500,
-                                color: '#334155',
+                                color: 'var(--color-text-secondary)',
                               }}
                             >
                               {v}
@@ -1156,7 +1156,7 @@ export default function QuestionBankPage() {
 
                 {(createForm.questionType === 'DESCRIPTIVE' || createForm.questionType === 'SHORT_QUESTION' || createForm.questionType === 'LONG_QUESTION') && (
                   <>
-                    <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', color: '#64748b', textTransform: 'uppercase', marginBottom: 10 }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', color: 'var(--color-text-tertiary)', textTransform: 'uppercase', marginBottom: 10 }}>
                       Sample Answer Guide
                     </div>
                     <Input.TextArea
@@ -1167,7 +1167,7 @@ export default function QuestionBankPage() {
                       style={{ marginBottom: 10 }}
                     />
                     {(createForm.questionType === 'SHORT_QUESTION' || createForm.questionType === 'LONG_QUESTION') && createForm.answerInputLimit && (
-                      <div style={{ fontSize: 12, color: '#64748b', background: '#f8fafc', padding: '8px 12px', borderRadius: 6, marginBottom: 18 }}>
+                      <div style={{ fontSize: 12, color: 'var(--color-text-tertiary)', background: 'var(--color-bg-subtle)', padding: '8px 12px', borderRadius: 6, marginBottom: 18 }}>
                         Candidates will have a limit of <strong>{createForm.answerInputLimit}</strong> {createForm.questionType === 'SHORT_QUESTION' ? 'characters' : 'words'} for their answer
                       </div>
                     )}
@@ -1179,7 +1179,7 @@ export default function QuestionBankPage() {
 
                 {createForm.questionType === 'FILE_UPLOAD' && (
                   <>
-                    <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', color: '#64748b', textTransform: 'uppercase', marginBottom: 10 }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', color: 'var(--color-text-tertiary)', textTransform: 'uppercase', marginBottom: 10 }}>
                       Upload Guidelines
                     </div>
                     <Input.TextArea
@@ -1194,7 +1194,7 @@ export default function QuestionBankPage() {
 
                 <Divider style={{ margin: '16px 0 18px' }} />
 
-                <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', color: '#64748b', textTransform: 'uppercase', marginBottom: 12 }}>
+                <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', color: 'var(--color-text-tertiary)', textTransform: 'uppercase', marginBottom: 12 }}>
                   Difficulty Level
                 </div>
                 <Row gutter={10}>
@@ -1210,17 +1210,17 @@ export default function QuestionBankPage() {
                           onClick={() => setCreateForm(s => ({ ...s, difficulty: item.level }))}
                           style={{
                             width: '100%',
-                            border: active ? '2px solid #eab308' : '1px solid #e2e8f0',
-                            background: active ? '#fffbeb' : '#fff',
+                            border: active ? '2px solid #eab308' : '1px solid var(--color-border)',
+                            background: active ? 'var(--color-status-pending-bg)' : 'var(--color-bg-surface)',
                             borderRadius: 10,
                             padding: '12px 8px',
                             cursor: 'pointer',
-                            color: '#334155',
+                            color: 'var(--color-text-secondary)',
                           }}
                         >
                           <div style={{ width: 10, height: 10, borderRadius: '50%', background: DIFFICULTY_COLOR[item.level], margin: '0 auto 5px' }} />
                           <div style={{ fontWeight: 700, fontSize: 12 }}>{item.level}</div>
-                          <div style={{ fontSize: 9, color: '#94a3b8', marginTop: 2 }}>{item.sub}</div>
+                          <div style={{ fontSize: 9, color: 'var(--color-text-tertiary)', marginTop: 2 }}>{item.sub}</div>
                         </button>
                       </Col>
                     );
@@ -1230,10 +1230,10 @@ export default function QuestionBankPage() {
             </Col>
 
             <Col xs={24} lg={8}>
-              <div style={{ borderLeft: '1px solid #eef2f7', padding: '20px 24px', height: '78vh', display: 'flex', flexDirection: 'column' }}>
+              <div style={{ borderLeft: '1px solid var(--color-border)', padding: '20px 24px', height: '78vh', display: 'flex', flexDirection: 'column' }}>
                 <div style={{ overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 14, paddingRight: 2 }}>
-                  <div style={{ border: '1px solid #e5e7eb', borderRadius: 10, padding: '14px' }}>
-                  <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.06em', color: '#6b7280', textTransform: 'uppercase', marginBottom: 8 }}>
+                  <div style={{ border: '1px solid var(--color-border)', borderRadius: 10, padding: '14px' }}>
+                  <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.06em', color: 'var(--color-text-tertiary)', textTransform: 'uppercase', marginBottom: 8 }}>
                     Question Type
                   </div>
                   <Select
@@ -1251,13 +1251,13 @@ export default function QuestionBankPage() {
                   />
                 </div>
 
-                  <div style={{ border: '1px solid #e5e7eb', borderRadius: 10, padding: '14px' }}>
-                  <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.06em', color: '#6b7280', textTransform: 'uppercase', marginBottom: 10 }}>
+                  <div style={{ border: '1px solid var(--color-border)', borderRadius: 10, padding: '14px' }}>
+                  <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.06em', color: 'var(--color-text-tertiary)', textTransform: 'uppercase', marginBottom: 10 }}>
                     Categorization
                   </div>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 10 }}>
                     <div>
-                      <div style={{ fontSize: 9, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', marginBottom: 4 }}>Subject</div>
+                      <div style={{ fontSize: 9, fontWeight: 700, color: 'var(--color-text-tertiary)', textTransform: 'uppercase', marginBottom: 4 }}>Subject</div>
                       <Select
                         value={createForm.subject}
                         onChange={v => setCreateForm(s => ({ ...s, subject: v }))}
@@ -1266,7 +1266,7 @@ export default function QuestionBankPage() {
                       />
                     </div>
                     <div>
-                      <div style={{ fontSize: 9, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', marginBottom: 4 }}>Topic</div>
+                      <div style={{ fontSize: 9, fontWeight: 700, color: 'var(--color-text-tertiary)', textTransform: 'uppercase', marginBottom: 4 }}>Topic</div>
                       <Select
                         value={createForm.topic}
                         onChange={v => setCreateForm(s => ({ ...s, topic: v }))}
@@ -1277,7 +1277,7 @@ export default function QuestionBankPage() {
                   </div>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 10 }}>
                     <div>
-                      <div style={{ fontSize: 9, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', marginBottom: 4 }}>Target Department</div>
+                      <div style={{ fontSize: 9, fontWeight: 700, color: 'var(--color-text-tertiary)', textTransform: 'uppercase', marginBottom: 4 }}>Target Department</div>
                       <Select
                         value={createForm.targetDepartment}
                         onChange={v => setCreateForm(s => ({ ...s, targetDepartment: v }))}
@@ -1286,7 +1286,7 @@ export default function QuestionBankPage() {
                       />
                     </div>
                     <div>
-                      <div style={{ fontSize: 9, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', marginBottom: 4 }}>Target Section</div>
+                      <div style={{ fontSize: 9, fontWeight: 700, color: 'var(--color-text-tertiary)', textTransform: 'uppercase', marginBottom: 4 }}>Target Section</div>
                       <Select
                         value={createForm.section}
                         onChange={v => setCreateForm(s => ({ ...s, section: v }))}
@@ -1296,7 +1296,7 @@ export default function QuestionBankPage() {
                     </div>
                   </div>
                   <div>
-                    <div style={{ fontSize: 9, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', marginBottom: 4 }}>Target Designation</div>
+                    <div style={{ fontSize: 9, fontWeight: 700, color: 'var(--color-text-tertiary)', textTransform: 'uppercase', marginBottom: 4 }}>Target Designation</div>
                     <Select
                       value={createForm.targetDesignation}
                       onChange={v => setCreateForm(s => ({ ...s, targetDesignation: v }))}
@@ -1306,11 +1306,11 @@ export default function QuestionBankPage() {
                   </div>
                 </div>
 
-                  <div style={{ border: '1px solid #e5e7eb', borderRadius: 10, padding: '14px' }}>
-                  <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.06em', color: '#6b7280', textTransform: 'uppercase', marginBottom: 8 }}>
+                  <div style={{ border: '1px solid var(--color-border)', borderRadius: 10, padding: '14px' }}>
+                  <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.06em', color: 'var(--color-text-tertiary)', textTransform: 'uppercase', marginBottom: 8 }}>
                     Skills / Tags
                   </div>
-                  <div style={{ border: '1px solid #e2e8f0', borderRadius: 8, padding: '10px 8px', background: '#f8fafc', minHeight: 40 }}>
+                  <div style={{ border: '1px solid var(--color-border)', borderRadius: 8, padding: '10px 8px', background: 'var(--color-bg-subtle)', minHeight: 40 }}>
                     <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: createForm.skillsTags.length > 0 ? 6 : 0 }}>
                       {createForm.skillsTags.map(tag => (
                         <Tag
@@ -1341,8 +1341,8 @@ export default function QuestionBankPage() {
                   </div>
                 </div>
 
-                  <div style={{ border: '1px solid #e5e7eb', borderRadius: 10, padding: '14px' }}>
-                  <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.06em', color: '#6b7280', textTransform: 'uppercase', marginBottom: 8 }}>
+                  <div style={{ border: '1px solid var(--color-border)', borderRadius: 10, padding: '14px' }}>
+                  <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.06em', color: 'var(--color-text-tertiary)', textTransform: 'uppercase', marginBottom: 8 }}>
                     Answer Timer
                   </div>
                   <div style={{ display: 'flex', gap: 8 }}>
@@ -1366,8 +1366,8 @@ export default function QuestionBankPage() {
                 </div>
 
                   {(createForm.questionType === 'SHORT_QUESTION' || createForm.questionType === 'LONG_QUESTION') && (
-                    <div style={{ border: '1px solid #e5e7eb', borderRadius: 10, padding: '14px' }}>
-                    <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.06em', color: '#6b7280', textTransform: 'uppercase', marginBottom: 8 }}>
+                    <div style={{ border: '1px solid var(--color-border)', borderRadius: 10, padding: '14px' }}>
+                    <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.06em', color: 'var(--color-text-tertiary)', textTransform: 'uppercase', marginBottom: 8 }}>
                       Character Limit
                     </div>
                     <Input
@@ -1381,11 +1381,11 @@ export default function QuestionBankPage() {
                   )}
                 </div>
 
-                <div style={{ borderTop: '1px solid #eef2f7', paddingTop: 14, marginTop: 12, background: '#fff' }}>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', rowGap: 6, fontSize: 11, color: '#6b7280', marginBottom: 10 }}>
-                    <span>Created By:</span><strong style={{ color: '#334155' }}>Admin User</strong>
-                    <span>Date:</span><strong style={{ color: '#334155' }}>{formatOngoingDateTime(currentDateTime)} (Ongoing)</strong>
-                    <span>Version:</span><strong style={{ color: '#334155' }}>v1.0</strong>
+                <div style={{ borderTop: '1px solid var(--color-border)', paddingTop: 14, marginTop: 12, background: 'var(--color-bg-surface)' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', rowGap: 6, fontSize: 11, color: 'var(--color-text-tertiary)', marginBottom: 10 }}>
+                    <span>Created By:</span><strong style={{ color: 'var(--color-text-secondary)' }}>Admin User</strong>
+                    <span>Date:</span><strong style={{ color: 'var(--color-text-secondary)' }}>{formatOngoingDateTime(currentDateTime)} (Ongoing)</strong>
+                    <span>Version:</span><strong style={{ color: 'var(--color-text-secondary)' }}>v1.0</strong>
                   </div>
                   <Button type="primary" block onClick={publishQuestion} style={{ height: 42, borderRadius: 8, fontWeight: 600 }}>
                     {modalMode === 'edit' ? 'Update Question' : 'Publish Question'}
@@ -1407,15 +1407,15 @@ export default function QuestionBankPage() {
         width={680}
       >
         <div style={{ display: 'flex', flexDirection: 'column', gap: 18, paddingTop: 8 }}>
-          <div style={{ border: '1px solid #e5e7eb', borderRadius: 12, padding: 16, background: '#f8fafc' }}>
-            <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: '0.06em', color: '#475569', textTransform: 'uppercase', marginBottom: 8 }}>
+          <div style={{ border: '1px solid var(--color-border)', borderRadius: 12, padding: 16, background: 'var(--color-bg-subtle)' }}>
+            <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: '0.06em', color: 'var(--color-text-secondary)', textTransform: 'uppercase', marginBottom: 8 }}>
               Repeat Rule
             </div>
-            <div style={{ fontSize: 13, color: '#475569', marginBottom: 12 }}>
+            <div style={{ fontSize: 13, color: 'var(--color-text-secondary)', marginBottom: 12 }}>
               Control how many times a question can be reused. Once the maximum repeat count is reached, the question moves to archived status automatically.
             </div>
             <div>
-              <div style={{ fontSize: 11, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', marginBottom: 6 }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--color-text-tertiary)', textTransform: 'uppercase', marginBottom: 6 }}>
                 Max Repeat Count
               </div>
               <Input
@@ -1431,16 +1431,16 @@ export default function QuestionBankPage() {
             </div>
           </div>
 
-          <div style={{ border: '1px solid #e5e7eb', borderRadius: 12, padding: 16, background: '#ffffff' }}>
-            <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: '0.06em', color: '#475569', textTransform: 'uppercase', marginBottom: 8 }}>
+          <div style={{ border: '1px solid var(--color-border)', borderRadius: 12, padding: 16, background: 'var(--color-bg-subtle)' }}>
+            <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: '0.06em', color: 'var(--color-text-secondary)', textTransform: 'uppercase', marginBottom: 8 }}>
               Cooldown Rule
             </div>
-            <div style={{ fontSize: 13, color: '#475569', marginBottom: 12 }}>
+            <div style={{ fontSize: 13, color: 'var(--color-text-secondary)', marginBottom: 12 }}>
               After the cooldown period ends, the archived question will resurface and become active again automatically.
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 180px', gap: 12 }}>
               <div>
-                <div style={{ fontSize: 11, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', marginBottom: 6 }}>
+                <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--color-text-tertiary)', textTransform: 'uppercase', marginBottom: 6 }}>
                   Cooldown Duration
                 </div>
                 <Input
@@ -1455,7 +1455,7 @@ export default function QuestionBankPage() {
                 />
               </div>
               <div>
-                <div style={{ fontSize: 11, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', marginBottom: 6 }}>
+                <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--color-text-tertiary)', textTransform: 'uppercase', marginBottom: 6 }}>
                   Unit
                 </div>
                 <Select
@@ -1471,11 +1471,11 @@ export default function QuestionBankPage() {
             </div>
           </div>
 
-          <div style={{ borderRadius: 12, padding: 16, background: '#eff6ff', border: '1px solid #bfdbfe' }}>
+          <div style={{ borderRadius: 12, padding: 16, background: 'var(--color-status-info-bg)', border: '1px solid #bfdbfe' }}>
             <div style={{ fontSize: 12, fontWeight: 700, color: '#1d4ed8', marginBottom: 6 }}>
               Current Behavior Summary
             </div>
-            <div style={{ fontSize: 13, color: '#334155', lineHeight: 1.6 }}>
+            <div style={{ fontSize: 13, color: 'var(--color-text-secondary)', lineHeight: 1.6 }}>
               A question can repeat up to <strong>{configuration.maxRepeatCount}</strong> time{configuration.maxRepeatCount > 1 ? 's' : ''}. After that it will move to <strong>Archived</strong>. It will return to <strong>Active</strong> after <strong>{configuration.cooldownValue}</strong> {configuration.cooldownUnit}.
             </div>
           </div>
@@ -1496,12 +1496,12 @@ export default function QuestionBankPage() {
       >
         {statusModal.question && (
           <div>
-            <p style={{ marginBottom: 16, color: '#374151', fontSize: 13 }}>
+            <p style={{ marginBottom: 16, color: 'var(--color-text-secondary)', fontSize: 13 }}>
               <strong>{statusModal.question.id}</strong> - {statusModal.question.text.length > 60
                 ? statusModal.question.text.slice(0, 60) + '...'
                 : statusModal.question.text}
             </p>
-            <div style={{ marginBottom: 8, fontSize: 12, fontWeight: 600, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+            <div style={{ marginBottom: 8, fontSize: 12, fontWeight: 600, color: 'var(--color-text-tertiary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
               Set status to
             </div>
             <Radio.Group

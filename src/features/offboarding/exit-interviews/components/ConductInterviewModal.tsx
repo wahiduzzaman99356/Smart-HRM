@@ -32,8 +32,8 @@ function YesNoToggle({
           fontSize: 12,
           fontWeight: 600,
           border: value === true ? '1.5px solid #0f766e' : '1.5px solid #e2e8f0',
-          background: value === true ? '#f0fdfa' : '#fff',
-          color: value === true ? '#0f766e' : '#6b7280',
+          background: value === true ? 'var(--color-primary-tint)' : 'var(--color-bg-surface)',
+          color: value === true ? 'var(--color-primary)' : 'var(--color-text-tertiary)',
           cursor: 'pointer',
           transition: 'all 0.12s',
         }}
@@ -49,8 +49,8 @@ function YesNoToggle({
           fontSize: 12,
           fontWeight: 600,
           border: value === false ? '1.5px solid #dc2626' : '1.5px solid #e2e8f0',
-          background: value === false ? '#fef2f2' : '#fff',
-          color: value === false ? '#dc2626' : '#6b7280',
+          background: value === false ? 'var(--color-status-rejected-bg)' : 'var(--color-bg-surface)',
+          color: value === false ? '#dc2626' : 'var(--color-text-tertiary)',
           cursor: 'pointer',
           transition: 'all 0.12s',
         }}
@@ -67,7 +67,7 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
     <div style={{
       fontSize: 10, fontWeight: 700, letterSpacing: '0.08em',
-      color: '#6b7280', textTransform: 'uppercase',
+      color: 'var(--color-text-tertiary)', textTransform: 'uppercase',
       marginBottom: 14, marginTop: 4,
     }}>
       {children}
@@ -93,13 +93,13 @@ function QuestionRow({
       <div style={{ display: 'flex', gap: 8, marginBottom: 7 }}>
         <span style={{
           width: 20, height: 20, borderRadius: '50%',
-          background: '#f3f4f6', display: 'flex', alignItems: 'center',
+          background: 'var(--color-bg-subtle)', display: 'flex', alignItems: 'center',
           justifyContent: 'center', fontSize: 11, fontWeight: 700,
-          color: '#6b7280', flexShrink: 0, marginTop: 1,
+          color: 'var(--color-text-tertiary)', flexShrink: 0, marginTop: 1,
         }}>
           {number}
         </span>
-        <span style={{ fontSize: 13, color: '#374151', fontWeight: 500, lineHeight: 1.4 }}>
+        <span style={{ fontSize: 13, color: 'var(--color-text-secondary)', fontWeight: 500, lineHeight: 1.4 }}>
           {text}
           {required && <span style={{ color: '#dc2626', marginLeft: 3 }}>*</span>}
         </span>
@@ -175,16 +175,16 @@ export function ConductInterviewModal({ open, interview, onClose, onComplete }: 
       footer={null}
       title={
         <div style={{ paddingBottom: 4 }}>
-          <div style={{ fontSize: 15, fontWeight: 700, color: '#111827', lineHeight: 1.3 }}>
+          <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--color-text-primary)', lineHeight: 1.3 }}>
             Conduct Exit Interview — {interview.employeeName}
           </div>
-          <div style={{ fontSize: 12, color: '#6b7280', fontWeight: 400, marginTop: 3 }}>
+          <div style={{ fontSize: 12, color: 'var(--color-text-tertiary)', fontWeight: 400, marginTop: 3 }}>
             {interview.department} · {interview.employeeId} · Conducted by {interview.interviewer}
           </div>
         </div>
       }
       styles={{
-        header: { borderBottom: '1px solid #e5e7eb', paddingBottom: 14, marginBottom: 0 },
+        header: { borderBottom: '1px solid var(--color-border)', paddingBottom: 14, marginBottom: 0 },
         body: { padding: '20px 24px', maxHeight: '72vh', overflowY: 'auto' },
       }}
     >
@@ -192,7 +192,7 @@ export function ConductInterviewModal({ open, interview, onClose, onComplete }: 
       <div style={{
         display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)',
         gap: 12, padding: '12px 14px',
-        background: '#f8fafc', border: '1px solid #e5e7eb',
+        background: 'var(--color-bg-subtle)', border: '1px solid var(--color-border)',
         borderRadius: 8, marginBottom: 20,
       }}>
         {[
@@ -202,10 +202,10 @@ export function ConductInterviewModal({ open, interview, onClose, onComplete }: 
           { label: 'Primary Reason', value: interview.reason },
         ].map(({ label, value }) => (
           <div key={label}>
-            <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.08em', color: '#9ca3af', textTransform: 'uppercase', marginBottom: 4 }}>
+            <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.08em', color: 'var(--color-text-disabled)', textTransform: 'uppercase', marginBottom: 4 }}>
               {label}
             </div>
-            <div style={{ fontSize: 12, fontWeight: 600, color: '#111827' }}>{value}</div>
+            <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--color-text-primary)' }}>{value}</div>
           </div>
         ))}
       </div>
@@ -219,7 +219,7 @@ export function ConductInterviewModal({ open, interview, onClose, onComplete }: 
           onChange={e => set('reasons', e.target.value)}
           placeholder="Employee's response..."
           rows={3}
-          style={{ borderRadius: 8, resize: 'none', borderColor: errors.reasons ? '#fca5a5' : undefined }}
+          style={{ borderRadius: 8, resize: 'none', borderColor: errors.reasons ? 'var(--color-status-rejected-bg)' : undefined }}
         />
         {errors.reasons && <div style={{ fontSize: 11, color: '#dc2626', marginTop: 4 }}>This field is required.</div>}
       </QuestionRow>
@@ -230,7 +230,7 @@ export function ConductInterviewModal({ open, interview, onClose, onComplete }: 
           onChange={e => set('policyImprovement', e.target.value)}
           placeholder="Employee's response..."
           rows={3}
-          style={{ borderRadius: 8, resize: 'none', borderColor: errors.policyImprovement ? '#fca5a5' : undefined }}
+          style={{ borderRadius: 8, resize: 'none', borderColor: errors.policyImprovement ? 'var(--color-status-rejected-bg)' : undefined }}
         />
         {errors.policyImprovement && <div style={{ fontSize: 11, color: '#dc2626', marginTop: 4 }}>This field is required.</div>}
       </QuestionRow>
@@ -312,13 +312,13 @@ export function ConductInterviewModal({ open, interview, onClose, onComplete }: 
 
       {/* ── Overall Section ────────────────────────────────────────────────── */}
       <div style={{
-        background: '#f8fafc', border: errors.overallRatingFinal || errors.wouldRecommendFinal ? '1.5px solid #fca5a5' : '1px solid #e5e7eb',
+        background: 'var(--color-bg-subtle)', border: errors.overallRatingFinal || errors.wouldRecommendFinal ? '1.5px solid #fca5a5' : '1px solid var(--color-border)',
         borderRadius: 8, padding: '14px 16px', marginTop: 8, marginBottom: 16,
       }}>
         <div style={{ marginBottom: 14 }}>
           <div style={{
             fontSize: 10, fontWeight: 700, letterSpacing: '0.08em',
-            color: '#374151', textTransform: 'uppercase', marginBottom: 8,
+            color: 'var(--color-text-secondary)', textTransform: 'uppercase', marginBottom: 8,
           }}>
             Overall Experience Rating <span style={{ color: '#dc2626' }}>*</span>
           </div>
@@ -337,7 +337,7 @@ export function ConductInterviewModal({ open, interview, onClose, onComplete }: 
         <div>
           <div style={{
             fontSize: 10, fontWeight: 700, letterSpacing: '0.08em',
-            color: '#374151', textTransform: 'uppercase', marginBottom: 8,
+            color: 'var(--color-text-secondary)', textTransform: 'uppercase', marginBottom: 8,
           }}>
             Would you recommend this organization? <span style={{ color: '#dc2626' }}>*</span>
           </div>
@@ -355,7 +355,7 @@ export function ConductInterviewModal({ open, interview, onClose, onComplete }: 
       <div style={{ marginBottom: 16 }}>
         <div style={{
           fontSize: 10, fontWeight: 700, letterSpacing: '0.08em',
-          color: '#6b7280', textTransform: 'uppercase', marginBottom: 8,
+          color: 'var(--color-text-tertiary)', textTransform: 'uppercase', marginBottom: 8,
         }}>
           HR Notes &amp; Observations
         </div>
@@ -372,17 +372,17 @@ export function ConductInterviewModal({ open, interview, onClose, onComplete }: 
       <div style={{
         display: 'flex', alignItems: 'flex-start', gap: 10,
         padding: '10px 14px', borderRadius: 8,
-        background: '#fffbeb', border: '1px solid #fde68a',
+        background: 'var(--color-status-pending-bg)', border: '1px solid #fde68a',
         marginBottom: 4,
       }}>
         <WarningOutlined style={{ color: '#d97706', fontSize: 14, marginTop: 1, flexShrink: 0 }} />
-        <span style={{ fontSize: 12, color: '#92400e', lineHeight: 1.5 }}>
+        <span style={{ fontSize: 12, color: '#d97706', lineHeight: 1.5 }}>
           Please be reminded of your obligation to maintain confidentiality concerning intellectual property and personal information of the organization.
         </span>
       </div>
 
       {/* ── Required note ──────────────────────────────────────────────────── */}
-      <div style={{ fontSize: 11, color: '#9ca3af', marginTop: 10, marginBottom: 4 }}>
+      <div style={{ fontSize: 11, color: 'var(--color-text-disabled)', marginTop: 10, marginBottom: 4 }}>
         Fields marked with <span style={{ color: '#dc2626' }}>*</span> are required
       </div>
 
@@ -390,7 +390,7 @@ export function ConductInterviewModal({ open, interview, onClose, onComplete }: 
       <div style={{
         display: 'flex', justifyContent: 'flex-end', gap: 10,
         paddingTop: 16, marginTop: 8,
-        borderTop: '1px solid #e5e7eb',
+        borderTop: '1px solid var(--color-border)',
       }}>
         <Button onClick={onClose} style={{ minWidth: 80 }}>
           Cancel

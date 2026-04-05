@@ -35,9 +35,9 @@ function TypeCard({ label, selected, onClick }: { label: string; selected: boole
       style={{
         width: 160,
         padding: '18px 16px',
-        border: `1.5px solid ${selected ? '#0d9488' : '#d1d5db'}`,
+        border: `1.5px solid ${selected ? 'var(--color-primary)' : 'var(--color-border)'}`,
         borderRadius: 12,
-        background: '#f9fafb',
+        background: 'var(--color-bg-subtle)',
         cursor: 'pointer',
         display: 'flex',
         flexDirection: 'column',
@@ -50,14 +50,14 @@ function TypeCard({ label, selected, onClick }: { label: string; selected: boole
       {/* Checkbox */}
       <div style={{
         width: 18, height: 18, borderRadius: 4,
-        border: `1.5px solid ${selected ? '#0d9488' : '#9ca3af'}`,
-        background: selected ? '#0d9488' : '#fff',
+        border: `1.5px solid ${selected ? 'var(--color-primary)' : 'var(--color-text-disabled)'}`,
+        background: selected ? 'var(--color-primary)' : 'var(--color-bg-surface)',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         flexShrink: 0,
       }}>
         {selected && <CheckOutlined style={{ color: '#fff', fontSize: 11 }} />}
       </div>
-      <span style={{ fontSize: 15, color: '#374151', fontWeight: selected ? 600 : 400 }}>{label}</span>
+      <span style={{ fontSize: 15, color: 'var(--color-text-secondary)', fontWeight: selected ? 600 : 400 }}>{label}</span>
     </div>
   );
 }
@@ -152,17 +152,17 @@ export function LoanRequestForm({ mode, request, onBack, onSubmit }: Props) {
 
   // ─── Render ───────────────────────────────────────────────────────────────────
   return (
-    <div style={{ height: '100%', overflowY: 'auto', background: '#eef4f5' }}>
+    <div style={{ height: '100%', overflowY: 'auto', background: 'var(--color-bg-subtle)' }}>
       <div style={{ padding: '24px 28px' }}>
         {/* Back + Title */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
           <button
             onClick={onBack}
-            style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#0d9488', display: 'flex', alignItems: 'center', gap: 4, fontSize: 13, fontWeight: 500 }}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', gap: 4, fontSize: 13, fontWeight: 500 }}
           >
             <ArrowLeftOutlined /> Back
           </button>
-          <h1 style={{ fontSize: 20, fontWeight: 700, color: '#111827', margin: 0 }}>
+          <h1 style={{ fontSize: 20, fontWeight: 700, color: 'var(--color-text-primary)', margin: 0 }}>
             {isReadOnly ? 'Loan Request Detail' : 'New Loan / Advance Request'}
           </h1>
           {isReadOnly && request && <span style={{ marginLeft: 8 }}>{statusBadge(request.status)}</span>}
@@ -180,23 +180,23 @@ export function LoanRequestForm({ mode, request, onBack, onSubmit }: Props) {
               </div>
             ) : (
               <div style={{ marginBottom: 20, display: 'flex', gap: 12, alignItems: 'center' }}>
-                <span style={{ fontSize: 13, color: '#6b7280' }}>Type:</span>
-                <span style={{ fontSize: 14, fontWeight: 600, color: '#111827' }}>{request?.type}</span>
+                <span style={{ fontSize: 13, color: 'var(--color-text-tertiary)' }}>Type:</span>
+                <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-text-primary)' }}>{request?.type}</span>
               </div>
             )}
 
-            <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 10, padding: '24px 24px 28px' }}>
+            <div style={{ background: 'var(--color-bg-surface)', border: '1px solid var(--color-border)', borderRadius: 10, padding: '24px 24px 28px' }}>
               {/* ── LOAN fields ── */}
               {(selectedType === 'Loan' || (isReadOnly && request?.type === 'Loan')) && (
                 <>
                   <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', alignItems: 'flex-end', marginBottom: 20 }}>
                     {/* Loan Amount */}
                     <div style={{ flex: '0 0 200px' }}>
-                      <label style={{ fontSize: 13, color: '#374151', fontWeight: 500, display: 'block', marginBottom: 6 }}>
+                      <label style={{ fontSize: 13, color: 'var(--color-text-secondary)', fontWeight: 500, display: 'block', marginBottom: 6 }}>
                         Loan Amount<span style={{ color: '#dc2626' }}> *</span>
                       </label>
                       {isReadOnly ? (
-                        <div style={{ padding: '6px 12px', background: '#f9fafb', border: '1px solid #e5e7eb', borderRadius: 8, fontSize: 13, color: '#374151' }}>
+                        <div style={{ padding: '6px 12px', background: 'var(--color-bg-subtle)', border: '1px solid var(--color-border)', borderRadius: 8, fontSize: 13, color: 'var(--color-text-secondary)' }}>
                           {(request?.loanAmount ?? 0).toLocaleString()} BDT
                         </div>
                       ) : (
@@ -211,17 +211,17 @@ export function LoanRequestForm({ mode, request, onBack, onSubmit }: Props) {
                     </div>
 
                     {/* Interest */}
-                    <div style={{ flex: '0 0 160px', background: '#f0fdfa', border: '1px solid #99f6e4', borderRadius: 8, padding: '10px 16px', textAlign: 'center' }}>
-                      <div style={{ fontSize: 12, color: '#6b7280', marginBottom: 2 }}>Interest</div>
-                      <div style={{ fontSize: 18, fontWeight: 700, color: '#0f766e' }}>{LOAN_INTEREST_RATE}%</div>
+                    <div style={{ flex: '0 0 160px', background: 'var(--color-primary-tint)', border: '1px solid #99f6e4', borderRadius: 8, padding: '10px 16px', textAlign: 'center' }}>
+                      <div style={{ fontSize: 12, color: 'var(--color-text-tertiary)', marginBottom: 2 }}>Interest</div>
+                      <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--color-primary)' }}>{LOAN_INTEREST_RATE}%</div>
                     </div>
 
                     {/* Total with Interest */}
-                    <div style={{ flex: 1, background: '#f0fdfa', border: '1px solid #99f6e4', borderRadius: 8, padding: '10px 16px' }}>
-                      <div style={{ fontSize: 12, color: '#6b7280', marginBottom: 2 }}>Total Loan Amount with interest</div>
-                      <div style={{ fontSize: 18, fontWeight: 700, color: '#0f766e' }}>
+                    <div style={{ flex: 1, background: 'var(--color-primary-tint)', border: '1px solid #99f6e4', borderRadius: 8, padding: '10px 16px' }}>
+                      <div style={{ fontSize: 12, color: 'var(--color-text-tertiary)', marginBottom: 2 }}>Total Loan Amount with interest</div>
+                      <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--color-primary)' }}>
                         {(isReadOnly ? (request?.amount ?? 0) : totalWithInterest).toLocaleString()}
-                        <span style={{ fontSize: 12, color: '#6b7280', marginLeft: 2 }}>BDT</span>
+                        <span style={{ fontSize: 12, color: 'var(--color-text-tertiary)', marginLeft: 2 }}>BDT</span>
                       </div>
                     </div>
                   </div>
@@ -234,24 +234,24 @@ export function LoanRequestForm({ mode, request, onBack, onSubmit }: Props) {
                   <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', alignItems: 'flex-end', marginBottom: 20 }}>
                     {/* Select Month */}
                     <div style={{ flex: '0 0 160px' }}>
-                      <label style={{ fontSize: 13, color: '#374151', fontWeight: 500, display: 'block', marginBottom: 6 }}>
+                      <label style={{ fontSize: 13, color: 'var(--color-text-secondary)', fontWeight: 500, display: 'block', marginBottom: 6 }}>
                         Select Month<span style={{ color: '#dc2626' }}> *</span>
                       </label>
                       {isReadOnly ? (
-                        <div style={{ padding: '6px 12px', background: '#f9fafb', border: '1px solid #e5e7eb', borderRadius: 8, fontSize: 13, color: '#374151' }}>
+                        <div style={{ padding: '6px 12px', background: 'var(--color-bg-subtle)', border: '1px solid var(--color-border)', borderRadius: 8, fontSize: 13, color: 'var(--color-text-secondary)' }}>
                           {request?.selectedMonth} month(s)
                         </div>
                       ) : (
-                        <div style={{ display: 'flex', alignItems: 'center', border: '1px solid #d1d5db', borderRadius: 8, overflow: 'hidden', background: '#fff' }}>
-                          <span style={{ flex: 1, padding: '6px 12px', fontSize: 14, color: '#111827', fontWeight: 500 }}>{advMonths}</span>
-                          <div style={{ display: 'flex', flexDirection: 'column', borderLeft: '1px solid #e5e7eb' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', border: '1px solid var(--color-border)', borderRadius: 8, overflow: 'hidden', background: 'var(--color-bg-surface)' }}>
+                          <span style={{ flex: 1, padding: '6px 12px', fontSize: 14, color: 'var(--color-text-primary)', fontWeight: 500 }}>{advMonths}</span>
+                          <div style={{ display: 'flex', flexDirection: 'column', borderLeft: '1px solid var(--color-border)' }}>
                             <button
                               onClick={() => setAdvMonths(m => Math.min(m + 1, 6))}
-                              style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px 8px', lineHeight: 1, color: '#374151', fontSize: 12 }}
+                              style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px 8px', lineHeight: 1, color: 'var(--color-text-secondary)', fontSize: 12 }}
                             >▲</button>
                             <button
                               onClick={() => setAdvMonths(m => Math.max(m - 1, 1))}
-                              style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px 8px', lineHeight: 1, color: '#374151', fontSize: 12 }}
+                              style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px 8px', lineHeight: 1, color: 'var(--color-text-secondary)', fontSize: 12 }}
                             >▼</button>
                           </div>
                         </div>
@@ -259,11 +259,11 @@ export function LoanRequestForm({ mode, request, onBack, onSubmit }: Props) {
                     </div>
 
                     {/* Total Advance Amount */}
-                    <div style={{ flex: 1, background: '#f0fdfa', border: '1px solid #99f6e4', borderRadius: 8, padding: '10px 16px', textAlign: 'center' }}>
-                      <div style={{ fontSize: 12, color: '#6b7280', marginBottom: 2 }}>Total Advance</div>
-                      <div style={{ fontSize: 18, fontWeight: 700, color: '#0f766e' }}>
+                    <div style={{ flex: 1, background: 'var(--color-primary-tint)', border: '1px solid #99f6e4', borderRadius: 8, padding: '10px 16px', textAlign: 'center' }}>
+                      <div style={{ fontSize: 12, color: 'var(--color-text-tertiary)', marginBottom: 2 }}>Total Advance</div>
+                      <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--color-primary)' }}>
                         {(isReadOnly ? (request?.amount ?? 0) : advTotalAmount).toLocaleString()}
-                        <span style={{ fontSize: 12, color: '#6b7280', marginLeft: 2 }}>BDT</span>
+                        <span style={{ fontSize: 12, color: 'var(--color-text-tertiary)', marginLeft: 2 }}>BDT</span>
                       </div>
                     </div>
                   </div>
@@ -272,11 +272,11 @@ export function LoanRequestForm({ mode, request, onBack, onSubmit }: Props) {
 
               {/* ── Select Installment number (common) ── */}
               <div style={{ marginBottom: 20 }}>
-                <label style={{ fontSize: 13, color: '#374151', fontWeight: 500, display: 'block', marginBottom: 6 }}>
+                <label style={{ fontSize: 13, color: 'var(--color-text-secondary)', fontWeight: 500, display: 'block', marginBottom: 6 }}>
                   Select Installment number<span style={{ color: '#dc2626' }}> *</span>
                 </label>
                 {isReadOnly ? (
-                  <div style={{ padding: '6px 12px', background: '#f9fafb', border: '1px solid #e5e7eb', borderRadius: 8, fontSize: 13, color: '#374151', display: 'inline-block' }}>
+                  <div style={{ padding: '6px 12px', background: 'var(--color-bg-subtle)', border: '1px solid var(--color-border)', borderRadius: 8, fontSize: 13, color: 'var(--color-text-secondary)', display: 'inline-block' }}>
                     {request?.installmentNumber}
                   </div>
                 ) : (
@@ -295,7 +295,7 @@ export function LoanRequestForm({ mode, request, onBack, onSubmit }: Props) {
                   Guarantor Employee <span style={{ color: '#dc2626' }}>*</span>
                 </label>
                 {isReadOnly ? (
-                  <div style={{ padding: '6px 12px', background: '#f9fafb', border: '1px solid #e5e7eb', borderRadius: 8, fontSize: 13, color: '#374151', display: 'inline-block', minWidth: 240 }}>
+                  <div style={{ padding: '6px 12px', background: 'var(--color-bg-subtle)', border: '1px solid var(--color-border)', borderRadius: 8, fontSize: 13, color: 'var(--color-text-secondary)', display: 'inline-block', minWidth: 240 }}>
                     {request?.guarantorEmployeeName}
                   </div>
                 ) : (
@@ -313,11 +313,11 @@ export function LoanRequestForm({ mode, request, onBack, onSubmit }: Props) {
               <div style={{ display: 'flex', gap: 20, alignItems: 'flex-start', marginBottom: 28 }}>
                 {/* Reason */}
                 <div style={{ flex: 1 }}>
-                  <label style={{ fontSize: 13, color: '#374151', fontWeight: 500, display: 'block', marginBottom: 6 }}>
+                  <label style={{ fontSize: 13, color: 'var(--color-text-secondary)', fontWeight: 500, display: 'block', marginBottom: 6 }}>
                     Reason<span style={{ color: '#dc2626' }}> *</span>
                   </label>
                   {isReadOnly ? (
-                    <div style={{ padding: '10px 12px', background: '#f9fafb', border: '1px solid #e5e7eb', borderRadius: 8, fontSize: 13, color: '#374151', minHeight: 80 }}>
+                    <div style={{ padding: '10px 12px', background: 'var(--color-bg-subtle)', border: '1px solid var(--color-border)', borderRadius: 8, fontSize: 13, color: 'var(--color-text-secondary)', minHeight: 80 }}>
                       {request?.reason}
                     </div>
                   ) : (
@@ -333,23 +333,23 @@ export function LoanRequestForm({ mode, request, onBack, onSubmit }: Props) {
 
                 {/* Attachment */}
                 <div style={{ flex: '0 0 160px' }}>
-                  <label style={{ fontSize: 13, color: '#374151', fontWeight: 500, display: 'block', marginBottom: 6 }}>
-                    Attachment <span style={{ fontSize: 12, color: '#9ca3af', fontWeight: 400 }}>(Optional)</span>
+                  <label style={{ fontSize: 13, color: 'var(--color-text-secondary)', fontWeight: 500, display: 'block', marginBottom: 6 }}>
+                    Attachment <span style={{ fontSize: 12, color: 'var(--color-text-disabled)', fontWeight: 400 }}>(Optional)</span>
                   </label>
                   {isReadOnly ? (
                     <>
                       {request?.attachmentName ? (
                         <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '6px 12px', border: '1px solid #e5e7eb', borderRadius: 8, background: '#f9fafb', fontSize: 12, color: '#374151' }}>
-                            <PaperClipOutlined style={{ color: '#0d9488' }} />
+                          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '6px 12px', border: '1px solid var(--color-border)', borderRadius: 8, background: 'var(--color-bg-subtle)', fontSize: 12, color: 'var(--color-text-secondary)' }}>
+                            <PaperClipOutlined style={{ color: 'var(--color-primary)' }} />
                             {request.attachmentName}
                           </div>
-                          <button style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 12, color: '#0d9488', fontWeight: 500, textDecoration: 'underline', display: 'flex', alignItems: 'center', gap: 4, padding: 0 }}>
+                          <button style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 12, color: 'var(--color-primary)', fontWeight: 500, textDecoration: 'underline', display: 'flex', alignItems: 'center', gap: 4, padding: 0 }}>
                             <EyeOutlined /> View
                           </button>
                         </div>
                       ) : (
-                        <span style={{ fontSize: 13, color: '#9ca3af' }}>No attachment</span>
+                        <span style={{ fontSize: 13, color: 'var(--color-text-disabled)' }}>No attachment</span>
                       )}
                     </>
                   ) : (
@@ -362,7 +362,7 @@ export function LoanRequestForm({ mode, request, onBack, onSubmit }: Props) {
                       <Button
                         style={{ width: 80, height: 80, borderRadius: 8, borderStyle: 'dashed', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 4 }}
                       >
-                        <UploadOutlined style={{ fontSize: 22, color: '#0d9488' }} />
+                        <UploadOutlined style={{ fontSize: 22, color: 'var(--color-primary)' }} />
                       </Button>
                     </Upload>
                   )}
@@ -371,9 +371,9 @@ export function LoanRequestForm({ mode, request, onBack, onSubmit }: Props) {
 
               {/* Approver Remarks (view-only, if decision was made) */}
               {isReadOnly && request?.remarks && (
-                <div style={{ marginBottom: 20, padding: '12px 16px', background: '#f0fdfa', border: '1px solid #99f6e4', borderRadius: 8 }}>
-                  <div style={{ fontSize: 12, color: '#0f766e', fontWeight: 600, marginBottom: 4 }}>Approver Remarks</div>
-                  <div style={{ fontSize: 13, color: '#374151' }}>{request.remarks}</div>
+                <div style={{ marginBottom: 20, padding: '12px 16px', background: 'var(--color-primary-tint)', border: '1px solid #99f6e4', borderRadius: 8 }}>
+                  <div style={{ fontSize: 12, color: 'var(--color-primary)', fontWeight: 600, marginBottom: 4 }}>Approver Remarks</div>
+                  <div style={{ fontSize: 13, color: 'var(--color-text-secondary)' }}>{request.remarks}</div>
                 </div>
               )}
 
@@ -384,7 +384,7 @@ export function LoanRequestForm({ mode, request, onBack, onSubmit }: Props) {
                   <Button
                     type="primary"
                     onClick={handleApply}
-                    style={{ background: '#0d9488', borderColor: '#0d9488', borderRadius: 8, minWidth: 100 }}
+                    style={{ background: 'var(--color-primary)', borderColor: 'var(--color-primary)', borderRadius: 8, minWidth: 100 }}
                   >
                     Apply
                   </Button>
@@ -395,11 +395,11 @@ export function LoanRequestForm({ mode, request, onBack, onSubmit }: Props) {
 
           {/* ── Right Panel: Note ───────────────────────────────────────────── */}
           <div style={{ width: 320, flexShrink: 0 }}>
-            <div style={{ background: '#fff', border: '1.5px solid #e5e7eb', borderRadius: 16, padding: '24px 22px' }}>
-              <h3 style={{ fontSize: 18, fontWeight: 700, color: '#111827', textAlign: 'center', marginBottom: 16 }}>Note</h3>
+            <div style={{ background: 'var(--color-bg-surface)', border: '1.5px solid #e5e7eb', borderRadius: 16, padding: '24px 22px' }}>
+              <h3 style={{ fontSize: 18, fontWeight: 700, color: 'var(--color-text-primary)', textAlign: 'center', marginBottom: 16 }}>Note</h3>
               <ul style={{ paddingLeft: 0, margin: 0, listStyle: 'none' }}>
                 {LOAN_POLICY_NOTES.map((note, i) => (
-                  <li key={i} style={{ fontSize: 13, color: '#374151', marginBottom: 10, lineHeight: 1.55, paddingLeft: 0 }}>
+                  <li key={i} style={{ fontSize: 13, color: 'var(--color-text-secondary)', marginBottom: 10, lineHeight: 1.55, paddingLeft: 0 }}>
                     -{note}
                   </li>
                 ))}

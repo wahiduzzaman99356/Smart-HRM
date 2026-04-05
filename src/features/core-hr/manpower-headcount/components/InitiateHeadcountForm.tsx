@@ -147,27 +147,27 @@ export function InitiateHeadcountForm({
   // ── Table columns ─────────────────────────────────────────────────────────────
   const columns: ColumnsType<HCOrgLevelRow> = [
     {
-      title: <span style={{ fontSize: 10, fontWeight: 700, color: '#9ca3af', letterSpacing: '0.05em' }}>ORGANIZATION LEVEL</span>,
+      title: <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--color-text-disabled)', letterSpacing: '0.05em' }}>ORGANIZATION LEVEL</span>,
       key: 'level',
       width: '28%',
       render: (_, r) => (
-        <span style={{ fontSize: 12, fontWeight: 700, color: '#374151', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
+        <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--color-text-secondary)', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
           {r.orgLevelPath}
         </span>
       ),
     },
     {
-      title: <span style={{ fontSize: 10, fontWeight: 700, color: '#9ca3af', letterSpacing: '0.05em' }}>CURRENT HC</span>,
+      title: <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--color-text-disabled)', letterSpacing: '0.05em' }}>CURRENT HC</span>,
       key: 'currentHC',
       align: 'center',
       width: 100,
       render: (_, r) => (
-        <span style={{ fontSize: 15, fontWeight: 800, color: '#111827' }}>{r.currentHC}</span>
+        <span style={{ fontSize: 15, fontWeight: 800, color: 'var(--color-text-primary)' }}>{r.currentHC}</span>
       ),
     },
     {
       title: (
-        <span style={{ fontSize: 10, fontWeight: 700, color: '#9ca3af', letterSpacing: '0.05em' }}>
+        <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--color-text-disabled)', letterSpacing: '0.05em' }}>
           REQUIRED HC<span style={{ color: '#ef4444' }}>*</span>
         </span>
       ),
@@ -185,7 +185,7 @@ export function InitiateHeadcountForm({
       ),
     },
     {
-      title: <span style={{ fontSize: 10, fontWeight: 700, color: '#9ca3af', letterSpacing: '0.05em' }}>BUDGET</span>,
+      title: <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--color-text-disabled)', letterSpacing: '0.05em' }}>BUDGET</span>,
       key: 'budget',
       width: 180,
       render: (_, r) => (
@@ -193,7 +193,7 @@ export function InitiateHeadcountForm({
           value={r.budget}
           onChange={e => updateRow(r.id, 'budget', e.target.value)}
           placeholder="Enter amount"
-          prefix={<span style={{ color: '#9ca3af', fontSize: 12 }}>BDT</span>}
+          prefix={<span style={{ color: 'var(--color-text-disabled)', fontSize: 12 }}>BDT</span>}
           type="number"
           min={0}
           style={{ borderRadius: 7 }}
@@ -201,11 +201,11 @@ export function InitiateHeadcountForm({
       ),
     },
     {
-      title: <span style={{ fontSize: 10, fontWeight: 700, color: '#9ca3af', letterSpacing: '0.05em' }}>JUSTIFICATION</span>,
+      title: <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--color-text-disabled)', letterSpacing: '0.05em' }}>JUSTIFICATION</span>,
       key: 'justification',
       render: (_, r) => (
         isAction
-          ? <span style={{ fontSize: 12, color: '#6b7280' }}>{r.justification || '—'}</span>
+          ? <span style={{ fontSize: 12, color: 'var(--color-text-tertiary)' }}>{r.justification || '—'}</span>
           : (
             <Input.TextArea
               value={r.justification}
@@ -219,13 +219,13 @@ export function InitiateHeadcountForm({
     },
     // Delete column only in create mode
     ...(!isAction ? [{
-      title: <span style={{ fontSize: 10, fontWeight: 700, color: '#9ca3af', letterSpacing: '0.05em' }}>ACTION</span>,
+      title: <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--color-text-disabled)', letterSpacing: '0.05em' }}>ACTION</span>,
       key: 'action',
       align: 'center' as const,
       width: 68,
       render: (_: unknown, r: HCOrgLevelRow) => (
         <Popconfirm title="Remove this row?" onConfirm={() => removeRow(r.id)} okText="Yes" cancelText="No">
-          <Button type="text" size="small" icon={<DeleteOutlined />} style={{ color: '#9ca3af' }} />
+          <Button type="text" size="small" icon={<DeleteOutlined />} style={{ color: 'var(--color-text-disabled)' }} />
         </Popconfirm>
       ),
     }] : []),
@@ -238,11 +238,11 @@ export function InitiateHeadcountForm({
       {/* ── Header ───────────────────────────────────────────────────────── */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
         <div>
-          <h1 style={{ fontSize: 16, fontWeight: 700, color: '#111827', margin: 0 }}>
+          <h1 style={{ fontSize: 16, fontWeight: 700, color: 'var(--color-text-primary)', margin: 0 }}>
             {isAction ? `Review Request — ${existingRequest?.id}` : 'Initiate Headcount Request'}
           </h1>
           {isAction && (
-            <p style={{ fontSize: 13, color: '#6b7280', margin: '4px 0 0' }}>
+            <p style={{ fontSize: 13, color: 'var(--color-text-tertiary)', margin: '4px 0 0' }}>
               Review and modify requested headcount before approving or rejecting.
             </p>
           )}
@@ -251,7 +251,7 @@ export function InitiateHeadcountForm({
           type="link"
           icon={<LeftOutlined style={{ fontSize: 12 }} />}
           onClick={onBack}
-          style={{ color: '#0f766e', fontWeight: 600, padding: 0, fontSize: 13 }}
+          style={{ color: 'var(--color-primary)', fontWeight: 600, padding: 0, fontSize: 13 }}
         >
           Back to List
         </Button>
@@ -259,13 +259,13 @@ export function InitiateHeadcountForm({
 
       {/* ── Controls card ────────────────────────────────────────────────── */}
       <div style={{
-        background: '#fff', border: '1px solid var(--color-border)', borderRadius: 10,
+        background: 'var(--color-bg-surface)', border: '1px solid var(--color-border)', borderRadius: 10,
         padding: '20px', marginBottom: 16,
         display: 'flex', gap: 24, alignItems: 'flex-end', flexWrap: 'wrap',
       }}>
         {/* Plan Year */}
         <div>
-          <div style={{ fontSize: 10, fontWeight: 700, color: '#9ca3af', letterSpacing: '0.06em', marginBottom: 6 }}>
+          <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--color-text-disabled)', letterSpacing: '0.06em', marginBottom: 6 }}>
             PLAN FOR THE YEAR<span style={{ color: '#ef4444' }}>*</span>
           </div>
           <Select
@@ -280,20 +280,20 @@ export function InitiateHeadcountForm({
         {/* Org Level picker — create mode only */}
         {!isAction && (
           <div style={{ flex: 1, minWidth: 320 }}>
-            <div style={{ fontSize: 10, fontWeight: 700, color: '#9ca3af', letterSpacing: '0.06em', marginBottom: 6 }}>
+            <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--color-text-disabled)', letterSpacing: '0.06em', marginBottom: 6 }}>
               SELECT ORGANIZATION LEVEL<span style={{ color: '#ef4444' }}>*</span>
             </div>
             <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
               <Button
                 icon={<ApartmentOutlined />}
                 onClick={() => setPickerOpen(true)}
-                style={{ background: '#eff6ff', borderColor: '#bfdbfe', color: '#0f766e', fontWeight: 600, fontSize: 12, borderRadius: 7, flexShrink: 0, height: 32 }}
+                style={{ background: 'var(--color-status-info-bg)', borderColor: 'rgba(59, 130, 246, 0.22)', color: 'var(--color-primary)', fontWeight: 600, fontSize: 12, borderRadius: 7, flexShrink: 0, height: 32 }}
               >
                 SELECT LEVEL
               </Button>
               <div style={{
-                flex: 1, border: '1px solid #e5e7eb', borderRadius: 7, padding: '5px 12px',
-                fontSize: 13, color: pendingSel ? '#111827' : '#9ca3af', background: '#fafafa',
+                flex: 1, border: '1px solid var(--color-border)', borderRadius: 7, padding: '5px 12px',
+                fontSize: 13, color: pendingSel ? 'var(--color-text-primary)' : 'var(--color-text-disabled)', background: 'var(--color-bg-subtle)',
                 minHeight: 32, display: 'flex', alignItems: 'center',
                 fontWeight: pendingSel ? 500 : 400,
               }}>
@@ -301,7 +301,7 @@ export function InitiateHeadcountForm({
               </div>
               <Button
                 onClick={handleAdd}
-                style={{ background: '#ecfdf5', borderColor: '#6ee7b7', color: '#065f46', fontWeight: 700, fontSize: 13, borderRadius: 7, flexShrink: 0, height: 32 }}
+                style={{ background: 'var(--color-status-approved-bg)', borderColor: 'var(--color-status-approved-bg)', color: 'var(--color-primary-dark)', fontWeight: 700, fontSize: 13, borderRadius: 7, flexShrink: 0, height: 32 }}
               >
                 + ADD
               </Button>
@@ -311,21 +311,21 @@ export function InitiateHeadcountForm({
       </div>
 
       {/* ── Rows table ───────────────────────────────────────────────────── */}
-      <div style={{ background: '#fff', border: '1px solid var(--color-border)', borderRadius: 10, overflow: 'hidden', marginBottom: 20 }}>
+      <div style={{ background: 'var(--color-bg-surface)', border: '1px solid var(--color-border)', borderRadius: 10, overflow: 'hidden', marginBottom: 20 }}>
         <Table
           dataSource={rows}
           columns={columns}
           rowKey="id"
           pagination={false}
           size="middle"
-          locale={{ emptyText: <div style={{ color: '#9ca3af', fontSize: 13, padding: '24px 0' }}>No levels added yet — select a level and click <strong>+ ADD</strong>.</div> }}
+          locale={{ emptyText: <div style={{ color: 'var(--color-text-disabled)', fontSize: 13, padding: '24px 0' }}>No levels added yet — select a level and click <strong>+ ADD</strong>.</div> }}
         />
       </div>
 
       {/* ── Rejection reason panel ────────────────────────────────────────── */}
       {isAction && rejectPanelOpen && (
         <div style={{
-          background: '#fff', border: '1px solid #fca5a5', borderRadius: 10,
+          background: 'var(--color-bg-surface)', border: '1px solid #fca5a5', borderRadius: 10,
           padding: '20px', marginBottom: 20,
         }}>
           <div style={{ fontSize: 13, fontWeight: 700, color: '#dc2626', marginBottom: 14 }}>
@@ -334,7 +334,7 @@ export function InitiateHeadcountForm({
 
           <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', alignItems: 'flex-start' }}>
             <div style={{ flex: '0 0 280px' }}>
-              <div style={{ fontSize: 10, fontWeight: 700, color: '#9ca3af', letterSpacing: '0.06em', marginBottom: 6 }}>
+              <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--color-text-disabled)', letterSpacing: '0.06em', marginBottom: 6 }}>
                 REASON<span style={{ color: '#ef4444' }}>*</span>
               </div>
               <Select
@@ -348,7 +348,7 @@ export function InitiateHeadcountForm({
 
             {rejectReason === 'others' && (
               <div style={{ flex: 1, minWidth: 240 }}>
-                <div style={{ fontSize: 10, fontWeight: 700, color: '#9ca3af', letterSpacing: '0.06em', marginBottom: 6 }}>
+                <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--color-text-disabled)', letterSpacing: '0.06em', marginBottom: 6 }}>
                   NOTE<span style={{ color: '#ef4444' }}>*</span>
                 </div>
                 <Input.TextArea
@@ -384,7 +384,7 @@ export function InitiateHeadcountForm({
         <Upload multiple beforeUpload={handleBeforeUpload} showUploadList={false}>
           <Button
             icon={<UploadOutlined />}
-            style={{ borderRadius: 7, background: '#eff6ff', borderColor: '#bfdbfe', color: '#0f766e', fontWeight: 600, height: 34 }}
+            style={{ borderRadius: 7, background: 'var(--color-status-info-bg)', borderColor: 'rgba(59, 130, 246, 0.22)', color: 'var(--color-primary)', fontWeight: 600, height: 34 }}
           >
             Click to Attach Files
           </Button>
@@ -396,15 +396,15 @@ export function InitiateHeadcountForm({
                 key={file.uid}
                 style={{
                   display: 'flex', alignItems: 'center', gap: 10,
-                  background: '#f8fafc', border: '1px solid #e2e8f0',
-                  borderRadius: 7, padding: '6px 12px', fontSize: 13, color: '#374151',
+                  background: 'var(--color-bg-subtle)', border: '1px solid var(--color-border)',
+                  borderRadius: 7, padding: '6px 12px', fontSize: 13, color: 'var(--color-text-secondary)',
                 }}
               >
                 <UploadOutlined style={{ color: 'var(--color-primary)', fontSize: 14, flexShrink: 0 }} />
                 <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                   {file.name}
                 </span>
-                <span style={{ fontSize: 11, color: '#9ca3af', flexShrink: 0 }}>
+                <span style={{ fontSize: 11, color: 'var(--color-text-disabled)', flexShrink: 0 }}>
                   {file.size ? `${(file.size / 1024).toFixed(1)} KB` : ''}
                 </span>
                 <Tooltip title="View file">
@@ -476,7 +476,7 @@ export function InitiateHeadcountForm({
               </Button>
               <Button
                 onClick={() => handleCreateAction('Pending')}
-                style={{ background: '#0d9488', borderColor: '#0d9488', color: '#fff', fontWeight: 700, borderRadius: 7, minWidth: 110 }}
+                style={{ background: 'var(--color-primary)', borderColor: 'var(--color-primary)', color: '#fff', fontWeight: 700, borderRadius: 7, minWidth: 110 }}
               >
                 Submit Request
               </Button>
@@ -494,8 +494,8 @@ export function InitiateHeadcountForm({
         width={760}
         title={
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <FileOutlined style={{ color: '#0d9488' }} />
-            <span style={{ fontWeight: 700, fontSize: 14, color: '#111827' }}>{viewingFile?.name}</span>
+            <FileOutlined style={{ color: 'var(--color-primary)' }} />
+            <span style={{ fontWeight: 700, fontSize: 14, color: 'var(--color-text-primary)' }}>{viewingFile?.name}</span>
           </div>
         }
         closeIcon={<CloseOutlined />}
@@ -506,13 +506,13 @@ export function InitiateHeadcountForm({
           const url = safeFile ? URL.createObjectURL(safeFile) : undefined;
           const isImage = viewingFile.type?.startsWith('image/');
           const isPdf   = viewingFile.type === 'application/pdf';
-          if (!url) return <div style={{ textAlign: 'center', color: '#9ca3af', padding: '40px 0' }}>Preview not available.</div>;
+          if (!url) return <div style={{ textAlign: 'center', color: 'var(--color-text-disabled)', padding: '40px 0' }}>Preview not available.</div>;
           if (isImage) return <img src={url} alt={viewingFile.name} style={{ width: '100%', borderRadius: 8 }} />;
           if (isPdf)   return <iframe src={url} title={viewingFile.name} style={{ width: '100%', height: 500, border: 'none', borderRadius: 8 }} />;
           return (
             <div style={{ textAlign: 'center', padding: '40px 0' }}>
-              <FileOutlined style={{ fontSize: 48, color: '#0d9488', marginBottom: 12 }} />
-              <div style={{ fontSize: 14, color: '#374151', marginBottom: 16 }}>{viewingFile.name}</div>
+              <FileOutlined style={{ fontSize: 48, color: 'var(--color-primary)', marginBottom: 12 }} />
+              <div style={{ fontSize: 14, color: 'var(--color-text-secondary)', marginBottom: 16 }}>{viewingFile.name}</div>
               <Button type="primary" href={url} target="_blank" rel="noopener noreferrer">Open File</Button>
             </div>
           );

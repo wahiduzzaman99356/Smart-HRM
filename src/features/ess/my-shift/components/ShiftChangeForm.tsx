@@ -51,7 +51,7 @@ function PolicyNote() {
         backdropFilter: 'blur(2px)',
       }}
     >
-      <div style={{ fontWeight: 700, fontSize: 14, color: '#111827', marginBottom: 14, textAlign: 'center' }}>
+      <div style={{ fontWeight: 700, fontSize: 14, color: 'var(--color-text-primary)', marginBottom: 14, textAlign: 'center' }}>
         Note
       </div>
       <ul style={{ listStyle: 'disc', paddingLeft: 20, margin: 0 }}>
@@ -60,7 +60,7 @@ function PolicyNote() {
           'A shift change request cannot be applied for more than 1 day at a time.',
           'The request must be submitted at least 3 working days before the desired shift change date.',
         ].map((note, i) => (
-          <li key={i} style={{ fontSize: 13, color: '#374151', marginBottom: 10, lineHeight: 1.6 }}>
+          <li key={i} style={{ fontSize: 13, color: 'var(--color-text-secondary)', marginBottom: 10, lineHeight: 1.6 }}>
             {note}
           </li>
         ))}
@@ -90,7 +90,7 @@ function ExchangeableEmployeeTable({
       key: 'id',
       width: '22%',
       ellipsis: { showTitle: true },
-      render: v => <span style={{ fontSize: 12, color: '#374151', whiteSpace: 'nowrap' }}>{v}</span>,
+      render: v => <span style={{ fontSize: 12, color: 'var(--color-text-secondary)', whiteSpace: 'nowrap' }}>{v}</span>,
     },
     {
       title: 'Name',
@@ -98,7 +98,7 @@ function ExchangeableEmployeeTable({
       key: 'name',
       width: '28%',
       ellipsis: { showTitle: true },
-      render: v => <span style={{ fontSize: 13, fontWeight: 600, color: '#111827' }}>{v}</span>,
+      render: v => <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--color-text-primary)' }}>{v}</span>,
     },
     {
       title: 'Designation',
@@ -106,7 +106,7 @@ function ExchangeableEmployeeTable({
       key: 'des',
       width: '26%',
       ellipsis: { showTitle: true },
-      render: v => <span style={{ fontSize: 12, color: '#6b7280' }}>{v}</span>,
+      render: v => <span style={{ fontSize: 12, color: 'var(--color-text-tertiary)' }}>{v}</span>,
     },
     {
       title: 'Shift',
@@ -114,13 +114,13 @@ function ExchangeableEmployeeTable({
       key: 'shift',
       width: '24%',
       ellipsis: { showTitle: true },
-      render: v => <span style={{ fontSize: 12, color: '#0d9488', whiteSpace: 'nowrap' }}>{v}</span>,
+      render: v => <span style={{ fontSize: 12, color: 'var(--color-primary)', whiteSpace: 'nowrap' }}>{v}</span>,
     },
   ];
 
   return (
     <div style={{ marginTop: 20 }}>
-      <div style={{ fontSize: 13, fontWeight: 600, color: '#374151', marginBottom: 10, textAlign: 'center' }}>
+      <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--color-text-secondary)', marginBottom: 10, textAlign: 'center' }}>
         {title ?? 'List of Shift Exchangeable Employee'}
       </div>
       <Table
@@ -243,11 +243,11 @@ export function ShiftChangeForm({ mode, request, onBack, onSubmit, onApprove, on
     <div style={{ flex: 1, minWidth: 0, paddingRight: 28 }}>
       {/* Current Shift Info */}
       <div style={{ marginBottom: 20 }}>
-        <div style={{ fontSize: 13, color: '#374151', marginBottom: 2 }}>
+        <div style={{ fontSize: 13, color: 'var(--color-text-secondary)', marginBottom: 2 }}>
           <strong>Current Shift Name:</strong>{' '}
           {isCreate ? CURRENT_EMPLOYEE_SHIFT.name : request?.fromShift.name}
         </div>
-        <div style={{ fontSize: 13, color: '#374151' }}>
+        <div style={{ fontSize: 13, color: 'var(--color-text-secondary)' }}>
           <strong>Time:</strong>{' '}
           {isCreate ? CURRENT_EMPLOYEE_SHIFT.timeRange : request?.fromShift.timeRange}
         </div>
@@ -282,11 +282,11 @@ export function ShiftChangeForm({ mode, request, onBack, onSubmit, onApprove, on
       {/* Date + To Shift */}
       <div style={{ display: 'flex', gap: 16, marginBottom: 16 }}>
         <div style={{ flex: 1 }}>
-          <div style={{ fontSize: 12, color: '#374151', marginBottom: 6, fontWeight: 500 }}>
+          <div style={{ fontSize: 12, color: 'var(--color-text-secondary)', marginBottom: 6, fontWeight: 500 }}>
             Select Date <span style={{ color: '#dc2626' }}>*</span>
           </div>
           {isReadOnly ? (
-            <div style={{ fontSize: 13, color: '#111827', padding: '6px 10px', border: '1px solid #e5e7eb', borderRadius: 6, background: '#f9fafb' }}>
+            <div style={{ fontSize: 13, color: 'var(--color-text-primary)', padding: '6px 10px', border: '1px solid var(--color-border)', borderRadius: 6, background: 'var(--color-bg-subtle)' }}>
               {request?.date ?? '—'}
             </div>
           ) : (
@@ -294,11 +294,11 @@ export function ShiftChangeForm({ mode, request, onBack, onSubmit, onApprove, on
           )}
         </div>
         <div style={{ flex: 1 }}>
-          <div style={{ fontSize: 12, color: '#374151', marginBottom: 6, fontWeight: 500 }}>
+          <div style={{ fontSize: 12, color: 'var(--color-text-secondary)', marginBottom: 6, fontWeight: 500 }}>
             To Shift <span style={{ color: '#dc2626' }}>*</span>
           </div>
           {isReadOnly ? (
-            <div style={{ fontSize: 13, color: '#111827', padding: '6px 10px', border: '1px solid #e5e7eb', borderRadius: 6, background: '#f9fafb' }}>
+            <div style={{ fontSize: 13, color: 'var(--color-text-primary)', padding: '6px 10px', border: '1px solid var(--color-border)', borderRadius: 6, background: 'var(--color-bg-subtle)' }}>
               {request?.toShift.name ?? '—'}
             </div>
           ) : (
@@ -315,7 +315,7 @@ export function ShiftChangeForm({ mode, request, onBack, onSubmit, onApprove, on
 
       {/* Shift Info Box */}
       {toShift && (
-        <div style={{ border: '1px solid #d1d5db', borderRadius: 8, padding: '12px 14px', marginBottom: 16, background: '#f9fafb', fontSize: 13, color: '#374151', lineHeight: 1.7 }}>
+        <div style={{ border: '1px solid var(--color-border)', borderRadius: 8, padding: '12px 14px', marginBottom: 16, background: 'var(--color-bg-subtle)', fontSize: 13, color: 'var(--color-text-secondary)', lineHeight: 1.7 }}>
           <div><strong>Shift Name:</strong> {toShift.name}</div>
           <div><strong>Time:</strong> {toShift.timeRange}</div>
           {toShift.policy && <div><strong>Policy:</strong> {toShift.policy}</div>}
@@ -325,12 +325,12 @@ export function ShiftChangeForm({ mode, request, onBack, onSubmit, onApprove, on
       {/* Assign to Employee — Change type, view-approve only */}
       {requestType === 'Change' && (isViewApprove || (isViewOnly && request?.assignedEmployee)) && (
         <div style={{ marginBottom: 16 }}>
-          <div style={{ fontSize: 12, color: '#374151', marginBottom: 6, fontWeight: 500 }}>
+          <div style={{ fontSize: 12, color: 'var(--color-text-secondary)', marginBottom: 6, fontWeight: 500 }}>
             Assign to Employee
-            <span style={{ color: '#9ca3af', fontWeight: 400 }}> (optional)</span>
+            <span style={{ color: 'var(--color-text-disabled)', fontWeight: 400 }}> (optional)</span>
           </div>
           {isViewOnly ? (
-            <div style={{ fontSize: 13, color: '#111827', padding: '6px 10px', border: '1px solid #e5e7eb', borderRadius: 6, background: '#f9fafb' }}>
+            <div style={{ fontSize: 13, color: 'var(--color-text-primary)', padding: '6px 10px', border: '1px solid var(--color-border)', borderRadius: 6, background: 'var(--color-bg-subtle)' }}>
               {assignedEmployee ? `${assignedEmployee.name} (${assignedEmployee.employeeId}) — ${assignedEmployee.designation}` : '—'}
             </div>
           ) : (
@@ -359,11 +359,11 @@ export function ShiftChangeForm({ mode, request, onBack, onSubmit, onApprove, on
       {/* Exchange With (only for Exchange type) */}
       {requestType === 'Exchange' && (
         <div style={{ marginBottom: 16 }}>
-          <div style={{ fontSize: 12, color: '#374151', marginBottom: 6, fontWeight: 500 }}>
+          <div style={{ fontSize: 12, color: 'var(--color-text-secondary)', marginBottom: 6, fontWeight: 500 }}>
             Exchange with <span style={{ color: '#dc2626' }}>*</span>
           </div>
           {isExchangeFieldReadOnly ? (
-            <div style={{ fontSize: 13, color: '#111827', padding: '6px 10px', border: '1px solid #e5e7eb', borderRadius: 6, background: '#f9fafb' }}>
+            <div style={{ fontSize: 13, color: 'var(--color-text-primary)', padding: '6px 10px', border: '1px solid var(--color-border)', borderRadius: 6, background: 'var(--color-bg-subtle)' }}>
               {exchangeWith ? `${exchangeWith.name} (${exchangeWith.employeeId}) — ${exchangeWith.designation}` : '—'}
             </div>
           ) : (
@@ -400,7 +400,7 @@ export function ShiftChangeForm({ mode, request, onBack, onSubmit, onApprove, on
 
       {/* Reason */}
       <div style={{ marginBottom: 24 }}>
-        <div style={{ fontSize: 12, color: '#374151', marginBottom: 6, fontWeight: 500 }}>
+        <div style={{ fontSize: 12, color: 'var(--color-text-secondary)', marginBottom: 6, fontWeight: 500 }}>
           Reason <span style={{ color: '#dc2626' }}>*</span>
         </div>
         <Input.TextArea
@@ -409,17 +409,17 @@ export function ShiftChangeForm({ mode, request, onBack, onSubmit, onApprove, on
           rows={3}
           placeholder="Briefly describe your reason for the shift change..."
           readOnly={isReadOnly}
-          style={{ background: isReadOnly ? '#f9fafb' : '#fff', resize: 'none' }}
+          style={{ background: isReadOnly ? 'var(--color-bg-subtle)' : 'var(--color-bg-surface)', resize: 'none' }}
         />
       </div>
 
       {/* Approver remarks (view-approve mode) */}
       {isViewApprove && (
         <div style={{ marginBottom: 24 }}>
-          <div style={{ fontSize: 12, color: '#374151', marginBottom: 6, fontWeight: 500 }}>
+          <div style={{ fontSize: 12, color: 'var(--color-text-secondary)', marginBottom: 6, fontWeight: 500 }}>
             Remarks{' '}
             <span style={{ color: '#dc2626' }}>*</span>
-            <span style={{ color: '#9ca3af', fontWeight: 400 }}> (mandatory for rejection)</span>
+            <span style={{ color: 'var(--color-text-disabled)', fontWeight: 400 }}> (mandatory for rejection)</span>
           </div>
           <Input.TextArea
             value={remarks}
@@ -440,8 +440,8 @@ export function ShiftChangeForm({ mode, request, onBack, onSubmit, onApprove, on
       {/* Previous remarks (view-only after decision) */}
       {isViewOnly && request?.remarks && (
         <div style={{ marginBottom: 24 }}>
-          <div style={{ fontSize: 12, color: '#374151', marginBottom: 6, fontWeight: 500 }}>Approver Remarks</div>
-          <div style={{ fontSize: 13, color: '#374151', padding: '8px 12px', border: '1px solid #e5e7eb', borderRadius: 6, background: '#f9fafb' }}>
+          <div style={{ fontSize: 12, color: 'var(--color-text-secondary)', marginBottom: 6, fontWeight: 500 }}>Approver Remarks</div>
+          <div style={{ fontSize: 13, color: 'var(--color-text-secondary)', padding: '8px 12px', border: '1px solid var(--color-border)', borderRadius: 6, background: 'var(--color-bg-subtle)' }}>
             {request.remarks}
           </div>
         </div>
@@ -451,7 +451,7 @@ export function ShiftChangeForm({ mode, request, onBack, onSubmit, onApprove, on
       {isCreate && (
         <div style={{ display: 'flex', gap: 12 }}>
           <Button onClick={handleReset}>Reset</Button>
-          <Button type="primary" loading={submitting} onClick={handleSubmit} style={{ background: '#0d9488', borderColor: '#0d9488' }}>
+          <Button type="primary" loading={submitting} onClick={handleSubmit} style={{ background: 'var(--color-primary)', borderColor: 'var(--color-primary)' }}>
             Apply
           </Button>
         </div>
@@ -470,7 +470,7 @@ export function ShiftChangeForm({ mode, request, onBack, onSubmit, onApprove, on
             type="primary"
             icon={<CheckCircleOutlined />}
             onClick={handleApprove}
-            style={{ background: '#0d9488', borderColor: '#0d9488' }}
+            style={{ background: 'var(--color-primary)', borderColor: 'var(--color-primary)' }}
           >
             Approve
           </Button>
@@ -489,7 +489,7 @@ export function ShiftChangeForm({ mode, request, onBack, onSubmit, onApprove, on
         borderRadius: 14,
         padding: '20px 20px 24px',
         // Teal dot-grid texture
-        backgroundColor: '#f0fdfa',
+        background: 'var(--color-primary-tint)',
         backgroundImage: 'radial-gradient(rgba(13, 148, 136, 0.18) 1.5px, transparent 1.5px)',
         backgroundSize: '18px 18px',
         border: '1px solid #ccfbf1',
@@ -538,7 +538,7 @@ export function ShiftChangeForm({ mode, request, onBack, onSubmit, onApprove, on
 
   // ─── Render ───────────────────────────────────────────────────────────────────
   return (
-    <div style={{ height: '100%', overflowY: 'auto', background: '#fff' }}>
+    <div style={{ height: '100%', overflowY: 'auto', background: 'var(--color-bg-surface)' }}>
       {/* Page Header */}
       <div
         style={{
@@ -547,7 +547,7 @@ export function ShiftChangeForm({ mode, request, onBack, onSubmit, onApprove, on
           display: 'flex',
           alignItems: 'center',
           gap: 12,
-          background: '#fff',
+          background: 'var(--color-bg-surface)',
           position: 'sticky',
           top: 0,
           zIndex: 5,
@@ -557,23 +557,23 @@ export function ShiftChangeForm({ mode, request, onBack, onSubmit, onApprove, on
           type="text"
           icon={<LeftOutlined />}
           onClick={onBack}
-          style={{ color: '#6b7280' }}
+          style={{ color: 'var(--color-text-tertiary)' }}
         >
           Back
         </Button>
-        <div style={{ width: 1, height: 20, background: '#e5e7eb' }} />
+        <div style={{ width: 1, height: 20, background: 'var(--color-bg-subtle)' }} />
         <div>
-          <div style={{ fontSize: 16, fontWeight: 700, color: '#111827' }}>
+          <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--color-text-primary)' }}>
             Shift Change / Exchange
-            {request && <span style={{ fontSize: 12, color: '#9ca3af', fontWeight: 400, marginLeft: 8 }}>#{request.id}</span>}
+            {request && <span style={{ fontSize: 12, color: 'var(--color-text-disabled)', fontWeight: 400, marginLeft: 8 }}>#{request.id}</span>}
           </div>
           {isCreate && (
-            <div style={{ fontSize: 12, color: '#6b7280', marginTop: 1 }}>
+            <div style={{ fontSize: 12, color: 'var(--color-text-tertiary)', marginTop: 1 }}>
               Current Shift Name: {CURRENT_EMPLOYEE_SHIFT.name} &nbsp;|&nbsp; Time: {CURRENT_EMPLOYEE_SHIFT.timeRange}
             </div>
           )}
           {isReadOnly && request && (
-            <div style={{ fontSize: 12, color: '#6b7280', marginTop: 1 }}>
+            <div style={{ fontSize: 12, color: 'var(--color-text-tertiary)', marginTop: 1 }}>
               {request.employeeName} &nbsp;·&nbsp; {request.designation} &nbsp;·&nbsp; {request.department}
             </div>
           )}

@@ -99,7 +99,7 @@ function initials(name: string) {
 }
 
 function avatarColor(id: string) {
-  const palette = ['#0f766e','#0284c7','#7c3aed','#d97706','#059669','#dc2626','#0891b2'];
+  const palette = ['var(--color-primary)','#0284c7','#7c3aed','#d97706','#059669','#dc2626','#0891b2'];
   return palette[parseInt(id.replace(/\D/g, '') || '0') % palette.length];
 }
 
@@ -139,7 +139,7 @@ const INIT_PERIODIC: PeriodicConfig = {
 // ─── Shared sub-components ────────────────────────────────────────────────────
 function FieldLabel({ children, required }: { children: React.ReactNode; required?: boolean }) {
   return (
-    <div style={{ fontSize: 10, fontWeight: 700, color: '#9ca3af', letterSpacing: '0.06em', marginBottom: 5 }}>
+    <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--color-text-disabled)', letterSpacing: '0.06em', marginBottom: 5 }}>
       {children}{required && <span style={{ color: '#ef4444', marginLeft: 2 }}>*</span>}
     </div>
   );
@@ -149,7 +149,7 @@ function StepBadge({ n }: { n: number }) {
   return (
     <div style={{
       width: 28, height: 28, borderRadius: '50%', flexShrink: 0,
-      background: '#0f766e', color: '#fff', fontWeight: 700, fontSize: 13,
+      background: 'var(--color-primary)', color: '#fff', fontWeight: 700, fontSize: 13,
       display: 'flex', alignItems: 'center', justifyContent: 'center',
     }}>
       {n}
@@ -174,24 +174,24 @@ function PipelineEditor({ steps, onAdd, onRemove, onUpdate, onMove, compact }: P
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
         <Space size={8}>
-          <div style={{ width: 3, height: 14, background: '#0f766e', borderRadius: 2 }} />
-          <Text style={{ fontSize: 11, fontWeight: 700, color: '#374151', letterSpacing: '0.05em' }}>
+          <div style={{ width: 3, height: 14, background: 'var(--color-primary)', borderRadius: 2 }} />
+          <Text style={{ fontSize: 11, fontWeight: 700, color: 'var(--color-text-secondary)', letterSpacing: '0.05em' }}>
             EVALUATION PIPELINE
           </Text>
-          <Text style={{ fontSize: 11, background: '#e6f7f4', color: '#0f766e', border: '1px solid #8dd3c8', borderRadius: 999, padding: '1px 8px', fontWeight: 600 }}>
+          <Text style={{ fontSize: 11, background: 'var(--color-primary-tint)', color: 'var(--color-primary)', border: '1px solid #8dd3c8', borderRadius: 999, padding: '1px 8px', fontWeight: 600 }}>
             {steps.length} step{steps.length !== 1 ? 's' : ''}
           </Text>
         </Space>
         {totalDays > 0 && (
           <Text type="secondary" style={{ fontSize: 12 }}>
-            Total: <strong style={{ color: '#0f766e' }}>{totalDays} day{totalDays !== 1 ? 's' : ''}</strong>
+            Total: <strong style={{ color: 'var(--color-primary)' }}>{totalDays} day{totalDays !== 1 ? 's' : ''}</strong>
           </Text>
         )}
       </div>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
         {steps.map((step, idx) => (
-          <div key={step.id} style={{ border: '1px solid #e5e7eb', borderRadius: 10, padding: compact ? '8px 12px' : '10px 14px', background: '#fafafa' }}>
+          <div key={step.id} style={{ border: '1px solid var(--color-border)', borderRadius: 10, padding: compact ? '8px 12px' : '10px 14px', background: 'var(--color-bg-subtle)' }}>
             {idx === 0 && (
               <div style={{ display: 'grid', gridTemplateColumns: '36px 1fr 160px 90px', gap: 10, marginBottom: 5 }}>
                 <div /><FieldLabel>ROLE / EVALUATOR</FieldLabel><FieldLabel>DAYS TO COMPLETE</FieldLabel><div />
@@ -214,23 +214,23 @@ function PipelineEditor({ steps, onAdd, onRemove, onUpdate, onMove, compact }: P
                 value={step.daysToComplete}
                 onChange={v => onUpdate(step.id, { daysToComplete: v ?? 1 })}
                 min={1} max={365} style={{ width: '100%' }}
-                addonAfter={<span style={{ fontSize: 11, color: '#9ca3af' }}>days</span>}
+                addonAfter={<span style={{ fontSize: 11, color: 'var(--color-text-disabled)' }}>days</span>}
               />
               <Space size={2}>
                 <Tooltip title="Move Up">
                   <Button type="text" size="small" icon={<ArrowUpOutlined style={{ fontSize: 11 }} />}
                     disabled={idx === 0} onClick={() => onMove(idx, idx - 1)}
-                    style={{ color: '#9ca3af', padding: '0 5px', height: 26 }} />
+                    style={{ color: 'var(--color-text-disabled)', padding: '0 5px', height: 26 }} />
                 </Tooltip>
                 <Tooltip title="Move Down">
                   <Button type="text" size="small" icon={<ArrowDownOutlined style={{ fontSize: 11 }} />}
                     disabled={idx === steps.length - 1} onClick={() => onMove(idx, idx + 1)}
-                    style={{ color: '#9ca3af', padding: '0 5px', height: 26 }} />
+                    style={{ color: 'var(--color-text-disabled)', padding: '0 5px', height: 26 }} />
                 </Tooltip>
                 <Tooltip title={steps.length <= 1 ? 'At least one step required' : 'Remove'}>
                   <Button type="text" size="small" icon={<CloseOutlined style={{ fontSize: 11 }} />}
                     disabled={steps.length <= 1} onClick={() => onRemove(step.id)}
-                    style={{ color: steps.length <= 1 ? '#d1d5db' : '#ef4444', padding: '0 5px', height: 26 }} />
+                    style={{ color: steps.length <= 1 ? 'var(--color-border)' : '#ef4444', padding: '0 5px', height: 26 }} />
                 </Tooltip>
               </Space>
             </div>
@@ -239,7 +239,7 @@ function PipelineEditor({ steps, onAdd, onRemove, onUpdate, onMove, compact }: P
       </div>
 
       <Button icon={<PlusOutlined />} onClick={onAdd}
-        style={{ marginTop: 10, borderRadius: 8, borderStyle: 'dashed', borderColor: '#0f766e', color: '#0f766e', background: '#eef8f6', fontWeight: 600, fontSize: 13, height: 34 }}>
+        style={{ marginTop: 10, borderRadius: 8, borderStyle: 'dashed', borderColor: 'var(--color-primary)', color: 'var(--color-primary)', background: 'var(--color-primary-tint)', fontWeight: 600, fontSize: 13, height: 34 }}>
         + Add Step
       </Button>
     </div>
@@ -260,25 +260,25 @@ interface SectionCardProps {
 function SectionCard({ icon, title, subtitle, enabled, onToggle, headerExtra, children }: SectionCardProps) {
   return (
     <div style={{
-      background: '#fff', border: `1px solid ${enabled ? '#a7e3d9' : '#e5e7eb'}`,
+      background: 'var(--color-bg-surface)', border: `1px solid ${enabled ? 'var(--color-border)' : 'var(--color-border)'}`,
       borderRadius: 14, marginBottom: 16, overflow: 'hidden', transition: 'border-color 0.25s',
     }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '14px 20px', background: enabled ? '#eef8f6' : '#f9fafb', borderBottom: '1px solid #e5e7eb', gap: 12, flexWrap: 'wrap' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '14px 20px', background: enabled ? 'var(--color-primary-tint)' : 'var(--color-bg-subtle)', borderBottom: '1px solid var(--color-border)', gap: 12, flexWrap: 'wrap' }}>
         <Space size={10}>
           <span style={{ fontSize: 20, lineHeight: 1 }}>{icon}</span>
           <div>
-            <Text strong style={{ fontSize: 15, color: '#111827', display: 'block' }}>{title}</Text>
+            <Text strong style={{ fontSize: 15, color: 'var(--color-text-primary)', display: 'block' }}>{title}</Text>
             {subtitle && <Text type="secondary" style={{ fontSize: 11 }}>{subtitle}</Text>}
           </div>
         </Space>
         <Space size={10} align="center">
           {headerExtra}
           <Space size={6}>
-            <Text style={{ fontSize: 12, color: enabled ? '#0f766e' : '#9ca3af', fontWeight: 600 }}>
+            <Text style={{ fontSize: 12, color: enabled ? 'var(--color-primary)' : 'var(--color-text-disabled)', fontWeight: 600 }}>
               {enabled ? 'Enabled' : 'Disabled'}
             </Text>
             <Switch checked={enabled} onChange={onToggle} size="small"
-              style={{ background: enabled ? '#0f766e' : undefined }} />
+              style={{ background: enabled ? 'var(--color-primary)' : undefined }} />
           </Space>
         </Space>
       </div>
@@ -287,7 +287,7 @@ function SectionCard({ icon, title, subtitle, enabled, onToggle, headerExtra, ch
           {children}
         </div>
         {!enabled && (
-          <div style={{ marginTop: 8, fontSize: 12, color: '#9ca3af', fontStyle: 'italic' }}>
+          <div style={{ marginTop: 8, fontSize: 12, color: 'var(--color-text-disabled)', fontStyle: 'italic' }}>
             This review type is currently disabled. Enable it to configure.
           </div>
         )}
@@ -353,22 +353,22 @@ function ExceptionDrawer({ open, onClose, exceptions, onChange, defaultPeriodic 
         <Space size={10}>
           <ExceptionOutlined style={{ color: '#d97706', fontSize: 18 }} />
           <div>
-            <div style={{ fontWeight: 700, fontSize: 15, color: '#111827' }}>Employee Exceptions</div>
-            <div style={{ fontSize: 11, color: '#9ca3af', fontWeight: 400 }}>
+            <div style={{ fontWeight: 700, fontSize: 15, color: 'var(--color-text-primary)' }}>Employee Exceptions</div>
+            <div style={{ fontSize: 11, color: 'var(--color-text-disabled)', fontWeight: 400 }}>
               Override review settings for specific employees
             </div>
           </div>
         </Space>
       }
       width={720}
-      styles={{ body: { background: '#f7fbfa', padding: '16px 20px' } }}
+      styles={{ body: { background: 'var(--color-bg-subtle)', padding: '16px 20px' } }}
       footer={
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <Text type="secondary" style={{ fontSize: 12 }}>
             {exceptions.length} exception{exceptions.length !== 1 ? 's' : ''} configured
           </Text>
           <Space>
-            <Button onClick={onClose} style={{ borderRadius: 8, borderColor: '#a7e3d9', color: '#0f766e' }}>
+            <Button onClick={onClose} style={{ borderRadius: 8, borderColor: 'var(--color-border)', color: 'var(--color-primary)' }}>
               Close
             </Button>
             <Button type="primary" onClick={() => { message.success('Exceptions saved.'); onClose(); }}
@@ -380,14 +380,14 @@ function ExceptionDrawer({ open, onClose, exceptions, onChange, defaultPeriodic 
       }
     >
       {/* Info banner */}
-      <div style={{ background: '#fffbeb', border: '1px solid #fde68a', borderRadius: 10, padding: '10px 14px', marginBottom: 16, fontSize: 12, color: '#92400e' }}>
+      <div style={{ background: 'var(--color-status-pending-bg)', border: '1px solid #fde68a', borderRadius: 10, padding: '10px 14px', marginBottom: 16, fontSize: 12, color: '#d97706' }}>
         <strong>Note:</strong> Exception settings override the default Yearly / Periodic Review configuration for the selected employee only. Leave a field at the default value to inherit from the global config.
       </div>
 
       {/* Employee search */}
       <div style={{ marginBottom: 16, position: 'relative' }}>
         <Input
-          prefix={<SearchOutlined style={{ color: '#9ca3af' }} />}
+          prefix={<SearchOutlined style={{ color: 'var(--color-text-disabled)' }} />}
           placeholder="Search employee by name, code or department…"
           value={empSearch}
           onChange={e => setEmpSearch(e.target.value)}
@@ -398,20 +398,20 @@ function ExceptionDrawer({ open, onClose, exceptions, onChange, defaultPeriodic 
         {empSearch.trim() !== '' && (
           <div style={{
             position: 'absolute', top: 'calc(100% + 4px)', left: 0, right: 0,
-            border: '1px solid #d1d5db', borderRadius: 8, background: '#fff',
+            border: '1px solid var(--color-border)', borderRadius: 8, background: 'var(--color-bg-surface)',
             boxShadow: '0 4px 12px rgba(0,0,0,0.08)', zIndex: 10,
             maxHeight: 220, overflowY: 'auto',
           }}>
             {searchResults.length === 0 ? (
-              <div style={{ padding: '12px 14px', color: '#9ca3af', fontSize: 12, textAlign: 'center' }}>
+              <div style={{ padding: '12px 14px', color: 'var(--color-text-disabled)', fontSize: 12, textAlign: 'center' }}>
                 No available employees match &ldquo;{empSearch}&rdquo;
               </div>
             ) : (
               searchResults.map(emp => (
                 <div key={emp.id} style={{
                   display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                  padding: '9px 12px', borderBottom: '1px solid #f3f4f6',
-                }} onMouseEnter={e => (e.currentTarget.style.background = '#f0fdf9')}
+                  padding: '9px 12px', borderBottom: '1px solid var(--color-border)',
+                }} onMouseEnter={e => (e.currentTarget.style.background = 'var(--color-primary-tint)')}
                   onMouseLeave={e => (e.currentTarget.style.background = '')}
                 >
                   <Space size={8}>
@@ -419,8 +419,8 @@ function ExceptionDrawer({ open, onClose, exceptions, onChange, defaultPeriodic 
                       {initials(emp.name)}
                     </Avatar>
                     <div>
-                      <div style={{ fontSize: 13, fontWeight: 600, color: '#111827', lineHeight: 1.3 }}>{emp.name}</div>
-                      <div style={{ fontSize: 11, color: '#9ca3af' }}>{emp.code} · {emp.designation} · {emp.dept}</div>
+                      <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--color-text-primary)', lineHeight: 1.3 }}>{emp.name}</div>
+                      <div style={{ fontSize: 11, color: 'var(--color-text-disabled)' }}>{emp.code} · {emp.designation} · {emp.dept}</div>
                     </div>
                   </Space>
                   <Button
@@ -439,7 +439,7 @@ function ExceptionDrawer({ open, onClose, exceptions, onChange, defaultPeriodic 
 
       {/* Exception cards */}
       {exceptions.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: '48px 0', color: '#9ca3af' }}>
+        <div style={{ textAlign: 'center', padding: '48px 0', color: 'var(--color-text-disabled)' }}>
           <ExceptionOutlined style={{ fontSize: 36, display: 'block', marginBottom: 10 }} />
           <Text type="secondary">No exceptions configured yet.</Text>
           <div style={{ marginTop: 6 }}>
@@ -455,9 +455,9 @@ function ExceptionDrawer({ open, onClose, exceptions, onChange, defaultPeriodic 
             const availableForThis = MOCK_EMPLOYEES.filter(e => !usedIds.includes(e.id) || e.id === exc.employeeId);
 
             return (
-              <div key={exc.id} style={{ background: '#fff', border: '1px solid #d9ebe8', borderRadius: 12, overflow: 'hidden' }}>
+              <div key={exc.id} style={{ background: 'var(--color-bg-surface)', border: '1px solid #d9ebe8', borderRadius: 12, overflow: 'hidden' }}>
                 {/* Exception card header */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 14px', background: '#eef8f6', borderBottom: '1px solid #d9ebe8' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 14px', background: 'var(--color-primary-tint)', borderBottom: '1px solid #d9ebe8' }}>
                   <Space size={10}>
                     <Avatar size={32} style={{ background: avatarColor(exc.employeeId), fontWeight: 700, fontSize: 12, flexShrink: 0 }}>
                       {emp ? initials(emp.name) : <UserOutlined />}
@@ -496,7 +496,7 @@ function ExceptionDrawer({ open, onClose, exceptions, onChange, defaultPeriodic 
                         value={exc.notifyDaysBefore}
                         onChange={v => updateException(exc.id, { notifyDaysBefore: v ?? 1 })}
                         min={1} max={365} style={{ width: '100%' }}
-                        addonAfter={<span style={{ fontSize: 11, color: '#9ca3af' }}>days</span>}
+                        addonAfter={<span style={{ fontSize: 11, color: 'var(--color-text-disabled)' }}>days</span>}
                       />
                     </div>
                     <div>
@@ -516,10 +516,10 @@ function ExceptionDrawer({ open, onClose, exceptions, onChange, defaultPeriodic 
                   {/* Custom pipeline toggle */}
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 0', borderTop: '1px dashed #e5e7eb', marginBottom: exc.customizePipeline ? 14 : 10 }}>
                     <Space size={8}>
-                      <SettingOutlined style={{ color: '#6b7280', fontSize: 13 }} />
-                      <Text style={{ fontSize: 12, color: '#374151', fontWeight: 600 }}>Custom Evaluation Pipeline</Text>
+                      <SettingOutlined style={{ color: 'var(--color-text-tertiary)', fontSize: 13 }} />
+                      <Text style={{ fontSize: 12, color: 'var(--color-text-secondary)', fontWeight: 600 }}>Custom Evaluation Pipeline</Text>
                       {!exc.customizePipeline && (
-                        <Tag style={{ fontSize: 10, borderRadius: 999, color: '#0f766e', borderColor: '#8dd3c8', background: '#e6f7f4' }}>
+                        <Tag style={{ fontSize: 10, borderRadius: 999, color: 'var(--color-primary)', borderColor: '#8dd3c8', background: 'var(--color-primary-tint)' }}>
                           Using default · {defaultPeriodic.pipeline.length} steps
                         </Tag>
                       )}
@@ -528,7 +528,7 @@ function ExceptionDrawer({ open, onClose, exceptions, onChange, defaultPeriodic 
                       checked={exc.customizePipeline}
                       onChange={v => updateException(exc.id, { customizePipeline: v })}
                       size="small"
-                      style={{ background: exc.customizePipeline ? '#0f766e' : undefined }}
+                      style={{ background: exc.customizePipeline ? 'var(--color-primary)' : undefined }}
                     />
                   </div>
 
@@ -619,14 +619,14 @@ export default function AppraisalConfigPage() {
   const periTotal = periodic.pipeline.reduce((s, st) => s + st.daysToComplete, 0);
 
   return (
-    <div style={{ padding: '16px 20px', background: '#eef5f4', minHeight: '100%', height: '100%', overflowY: 'auto' }}>
+    <div style={{ padding: '16px 20px', background: 'var(--color-bg-subtle)', minHeight: '100%', height: '100%', overflowY: 'auto' }}>
 
       {/* ── Page header ── */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 18, flexWrap: 'wrap', gap: 10 }}>
         <div>
-          <Title level={3} style={{ margin: 0, color: '#1f2937' }}>
+          <Title level={3} style={{ margin: 0, color: 'var(--color-text-secondary)' }}>
             Appraisal Configuration
-            <Text style={{ marginLeft: 10, color: '#0f766e', fontSize: 20, fontWeight: 500 }}>Setup</Text>
+            <Text style={{ marginLeft: 10, color: 'var(--color-primary)', fontSize: 20, fontWeight: 500 }}>Setup</Text>
           </Title>
           <Text type="secondary" style={{ fontSize: 13 }}>
             Configure evaluation pipelines and timelines for confirmation and periodic appraisals.
@@ -634,7 +634,7 @@ export default function AppraisalConfigPage() {
         </div>
         <Space size={8}>
           <Button icon={<ReloadOutlined />} onClick={handleReset}
-            style={{ borderRadius: 10, borderColor: '#c7ddda', color: '#94a3b8' }}>
+            style={{ borderRadius: 10, borderColor: '#c7ddda', color: 'var(--color-text-tertiary)' }}>
             Reset Defaults
           </Button>
           <Button type="primary" icon={saved ? <CheckCircleOutlined /> : <SaveOutlined />} onClick={handleSave}
@@ -646,27 +646,27 @@ export default function AppraisalConfigPage() {
 
       {/* ── Summary chips ── */}
       <div style={{ display: 'flex', gap: 10, marginBottom: 16, flexWrap: 'wrap' }}>
-        <div style={{ background: confirmation.enabled ? '#eef8f6' : '#f9fafb', border: `1px solid ${confirmation.enabled ? '#a7e3d9' : '#e5e7eb'}`, borderRadius: 10, padding: '8px 14px', fontSize: 12 }}>
+        <div style={{ background: confirmation.enabled ? 'var(--color-primary-tint)' : 'var(--color-bg-subtle)', border: `1px solid ${confirmation.enabled ? 'var(--color-border)' : 'var(--color-border)'}`, borderRadius: 10, padding: '8px 14px', fontSize: 12 }}>
           <Text type="secondary">Confirmation Review </Text>
-          <Text strong style={{ color: confirmation.enabled ? '#0f766e' : '#9ca3af' }}>
+          <Text strong style={{ color: confirmation.enabled ? 'var(--color-primary)' : 'var(--color-text-disabled)' }}>
             {confirmation.enabled
               ? `notify ${confirmation.notifyDaysBefore}d · ${confirmation.pipeline.length} steps · ${confTotal} days pipeline`
               : 'Disabled'}
           </Text>
         </div>
-        <div style={{ background: periodic.enabled ? '#eef8f6' : '#f9fafb', border: `1px solid ${periodic.enabled ? '#a7e3d9' : '#e5e7eb'}`, borderRadius: 10, padding: '8px 14px', fontSize: 12 }}>
+        <div style={{ background: periodic.enabled ? 'var(--color-primary-tint)' : 'var(--color-bg-subtle)', border: `1px solid ${periodic.enabled ? 'var(--color-border)' : 'var(--color-border)'}`, borderRadius: 10, padding: '8px 14px', fontSize: 12 }}>
           <Text type="secondary">Periodic Review </Text>
-          <Text strong style={{ color: periodic.enabled ? '#0f766e' : '#9ca3af' }}>
+          <Text strong style={{ color: periodic.enabled ? 'var(--color-primary)' : 'var(--color-text-disabled)' }}>
             {periodic.enabled
               ? `${freqLabel(periodic.reviewFrequency)} · notify ${periodic.notifyDaysBefore}d · ${periodic.pipeline.length} steps · ${periTotal} days pipeline`
               : 'Disabled'}
           </Text>
         </div>
         {exceptions.length > 0 && (
-          <div style={{ background: '#fffbeb', border: '1px solid #fde68a', borderRadius: 10, padding: '8px 14px', fontSize: 12, cursor: 'pointer' }}
+          <div style={{ background: 'var(--color-status-pending-bg)', border: '1px solid #fde68a', borderRadius: 10, padding: '8px 14px', fontSize: 12, cursor: 'pointer' }}
             onClick={() => setExceptionOpen(true)}>
             <Text style={{ color: '#d97706' }}>⚠ </Text>
-            <Text strong style={{ color: '#92400e' }}>
+            <Text strong style={{ color: '#d97706' }}>
               {exceptions.length} employee exception{exceptions.length !== 1 ? 's' : ''} active
             </Text>
           </div>
@@ -675,7 +675,7 @@ export default function AppraisalConfigPage() {
 
       {/* ════════════════ Section 1 — Confirmation KPI Review ════════════════ */}
       <SectionCard
-        icon={<FormOutlined style={{ color: '#0f766e' }} />}
+        icon={<FormOutlined style={{ color: 'var(--color-primary)' }} />}
         title="Confirmation KPI Review"
         subtitle="Triggered automatically N days before an employee's confirmation date"
         enabled={confirmation.enabled}
@@ -688,7 +688,7 @@ export default function AppraisalConfigPage() {
               value={confirmation.notifyDaysBefore}
               onChange={v => setConf({ notifyDaysBefore: v ?? 1 })}
               min={1} max={365} style={{ width: '100%' }}
-              addonAfter={<span style={{ fontSize: 11, color: '#9ca3af' }}>days</span>}
+              addonAfter={<span style={{ fontSize: 11, color: 'var(--color-text-disabled)' }}>days</span>}
             />
             <Text type="secondary" style={{ fontSize: 11, marginTop: 4, display: 'block' }}>
               Form generated {confirmation.notifyDaysBefore} day{confirmation.notifyDaysBefore !== 1 ? 's' : ''} before the confirmation date.
@@ -710,7 +710,7 @@ export default function AppraisalConfigPage() {
 
       {/* ════════════════ Section 2 — Yearly / Periodic Review ════════════════ */}
       <SectionCard
-        icon={<CalendarOutlined style={{ color: '#0f766e' }} />}
+        icon={<CalendarOutlined style={{ color: 'var(--color-primary)' }} />}
         title="Yearly / Periodic Review"
         subtitle="Triggered on a recurring schedule for ongoing performance appraisals"
         enabled={periodic.enabled}
@@ -721,9 +721,9 @@ export default function AppraisalConfigPage() {
             onClick={() => setExceptionOpen(true)}
             style={{
               borderRadius: 8, fontSize: 12, height: 30,
-              background: exceptions.length > 0 ? '#fffbeb' : '#f9fafb',
-              borderColor: exceptions.length > 0 ? '#fde68a' : '#d1d5db',
-              color: exceptions.length > 0 ? '#d97706' : '#6b7280',
+              background: exceptions.length > 0 ? 'var(--color-status-pending-bg)' : 'var(--color-bg-subtle)',
+              borderColor: exceptions.length > 0 ? 'rgba(253, 230, 138, 0.4)' : 'var(--color-border)',
+              color: exceptions.length > 0 ? '#d97706' : 'var(--color-text-tertiary)',
               fontWeight: 600,
             }}
           >
@@ -744,7 +744,7 @@ export default function AppraisalConfigPage() {
               value={periodic.notifyDaysBefore}
               onChange={v => setPeri({ notifyDaysBefore: v ?? 1 })}
               min={1} max={365} style={{ width: '100%' }}
-              addonAfter={<span style={{ fontSize: 11, color: '#9ca3af' }}>days</span>}
+              addonAfter={<span style={{ fontSize: 11, color: 'var(--color-text-disabled)' }}>days</span>}
             />
             <Text type="secondary" style={{ fontSize: 11, marginTop: 4, display: 'block' }}>
               Form generated {periodic.notifyDaysBefore} day{periodic.notifyDaysBefore !== 1 ? 's' : ''} before the review date.

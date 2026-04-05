@@ -208,16 +208,16 @@ const MOCK_TICKETS: ComplaintTicket[] = [
 
 // ── Colour maps ────────────────────────────────────────────────────────────────
 const STATUS_CFG: Record<TicketStatus, { bg: string; text: string; dot: string }> = {
-  'Pending': { bg: '#fffbeb', text: '#d97706', dot: '#f59e0b' },
-  'Ongoing': { bg: '#eff6ff', text: '#2563eb', dot: '#3b82f6' },
-  'Closed':  { bg: '#f3f4f6', text: '#6b7280', dot: '#9ca3af' },
+  'Pending': { bg: 'var(--color-status-pending-bg)', text: '#d97706', dot: '#f59e0b' },
+  'Ongoing': { bg: 'var(--color-status-info-bg)', text: '#2563eb', dot: '#3b82f6' },
+  'Closed':  { bg: 'var(--color-bg-subtle)', text: 'var(--color-text-tertiary)', dot: 'var(--color-text-disabled)' },
 };
 
 const SEC_CFG: Record<SecurityLevel, { bg: string; text: string; border: string }> = {
-  Low:      { bg: '#f0fdf4', text: '#15803d', border: '#bbf7d0' },
-  Medium:   { bg: '#fffbeb', text: '#d97706', border: '#fde68a' },
-  High:     { bg: '#fff7ed', text: '#c2410c', border: '#fed7aa' },
-  Critical: { bg: '#fef2f2', text: '#dc2626', border: '#fecaca' },
+  Low:      { bg: 'var(--color-status-approved-bg)', text: '#15803d', border: 'var(--color-status-approved-bg)' },
+  Medium:   { bg: 'var(--color-status-pending-bg)', text: '#d97706', border: 'rgba(253, 230, 138, 0.4)' },
+  High:     { bg: 'rgba(249, 115, 22, 0.10)', text: '#c2410c', border: 'rgba(251, 146, 60, 0.22)' },
+  Critical: { bg: 'var(--color-status-rejected-bg)', text: '#dc2626', border: 'var(--color-status-rejected-bg)' },
 };
 
 const NATURE_COLOR: Record<NatureType, string> = {
@@ -226,7 +226,7 @@ const NATURE_COLOR: Record<NatureType, string> = {
   'Workplace Violence':'#c2410c',
   'Theft / Pilferage': '#b45309',
   'Policy Violation':  '#0369a1',
-  'Misconduct':        '#374151',
+  'Misconduct':        'var(--color-text-secondary)',
 };
 
 // ── Small display components ───────────────────────────────────────────────────
@@ -274,10 +274,10 @@ function EmployeeCell({ employees }: { employees: Employee[] }) {
   const shown = employees.slice(0, 2);
   const extra = employees.length - 2;
   return (
-    <span style={{ fontSize: 12, color: '#374151' }}>
+    <span style={{ fontSize: 12, color: 'var(--color-text-secondary)' }}>
       {shown.map((e, i) => (
         <span key={e.id}>
-          {i > 0 && <span style={{ color: '#9ca3af' }}>; </span>}
+          {i > 0 && <span style={{ color: 'var(--color-text-disabled)' }}>; </span>}
           <Tooltip title={e.name}>
             <span style={{ cursor: 'default' }}>{e.id} ({e.name})</span>
           </Tooltip>
@@ -285,7 +285,7 @@ function EmployeeCell({ employees }: { employees: Employee[] }) {
       ))}
       {extra > 0 && (
         <Tooltip title={employees.slice(2).map(e => `${e.id} (${e.name})`).join(', ')}>
-          <span style={{ color: '#0f766e', fontWeight: 600, marginLeft: 4, cursor: 'pointer' }}>
+          <span style={{ color: 'var(--color-primary)', fontWeight: 600, marginLeft: 4, cursor: 'pointer' }}>
             &amp; {extra} More
           </span>
         </Tooltip>
@@ -300,10 +300,10 @@ function SectionLabel({ children, color = 'employee' }: { children: React.ReactN
   return (
     <div style={{
       padding: '6px 14px',
-      background: isHr ? '#fff7ed' : '#eef8f7',
-      borderLeft: `3px solid ${isHr ? '#f97316' : '#0f766e'}`,
+      background: isHr ? 'rgba(249, 115, 22, 0.10)' : 'var(--color-primary-tint)',
+      borderLeft: `3px solid ${isHr ? '#f97316' : 'var(--color-primary)'}`,
       fontWeight: 700, fontSize: 12,
-      color: isHr ? '#c2410c' : '#115e59',
+      color: isHr ? '#c2410c' : 'var(--color-primary-dark)',
       letterSpacing: '0.02em', borderRadius: '0 6px 6px 0', marginBottom: 14,
     }}>
       {children}
@@ -315,13 +315,13 @@ function SectionLabel({ children, color = 'employee' }: { children: React.ReactN
 function ReadField({ label, value }: { label: string; value?: string }) {
   return (
     <div style={{ marginBottom: 10 }}>
-      <div style={{ fontSize: 11, fontWeight: 600, color: '#6b7280', marginBottom: 2, letterSpacing: '0.03em' }}>
+      <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--color-text-tertiary)', marginBottom: 2, letterSpacing: '0.03em' }}>
         {label.toUpperCase()}
       </div>
       <div style={{
-        fontSize: 13, color: value ? '#111827' : '#d1d5db',
-        padding: '6px 10px', background: '#f8fafc',
-        border: '1px solid #e5e7eb', borderRadius: 8, minHeight: 34,
+        fontSize: 13, color: value ? 'var(--color-text-primary)' : 'var(--color-border)',
+        padding: '6px 10px', background: 'var(--color-bg-subtle)',
+        border: '1px solid var(--color-border)', borderRadius: 8, minHeight: 34,
       }}>
         {value || '—'}
       </div>
@@ -346,14 +346,14 @@ const FileRow = memo(function FileRow({
   return (
     <div style={{
       display: 'flex', alignItems: 'center', gap: 8,
-      background: '#f8fafc', border: '1px solid #e5e7eb',
-      borderRadius: 7, padding: '5px 10px', fontSize: 12, color: '#374151',
+      background: 'var(--color-bg-subtle)', border: '1px solid var(--color-border)',
+      borderRadius: 7, padding: '5px 10px', fontSize: 12, color: 'var(--color-text-secondary)',
     }}>
-      <FileOutlined style={{ color: '#0f766e', flexShrink: 0 }} />
+      <FileOutlined style={{ color: 'var(--color-primary)', flexShrink: 0 }} />
       <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', minWidth: 0 }}>
         {file.name}
       </span>
-      <span style={{ fontSize: 11, color: '#9ca3af', flexShrink: 0 }}>
+      <span style={{ fontSize: 11, color: 'var(--color-text-disabled)', flexShrink: 0 }}>
         {file.size ? `${(file.size / 1024).toFixed(1)} KB` : ''}
       </span>
       <select
@@ -362,7 +362,7 @@ const FileRow = memo(function FileRow({
         style={{
           width: 190, flexShrink: 0, height: 24, fontSize: 11,
           border: '1px solid #d9d9d9', borderRadius: 6, padding: '0 6px',
-          background: '#fff', color: attachType ? '#374151' : '#9ca3af',
+          background: 'var(--color-bg-surface)', color: attachType ? 'var(--color-text-secondary)' : 'var(--color-text-disabled)',
           cursor: 'pointer', outline: 'none',
         }}
       >
@@ -371,7 +371,7 @@ const FileRow = memo(function FileRow({
       </select>
       <Tooltip title="View">
         <Button type="text" size="small" icon={<EyeOutlined />} onClick={() => onView(file)}
-          style={{ color: '#0f766e', padding: '0 4px', height: 22, flexShrink: 0 }} />
+          style={{ color: 'var(--color-primary)', padding: '0 4px', height: 22, flexShrink: 0 }} />
       </Tooltip>
       <Tooltip title="Remove">
         <Button type="text" size="small" icon={<DeleteOutlined />} onClick={() => onRemove(file.uid)}
@@ -425,8 +425,8 @@ function AttachmentUpload({
         open={!!viewingFile}
         title={
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <FileOutlined style={{ color: '#0f766e' }} />
-            <span style={{ fontWeight: 700, fontSize: 14, color: '#111827' }}>{viewingFile?.name}</span>
+            <FileOutlined style={{ color: 'var(--color-primary)' }} />
+            <span style={{ fontWeight: 700, fontSize: 14, color: 'var(--color-text-primary)' }}>{viewingFile?.name}</span>
           </div>
         }
         footer={null}
@@ -440,13 +440,13 @@ function AttachmentUpload({
           const url    = safeFile ? URL.createObjectURL(safeFile) : undefined;
           const isImg  = viewingFile.type?.startsWith('image/');
           const isPdf  = viewingFile.type === 'application/pdf';
-          if (!url) return <div style={{ textAlign: 'center', color: '#9ca3af', padding: '40px 0' }}>Preview not available.</div>;
+          if (!url) return <div style={{ textAlign: 'center', color: 'var(--color-text-disabled)', padding: '40px 0' }}>Preview not available.</div>;
           if (isImg) return <img src={url} alt={viewingFile.name} style={{ width: '100%', borderRadius: 8 }} />;
           if (isPdf) return <iframe src={url} title={viewingFile.name} style={{ width: '100%', height: 500, border: 'none', borderRadius: 8 }} />;
           return (
             <div style={{ textAlign: 'center', padding: '40px 0' }}>
-              <FileOutlined style={{ fontSize: 48, color: '#0f766e', display: 'block', marginBottom: 12 }} />
-              <div style={{ fontSize: 14, color: '#374151', marginBottom: 16 }}>{viewingFile.name}</div>
+              <FileOutlined style={{ fontSize: 48, color: 'var(--color-primary)', display: 'block', marginBottom: 12 }} />
+              <div style={{ fontSize: 14, color: 'var(--color-text-secondary)', marginBottom: 16 }}>{viewingFile.name}</div>
               <Button type="primary" href={url} target="_blank" rel="noopener noreferrer">Open File</Button>
             </div>
           );
@@ -481,9 +481,9 @@ function RespondDrawer({
     <Drawer
       title={
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <SendOutlined style={{ color: '#0f766e' }} />
-          <span style={{ fontWeight: 700, color: '#111827' }}>Respond to Show Cause</span>
-          <span style={{ fontSize: 12, color: '#6b7280', fontWeight: 400 }}>— {ticket.ticketId}</span>
+          <SendOutlined style={{ color: 'var(--color-primary)' }} />
+          <span style={{ fontWeight: 700, color: 'var(--color-text-primary)' }}>Respond to Show Cause</span>
+          <span style={{ fontSize: 12, color: 'var(--color-text-tertiary)', fontWeight: 400 }}>— {ticket.ticketId}</span>
           <StatusBadge status={ticket.status} />
         </div>
       }
@@ -532,7 +532,7 @@ function RespondDrawer({
           {ticket.showCause && (
             <div style={{
               marginBottom: 16, padding: '10px 14px',
-              background: '#fff7ed', border: '1px solid #fed7aa', borderRadius: 8,
+              background: 'rgba(249, 115, 22, 0.10)', border: '1px solid #fed7aa', borderRadius: 8,
             }}>
               <div style={{ fontSize: 12, fontWeight: 700, color: '#c2410c', marginBottom: 4 }}>
                 Show Cause Notice — {ticket.showCause.ref}
@@ -545,7 +545,7 @@ function RespondDrawer({
                   </span>
                 )}
               </div>
-              <div style={{ fontSize: 13, color: '#92400e' }}>{ticket.showCause.description}</div>
+              <div style={{ fontSize: 13, color: '#d97706' }}>{ticket.showCause.description}</div>
             </div>
           )}
 
@@ -577,13 +577,13 @@ function RespondDrawer({
         {/* ── Right: ticket history panel ── */}
         <div style={{
           width: 280, flexShrink: 0,
-          borderLeft: '1px solid #e5e7eb',
+          borderLeft: '1px solid var(--color-border)',
           overflowY: 'auto', padding: 16,
-          background: '#f8fafc',
+          background: 'var(--color-bg-subtle)',
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
-            <HistoryOutlined style={{ color: '#0f766e' }} />
-            <span style={{ fontWeight: 700, fontSize: 13, color: '#111827' }}>Ticket Info</span>
+            <HistoryOutlined style={{ color: 'var(--color-primary)' }} />
+            <span style={{ fontWeight: 700, fontSize: 13, color: 'var(--color-text-primary)' }}>Ticket Info</span>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             {[
@@ -595,8 +595,8 @@ function RespondDrawer({
               { label: 'Reported By',  value: `${ticket.reportedBy.id} (${ticket.reportedBy.name})` },
             ].map(f => (
               <div key={f.label} style={{ fontSize: 12, borderBottom: '1px solid #f0f0f0', paddingBottom: 8 }}>
-                <div style={{ color: '#9ca3af', fontWeight: 600, marginBottom: 2 }}>{f.label}</div>
-                <div style={{ color: '#111827' }}>{f.value}</div>
+                <div style={{ color: 'var(--color-text-disabled)', fontWeight: 600, marginBottom: 2 }}>{f.label}</div>
+                <div style={{ color: 'var(--color-text-primary)' }}>{f.value}</div>
               </div>
             ))}
           </div>
@@ -619,9 +619,9 @@ function ViewDetailsDrawer({
     <Drawer
       title={
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <EyeOutlined style={{ color: '#0f766e' }} />
-          <span style={{ fontWeight: 700, color: '#111827' }}>View Details</span>
-          <span style={{ fontSize: 12, color: '#6b7280', fontWeight: 400 }}>— {ticket.ticketId}</span>
+          <EyeOutlined style={{ color: 'var(--color-primary)' }} />
+          <span style={{ fontWeight: 700, color: 'var(--color-text-primary)' }}>View Details</span>
+          <span style={{ fontSize: 12, color: 'var(--color-text-tertiary)', fontWeight: 400 }}>— {ticket.ticketId}</span>
         </div>
       }
       open={open}
@@ -654,7 +654,7 @@ function ViewDetailsDrawer({
         <>
           <Divider style={{ margin: '8px 0 16px' }} />
           <SectionLabel color="hr">Show Cause — {ticket.showCause.ref}</SectionLabel>
-          <div style={{ padding: '10px 14px', background: '#fff7ed', border: '1px solid #fed7aa', borderRadius: 8, fontSize: 13, color: '#92400e' }}>
+          <div style={{ padding: '10px 14px', background: 'rgba(249, 115, 22, 0.10)', border: '1px solid #fed7aa', borderRadius: 8, fontSize: 13, color: '#d97706' }}>
             {ticket.showCause.description}
           </div>
         </>
@@ -707,9 +707,9 @@ function InvestigationRespondDrawer({
     <Drawer
       title={
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <MessageOutlined style={{ color: '#0f766e' }} />
-          <span style={{ fontWeight: 700, color: '#111827' }}>Investigation Respond</span>
-          <span style={{ fontSize: 12, color: '#6b7280', fontWeight: 400 }}>— {ticket.ticketId}</span>
+          <MessageOutlined style={{ color: 'var(--color-primary)' }} />
+          <span style={{ fontWeight: 700, color: 'var(--color-text-primary)' }}>Investigation Respond</span>
+          <span style={{ fontSize: 12, color: 'var(--color-text-tertiary)', fontWeight: 400 }}>— {ticket.ticketId}</span>
           <StatusBadge status={ticket.status} />
         </div>
       }
@@ -739,7 +739,7 @@ function InvestigationRespondDrawer({
           {/* Session info banner */}
           <div style={{
             marginBottom: 20, padding: '10px 14px',
-            background: '#ecfeff', border: '1px solid #a5f3fc', borderRadius: 8,
+            background: 'rgba(6, 182, 212, 0.10)', border: '1px solid #a5f3fc', borderRadius: 8,
           }}>
             <div style={{ fontSize: 12, fontWeight: 700, color: '#0e7490', marginBottom: 2 }}>
               <MessageOutlined style={{ marginRight: 6 }} />
@@ -756,20 +756,20 @@ function InvestigationRespondDrawer({
               const ans = answers[q.id] ?? { text: '', files: [] };
               return (
                 <div key={q.id} style={{
-                  border: '1px solid #e5e7eb', borderRadius: 10, overflow: 'hidden',
+                  border: '1px solid var(--color-border)', borderRadius: 10, overflow: 'hidden',
                 }}>
                   {/* Question header */}
-                  <div style={{ padding: '10px 16px', background: '#f8fafc', borderBottom: '1px solid #e5e7eb' }}>
+                  <div style={{ padding: '10px 16px', background: 'var(--color-bg-subtle)', borderBottom: '1px solid var(--color-border)' }}>
                     <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
                       <div style={{
-                        width: 24, height: 24, borderRadius: '50%', background: '#EEF2FF',
+                        width: 24, height: 24, borderRadius: '50%', background: 'var(--color-status-info-bg)',
                         color: '#3B6EEA', fontSize: 12, fontWeight: 700,
                         display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
                       }}>
                         {idx + 1}
                       </div>
                       <div style={{ flex: 1 }}>
-                        <div style={{ fontSize: 13, fontWeight: 600, color: '#111827', lineHeight: 1.6 }}>
+                        <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--color-text-primary)', lineHeight: 1.6 }}>
                           {q.questionText}
                         </div>
                         {q.requiresAttachment && (
@@ -809,13 +809,13 @@ function InvestigationRespondDrawer({
         {/* ── Right: ticket info panel ── */}
         <div style={{
           width: 280, flexShrink: 0,
-          borderLeft: '1px solid #e5e7eb',
+          borderLeft: '1px solid var(--color-border)',
           overflowY: 'auto', padding: 16,
-          background: '#f8fafc',
+          background: 'var(--color-bg-subtle)',
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
-            <HistoryOutlined style={{ color: '#0f766e' }} />
-            <span style={{ fontWeight: 700, fontSize: 13, color: '#111827' }}>Ticket Info</span>
+            <HistoryOutlined style={{ color: 'var(--color-primary)' }} />
+            <span style={{ fontWeight: 700, fontSize: 13, color: 'var(--color-text-primary)' }}>Ticket Info</span>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 20 }}>
             {[
@@ -827,8 +827,8 @@ function InvestigationRespondDrawer({
               { label: 'Department',   value: ticket.department },
             ].map(f => (
               <div key={f.label} style={{ fontSize: 12, borderBottom: '1px solid #f0f0f0', paddingBottom: 8 }}>
-                <div style={{ color: '#9ca3af', fontWeight: 600, marginBottom: 2 }}>{f.label}</div>
-                <div style={{ color: '#111827' }}>{f.value}</div>
+                <div style={{ color: 'var(--color-text-disabled)', fontWeight: 600, marginBottom: 2 }}>{f.label}</div>
+                <div style={{ color: 'var(--color-text-primary)' }}>{f.value}</div>
               </div>
             ))}
           </div>
@@ -837,14 +837,14 @@ function InvestigationRespondDrawer({
           <div style={{ fontSize: 12, fontWeight: 700, color: '#0e7490', marginBottom: 6 }}>
             Session Summary
           </div>
-          <div style={{ fontSize: 12, color: '#374151', marginBottom: 4 }}>
-            <span style={{ color: '#6b7280' }}>Sent by:</span> {qa.sentBy}
+          <div style={{ fontSize: 12, color: 'var(--color-text-secondary)', marginBottom: 4 }}>
+            <span style={{ color: 'var(--color-text-tertiary)' }}>Sent by:</span> {qa.sentBy}
           </div>
-          <div style={{ fontSize: 12, color: '#374151', marginBottom: 4 }}>
-            <span style={{ color: '#6b7280' }}>Sent at:</span> {qa.sentAt}
+          <div style={{ fontSize: 12, color: 'var(--color-text-secondary)', marginBottom: 4 }}>
+            <span style={{ color: 'var(--color-text-tertiary)' }}>Sent at:</span> {qa.sentAt}
           </div>
-          <div style={{ fontSize: 12, color: '#374151' }}>
-            <span style={{ color: '#6b7280' }}>Questions:</span> {qa.questions.length}
+          <div style={{ fontSize: 12, color: 'var(--color-text-secondary)' }}>
+            <span style={{ color: 'var(--color-text-tertiary)' }}>Questions:</span> {qa.questions.length}
           </div>
         </div>
       </div>
@@ -915,7 +915,7 @@ function CreateComplaintModal({
     <Modal
       title={
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <ExclamationCircleOutlined style={{ color: '#0f766e' }} />
+          <ExclamationCircleOutlined style={{ color: 'var(--color-primary)' }} />
           <span style={{ fontWeight: 700 }}>File a New Complaint</span>
         </div>
       }
@@ -935,8 +935,8 @@ function CreateComplaintModal({
           <Input
             value={`${SESSION_EMPLOYEE.id} — ${SESSION_EMPLOYEE.name}`}
             readOnly
-            prefix={<UserOutlined style={{ color: '#9ca3af' }} />}
-            style={{ background: '#f8fafc', color: '#6b7280', cursor: 'default' }}
+            prefix={<UserOutlined style={{ color: 'var(--color-text-disabled)' }} />}
+            style={{ background: 'var(--color-bg-subtle)', color: 'var(--color-text-tertiary)', cursor: 'default' }}
           />
         </Form.Item>
 
@@ -1112,7 +1112,7 @@ export default function MyComplaintsPage() {
   };
 
   const colHead = (label: string) => (
-    <span style={{ fontSize: 11, color: '#9ca3af', fontWeight: 700, letterSpacing: '0.04em', whiteSpace: 'nowrap' }}>
+    <span style={{ fontSize: 11, color: 'var(--color-text-disabled)', fontWeight: 700, letterSpacing: '0.04em', whiteSpace: 'nowrap' }}>
       {label}
     </span>
   );
@@ -1123,7 +1123,7 @@ export default function MyComplaintsPage() {
       dataIndex: 'ticketId',
       width: 155,
       render: v => (
-        <span style={{ fontFamily: 'monospace', fontWeight: 700, fontSize: 12, color: '#0f766e' }}>{v}</span>
+        <span style={{ fontFamily: 'monospace', fontWeight: 700, fontSize: 12, color: 'var(--color-primary)' }}>{v}</span>
       ),
     },
     {
@@ -1132,7 +1132,7 @@ export default function MyComplaintsPage() {
       width: 240,
       render: v => (
         <Tooltip title={v}>
-          <span style={{ color: '#374151', fontSize: 13 }}>
+          <span style={{ color: 'var(--color-text-secondary)', fontSize: 13 }}>
             {v.length > 60 ? `${v.slice(0, 60)}…` : v}
           </span>
         </Tooltip>
@@ -1155,8 +1155,8 @@ export default function MyComplaintsPage() {
       dataIndex: 'reportedBy',
       width: 170,
       render: (v: ComplaintTicket['reportedBy']) => (
-        <span style={{ fontSize: 12, color: '#374151' }}>
-          <UserOutlined style={{ marginRight: 4, color: '#9ca3af' }} />
+        <span style={{ fontSize: 12, color: 'var(--color-text-secondary)' }}>
+          <UserOutlined style={{ marginRight: 4, color: 'var(--color-text-disabled)' }} />
           {v.anonymous ? v.name : `${v.id} (${v.name})`}
         </span>
       ),
@@ -1171,7 +1171,7 @@ export default function MyComplaintsPage() {
       title: colHead('REQUEST DATE'),
       dataIndex: 'requestDate',
       width: 145,
-      render: v => <span style={{ fontSize: 12, color: '#6b7280' }}>{v}</span>,
+      render: v => <span style={{ fontSize: 12, color: 'var(--color-text-tertiary)' }}>{v}</span>,
     },
     {
       title: colHead('STATUS'),
@@ -1184,7 +1184,7 @@ export default function MyComplaintsPage() {
             <span style={{
               display: 'inline-flex', alignItems: 'center', gap: 4,
               padding: '1px 6px', borderRadius: 4, fontSize: 10, fontWeight: 700,
-              color: '#dc2626', background: '#fef2f2', border: '1px solid #fecaca',
+              color: '#dc2626', background: 'var(--color-status-rejected-bg)', border: '1px solid #fecaca',
               letterSpacing: '0.04em', width: 'fit-content',
             }}>
               RESPOND REQUIRED
@@ -1194,7 +1194,7 @@ export default function MyComplaintsPage() {
             <span style={{
               display: 'inline-flex', alignItems: 'center', gap: 4,
               padding: '1px 6px', borderRadius: 4, fontSize: 10, fontWeight: 700,
-              color: '#0e7490', background: '#ecfeff', border: '1px solid #a5f3fc',
+              color: '#0e7490', background: 'rgba(6, 182, 212, 0.10)', border: '1px solid #a5f3fc',
               letterSpacing: '0.04em', width: 'fit-content',
             }}>
               <MessageOutlined style={{ fontSize: 9 }} /> Q&amp;A PENDING
@@ -1208,8 +1208,8 @@ export default function MyComplaintsPage() {
       dataIndex: 'resolutionDate',
       width: 145,
       render: v => v
-        ? <span style={{ fontSize: 12, color: '#6b7280' }}>{v}</span>
-        : <span style={{ color: '#d1d5db' }}>—</span>,
+        ? <span style={{ fontSize: 12, color: 'var(--color-text-tertiary)' }}>{v}</span>
+        : <span style={{ color: 'var(--color-text-disabled)' }}>—</span>,
     },
     {
       title: colHead('ACTIONS'),
@@ -1255,7 +1255,7 @@ export default function MyComplaintsPage() {
             type="text"
             size="small"
             icon={<MoreOutlined style={{ fontSize: 18 }} />}
-            style={{ color: '#9ca3af', borderRadius: 6, width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}
+            style={{ color: 'var(--color-text-disabled)', borderRadius: 6, width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}
           />
         </Dropdown>
       ),
@@ -1279,7 +1279,7 @@ export default function MyComplaintsPage() {
       {/* ── Info banner ───────────────────────────────────────────────────── */}
       {showInfo && (
         <div style={{
-          background: '#f0f9ff', border: '1px solid #bae6fd',
+          background: 'var(--color-status-info-bg)', border: '1px solid #bae6fd',
           borderRadius: 10, padding: '12px 16px', marginBottom: 20, position: 'relative',
         }}>
           <button
@@ -1287,7 +1287,7 @@ export default function MyComplaintsPage() {
             style={{
               position: 'absolute', top: 10, right: 12,
               background: 'none', border: 'none', cursor: 'pointer',
-              color: '#6b7280', padding: 0, lineHeight: 1,
+              color: 'var(--color-text-tertiary)', padding: 0, lineHeight: 1,
             }}
           >
             <CloseOutlined style={{ fontSize: 13 }} />
@@ -1298,7 +1298,7 @@ export default function MyComplaintsPage() {
               Your Complaint Portal
             </span>
           </div>
-          <p style={{ margin: '0 0 8px', fontSize: 12, color: '#374151' }}>
+          <p style={{ margin: '0 0 8px', fontSize: 12, color: 'var(--color-text-secondary)' }}>
             Track your filed complaints, respond to HR requests, submit explanations for show cause letters, and file appeals if needed.
           </p>
           <ol style={{ margin: 0, paddingLeft: 20, display: 'flex', flexDirection: 'column', gap: 3 }}>
@@ -1308,7 +1308,7 @@ export default function MyComplaintsPage() {
               'Respond to any show cause letters or requests from the investigation team',
               'Track progress and file an appeal if unsatisfied with the outcome',
             ].map((step, i) => (
-              <li key={i} style={{ fontSize: 12, color: '#374151' }}>{step}</li>
+              <li key={i} style={{ fontSize: 12, color: 'var(--color-text-secondary)' }}>{step}</li>
             ))}
           </ol>
         </div>
@@ -1319,7 +1319,7 @@ export default function MyComplaintsPage() {
         <div>
           <div className="filter-label">SEARCH</div>
           <Input
-            prefix={<SearchOutlined style={{ color: '#9ca3af' }} />}
+            prefix={<SearchOutlined style={{ color: 'var(--color-text-disabled)' }} />}
             placeholder="Ticket ID, employee ID or name…"
             value={draft.search}
             onChange={e => setDraft(p => ({ ...p, search: e.target.value }))}
@@ -1332,7 +1332,7 @@ export default function MyComplaintsPage() {
           <Button
             icon={<FilterOutlined />}
             onClick={() => setShowFilters(v => !v)}
-            style={showFilters ? { borderColor: '#94a3b8', color: '#334155' } : {}}
+            style={showFilters ? { borderColor: 'var(--color-text-tertiary)', color: 'var(--color-text-secondary)' } : {}}
           >
             Filters
           </Button>
@@ -1344,7 +1344,7 @@ export default function MyComplaintsPage() {
       {showFilters && (
         <div style={{
           padding: '16px 20px',
-          background: '#f8fafc',
+          background: 'var(--color-bg-subtle)',
           border: '1px solid #e8edf3',
           borderLeft: '3px solid #cbd5e1',
           borderRadius: '0 0 8px 8px',
@@ -1353,18 +1353,18 @@ export default function MyComplaintsPage() {
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
             <Space size={8} align="center">
-              <FilterOutlined style={{ color: '#64748b' }} />
-              <span style={{ fontWeight: 700, fontSize: 12, letterSpacing: '0.07em', color: '#374151', textTransform: 'uppercase' }}>
+              <FilterOutlined style={{ color: 'var(--color-text-tertiary)' }} />
+              <span style={{ fontWeight: 700, fontSize: 12, letterSpacing: '0.07em', color: 'var(--color-text-secondary)', textTransform: 'uppercase' }}>
                 Advanced Filtering
               </span>
             </Space>
-            <Button type="link" size="small" onClick={handleReset} icon={<ReloadOutlined />} style={{ color: '#64748b', padding: 0, fontSize: 12 }}>
+            <Button type="link" size="small" onClick={handleReset} icon={<ReloadOutlined />} style={{ color: 'var(--color-text-tertiary)', padding: 0, fontSize: 12 }}>
               Reset All Filters
             </Button>
           </div>
           <Row gutter={[12, 12]} align="bottom">
             <Col flex="1 1 160px">
-              <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.06em', color: '#6b7280', marginBottom: 6, textTransform: 'uppercase' }}>Nature of Conflict</div>
+              <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.06em', color: 'var(--color-text-tertiary)', marginBottom: 6, textTransform: 'uppercase' }}>Nature of Conflict</div>
               <Select
                 placeholder="All"
                 style={{ width: '100%' }}
@@ -1378,7 +1378,7 @@ export default function MyComplaintsPage() {
               />
             </Col>
             <Col flex="1 1 140px">
-              <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.06em', color: '#6b7280', marginBottom: 6, textTransform: 'uppercase' }}>Security Level</div>
+              <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.06em', color: 'var(--color-text-tertiary)', marginBottom: 6, textTransform: 'uppercase' }}>Security Level</div>
               <Select
                 placeholder="All"
                 style={{ width: '100%' }}
@@ -1389,7 +1389,7 @@ export default function MyComplaintsPage() {
               />
             </Col>
             <Col flex="2 1 240px">
-              <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.06em', color: '#6b7280', marginBottom: 6, textTransform: 'uppercase' }}>Request Date Range</div>
+              <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.06em', color: 'var(--color-text-tertiary)', marginBottom: 6, textTransform: 'uppercase' }}>Request Date Range</div>
               <RangePicker
                 value={draft.dateRange}
                 onChange={v => setDraft(p => ({ ...p, dateRange: v }))}
@@ -1421,8 +1421,8 @@ export default function MyComplaintsPage() {
                 display: 'inline-flex', alignItems: 'center', gap: 6,
                 padding: '6px 14px', borderRadius: 10,
                 border: isActive ? '1.5px solid #0f766e' : '1.5px solid #d8e7e5',
-                background: isActive ? '#f0fdfa' : '#ffffff',
-                color: isActive ? '#0f766e' : '#374151',
+                background: isActive ? 'var(--color-primary-tint)' : 'var(--color-bg-surface)',
+                color: isActive ? 'var(--color-primary)' : 'var(--color-text-secondary)',
                 fontWeight: isActive ? 700 : 500,
                 fontSize: 13, fontFamily: 'inherit', cursor: 'pointer',
                 transition: 'border-color 0.15s, background 0.15s, color 0.15s',
@@ -1433,8 +1433,8 @@ export default function MyComplaintsPage() {
                 display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                 minWidth: 20, height: 20, borderRadius: 10,
                 fontSize: 11, fontWeight: 700, padding: '0 5px',
-                background: isActive ? '#0f766e' : '#e5e7eb',
-                color: isActive ? '#ffffff' : '#6b7280',
+                background: isActive ? 'var(--color-primary)' : 'var(--color-border)',
+                color: isActive ? 'var(--color-bg-surface)' : 'var(--color-text-tertiary)',
               }}>
                 {count}
               </span>
@@ -1451,13 +1451,13 @@ export default function MyComplaintsPage() {
             style={{
               display: 'flex', alignItems: 'center', justifyContent: 'space-between',
               width: '100%',
-              padding: '10px 16px', background: '#fff7ed', borderBottom: actionRequiredExpanded ? '1px solid #fed7aa' : 'none',
+              padding: '10px 16px', background: 'rgba(249, 115, 22, 0.10)', borderBottom: actionRequiredExpanded ? '1px solid #fed7aa' : 'none',
               border: 'none',
               cursor: 'pointer',
             }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <WarningFilled style={{ color: '#ea580c', fontSize: 14 }} />
-              <span style={{ fontWeight: 700, fontSize: 13, color: '#92400e' }}>
+              <span style={{ fontWeight: 700, fontSize: 13, color: '#d97706' }}>
                 ACTION REQUIRED ({actionRequired})
               </span>
             </div>
@@ -1466,7 +1466,7 @@ export default function MyComplaintsPage() {
                 fontSize: 11,
                 fontWeight: 700,
                 color: '#991b1b',
-                background: '#fee2e2',
+                background: 'var(--color-status-rejected-bg)',
                 border: '1px solid #fecaca',
                 borderRadius: 999,
                 padding: '2px 8px',
@@ -1478,7 +1478,7 @@ export default function MyComplaintsPage() {
                 fontSize: 11,
                 fontWeight: 700,
                 color: '#0e7490',
-                background: '#ecfeff',
+                background: 'rgba(6, 182, 212, 0.10)',
                 border: '1px solid #a5f3fc',
                 borderRadius: 999,
                 padding: '2px 8px',
@@ -1500,7 +1500,7 @@ export default function MyComplaintsPage() {
               fontWeight: 700,
               letterSpacing: '0.05em',
               color: '#991b1b',
-              background: '#fff1f2',
+              background: 'var(--color-status-rejected-bg)',
               borderBottom: '1px solid #fecdd3',
             }}>
               SHOW CAUSE RESPONSES
@@ -1508,15 +1508,15 @@ export default function MyComplaintsPage() {
           )}
           {/* Show Cause items */}
           {showCauseItems.map(item => (
-            <div key={`sc-${item.ticketId}`} style={{ padding: '12px 16px', background: '#fffbf5', borderBottom: '1px solid #fef3c7' }}>
+            <div key={`sc-${item.ticketId}`} style={{ padding: '12px 16px', background: 'var(--color-bg-surface)', borderBottom: '1px solid #fef3c7' }}>
               <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
                 <div style={{ display: 'flex', gap: 10, flex: 1 }}>
                   <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#dc2626', display: 'inline-block', marginTop: 4, flexShrink: 0 }} />
                   <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: 13, fontWeight: 600, color: '#111827' }}>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--color-text-primary)' }}>
                       Submit explanation for Show Cause ({item.showCause!.ref})
                     </div>
-                    <div style={{ fontSize: 12, color: '#6b7280', marginTop: 2 }}>
+                    <div style={{ fontSize: 12, color: 'var(--color-text-tertiary)', marginTop: 2 }}>
                       {item.showCause!.description}
                     </div>
                     <Button
@@ -1530,7 +1530,7 @@ export default function MyComplaintsPage() {
                   </div>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0, marginLeft: 16 }}>
-                  <span style={{ fontSize: 12, color: '#9ca3af', fontFamily: 'monospace' }}>#{item.ticketId}</span>
+                  <span style={{ fontSize: 12, color: 'var(--color-text-disabled)', fontFamily: 'monospace' }}>#{item.ticketId}</span>
                   {item.showCause!.isOverdue && (
                     <span style={{
                       padding: '2px 8px', borderRadius: 4,
@@ -1552,7 +1552,7 @@ export default function MyComplaintsPage() {
               fontWeight: 700,
               letterSpacing: '0.05em',
               color: '#0e7490',
-              background: '#f0fdff',
+              background: 'rgba(6, 182, 212, 0.10)',
               borderBottom: '1px solid #bae6fd',
             }}>
               INVESTIGATION Q&A
@@ -1560,15 +1560,15 @@ export default function MyComplaintsPage() {
           )}
           {/* Q&A Session items */}
           {qaItems.map(item => (
-            <div key={`qa-${item.ticketId}`} style={{ padding: '12px 16px', background: '#f0fdfe', borderBottom: '1px solid #cffafe' }}>
+            <div key={`qa-${item.ticketId}`} style={{ padding: '12px 16px', background: 'rgba(6, 182, 212, 0.10)', borderBottom: '1px solid #cffafe' }}>
               <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
                 <div style={{ display: 'flex', gap: 10, flex: 1 }}>
                   <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#0891b2', display: 'inline-block', marginTop: 4, flexShrink: 0 }} />
                   <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: 13, fontWeight: 600, color: '#111827' }}>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--color-text-primary)' }}>
                       Answer investigation questions — {item.investigationQA!.questions.length} question{item.investigationQA!.questions.length !== 1 ? 's' : ''} pending
                     </div>
-                    <div style={{ fontSize: 12, color: '#6b7280', marginTop: 2 }}>
+                    <div style={{ fontSize: 12, color: 'var(--color-text-tertiary)', marginTop: 2 }}>
                       Sent by {item.investigationQA!.sentBy} on {item.investigationQA!.sentAt}
                     </div>
                     <Button
@@ -1582,11 +1582,11 @@ export default function MyComplaintsPage() {
                   </div>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0, marginLeft: 16 }}>
-                  <span style={{ fontSize: 12, color: '#9ca3af', fontFamily: 'monospace' }}>#{item.ticketId}</span>
+                  <span style={{ fontSize: 12, color: 'var(--color-text-disabled)', fontFamily: 'monospace' }}>#{item.ticketId}</span>
                   <span style={{
                     padding: '2px 8px', borderRadius: 4,
                     fontSize: 11, fontWeight: 700, color: '#0e7490',
-                    background: '#ecfeff', border: '1px solid #a5f3fc', letterSpacing: '0.04em',
+                    background: 'rgba(6, 182, 212, 0.10)', border: '1px solid #a5f3fc', letterSpacing: '0.04em',
                   }}>
                     Q&amp;A
                   </span>

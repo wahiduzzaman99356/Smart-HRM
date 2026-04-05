@@ -30,7 +30,7 @@ const NODE_H = 90;    // approximate card height (px)
 const H_GAP = 48;     // horizontal gap between sibling subtrees
 const V_GAP = 80;     // vertical gap between levels
 const CANVAS_PAD = 60; // padding around the entire tree
-const CONNECTOR_COLOR = '#d1d5db';
+const CONNECTOR_COLOR = 'var(--color-border)';
 const CONNECTOR_WIDTH = 2;
 
 // ─── Layout helpers ───────────────────────────────────────────────────────────
@@ -243,7 +243,7 @@ export function OrgTreeCanvas({ tree, darkMode, highlightDept, showGrade, canAdd
   );
 
   // ── Styles ───────────────────────────────────────────────────────────────────
-  const canvasBg = darkMode ? '#111827' : '#eef4f5';
+  const canvasBg = darkMode ? 'var(--color-text-primary)' : 'var(--color-bg-subtle)';
 
   return (
     <div
@@ -289,7 +289,7 @@ export function OrgTreeCanvas({ tree, darkMode, highlightDept, showGrade, canAdd
                 background: hasNodes
                   ? darkMode ? `${gc.bg}14` : `${gc.bg}88`
                   : 'transparent',
-                borderTop: `1px solid ${darkMode ? '#1f2937' : `${gc.border}55`}`,
+                borderTop: `1px solid ${darkMode ? 'var(--color-text-secondary)' : `${gc.border}55`}`,
                 pointerEvents: 'none',
               }}
             >
@@ -298,9 +298,9 @@ export function OrgTreeCanvas({ tree, darkMode, highlightDept, showGrade, canAdd
                 position: 'absolute',
                 left: 8,
                 top: (bandH - 22) / 2,
-                background: hasNodes ? gc.bg : darkMode ? '#1f2937' : '#f3f4f6',
+                background: hasNodes ? gc.bg : darkMode ? 'var(--color-text-secondary)' : 'var(--color-bg-subtle)',
                 border: `1px solid ${gc.border}`,
-                color: hasNodes ? gc.text : darkMode ? '#4b5563' : '#9ca3af',
+                color: hasNodes ? gc.text : darkMode ? 'var(--color-text-secondary)' : 'var(--color-text-disabled)',
                 borderRadius: 6,
                 fontSize: 10,
                 fontWeight: 700,
@@ -326,7 +326,7 @@ export function OrgTreeCanvas({ tree, darkMode, highlightDept, showGrade, canAdd
               key={edge.key}
               d={edge.d}
               fill="none"
-              stroke={darkMode ? '#374151' : CONNECTOR_COLOR}
+              stroke={darkMode ? 'var(--color-text-secondary)' : CONNECTOR_COLOR}
               strokeWidth={CONNECTOR_WIDTH}
               strokeLinecap="round"
             />
@@ -364,7 +364,7 @@ export function OrgTreeCanvas({ tree, darkMode, highlightDept, showGrade, canAdd
           display: 'flex',
           flexDirection: 'column',
           gap: 4,
-          background: '#fff',
+          background: 'var(--color-bg-surface)',
           borderRadius: 8,
           boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
           padding: 4,
@@ -397,7 +397,7 @@ export function OrgTreeCanvas({ tree, darkMode, highlightDept, showGrade, canAdd
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            color: '#9ca3af',
+            color: 'var(--color-text-disabled)',
             fontSize: 14,
           }}
         >

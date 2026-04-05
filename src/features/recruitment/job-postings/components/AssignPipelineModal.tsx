@@ -46,9 +46,9 @@ function ChoiceCard({
         textAlign: 'center',
         gap: 14,
         padding: '28px 20px 24px',
-        border: `1.5px solid ${hovered ? '#0f766e' : '#d8e7e5'}`,
+        border: `1.5px solid ${hovered ? 'var(--color-primary)' : 'var(--color-border)'}`,
         borderRadius: 12,
-        background: hovered ? '#f0fdfa' : '#fafcfb',
+        background: hovered ? 'var(--color-primary-tint)' : 'var(--color-bg-surface)',
         cursor: 'pointer',
         transition: 'border-color 0.18s, background 0.18s, box-shadow 0.18s',
         boxShadow: hovered ? '0 4px 14px rgba(15,118,110,0.10)' : 'none',
@@ -65,7 +65,7 @@ function ChoiceCard({
         transition: 'background 0.18s',
         flexShrink: 0,
       }}>
-        <span style={{ fontSize: 22, color: hovered ? '#ffffff' : '#0f766e' }}>
+        <span style={{ fontSize: 22, color: hovered ? 'var(--color-bg-surface)' : 'var(--color-primary)' }}>
           {icon}
         </span>
       </div>
@@ -73,13 +73,13 @@ function ChoiceCard({
       <div>
         <div style={{
           fontWeight: 700, fontSize: 14,
-          color: hovered ? '#0f766e' : '#111827',
+          color: hovered ? 'var(--color-primary)' : 'var(--color-text-primary)',
           marginBottom: 5,
           transition: 'color 0.18s',
         }}>
           {title}
         </div>
-        <div style={{ fontSize: 12, color: '#6b7280', lineHeight: 1.5 }}>
+        <div style={{ fontSize: 12, color: 'var(--color-text-tertiary)', lineHeight: 1.5 }}>
           {description}
         </div>
       </div>
@@ -97,13 +97,13 @@ function ModalTitle({ icon, title, subtitle }: { icon: React.ReactNode; title: s
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         flexShrink: 0,
       }}>
-        <span style={{ color: '#ffffff', fontSize: 15 }}>{icon}</span>
+        <span style={{ color: 'var(--color-bg-surface)', fontSize: 15 }}>{icon}</span>
       </div>
       <div>
-        <div style={{ fontWeight: 700, fontSize: 15, color: '#111827', lineHeight: 1.2 }}>
+        <div style={{ fontWeight: 700, fontSize: 15, color: 'var(--color-text-primary)', lineHeight: 1.2 }}>
           {title}
         </div>
-        <div style={{ fontWeight: 400, fontSize: 12, color: '#6b7280', marginTop: 2 }}>
+        <div style={{ fontWeight: 400, fontSize: 12, color: 'var(--color-text-tertiary)', marginTop: 2 }}>
           {subtitle}
         </div>
       </div>
@@ -194,7 +194,7 @@ export function AssignPipelineModal({ open, onClose, onAssign, onCreateNew }: Pr
       >
         <div style={{
           fontSize: 10, fontWeight: 700, letterSpacing: '0.08em',
-          color: '#9ca3af', textTransform: 'uppercase', marginBottom: 8,
+          color: 'var(--color-text-disabled)', textTransform: 'uppercase', marginBottom: 8,
         }}>
           Existing Pipelines
         </div>
@@ -245,7 +245,7 @@ export function AssignPipelineModal({ open, onClose, onAssign, onCreateNew }: Pr
       <div style={{ marginBottom: 20 }}>
         <div style={{
           fontSize: 11, fontWeight: 700, letterSpacing: '0.06em',
-          color: '#0f766e', textTransform: 'uppercase', marginBottom: 8,
+          color: 'var(--color-primary)', textTransform: 'uppercase', marginBottom: 8,
         }}>
           Pipeline Name
         </div>

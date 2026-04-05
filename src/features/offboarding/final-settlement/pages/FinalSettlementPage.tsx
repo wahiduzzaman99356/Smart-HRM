@@ -13,6 +13,7 @@ import {
   FileDoneOutlined,
   FileTextOutlined,
   FilterOutlined,
+  LeftOutlined,
   PlusOutlined,
   ReloadOutlined,
   RightOutlined,
@@ -22,9 +23,10 @@ import {
   TeamOutlined,
   UpOutlined,
   UserOutlined,
+  WarningOutlined,
 } from '@ant-design/icons';
 import {
-  Avatar, Button, Col, Input, InputNumber, Modal,
+  Avatar, Button, Col, Input, InputNumber,
   Progress, Row, Select, Space, message,
 } from 'antd';
 import type { ReactNode } from 'react';
@@ -67,17 +69,33 @@ interface Filters {
   amountBand: AmountBand;
 }
 
+interface MockClearanceDept {
+  department: string;
+  status: 'Cleared' | 'Pending' | 'In Review';
+  date: string;
+}
+
 interface EligibleEmployee {
   id: string;
   name: string;
   department: string;
+  section: string;
   designation: string;
   reason: string;
   lastWorkingDay: string;
   noticePeriod: string;
+  noticeTotalDays: number;
+  noticeServedDays: number;
+  noticeDuration: string;
   dateOfJoining: string;
+  resignationDate: string;
+  empStatus: string;
   grossSalary: number;
   tenure: string;
+  approver: string;
+  lineManager: string;
+  clearanceId: string;
+  clearanceDepts: MockClearanceDept[];
 }
 
 type CardDetailTab = 'settlement' | 'resignation' | 'clearance';
@@ -120,98 +138,180 @@ interface ComputationRow {
 // ─── Color palette ────────────────────────────────────────────────────────────
 
 const C = {
-  primary: '#0f766e',
-  primaryDark: '#115e59',
-  primaryLight: '#f0fdfa',
-  border: '#d8e7e5',
-  borderStrong: '#bdd6d2',
-  surface: '#ffffff',
-  surfaceMuted: '#f8fafc',
-  text: '#111827',
-  textSecondary: '#374151',
-  textMuted: '#6b7280',
-  textSoft: '#9ca3af',
+  primary: '#3B6EEA',
+  primaryDark: '#2952C8',
+  primaryLight: 'var(--color-status-info-bg)',
+  border: 'var(--color-border)',
+  borderStrong: 'var(--color-border)',
+  surface: 'var(--color-bg-surface)',
+  surfaceMuted: 'var(--color-bg-subtle)',
+  text: 'var(--color-text-primary)',
+  textSecondary: 'var(--color-text-secondary)',
+  textMuted: 'var(--color-text-tertiary)',
+  textSoft: 'var(--color-text-disabled)',
   success: '#059669',
-  successBg: '#f0fdf4',
-  successBorder: '#bbf7d0',
-  warning: '#d97706',
-  warningBg: '#fffbeb',
-  warningBorder: '#fde68a',
-  info: '#0284c7',
-  infoBg: '#f0f9ff',
-  infoBorder: '#bae6fd',
-  danger: '#dc2626',
-  dangerBg: '#fef2f2',
-  dangerBorder: '#fecaca',
-  neutralBg: '#f8fafc',
-  neutralBorder: '#e5e7eb',
-  neutralText: '#6b7280',
+  successBg: 'var(--color-status-approved-bg)',
+  successBorder: 'var(--color-status-approved-bg)',
+  warning: '#D97706',
+  warningBg: 'var(--color-status-pending-bg)',
+  warningBorder: 'rgba(253, 230, 138, 0.4)',
+  info: '#0284C7',
+  infoBg: 'var(--color-status-info-bg)',
+  infoBorder: '#BAE6FD',
+  danger: '#DC2626',
+  dangerBg: 'var(--color-status-rejected-bg)',
+  dangerBorder: 'var(--color-status-rejected-bg)',
+  neutralBg: 'var(--color-bg-subtle)',
+  neutralBorder: 'var(--color-border)',
+  neutralText: 'var(--color-text-tertiary)',
 };
 
 // ─── Static data ──────────────────────────────────────────────────────────────
 
-const AVATAR_COLORS = ['#0d9488', '#3b82f6', '#f59e0b', '#8b5cf6', '#10b981', '#64748b', '#ef4444'];
+const AVATAR_COLORS = ['#3b6eea', 'var(--color-primary)', '#f59e0b', '#8b5cf6', '#10b981', 'var(--color-text-tertiary)', '#ef4444'];
 
 const ELIGIBLE_EMPLOYEES: EligibleEmployee[] = [
   {
     id: 'EMP-1042',
     name: 'Sarah Chen',
     department: 'Engineering',
+    section: 'Frontend',
     designation: 'Sr. Software Engineer',
     reason: 'Resignation',
     lastWorkingDay: '2026-04-15',
     noticePeriod: '60 days',
-    dateOfJoining: '2024-01-15',
+    noticeTotalDays: 60,
+    noticeServedDays: 31,
+    noticeDuration: 'Early Release (Notice Buyout)',
+    dateOfJoining: '2021-06-15',
+    resignationDate: '2026-03-15',
+    empStatus: 'Permanent',
     grossSalary: 12000,
-    tenure: '2 Years, 3 Months',
+    tenure: '4 Years, 9 Months',
+    approver: 'David Miller',
+    lineManager: 'Alex Turner',
+    clearanceId: 'CLR-001',
+    clearanceDepts: [
+      { department: 'Immediate Supervisor', status: 'Cleared', date: '2026-03-28' },
+      { department: 'Finance & Accounts',   status: 'Cleared', date: '2026-04-02' },
+      { department: 'Administration',       status: 'Cleared', date: '2026-03-27' },
+      { department: 'Asset Management (IT)',status: 'Cleared', date: '2026-04-02' },
+      { department: 'IT Department',        status: 'Cleared', date: '2026-03-28' },
+      { department: 'Airline Security',     status: 'Cleared', date: '2026-03-28' },
+      { department: 'Revenue Department',   status: 'Cleared', date: '2026-04-02' },
+      { department: 'Head of Department',   status: 'Cleared', date: '2026-04-02' },
+      { department: 'HR Department',        status: 'Cleared', date: '2026-04-02' },
+    ],
   },
   {
     id: 'EMP-2103',
     name: 'James Okafor',
     department: 'Finance',
+    section: 'Accounting',
     designation: 'Finance Manager',
     reason: 'Retirement',
     lastWorkingDay: '2026-05-31',
     noticePeriod: '90 days',
+    noticeTotalDays: 90,
+    noticeServedDays: 90,
+    noticeDuration: 'Serve Full Notice',
     dateOfJoining: '2019-05-01',
+    resignationDate: '2026-03-02',
+    empStatus: 'Permanent',
     grossSalary: 15000,
     tenure: '7 Years, 0 Months',
+    approver: 'Robert Kim',
+    lineManager: 'Monica Shah',
+    clearanceId: 'CLR-002',
+    clearanceDepts: [
+      { department: 'Immediate Supervisor', status: 'Cleared', date: '2026-04-01' },
+      { department: 'Finance & Accounts',   status: 'Cleared', date: '2026-04-02' },
+      { department: 'Administration',       status: 'Cleared', date: '2026-04-01' },
+      { department: 'IT Department',        status: 'Pending', date: '' },
+      { department: 'HR Department',        status: 'Pending', date: '' },
+    ],
   },
   {
     id: 'EMP-3058',
     name: 'Priya Nair',
     department: 'HR',
+    section: 'Talent Acquisition',
     designation: 'HR Business Partner',
     reason: 'Resignation',
     lastWorkingDay: '2026-04-30',
     noticePeriod: '30 days',
+    noticeTotalDays: 30,
+    noticeServedDays: 30,
+    noticeDuration: 'Serve Full Notice',
     dateOfJoining: '2022-10-12',
+    resignationDate: '2026-04-01',
+    empStatus: 'Permanent',
     grossSalary: 9800,
     tenure: '3 Years, 5 Months',
+    approver: 'Angela Torres',
+    lineManager: 'Peter Chang',
+    clearanceId: 'CLR-003',
+    clearanceDepts: [
+      { department: 'Immediate Supervisor', status: 'Cleared',   date: '2026-04-10' },
+      { department: 'Finance & Accounts',   status: 'Pending',   date: '' },
+      { department: 'IT Department',        status: 'In Review', date: '' },
+      { department: 'HR Department',        status: 'Pending',   date: '' },
+    ],
   },
   {
     id: 'EMP-4219',
     name: 'David Kurz',
     department: 'Sales',
+    section: 'Enterprise',
     designation: 'Regional Sales Manager',
     reason: 'Resignation',
     lastWorkingDay: '2026-06-15',
     noticePeriod: '30 days',
+    noticeTotalDays: 30,
+    noticeServedDays: 20,
+    noticeDuration: 'Early Release (Notice Buyout)',
     dateOfJoining: '2023-06-01',
+    resignationDate: '2026-05-16',
+    empStatus: 'Permanent',
     grossSalary: 11200,
     tenure: '2 Years, 9 Months',
+    approver: 'Maria Santos',
+    lineManager: 'James Okafor',
+    clearanceId: 'CLR-004',
+    clearanceDepts: [
+      { department: 'Immediate Supervisor', status: 'Pending', date: '' },
+      { department: 'Finance & Accounts',   status: 'Pending', date: '' },
+      { department: 'IT Department',        status: 'Pending', date: '' },
+      { department: 'HR Department',        status: 'Pending', date: '' },
+    ],
   },
   {
     id: 'EMP-5087',
     name: 'Amara Diallo',
     department: 'Operations',
+    section: 'Logistics',
     designation: 'Operations Analyst',
     reason: 'End of Contract',
     lastWorkingDay: '2026-04-01',
     noticePeriod: 'N/A',
+    noticeTotalDays: 0,
+    noticeServedDays: 0,
+    noticeDuration: 'Contract End',
     dateOfJoining: '2024-04-01',
+    resignationDate: '2026-03-01',
+    empStatus: 'Contractual',
     grossSalary: 8500,
     tenure: '2 Years, 0 Months',
+    approver: 'Grace Obi',
+    lineManager: 'Tom Hayden',
+    clearanceId: 'CLR-005',
+    clearanceDepts: [
+      { department: 'Immediate Supervisor', status: 'Cleared', date: '2026-03-28' },
+      { department: 'Administration',       status: 'Cleared', date: '2026-03-29' },
+      { department: 'IT Department',        status: 'Cleared', date: '2026-03-30' },
+      { department: 'Finance & Accounts',   status: 'Pending', date: '' },
+      { department: 'HR Department',        status: 'Pending', date: '' },
+    ],
   },
 ];
 
@@ -247,7 +347,7 @@ const DEDUCTION_TYPES = [
   'Tax Deduction',
   'Advance Salary Recovery',
   'Asset Recovery',
-  'Notice Recovery',
+  'Short of Notice Period (Gross Salary)',
   'Loan Recovery',
   'Other Deduction',
 ];
@@ -527,7 +627,7 @@ function newRow(type = ''): ComputationRow {
   return { id: String(rowCounter++), type, days: null, amount: 0 };
 }
 
-// ─── Sub-components ───────────────────────────────────────────────────────────
+// ─── Shared sub-components ────────────────────────────────────────────────────
 
 function MetricCard({ label, value, hint, accent, icon }: {
   label: string; value: string; hint: string; accent: string; icon: ReactNode;
@@ -571,7 +671,7 @@ function StageTrack({ status }: { status: SettlementStatus }) {
             <div style={{ fontSize: 9, fontWeight: 700, color: isCurrent ? theme.text : C.textSoft, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 6, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
               {stage}
             </div>
-            <div style={{ height: 4, borderRadius: 999, background: '#e5e7eb', overflow: 'hidden' }}>
+            <div style={{ height: 4, borderRadius: 999, background: 'var(--color-bg-subtle)', overflow: 'hidden' }}>
               <div style={{ width: isReached ? '100%' : '0%', height: '100%', background: theme.accent, transition: 'width 0.2s ease' }} />
             </div>
           </div>
@@ -614,37 +714,8 @@ function AmountPanel({ title, accent, background, border, items, total }: {
   );
 }
 
-// ─── Step indicator for modal ─────────────────────────────────────────────────
-
-function ModalStepIndicator({ current }: { current: 0 | 1 }) {
-  const steps = ['Employee Selection', 'Settlement Breakdown'] as const;
-  return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 20 }}>
-      {steps.map((label, idx) => (
-        <Fragment key={label}>
-          {idx > 0 && <RightOutlined style={{ fontSize: 10, color: C.textSoft }} />}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <div style={{
-              width: 22, height: 22, borderRadius: '50%', flexShrink: 0,
-              background: current >= idx ? C.primaryDark : '#e5e7eb',
-              color: current >= idx ? '#ffffff' : C.textSoft,
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: 11, fontWeight: 700,
-            }}>{idx + 1}</div>
-            <span style={{ fontSize: 12, fontWeight: current === idx ? 700 : 400, color: current === idx ? C.text : C.textMuted }}>
-              {label}
-            </span>
-          </div>
-        </Fragment>
-      ))}
-    </div>
-  );
-}
-
-// ─── Collapsible section for modal ───────────────────────────────────────────
-
-function CollapsibleSection({ title, tag, tagColor, tagBg, children }: {
-  title: string; tag?: string; tagColor?: string; tagBg?: string; children: ReactNode;
+function CollapsibleSection({ title, tag, tagColor, tagBg, icon, children }: {
+  title: string; tag?: string; tagColor?: string; tagBg?: string; icon?: ReactNode; children: ReactNode;
 }) {
   const [open, setOpen] = useState(true);
   return (
@@ -652,12 +723,10 @@ function CollapsibleSection({ title, tag, tagColor, tagBg, children }: {
       <button
         type="button"
         onClick={() => setOpen(v => !v)}
-        style={{
-          width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          padding: '10px 14px', background: C.surfaceMuted, border: 'none', cursor: 'pointer',
-        }}
+        style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px', background: C.surfaceMuted, border: 'none', cursor: 'pointer' }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          {icon && <span style={{ color: C.textMuted, fontSize: 13, display: 'flex' }}>{icon}</span>}
           <span style={{ fontSize: 12, fontWeight: 700, color: C.text }}>{title}</span>
           {tag && (
             <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 999, background: tagBg ?? C.primaryLight, color: tagColor ?? C.primary }}>
@@ -763,10 +832,424 @@ function ComputationRowEditor({ rows, typeOptions, onRowsChange, accent, label, 
   );
 }
 
-// ─── Generate Settlement Modal (2-step wizard) ────────────────────────────────
+// ─── Wizard step indicator ────────────────────────────────────────────────────
 
-function GenerateSettlementModal({ open, onClose, onSave }: {
-  open: boolean;
+function WizardStepIndicator({ current }: { current: 0 | 1 }) {
+  const steps = [
+    { label: 'Employee & Details' },
+    { label: 'Settlement Breakdown' },
+  ] as const;
+  return (
+    <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 10, padding: '14px 20px', marginBottom: 20, display: 'flex', alignItems: 'center', gap: 10 }}>
+      {steps.map((step, idx) => (
+        <Fragment key={step.label}>
+          {idx > 0 && (
+            <RightOutlined style={{ fontSize: 11, color: C.textSoft }} />
+          )}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div style={{
+              width: 26, height: 26, borderRadius: '50%', flexShrink: 0,
+              background: current >= idx ? '#1e3a5f' : 'var(--color-border)',
+              color: current >= idx ? 'var(--color-bg-surface)' : C.textMuted,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: 12, fontWeight: 700,
+            }}>{idx + 1}</div>
+            <span style={{ fontSize: 13, fontWeight: current === idx ? 700 : 400, color: current === idx ? C.text : C.textMuted }}>
+              {step.label}
+            </span>
+          </div>
+        </Fragment>
+      ))}
+    </div>
+  );
+}
+
+// ─── Wizard page header ───────────────────────────────────────────────────────
+
+function WizardPageHeader({ onBack }: { onBack?: () => void }) {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
+      {onBack && (
+        <button
+          type="button"
+          onClick={onBack}
+          style={{ width: 30, height: 30, borderRadius: 8, border: `1px solid ${C.border}`, background: C.surface, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
+        >
+          <LeftOutlined style={{ fontSize: 12, color: C.textMuted }} />
+        </button>
+      )}
+      <div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <FileDoneOutlined style={{ color: '#1e3a5f', fontSize: 16 }} />
+          <span style={{ fontSize: 18, fontWeight: 700, color: C.text }}>Generate Final Settlement</span>
+        </div>
+        <div style={{ fontSize: 12, color: C.textMuted, marginTop: 2, marginLeft: 24 }}>
+          Full &amp; final settlement computation based on company policy
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Wizard employee header card ──────────────────────────────────────────────
+
+function WizardEmployeeCard({ emp, showEarlyRelease }: { emp: EligibleEmployee; showEarlyRelease?: boolean }) {
+  return (
+    <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 10, padding: '14px 18px', marginBottom: 16, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+        <Avatar size={40} style={{ background: avatarColor(emp.name), fontWeight: 800, fontSize: 14, flexShrink: 0 }}>
+          {initials(emp.name)}
+        </Avatar>
+        <div>
+          <div style={{ fontSize: 14, fontWeight: 700, color: C.text }}>{emp.name}</div>
+          <div style={{ fontSize: 12, color: C.textMuted, marginTop: 2 }}>
+            {emp.designation} · {emp.department} · {emp.id}
+          </div>
+        </div>
+      </div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+        {showEarlyRelease && (
+          <span style={{ fontSize: 11, fontWeight: 700, padding: '3px 10px', borderRadius: 999, background: 'var(--color-status-pending-bg)', border: '1px solid rgba(253, 230, 138, 0.4)', color: '#D97706' }}>
+            EARLY RELEASE
+          </span>
+        )}
+        <div style={{ textAlign: 'right' }}>
+          <div style={{ fontSize: 10, fontWeight: 700, color: C.textSoft, letterSpacing: '0.07em', textTransform: 'uppercase' }}>Gross Salary</div>
+          <div style={{ fontSize: 18, fontWeight: 800, color: C.text, letterSpacing: '-0.02em' }}>{formatCurrency(emp.grossSalary)}</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Wizard step 1 panels ─────────────────────────────────────────────────────
+
+function ResignationDetailsPanel({ emp }: { emp: EligibleEmployee }) {
+  const fields = [
+    { label: 'EMPLOYEE ID',        value: emp.id },
+    { label: 'DESIGNATION',        value: emp.designation },
+    { label: 'SEPARATION TYPE',    value: emp.reason },
+    { label: 'EMPLOYMENT STATUS',  value: emp.empStatus },
+    { label: 'DATE OF JOINING',    value: emp.dateOfJoining },
+    { label: 'RESIGNATION DATE',   value: emp.resignationDate },
+    { label: 'LAST WORKING DAY',   value: emp.lastWorkingDay },
+    { label: 'NOTICE PERIOD',      value: emp.noticePeriod },
+    { label: 'DURATION',           value: emp.noticeDuration },
+    { label: 'DEPARTMENT / SECTION', value: `${emp.department} / ${emp.section}` },
+    { label: 'APPROVER',           value: emp.approver },
+    { label: 'LINE MANAGER',       value: emp.lineManager },
+  ];
+
+  const isInProgress = emp.clearanceDepts.some(d => d.status !== 'Cleared');
+
+  return (
+    <div style={{ border: `1px solid ${C.border}`, borderRadius: 10, overflow: 'hidden', flex: 1, minWidth: 0 }}>
+      <div style={{ padding: '10px 14px', background: C.surfaceMuted, display: 'flex', alignItems: 'center', gap: 8, borderBottom: `1px solid ${C.border}` }}>
+        <FileTextOutlined style={{ color: C.textMuted, fontSize: 13 }} />
+        <span style={{ fontSize: 12, fontWeight: 700, color: C.text, letterSpacing: '0.06em', textTransform: 'uppercase' }}>Resignation Details</span>
+        <span style={{ marginLeft: 4, fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 999, background: isInProgress ? C.warningBg : C.successBg, color: isInProgress ? C.warning : C.success, border: `1px solid ${isInProgress ? C.warningBorder : C.successBorder}` }}>
+          {isInProgress ? 'In Progress' : 'Completed'}
+        </span>
+      </div>
+      <div style={{ padding: 0 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr' }}>
+          {fields.map((field, idx) => (
+            <div
+              key={field.label}
+              style={{
+                padding: '12px 14px',
+                borderBottom: idx < fields.length - 2 ? `1px solid ${C.border}` : 'none',
+                borderRight: idx % 2 === 0 ? `1px solid ${C.border}` : 'none',
+              }}
+            >
+              <div style={{ fontSize: 10, fontWeight: 700, color: C.textSoft, letterSpacing: '0.07em', textTransform: 'uppercase', marginBottom: 4 }}>
+                {field.label}
+              </div>
+              <div style={{ fontSize: 12, fontWeight: 600, color: C.text }}>{field.value}</div>
+            </div>
+          ))}
+        </div>
+        <div style={{ padding: '12px 14px', borderTop: `1px solid ${C.border}` }}>
+          <div style={{ fontSize: 10, fontWeight: 700, color: C.textSoft, letterSpacing: '0.07em', textTransform: 'uppercase', marginBottom: 4 }}>
+            REASON
+          </div>
+          <div style={{ fontSize: 12, fontWeight: 600, color: C.text }}>Career growth opportunity</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ClearanceReportPanel({ emp }: { emp: EligibleEmployee }) {
+  const cleared = emp.clearanceDepts.filter(d => d.status === 'Cleared').length;
+  const total = emp.clearanceDepts.length;
+  const pct = total > 0 ? Math.round((cleared / total) * 100) : 0;
+  const allCleared = cleared === total;
+
+  return (
+    <div style={{ border: `1px solid ${C.border}`, borderRadius: 10, overflow: 'hidden', flex: 1, minWidth: 0 }}>
+      <div style={{ padding: '10px 14px', background: C.surfaceMuted, display: 'flex', alignItems: 'center', gap: 8, borderBottom: `1px solid ${C.border}` }}>
+        <SafetyOutlined style={{ color: C.textMuted, fontSize: 13 }} />
+        <span style={{ fontSize: 12, fontWeight: 700, color: C.text, letterSpacing: '0.06em', textTransform: 'uppercase' }}>Clearance Report</span>
+        <span style={{ marginLeft: 4, fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 999, background: allCleared ? C.successBg : C.warningBg, color: allCleared ? C.success : C.warning, border: `1px solid ${allCleared ? C.successBorder : C.warningBorder}` }}>
+          {pct}%
+        </span>
+      </div>
+      <div style={{ padding: '12px 14px' }}>
+        {/* Status summary */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '2px 10px', borderRadius: 999, border: `1px solid ${allCleared ? C.successBorder : C.warningBorder}`, background: allCleared ? C.successBg : C.warningBg, color: allCleared ? C.success : C.warning, fontSize: 11, fontWeight: 700 }}>
+              <CheckCircleOutlined style={{ fontSize: 11 }} />
+              {allCleared ? 'Cleared' : 'In Progress'}
+            </span>
+            <span style={{ fontSize: 11, color: C.textMuted }}>{emp.clearanceId}</span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
+            <span style={{ fontSize: 18, fontWeight: 800, color: C.text }}>{cleared}/{total}</span>
+            <span style={{ fontSize: 9, fontWeight: 700, color: C.textSoft, letterSpacing: '0.07em', textTransform: 'uppercase' }}>cleared</span>
+          </div>
+        </div>
+        {/* Progress bar */}
+        <div style={{ fontSize: 11, color: C.textMuted, marginBottom: 4, display: 'flex', justifyContent: 'space-between' }}>
+          <span>Progress</span>
+          <span>{pct}%</span>
+        </div>
+        <Progress percent={pct} strokeColor={allCleared ? C.success : C.primary} trailColor="#E5E7EB" size="small" showInfo={false} style={{ marginBottom: 12 }} />
+        {/* Department list */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+          {emp.clearanceDepts.map((dept, idx) => {
+            const isCleared = dept.status === 'Cleared';
+            const dc = isCleared ? C.success : dept.status === 'In Review' ? C.info : C.warning;
+            const dcBg = isCleared ? C.successBg : dept.status === 'In Review' ? C.infoBg : C.warningBg;
+            const dcBorder = isCleared ? C.successBorder : dept.status === 'In Review' ? C.infoBorder : C.warningBorder;
+            return (
+              <div
+                key={dept.department}
+                style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 0', borderBottom: idx < emp.clearanceDepts.length - 1 ? `1px solid ${C.border}` : 'none', gap: 8 }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, flex: 1, minWidth: 0 }}>
+                  <CheckCircleOutlined style={{ color: isCleared ? C.success : C.border, fontSize: 14, flexShrink: 0 }} />
+                  <span style={{ fontSize: 12, color: C.textSecondary, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{dept.department}</span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '2px 8px', borderRadius: 999, border: `1px solid ${dcBorder}`, background: dcBg, color: dc, fontSize: 10, fontWeight: 700 }}>
+                    {dept.status}
+                  </span>
+                  {dept.date && <span style={{ fontSize: 11, color: C.textMuted, minWidth: 72 }}>{dept.date}</span>}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Wizard step 2 sections ───────────────────────────────────────────────────
+
+function AttendanceSummarySection() {
+  return (
+    <CollapsibleSection title="Attendance Summary" tag="91% rate" tagColor={C.success} tagBg={C.successBg} icon={<CalendarOutlined />}>
+      <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
+        {[
+          { label: 'Working Days', value: 240, color: C.text,    bg: C.surfaceMuted },
+          { label: 'Present',      value: 218, color: C.success,  bg: C.successBg },
+          { label: 'Absent',       value: 5,   color: C.danger,   bg: C.dangerBg },
+          { label: 'Late Entry',   value: 8,   color: C.warning,  bg: C.warningBg },
+          { label: 'Early Exit',   value: 3,   color: C.info,     bg: C.infoBg },
+        ].map(item => (
+          <div key={item.label} style={{ flex: 1, textAlign: 'center', padding: '10px 4px', borderRadius: 8, background: item.bg, border: `1px solid ${C.border}` }}>
+            <div style={{ fontSize: 18, fontWeight: 800, color: item.color }}>{item.value}</div>
+            <div style={{ fontSize: 9, fontWeight: 600, color: C.textSoft, letterSpacing: '0.05em', textTransform: 'uppercase', marginTop: 3 }}>{item.label}</div>
+          </div>
+        ))}
+      </div>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
+        <span style={{ fontSize: 11, color: C.textMuted }}>Attendance Rate</span>
+        <span style={{ fontSize: 11, fontWeight: 700, color: C.success }}>91%</span>
+      </div>
+      <Progress percent={91} strokeColor={C.success} trailColor="#E5E7EB" size="small" showInfo={false} />
+    </CollapsibleSection>
+  );
+}
+
+function SalaryBreakdownSection({ grossSalary }: { grossSalary: number }) {
+  return (
+    <CollapsibleSection title="Salary Breakdown" tag={formatCurrency(grossSalary)} tagColor={C.primary} tagBg={C.primaryLight} icon={<DollarCircleOutlined />}>
+      <div style={{ border: `1px solid ${C.border}`, borderRadius: 8, overflow: 'hidden' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 80px 90px' }}>
+          {['Component', '%', 'Amount'].map(h => (
+            <div key={h} style={{ padding: '8px 12px', fontSize: 10, fontWeight: 700, color: C.textSoft, letterSpacing: '0.07em', textTransform: 'uppercase', borderBottom: `1px solid ${C.border}`, textAlign: h !== 'Component' ? 'right' : 'left' }}>{h}</div>
+          ))}
+          {SALARY_COMPONENTS.map((comp, idx) => {
+            const amt = Math.round(grossSalary * comp.pct / 100);
+            const isLast = idx === SALARY_COMPONENTS.length - 1;
+            return (
+              <Fragment key={comp.label}>
+                <div style={{ padding: '9px 12px', fontSize: 12, color: C.textSecondary, borderBottom: isLast ? 'none' : `1px solid ${C.border}` }}>{comp.label}</div>
+                <div style={{ padding: '9px 12px', fontSize: 12, color: C.textMuted, textAlign: 'right', borderBottom: isLast ? 'none' : `1px solid ${C.border}` }}>
+                  <span style={{ display: 'inline-block', width: 24, height: 3, background: `${C.primary}40`, borderRadius: 2, verticalAlign: 'middle', marginRight: 4 }} />
+                  {comp.pct}%
+                </div>
+                <div style={{ padding: '9px 12px', fontSize: 12, fontWeight: 600, color: C.text, textAlign: 'right', borderBottom: isLast ? 'none' : `1px solid ${C.border}` }}>
+                  {formatCurrency(amt)}
+                </div>
+              </Fragment>
+            );
+          })}
+          <div style={{ padding: '10px 12px', fontSize: 12, fontWeight: 700, color: C.text, borderTop: `1px solid ${C.border}` }}>Gross Salary</div>
+          <div style={{ padding: '10px 12px', fontSize: 12, fontWeight: 700, color: C.text, borderTop: `1px solid ${C.border}`, textAlign: 'right' }}>100%</div>
+          <div style={{ padding: '10px 12px', fontSize: 12, fontWeight: 700, color: C.text, borderTop: `1px solid ${C.border}`, textAlign: 'right' }}>{formatCurrency(grossSalary)}</div>
+        </div>
+      </div>
+    </CollapsibleSection>
+  );
+}
+
+function LeaveBreakdownSection() {
+  const totalBalance = MOCK_LEAVE_ROWS.reduce((s, r) => s + r.balance, 0);
+  return (
+    <CollapsibleSection title="Leave Breakdown" tag={`${totalBalance}d balance`} tagColor={C.info} tagBg={C.infoBg} icon={<ClockCircleOutlined />}>
+      <div style={{ border: `1px solid ${C.border}`, borderRadius: 8, overflow: 'hidden', marginBottom: 10 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 80px 80px 80px' }}>
+          {['Leave Type', 'Entitled', 'Availed', 'Balance'].map(h => (
+            <div key={h} style={{ padding: '8px 12px', fontSize: 10, fontWeight: 700, color: C.textSoft, letterSpacing: '0.07em', textTransform: 'uppercase', borderBottom: `1px solid ${C.border}`, textAlign: h !== 'Leave Type' ? 'center' : 'left' }}>{h}</div>
+          ))}
+          {MOCK_LEAVE_ROWS.map((row, idx) => {
+            const isLast = idx === MOCK_LEAVE_ROWS.length - 1;
+            return (
+              <Fragment key={row.type}>
+                <div style={{ padding: '9px 12px', fontSize: 12, color: C.textSecondary, borderBottom: isLast ? 'none' : `1px solid ${C.border}` }}>{row.type}</div>
+                <div style={{ padding: '9px 12px', fontSize: 12, color: C.text, textAlign: 'center', borderBottom: isLast ? 'none' : `1px solid ${C.border}` }}>{row.entitled}</div>
+                <div style={{ padding: '9px 12px', fontSize: 12, color: row.availed > 0 ? C.warning : C.textMuted, fontWeight: row.availed > 0 ? 600 : 400, textAlign: 'center', borderBottom: isLast ? 'none' : `1px solid ${C.border}` }}>{row.availed}</div>
+                <div style={{ padding: '9px 12px', fontSize: 12, color: row.balance > 0 ? C.success : C.textMuted, fontWeight: row.balance > 0 ? 600 : 400, textAlign: 'center', borderBottom: isLast ? 'none' : `1px solid ${C.border}` }}>{row.balance}</div>
+              </Fragment>
+            );
+          })}
+          <div style={{ padding: '9px 12px', fontSize: 12, fontWeight: 700, color: C.text, borderTop: `1px solid ${C.border}` }}>Total</div>
+          <div style={{ padding: '9px 12px', fontSize: 12, fontWeight: 700, color: C.text, textAlign: 'center', borderTop: `1px solid ${C.border}` }}>{MOCK_LEAVE_ROWS.reduce((s, r) => s + r.entitled, 0)}</div>
+          <div style={{ padding: '9px 12px', fontSize: 12, fontWeight: 700, color: C.warning, textAlign: 'center', borderTop: `1px solid ${C.border}` }}>{MOCK_LEAVE_ROWS.reduce((s, r) => s + r.availed, 0)}</div>
+          <div style={{ padding: '9px 12px', fontSize: 12, fontWeight: 700, color: C.success, textAlign: 'center', borderTop: `1px solid ${C.border}` }}>{totalBalance}</div>
+        </div>
+      </div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: C.info }}>
+        <ClockCircleOutlined style={{ fontSize: 12 }} />
+        <span>{totalBalance} days leave balance eligible for encashment</span>
+      </div>
+    </CollapsibleSection>
+  );
+}
+
+function NoticeBuyoutSection({ emp }: { emp: EligibleEmployee }) {
+  const isEarlyRelease = emp.noticeDuration === 'Early Release (Notice Buyout)';
+  if (!isEarlyRelease || emp.noticeTotalDays === 0) return null;
+
+  const remaining = emp.noticeTotalDays - emp.noticeServedDays;
+  const dailyRate = Math.round(emp.grossSalary / 30);
+  const deduction = remaining * dailyRate;
+
+  return (
+    <div style={{ border: `1px solid ${C.warningBorder}`, borderRadius: 10, padding: '14px 16px', marginBottom: 12, background: 'var(--color-status-pending-bg)' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+        <WarningOutlined style={{ color: C.warning, fontSize: 14 }} />
+        <span style={{ fontSize: 13, fontWeight: 700, color: '#92400E' }}>Early Release — Notice Buyout Deduction</span>
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10, marginBottom: 10 }}>
+        {[
+          { label: 'Total Notice Days', value: String(emp.noticeTotalDays), color: C.text },
+          { label: 'Days Served', value: String(emp.noticeServedDays), color: C.success },
+          { label: 'Remaining Days', value: String(remaining), color: C.danger },
+          { label: 'Salary Deduction', value: formatCurrency(deduction), color: C.warning },
+        ].map(item => (
+          <div key={item.label} style={{ textAlign: 'center', padding: '12px 8px', background: item.color === C.warning ? 'var(--color-status-pending-bg)' : C.surface, borderRadius: 8, border: `1px solid ${item.color === C.warning ? C.warningBorder : C.border}` }}>
+            <div style={{ fontSize: 20, fontWeight: 800, color: item.color }}>{item.value}</div>
+            <div style={{ fontSize: 10, fontWeight: 600, color: C.textMuted, textTransform: 'uppercase', letterSpacing: '0.05em', marginTop: 4 }}>{item.label}</div>
+          </div>
+        ))}
+      </div>
+      <div style={{ fontSize: 11, color: C.textMuted }}>
+        Calculation: {remaining} days × {formatCurrency(dailyRate)}/day — auto-added as &ldquo;Short of Notice Period (Gross Salary)&rdquo; in deductions below.
+      </div>
+    </div>
+  );
+}
+
+// ─── Settlement computation section ──────────────────────────────────────────
+
+function SettlementComputationSection({ payableRows, setPayableRows, deductionRows, setDeductionRows, preparedBy }: {
+  payableRows: ComputationRow[];
+  setPayableRows: (rows: ComputationRow[]) => void;
+  deductionRows: ComputationRow[];
+  setDeductionRows: (rows: ComputationRow[]) => void;
+  preparedBy: string;
+}) {
+  const subTotalA = payableRows.reduce((sum, r) => sum + (r.amount || 0), 0);
+  const subTotalB = deductionRows.reduce((sum, r) => sum + (r.amount || 0), 0);
+  const netPayable = subTotalA - subTotalB;
+
+  return (
+    <div style={{ border: `1px solid ${C.border}`, borderRadius: 10, overflow: 'hidden', marginBottom: 12 }}>
+      <div style={{ padding: '10px 14px', background: C.surfaceMuted, display: 'flex', alignItems: 'center', gap: 8, borderBottom: `1px solid ${C.border}` }}>
+        <FileDoneOutlined style={{ color: C.primary, fontSize: 13 }} />
+        <span style={{ fontSize: 12, fontWeight: 700, color: C.text }}>Settlement Computation</span>
+        <span style={{ fontSize: 11, color: C.textMuted }}>Final payable calculation</span>
+      </div>
+      <div style={{ padding: '16px 14px' }}>
+        <ComputationRowEditor
+          rows={payableRows}
+          typeOptions={PAYABLE_TYPES}
+          onRowsChange={setPayableRows}
+          accent={C.success}
+          label="A"
+          emptyHint="No payable items — click 'Add Row' to add"
+        />
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 12px', background: `${C.success}10`, borderRadius: 8, marginBottom: 16 }}>
+          <span style={{ fontSize: 12, fontWeight: 700, color: C.textSecondary }}>Sub-Total (A)</span>
+          <span style={{ fontSize: 14, fontWeight: 800, color: C.success }}>{formatCurrency(subTotalA)}</span>
+        </div>
+
+        <ComputationRowEditor
+          rows={deductionRows}
+          typeOptions={DEDUCTION_TYPES}
+          onRowsChange={setDeductionRows}
+          accent={C.danger}
+          label="B"
+          emptyHint="No deductions — click 'Add Row' to add"
+        />
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 12px', background: `${C.danger}10`, borderRadius: 8, marginBottom: 16 }}>
+          <span style={{ fontSize: 12, fontWeight: 700, color: C.textSecondary }}>Sub-Total (B)</span>
+          <span style={{ fontSize: 14, fontWeight: 800, color: C.danger }}>−{formatCurrency(subTotalB)}</span>
+        </div>
+
+        {/* Net Payable */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 16px', background: C.surfaceMuted, border: `1px solid ${C.border}`, borderRadius: 10 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <div style={{ width: 32, height: 32, borderRadius: 8, background: C.primaryLight, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <DollarCircleOutlined style={{ color: C.primary, fontSize: 16 }} />
+            </div>
+            <div>
+              <div style={{ fontSize: 11, fontWeight: 700, color: C.textSecondary, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Net Payable (A − B)</div>
+              <div style={{ fontSize: 11, color: C.textMuted, marginTop: 2 }}>Final settlement amount due</div>
+            </div>
+          </div>
+          <div style={{ fontSize: 26, fontWeight: 800, color: C.text, letterSpacing: '-0.03em' }}>{formatCurrency(netPayable)}</div>
+        </div>
+
+        <div style={{ marginTop: 12, display: 'flex', justifyContent: 'flex-end' }}>
+          <span style={{ fontSize: 11, color: C.textMuted }}>
+            Prepared by: <strong style={{ color: C.textSecondary }}>{preparedBy}</strong>
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Generate Settlement Wizard (full page) ───────────────────────────────────
+
+function GenerateSettlementWizard({ onClose, onSave }: {
   onClose: () => void;
   onSave: (record: SettlementRecord, asDraft: boolean) => void;
 }) {
@@ -779,16 +1262,21 @@ function GenerateSettlementModal({ open, onClose, onSave }: {
   const [deductionRows, setDeductionRows] = useState<ComputationRow[]>([]);
 
   const selectedEmp = ELIGIBLE_EMPLOYEES.find(e => e.id === selectedEmpId);
-  const subTotalA = payableRows.reduce((sum, r) => sum + (r.amount || 0), 0);
-  const subTotalB = deductionRows.reduce((sum, r) => sum + (r.amount || 0), 0);
-  const netPayable = subTotalA - subTotalB;
+  const isEarlyRelease = selectedEmp?.noticeDuration === 'Early Release (Notice Buyout)';
 
-  const handleClose = () => {
-    setStep(0);
-    setSelectedEmpId('');
-    setPayableRows([newRow('Monthly Salary (Pro-rata)'), newRow('Leave Encashment')]);
-    setDeductionRows([]);
-    onClose();
+  const handleNext = () => {
+    if (!selectedEmp) return;
+    // Auto-add notice buyout deduction if early release
+    if (isEarlyRelease && selectedEmp.noticeTotalDays > 0) {
+      const remaining = selectedEmp.noticeTotalDays - selectedEmp.noticeServedDays;
+      const dailyRate = Math.round(selectedEmp.grossSalary / 30);
+      const deductionAmt = remaining * dailyRate;
+      const alreadyAdded = deductionRows.some(r => r.type === 'Short of Notice Period (Gross Salary)');
+      if (!alreadyAdded && deductionAmt > 0) {
+        setDeductionRows(prev => [...prev, { id: String(rowCounter++), type: 'Short of Notice Period (Gross Salary)', days: remaining, amount: deductionAmt }]);
+      }
+    }
+    setStep(1);
   };
 
   const handleSave = (asDraft: boolean) => {
@@ -809,90 +1297,60 @@ function GenerateSettlementModal({ open, onClose, onSave }: {
       preparedBy: 'Md. Wahiduzzaman Nayem (TN-99356)',
     };
     onSave(record, asDraft);
-    handleClose();
   };
 
-  const totalLeaveBalance = MOCK_LEAVE_ROWS.reduce((s, r) => s + r.balance, 0);
-
   return (
-    <Modal
-      open={open}
-      onCancel={handleClose}
-      title={
-        <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 2 }}>
-            <FileDoneOutlined style={{ color: C.primaryDark, fontSize: 16 }} />
-            <span style={{ fontSize: 15, fontWeight: 700, color: C.text }}>Generate Final Settlement</span>
-          </div>
-          <div style={{ fontSize: 12, color: C.textMuted, fontWeight: 400, marginLeft: 26 }}>
-            Full & final settlement computation based on company policy
-          </div>
-        </div>
-      }
-      footer={null}
-      width={660}
-      centered
-      styles={{ body: { padding: '20px 24px 24px', maxHeight: '72vh', overflowY: 'auto' } }}
-      destroyOnClose
-    >
-      <ModalStepIndicator current={step} />
+    <div>
+      <WizardPageHeader onBack={step === 1 ? () => setStep(0) : undefined} />
+      <WizardStepIndicator current={step} />
 
+      {/* ── Step 1: Employee & Details ── */}
       {step === 0 && (
         <>
-          <div style={{ fontSize: 11, fontWeight: 700, color: C.textMuted, letterSpacing: '0.07em', textTransform: 'uppercase', marginBottom: 8 }}>
-            Select Employee
+          <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 10, padding: '16px', marginBottom: 16 }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: C.textMuted, letterSpacing: '0.07em', textTransform: 'uppercase', marginBottom: 8 }}>
+              Select Employee
+            </div>
+            <Select
+              style={{ width: '100%' }}
+              placeholder="Select employee..."
+              value={selectedEmpId || undefined}
+              onChange={value => {
+                setSelectedEmpId(value);
+                // Reset computation rows when employee changes
+                setPayableRows([newRow('Monthly Salary (Pro-rata)'), newRow('Leave Encashment')]);
+                setDeductionRows([]);
+              }}
+              options={ELIGIBLE_EMPLOYEES.map(e => ({
+                label: `${e.name} — ${e.department} — ${e.reason}`,
+                value: e.id,
+              }))}
+              showSearch
+              filterOption={(input, option) =>
+                String(option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+              }
+              size="large"
+            />
           </div>
-          <Select
-            style={{ width: '100%' }}
-            placeholder="Select employee..."
-            value={selectedEmpId || undefined}
-            onChange={value => setSelectedEmpId(value)}
-            options={ELIGIBLE_EMPLOYEES.map(e => ({
-              label: `${e.name} — ${e.department} — ${e.reason}`,
-              value: e.id,
-            }))}
-            showSearch
-            filterOption={(input, option) =>
-              String(option?.label ?? '').toLowerCase().includes(input.toLowerCase())
-            }
-          />
 
           {selectedEmp && (
-            <div style={{ marginTop: 16, border: `1px solid ${C.border}`, borderRadius: 10, overflow: 'hidden' }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 0 }}>
-                {[
-                  { label: 'Employee ID', value: selectedEmp.id },
-                  { label: 'Designation', value: selectedEmp.designation },
-                  { label: 'Separation Type', value: selectedEmp.reason },
-                  { label: 'Last Working Day', value: selectedEmp.lastWorkingDay },
-                  { label: 'Notice Period', value: selectedEmp.noticePeriod },
-                  { label: 'Department', value: selectedEmp.department },
-                ].map((item, idx) => (
-                  <div
-                    key={item.label}
-                    style={{
-                      padding: '12px 16px',
-                      borderBottom: idx < 4 ? `1px solid ${C.border}` : 'none',
-                      borderRight: idx % 2 === 0 ? `1px solid ${C.border}` : 'none',
-                    }}
-                  >
-                    <div style={{ fontSize: 10, fontWeight: 700, color: C.textSoft, letterSpacing: '0.07em', textTransform: 'uppercase', marginBottom: 4 }}>
-                      {item.label}
-                    </div>
-                    <div style={{ fontSize: 13, fontWeight: 600, color: C.text }}>{item.value}</div>
-                  </div>
-                ))}
+            <>
+              <WizardEmployeeCard emp={selectedEmp} />
+              <div style={{ display: 'flex', gap: 14 }}>
+                <ResignationDetailsPanel emp={selectedEmp} />
+                <ClearanceReportPanel emp={selectedEmp} />
               </div>
-            </div>
+            </>
           )}
 
-          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 24 }}>
-            <Button onClick={handleClose}>Cancel</Button>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 20, paddingTop: 16, borderTop: `1px solid ${C.border}` }}>
+            <Button onClick={onClose}>Cancel</Button>
             <Button
               type="primary"
               disabled={!selectedEmpId}
-              onClick={() => setStep(1)}
-              style={{ background: C.primaryDark, borderColor: C.primaryDark }}
+              onClick={handleNext}
+              icon={<RightOutlined />}
+              iconPosition="end"
             >
               Next: Settlement Breakdown
             </Button>
@@ -900,327 +1358,132 @@ function GenerateSettlementModal({ open, onClose, onSave }: {
         </>
       )}
 
+      {/* ── Step 2: Settlement Breakdown ── */}
       {step === 1 && selectedEmp && (
         <>
-          {/* Employee header */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 14px', background: C.surfaceMuted, border: `1px solid ${C.border}`, borderRadius: 10, marginBottom: 14 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <Avatar size={36} style={{ background: avatarColor(selectedEmp.name), fontWeight: 800, fontSize: 13, flexShrink: 0 }}>
-                {initials(selectedEmp.name)}
-              </Avatar>
-              <div>
-                <div style={{ fontSize: 13, fontWeight: 700, color: C.text }}>{selectedEmp.name}</div>
-                <div style={{ fontSize: 11, color: C.textMuted }}>{selectedEmp.designation} · {selectedEmp.department} · {selectedEmp.id}</div>
-              </div>
-            </div>
-            <div style={{ textAlign: 'right' }}>
-              <div style={{ fontSize: 10, fontWeight: 700, color: C.textSoft, letterSpacing: '0.07em', textTransform: 'uppercase' }}>Gross Salary</div>
-              <div style={{ fontSize: 16, fontWeight: 800, color: C.text }}>{formatCurrency(selectedEmp.grossSalary)}</div>
-            </div>
+          <WizardEmployeeCard emp={selectedEmp} showEarlyRelease={isEarlyRelease} />
+
+          {/* Attendance + Salary side by side */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginBottom: 0 }}>
+            <div><AttendanceSummarySection /></div>
+            <div><SalaryBreakdownSection grossSalary={selectedEmp.grossSalary} /></div>
           </div>
 
-          {/* Attendance Summary */}
-          <CollapsibleSection title="Attendance Summary" tag="91% rate" tagColor={C.success} tagBg={C.successBg}>
-            <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
-              {[
-                { label: 'Working Days', value: 240, color: C.text, bg: C.surfaceMuted },
-                { label: 'Present', value: 218, color: C.success, bg: C.successBg },
-                { label: 'Absent', value: 5, color: C.danger, bg: C.dangerBg },
-                { label: 'Late Entry', value: 8, color: C.warning, bg: C.warningBg },
-                { label: 'Early Exit', value: 3, color: C.info, bg: C.infoBg },
-              ].map(item => (
-                <div key={item.label} style={{ flex: 1, textAlign: 'center', padding: '10px 6px', borderRadius: 8, background: item.bg, border: `1px solid ${C.border}` }}>
-                  <div style={{ fontSize: 16, fontWeight: 800, color: item.color }}>{item.value}</div>
-                  <div style={{ fontSize: 9, fontWeight: 600, color: C.textSoft, letterSpacing: '0.05em', textTransform: 'uppercase', marginTop: 3 }}>{item.label}</div>
-                </div>
-              ))}
-            </div>
-            <div style={{ fontSize: 11, color: C.textMuted, marginBottom: 6 }}>Attendance Rate</div>
-            <Progress percent={91} strokeColor={C.success} trailColor="#e5e7eb" size="small" />
-          </CollapsibleSection>
+          <LeaveBreakdownSection />
+          <NoticeBuyoutSection emp={selectedEmp} />
 
-          {/* Salary Breakdown */}
-          <CollapsibleSection title="Salary Breakdown" tag={formatCurrency(selectedEmp.grossSalary)} tagColor={C.primary} tagBg={C.primaryLight}>
-            <div style={{ border: `1px solid ${C.border}`, borderRadius: 8, overflow: 'hidden' }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr auto auto', gap: 0 }}>
-                <div style={{ padding: '8px 12px', fontSize: 10, fontWeight: 700, color: C.textSoft, letterSpacing: '0.07em', textTransform: 'uppercase', borderBottom: `1px solid ${C.border}` }}>Component</div>
-                <div style={{ padding: '8px 12px', fontSize: 10, fontWeight: 700, color: C.textSoft, letterSpacing: '0.07em', textTransform: 'uppercase', borderBottom: `1px solid ${C.border}`, textAlign: 'right' }}>Pct.</div>
-                <div style={{ padding: '8px 12px', fontSize: 10, fontWeight: 700, color: C.textSoft, letterSpacing: '0.07em', textTransform: 'uppercase', borderBottom: `1px solid ${C.border}`, textAlign: 'right' }}>Amount</div>
-                {SALARY_COMPONENTS.map((comp, idx) => {
-                  const amt = Math.round(selectedEmp.grossSalary * comp.pct / 100);
-                  const isLast = idx === SALARY_COMPONENTS.length - 1;
-                  return (
-                    <Fragment key={comp.label}>
-                      <div style={{ padding: '9px 12px', fontSize: 12, color: C.textSecondary, borderBottom: isLast ? 'none' : `1px solid ${C.border}` }}>{comp.label}</div>
-                      <div style={{ padding: '9px 12px', fontSize: 12, color: C.textMuted, textAlign: 'right', borderBottom: isLast ? 'none' : `1px solid ${C.border}` }}>
-                        <span style={{ display: 'inline-block', width: 32, height: 3, background: `${C.primary}40`, borderRadius: 2, verticalAlign: 'middle', marginRight: 4 }} />
-                        {comp.pct}%
-                      </div>
-                      <div style={{ padding: '9px 12px', fontSize: 12, fontWeight: 600, color: C.text, textAlign: 'right', borderBottom: isLast ? 'none' : `1px solid ${C.border}` }}>
-                        {formatCurrency(amt)}
-                      </div>
-                    </Fragment>
-                  );
-                })}
-                <div style={{ padding: '10px 12px', fontSize: 12, fontWeight: 700, color: C.text, borderTop: `1px solid ${C.border}` }}>Gross Salary</div>
-                <div style={{ padding: '10px 12px', fontSize: 12, fontWeight: 700, color: C.text, borderTop: `1px solid ${C.border}`, textAlign: 'right' }}>100%</div>
-                <div style={{ padding: '10px 12px', fontSize: 12, fontWeight: 700, color: C.text, borderTop: `1px solid ${C.border}`, textAlign: 'right' }}>{formatCurrency(selectedEmp.grossSalary)}</div>
-              </div>
-            </div>
-          </CollapsibleSection>
+          <SettlementComputationSection
+            payableRows={payableRows}
+            setPayableRows={setPayableRows}
+            deductionRows={deductionRows}
+            setDeductionRows={setDeductionRows}
+            preparedBy="Md. Wahiduzzaman Nayem (TN-99356)"
+          />
 
-          {/* Leave Breakdown */}
-          <CollapsibleSection title="Leave Breakdown" tag={`${totalLeaveBalance}d balance`} tagColor={C.info} tagBg={C.infoBg}>
-            <div style={{ border: `1px solid ${C.border}`, borderRadius: 8, overflow: 'hidden', marginBottom: 10 }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr auto auto auto', gap: 0 }}>
-                {['Leave Type', 'Entitled', 'Availed', 'Balance'].map(h => (
-                  <div key={h} style={{ padding: '8px 12px', fontSize: 10, fontWeight: 700, color: C.textSoft, letterSpacing: '0.07em', textTransform: 'uppercase', borderBottom: `1px solid ${C.border}` }}>{h}</div>
-                ))}
-                {MOCK_LEAVE_ROWS.map((row, idx) => {
-                  const isLast = idx === MOCK_LEAVE_ROWS.length - 1;
-                  return (
-                    <Fragment key={row.type}>
-                      <div style={{ padding: '9px 12px', fontSize: 12, color: C.textSecondary, borderBottom: isLast ? 'none' : `1px solid ${C.border}` }}>{row.type}</div>
-                      <div style={{ padding: '9px 12px', fontSize: 12, color: C.text, textAlign: 'center', borderBottom: isLast ? 'none' : `1px solid ${C.border}` }}>{row.entitled}</div>
-                      <div style={{ padding: '9px 12px', fontSize: 12, color: row.availed > 0 ? C.warning : C.textMuted, fontWeight: row.availed > 0 ? 600 : 400, textAlign: 'center', borderBottom: isLast ? 'none' : `1px solid ${C.border}` }}>{row.availed}</div>
-                      <div style={{ padding: '9px 12px', fontSize: 12, color: row.balance > 0 ? C.success : C.textMuted, fontWeight: row.balance > 0 ? 600 : 400, textAlign: 'center', borderBottom: isLast ? 'none' : `1px solid ${C.border}` }}>{row.balance}</div>
-                    </Fragment>
-                  );
-                })}
-                {/* Total row */}
-                <div style={{ padding: '9px 12px', fontSize: 12, fontWeight: 700, color: C.text, borderTop: `1px solid ${C.border}` }}>Total</div>
-                <div style={{ padding: '9px 12px', fontSize: 12, fontWeight: 700, color: C.text, textAlign: 'center', borderTop: `1px solid ${C.border}` }}>{MOCK_LEAVE_ROWS.reduce((s, r) => s + r.entitled, 0)}</div>
-                <div style={{ padding: '9px 12px', fontSize: 12, fontWeight: 700, color: C.warning, textAlign: 'center', borderTop: `1px solid ${C.border}` }}>{MOCK_LEAVE_ROWS.reduce((s, r) => s + r.availed, 0)}</div>
-                <div style={{ padding: '9px 12px', fontSize: 12, fontWeight: 700, color: C.success, textAlign: 'center', borderTop: `1px solid ${C.border}` }}>{totalLeaveBalance}</div>
-              </div>
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: C.info }}>
-              <ClockCircleOutlined style={{ fontSize: 12 }} />
-              <span>{totalLeaveBalance} days leave balance eligible for encashment</span>
-            </div>
-          </CollapsibleSection>
-
-          {/* Settlement Computation */}
-          <div style={{ border: `1px solid ${C.border}`, borderRadius: 10, overflow: 'hidden', marginBottom: 12 }}>
-            <div style={{ padding: '10px 14px', background: C.surfaceMuted, display: 'flex', alignItems: 'center', gap: 8, borderBottom: `1px solid ${C.border}` }}>
-              <FileDoneOutlined style={{ color: C.primary, fontSize: 13 }} />
-              <span style={{ fontSize: 12, fontWeight: 700, color: C.text }}>Settlement Computation</span>
-              <span style={{ fontSize: 11, color: C.textMuted }}>Final payable calculation</span>
-            </div>
-            <div style={{ padding: 14 }}>
-              <ComputationRowEditor
-                rows={payableRows}
-                typeOptions={PAYABLE_TYPES}
-                onRowsChange={setPayableRows}
-                accent={C.success}
-                label="A"
-                emptyHint="No payable items — click Add Row to add"
-              />
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 12px', background: `${C.success}10`, borderRadius: 8, marginBottom: 14 }}>
-                <span style={{ fontSize: 12, fontWeight: 700, color: C.textSecondary }}>Sub-Total (A)</span>
-                <span style={{ fontSize: 14, fontWeight: 800, color: C.success }}>{formatCurrency(subTotalA)}</span>
-              </div>
-
-              <ComputationRowEditor
-                rows={deductionRows}
-                typeOptions={DEDUCTION_TYPES}
-                onRowsChange={setDeductionRows}
-                accent={C.danger}
-                label="B"
-                emptyHint="No deductions — click Add Row to add"
-              />
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 12px', background: `${C.danger}10`, borderRadius: 8, marginBottom: 14 }}>
-                <span style={{ fontSize: 12, fontWeight: 700, color: C.textSecondary }}>Sub-Total (B)</span>
-                <span style={{ fontSize: 14, fontWeight: 800, color: C.danger }}>−{formatCurrency(subTotalB)}</span>
-              </div>
-
-              {/* Net Payable */}
-              <div style={{ background: 'linear-gradient(135deg, #163563 0%, #1e3a6f 100%)', borderRadius: 10, padding: '12px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                  <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'rgba(255,255,255,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <DollarCircleOutlined style={{ color: '#ffffff' }} />
-                  </div>
-                  <div>
-                    <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.82)' }}>Net Payable (A − B)</div>
-                    <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.7)', marginTop: 2 }}>Final settlement amount due</div>
-                  </div>
-                </div>
-                <div style={{ fontSize: 22, fontWeight: 800, color: '#ffffff', letterSpacing: '-0.03em' }}>{formatCurrency(netPayable)}</div>
-              </div>
-
-              <div style={{ marginTop: 12, fontSize: 11, color: C.textMuted }}>
-                Prepared by: <strong style={{ color: C.textSecondary }}>Md. Wahiduzzaman Nayem (TN-99356)</strong>
-              </div>
-            </div>
-          </div>
-
-          <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8, paddingTop: 4 }}>
-            <Button onClick={() => setStep(0)}>Back</Button>
+          <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8, marginTop: 20, paddingTop: 16, borderTop: `1px solid ${C.border}` }}>
+            <Button icon={<LeftOutlined />} onClick={() => setStep(0)}>Back</Button>
             <Space>
-              <Button onClick={handleClose}>Cancel</Button>
+              <Button onClick={onClose}>Cancel</Button>
               <Button onClick={() => handleSave(true)}>Save as Draft</Button>
-              <Button
-                type="primary"
-                onClick={() => handleSave(false)}
-                style={{ background: C.primaryDark, borderColor: C.primaryDark }}
-              >
+              <Button type="primary" onClick={() => handleSave(false)}>
                 Generate Settlement
               </Button>
             </Space>
           </div>
         </>
       )}
-    </Modal>
+    </div>
   );
 }
 
-// ─── Edit Settlement Modal ────────────────────────────────────────────────────
+// ─── Edit Settlement Wizard (full page) ───────────────────────────────────────
 
-function EditSettlementModal({ record, onClose, onSave }: {
-  record: SettlementRecord | null;
+function EditSettlementWizard({ record, onClose, onSave }: {
+  record: SettlementRecord;
   onClose: () => void;
   onSave: (updated: SettlementRecord) => void;
 }) {
   const [payableRows, setPayableRows] = useState<ComputationRow[]>(
-    () => (record?.payables ?? []).map(p => ({ id: String(rowCounter++), type: p.label, days: null, amount: p.amount })),
+    () => record.payables.map(p => ({ id: String(rowCounter++), type: p.label, days: null, amount: p.amount })),
   );
   const [deductionRows, setDeductionRows] = useState<ComputationRow[]>(
-    () => (record?.deductions ?? []).map(d => ({ id: String(rowCounter++), type: d.label, days: null, amount: d.amount })),
+    () => record.deductions.map(d => ({ id: String(rowCounter++), type: d.label, days: null, amount: d.amount })),
   );
 
-  const subTotalA = payableRows.reduce((sum, r) => sum + (r.amount || 0), 0);
-  const subTotalB = deductionRows.reduce((sum, r) => sum + (r.amount || 0), 0);
-  const netPayable = subTotalA - subTotalB;
+  const grossSalary = ELIGIBLE_EMPLOYEES.find(e => e.name === record.empName)?.grossSalary;
 
   const handleSave = (asDraft: boolean) => {
-    if (!record) return;
     onSave({
       ...record,
       payables: payableRows.filter(r => r.type).map(r => ({ label: r.type, amount: r.amount || 0 })),
       deductions: deductionRows.filter(r => r.type).map(r => ({ label: r.type, amount: r.amount || 0 })),
       status: asDraft ? 'Draft' : record.status,
     });
-    onClose();
   };
 
-  const grossSalary = ELIGIBLE_EMPLOYEES.find(e => e.id === record?.empId)?.grossSalary;
-
   return (
-    <Modal
-      open={!!record}
-      onCancel={onClose}
-      title={
+    <div>
+      {/* Edit page header */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
         <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 2 }}>
-            <EditOutlined style={{ color: C.primaryDark, fontSize: 16 }} />
-            <span style={{ fontSize: 15, fontWeight: 700, color: C.text }}>Edit Settlement</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <EditOutlined style={{ color: '#1e3a5f', fontSize: 16 }} />
+            <span style={{ fontSize: 18, fontWeight: 700, color: C.text }}>Edit Settlement</span>
           </div>
-          <div style={{ fontSize: 12, color: C.textMuted, fontWeight: 400, marginLeft: 26 }}>
-            {record?.empName} — {record?.department} — {record?.reason}
+          <div style={{ fontSize: 12, color: C.textMuted, marginTop: 2, marginLeft: 24 }}>
+            {record.empName} — {record.department} — {record.reason}
           </div>
         </div>
-      }
-      footer={null}
-      width={660}
-      centered
-      styles={{ body: { padding: '20px 24px 24px', maxHeight: '72vh', overflowY: 'auto' } }}
-      destroyOnClose
-    >
-      {record && (
-        <>
-          {/* Employee header */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 14px', background: C.surfaceMuted, border: `1px solid ${C.border}`, borderRadius: 10, marginBottom: 16 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <Avatar size={36} style={{ background: avatarColor(record.empName), fontWeight: 800, fontSize: 13, flexShrink: 0 }}>
-                {initials(record.empName)}
-              </Avatar>
-              <div>
-                <div style={{ fontSize: 13, fontWeight: 700, color: C.text }}>{record.empName}</div>
-                <div style={{ fontSize: 11, color: C.textMuted }}>{record.designation} · {record.department} · {record.empId}</div>
-              </div>
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              {grossSalary && (
-                <div style={{ textAlign: 'right' }}>
-                  <div style={{ fontSize: 10, fontWeight: 700, color: C.textSoft, letterSpacing: '0.07em', textTransform: 'uppercase' }}>Gross Salary</div>
-                  <div style={{ fontSize: 15, fontWeight: 800, color: C.text }}>{formatCurrency(grossSalary)}</div>
-                </div>
-              )}
-              <StatusBadge status={record.status} />
+      </div>
+
+      {/* Employee summary card */}
+      <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 10, padding: '14px 18px', marginBottom: 16, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <Avatar size={40} style={{ background: avatarColor(record.empName), fontWeight: 800, fontSize: 14, flexShrink: 0 }}>
+            {initials(record.empName)}
+          </Avatar>
+          <div>
+            <div style={{ fontSize: 14, fontWeight: 700, color: C.text }}>{record.empName}</div>
+            <div style={{ fontSize: 12, color: C.textMuted, marginTop: 2 }}>
+              {record.designation} · {record.department} · {record.empId}
             </div>
           </div>
-
-          {/* Key info */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: 10, marginBottom: 16 }}>
-            <MetaItem icon={<FileDoneOutlined style={{ fontSize: 11 }} />} label="Reason" value={record.reason} />
-            <MetaItem icon={<ClockCircleOutlined style={{ fontSize: 11 }} />} label="Tenure" value={record.tenure} />
-            <MetaItem icon={<CalendarOutlined style={{ fontSize: 11 }} />} label="Last Working Day" value={record.lastWorkingDay} />
-            <MetaItem icon={<ApartmentOutlined style={{ fontSize: 11 }} />} label="Date of Joining" value={record.dateOfJoining} />
-          </div>
-
-          {/* Settlement Computation */}
-          <div style={{ border: `1px solid ${C.border}`, borderRadius: 10, overflow: 'hidden', marginBottom: 14 }}>
-            <div style={{ padding: '10px 14px', background: C.surfaceMuted, display: 'flex', alignItems: 'center', gap: 8, borderBottom: `1px solid ${C.border}` }}>
-              <FileDoneOutlined style={{ color: C.primary, fontSize: 13 }} />
-              <span style={{ fontSize: 12, fontWeight: 700, color: C.text }}>Settlement Computation</span>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          {grossSalary != null && (
+            <div style={{ textAlign: 'right' }}>
+              <div style={{ fontSize: 10, fontWeight: 700, color: C.textSoft, letterSpacing: '0.07em', textTransform: 'uppercase' }}>Gross Salary</div>
+              <div style={{ fontSize: 18, fontWeight: 800, color: C.text }}>{formatCurrency(grossSalary)}</div>
             </div>
-            <div style={{ padding: 14 }}>
-              <ComputationRowEditor
-                rows={payableRows}
-                typeOptions={PAYABLE_TYPES}
-                onRowsChange={setPayableRows}
-                accent={C.success}
-                label="A"
-                emptyHint="No payable items — click Add Row to add"
-              />
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 12px', background: `${C.success}10`, borderRadius: 8, marginBottom: 14 }}>
-                <span style={{ fontSize: 12, fontWeight: 700, color: C.textSecondary }}>Sub-Total (A)</span>
-                <span style={{ fontSize: 14, fontWeight: 800, color: C.success }}>{formatCurrency(subTotalA)}</span>
-              </div>
+          )}
+          <StatusBadge status={record.status} />
+        </div>
+      </div>
 
-              <ComputationRowEditor
-                rows={deductionRows}
-                typeOptions={DEDUCTION_TYPES}
-                onRowsChange={setDeductionRows}
-                accent={C.danger}
-                label="B"
-                emptyHint="No deductions — click Add Row to add"
-              />
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 12px', background: `${C.danger}10`, borderRadius: 8, marginBottom: 14 }}>
-                <span style={{ fontSize: 12, fontWeight: 700, color: C.textSecondary }}>Sub-Total (B)</span>
-                <span style={{ fontSize: 14, fontWeight: 800, color: C.danger }}>−{formatCurrency(subTotalB)}</span>
-              </div>
+      {/* Meta info */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: 10, marginBottom: 16 }}>
+        <MetaItem icon={<FileDoneOutlined style={{ fontSize: 11 }} />} label="Reason" value={record.reason} />
+        <MetaItem icon={<ClockCircleOutlined style={{ fontSize: 11 }} />} label="Tenure" value={record.tenure} />
+        <MetaItem icon={<CalendarOutlined style={{ fontSize: 11 }} />} label="Last Working Day" value={record.lastWorkingDay} />
+        <MetaItem icon={<ApartmentOutlined style={{ fontSize: 11 }} />} label="Date of Joining" value={record.dateOfJoining} />
+      </div>
 
-              {/* Net Payable */}
-              <div style={{ background: 'linear-gradient(135deg, #163563 0%, #1e3a6f 100%)', borderRadius: 10, padding: '12px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                  <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'rgba(255,255,255,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <DollarCircleOutlined style={{ color: '#ffffff' }} />
-                  </div>
-                  <div>
-                    <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.82)' }}>Net Payable (A − B)</div>
-                    <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.7)', marginTop: 2 }}>Final settlement amount due</div>
-                  </div>
-                </div>
-                <div style={{ fontSize: 22, fontWeight: 800, color: '#ffffff', letterSpacing: '-0.03em' }}>{formatCurrency(netPayable)}</div>
-              </div>
+      <SettlementComputationSection
+        payableRows={payableRows}
+        setPayableRows={setPayableRows}
+        deductionRows={deductionRows}
+        setDeductionRows={setDeductionRows}
+        preparedBy={record.preparedBy}
+      />
 
-              <div style={{ marginTop: 12, fontSize: 11, color: C.textMuted }}>
-                Prepared by: <strong style={{ color: C.textSecondary }}>{record.preparedBy}</strong>
-              </div>
-            </div>
-          </div>
-
-          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
-            <Button onClick={onClose}>Cancel</Button>
-            <Button onClick={() => handleSave(true)}>Save as Draft</Button>
-            <Button type="primary" onClick={() => handleSave(false)} style={{ background: C.primaryDark, borderColor: C.primaryDark }}>
-              Update Settlement
-            </Button>
-          </div>
-        </>
-      )}
-    </Modal>
+      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 20, paddingTop: 16, borderTop: `1px solid ${C.border}` }}>
+        <Button onClick={onClose}>Cancel</Button>
+        <Button onClick={() => handleSave(true)}>Save as Draft</Button>
+        <Button type="primary" onClick={() => handleSave(false)}>
+          Update Settlement
+        </Button>
+      </div>
+    </div>
   );
 }
 
@@ -1342,10 +1605,10 @@ function SettlementCard({ record, expanded, onToggle, onSubmitForReview, onAppro
                 <AmountPanel title="Deductions" accent={C.danger}  background={C.dangerBg}  border={C.dangerBorder}  items={record.deductions} total={deductionsTotal} />
               </div>
 
-              <div style={{ background: 'linear-gradient(135deg, #163563 0%, #1e3a6f 100%)', color: '#ffffff', borderRadius: 12, padding: '12px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginBottom: 14, flexWrap: 'wrap' }}>
+              <div style={{ background: 'linear-gradient(135deg, #163563 0%, #1e3a6f 100%)', color: 'var(--color-bg-surface)', borderRadius: 12, padding: '12px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginBottom: 14, flexWrap: 'wrap' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                   <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'rgba(255,255,255,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <DollarCircleOutlined style={{ color: '#ffffff' }} />
+                    <DollarCircleOutlined style={{ color: 'var(--color-bg-surface)' }} />
                   </div>
                   <div>
                     <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', opacity: 0.82 }}>Net Payable (A - B)</div>
@@ -1370,17 +1633,17 @@ function SettlementCard({ record, expanded, onToggle, onSubmitForReview, onAppro
                   {record.status === 'Draft' && (
                     <>
                       <Button icon={<EditOutlined />} onClick={onEdit}>Edit</Button>
-                      <Button type="primary" icon={<SendOutlined />} onClick={onSubmitForReview} style={{ background: C.primaryDark, borderColor: C.primaryDark }}>Submit for Review</Button>
+                      <Button type="primary" icon={<SendOutlined />} onClick={onSubmitForReview}>Submit for Review</Button>
                     </>
                   )}
                   {record.status === 'Under Review' && (
                     <>
-                      <Button type="primary" icon={<CheckCircleOutlined />} onClick={onApprove} style={{ background: C.primaryDark, borderColor: C.primaryDark }}>Approve</Button>
+                      <Button type="primary" icon={<CheckCircleOutlined />} onClick={onApprove}>Approve</Button>
                       <Button danger onClick={onDispute}>Dispute</Button>
                     </>
                   )}
                   {record.status === 'Approved' && (
-                    <Button type="primary" icon={<CheckCircleOutlined />} onClick={onMarkPaid} style={{ background: C.primaryDark, borderColor: C.primaryDark }}>Mark as Paid</Button>
+                    <Button type="primary" icon={<CheckCircleOutlined />} onClick={onMarkPaid}>Mark as Paid</Button>
                   )}
                   {record.status === 'Disputed' && (
                     <Button onClick={onReopen}>Reopen Review</Button>
@@ -1401,7 +1664,6 @@ function SettlementCard({ record, expanded, onToggle, onSubmitForReview, onAppro
                 </div>
               ) : (
                 <>
-                  {/* 3-column info grid */}
                   <div style={{ border: `1px solid ${C.border}`, borderRadius: 10, overflow: 'hidden', marginBottom: 12 }}>
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr' }}>
                       {([
@@ -1434,7 +1696,6 @@ function SettlementCard({ record, expanded, onToggle, onSubmitForReview, onAppro
                     </div>
                   </div>
 
-                  {/* Reason for separation – full width */}
                   <div style={{ border: `1px solid ${C.border}`, borderRadius: 10, overflow: 'hidden', marginBottom: 12 }}>
                     <div style={{ padding: '12px 16px' }}>
                       <div style={{ fontSize: 10, fontWeight: 700, color: C.textSoft, letterSpacing: '0.07em', textTransform: 'uppercase', marginBottom: 6 }}>REASON FOR SEPARATION</div>
@@ -1442,7 +1703,6 @@ function SettlementCard({ record, expanded, onToggle, onSubmitForReview, onAppro
                     </div>
                   </div>
 
-                  {/* Approver + Line Manager */}
                   <div style={{ border: `1px solid ${C.border}`, borderRadius: 10, overflow: 'hidden', marginBottom: 14 }}>
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr' }}>
                       <div style={{ padding: '12px 16px', borderRight: `1px solid ${C.border}` }}>
@@ -1482,7 +1742,6 @@ function SettlementCard({ record, expanded, onToggle, onSubmitForReview, onAppro
                 const crBorder = cr.status === 'Cleared' ? C.successBorder : cr.status === 'In Review' ? C.infoBorder : C.warningBorder;
                 return (
                   <>
-                    {/* Status + ID + progress summary */}
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10, flexWrap: 'wrap', gap: 10 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                         <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '3px 10px', borderRadius: 999, border: `1px solid ${crBorder}`, background: crBg, color: crColor, fontSize: 11, fontWeight: 700 }}>
@@ -1506,7 +1765,6 @@ function SettlementCard({ record, expanded, onToggle, onSubmitForReview, onAppro
                       style={{ marginBottom: 14 }}
                     />
 
-                    {/* Departments table */}
                     <div style={{ border: `1px solid ${C.border}`, borderRadius: 10, overflow: 'hidden', marginBottom: 14 }}>
                       <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1.5fr 1fr 1fr', padding: '8px 14px', background: C.surfaceMuted, borderBottom: `1px solid ${C.border}`, gap: 8 }}>
                         {(['DEPARTMENT', 'STATUS', 'APPROVER', 'DATE', 'REMARKS'] as const).map(h => (
@@ -1559,6 +1817,8 @@ function SettlementCard({ record, expanded, onToggle, onSubmitForReview, onAppro
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
+type WizardMode = 'none' | 'generate' | 'edit';
+
 export default function FinalSettlementPage() {
   const [settlements, setSettlements] = useState<SettlementRecord[]>(INITIAL_SETTLEMENTS);
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
@@ -1566,7 +1826,7 @@ export default function FinalSettlementPage() {
   const [draftFilters, setDraftFilters] = useState<Filters>(EMPTY_FILTERS);
   const [appliedFilters, setAppliedFilters] = useState<Filters>(EMPTY_FILTERS);
   const [showFilters, setShowFilters] = useState(false);
-  const [showGenerateModal, setShowGenerateModal] = useState(false);
+  const [wizardMode, setWizardMode] = useState<WizardMode>('none');
   const [editTarget, setEditTarget] = useState<SettlementRecord | null>(null);
 
   const departmentOptions = useMemo(
@@ -1633,6 +1893,7 @@ export default function FinalSettlementPage() {
 
   const handleSaveGenerated = (record: SettlementRecord, asDraft: boolean) => {
     setSettlements(prev => [record, ...prev]);
+    setWizardMode('none');
     if (asDraft) {
       message.success(`Draft settlement saved for ${record.empName}.`);
     } else {
@@ -1642,9 +1903,46 @@ export default function FinalSettlementPage() {
 
   const handleSaveEdited = (updated: SettlementRecord) => {
     setSettlements(prev => prev.map(r => r.id === updated.id ? updated : r));
+    setWizardMode('none');
+    setEditTarget(null);
     message.success(`Settlement updated for ${updated.empName}.`);
   };
 
+  const handleEditOpen = (record: SettlementRecord) => {
+    setEditTarget(record);
+    setWizardMode('edit');
+  };
+
+  const handleWizardClose = () => {
+    setWizardMode('none');
+    setEditTarget(null);
+  };
+
+  // ── Wizard views ──────────────────────────────────────────────────────────
+  if (wizardMode === 'generate') {
+    return (
+      <div className="page-shell">
+        <GenerateSettlementWizard
+          onClose={handleWizardClose}
+          onSave={handleSaveGenerated}
+        />
+      </div>
+    );
+  }
+
+  if (wizardMode === 'edit' && editTarget) {
+    return (
+      <div className="page-shell">
+        <EditSettlementWizard
+          record={editTarget}
+          onClose={handleWizardClose}
+          onSave={handleSaveEdited}
+        />
+      </div>
+    );
+  }
+
+  // ── List view ─────────────────────────────────────────────────────────────
   return (
     <div className="page-shell">
       <div className="page-header-row">
@@ -1662,7 +1960,7 @@ export default function FinalSettlementPage() {
           <Button icon={<DownloadOutlined />} onClick={() => downloadCsv(visibleRecords)}>
             Export CSV
           </Button>
-          <Button type="primary" icon={<PlusOutlined />} onClick={() => setShowGenerateModal(true)}>
+          <Button type="primary" icon={<PlusOutlined />} onClick={() => setWizardMode('generate')}>
             Generate New
           </Button>
         </Space>
@@ -1698,7 +1996,7 @@ export default function FinalSettlementPage() {
       </div>
 
       {showFilters && (
-        <div style={{ padding: '16px 20px', background: '#f8fafc', border: '1px solid #e8edf3', borderLeft: '3px solid #cbd5e1', borderRadius: '0 0 8px 8px', marginTop: -8, marginBottom: 16 }}>
+        <div style={{ padding: '16px 20px', background: 'var(--color-bg-subtle)', border: '1px solid #e8edf3', borderLeft: '3px solid #cbd5e1', borderRadius: '0 0 8px 8px', marginTop: -8, marginBottom: 16 }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginBottom: 14, flexWrap: 'wrap' }}>
             <span style={{ fontSize: 12, fontWeight: 700, letterSpacing: '0.07em', color: C.textSecondary, textTransform: 'uppercase' }}>Advanced Filtering</span>
             <Button type="link" size="small" onClick={handleReset} style={{ color: C.textMuted, padding: 0, fontSize: 12 }}>Reset All Filters</Button>
@@ -1744,7 +2042,7 @@ export default function FinalSettlementPage() {
           return (
             <button key={tab.key} type="button" className={`tab-pill${isActive ? ' active' : ''}`} onClick={() => setActiveTab(tab.key)}>
               {tab.label}
-              <span style={{ marginLeft: 6, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minWidth: 18, height: 18, borderRadius: 9, padding: '0 4px', fontSize: 10, fontWeight: 700, background: isActive ? C.primary : '#e5e7eb', color: isActive ? '#ffffff' : C.textMuted, verticalAlign: 'middle' }}>
+              <span style={{ marginLeft: 6, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minWidth: 18, height: 18, borderRadius: 9, padding: '0 4px', fontSize: 10, fontWeight: 700, background: isActive ? C.primary : 'var(--color-border)', color: isActive ? 'var(--color-bg-surface)' : C.textMuted, verticalAlign: 'middle' }}>
                 {counts[tab.key]}
               </span>
             </button>
@@ -1760,7 +2058,7 @@ export default function FinalSettlementPage() {
             record={record}
             expanded={expandedIds.has(record.id)}
             onToggle={() => toggleExpanded(record.id)}
-            onEdit={() => setEditTarget(record)}
+            onEdit={() => handleEditOpen(record)}
             onSubmitForReview={() => {
               updateStatus(record.id, 'Under Review');
               message.success(`${record.empName}'s settlement moved to Under Review.`);
@@ -1795,19 +2093,6 @@ export default function FinalSettlementPage() {
           </div>
         )}
       </div>
-
-      {/* Modals */}
-      <GenerateSettlementModal
-        open={showGenerateModal}
-        onClose={() => setShowGenerateModal(false)}
-        onSave={handleSaveGenerated}
-      />
-
-      <EditSettlementModal
-        record={editTarget}
-        onClose={() => setEditTarget(null)}
-        onSave={handleSaveEdited}
-      />
     </div>
   );
 }

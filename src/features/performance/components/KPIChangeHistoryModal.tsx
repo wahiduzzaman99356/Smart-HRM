@@ -22,7 +22,7 @@ import type { KPIChangeRequest, KPIChangeDetail } from '../types/performance.typ
 const { Text } = Typography;
 
 const AVATAR_COLORS = [
-  '#ef4444', '#0f766e', '#7c3aed', '#f59e0b', '#ec4899',
+  '#ef4444', 'var(--color-primary)', '#7c3aed', '#f59e0b', '#ec4899',
   '#0891b2', '#65a30d', '#ea580c', '#6366f1', '#0284c7',
 ];
 
@@ -32,15 +32,15 @@ function initials(name: string) {
 
 // ── Status configs ─────────────────────────────────────────────────────────────
 const STATUS_CFG = {
-  Pending:  { dot: <ClockCircleOutlined style={{ fontSize: 16, color: '#f59e0b' }} />, border: '#fde68a', tagBg: '#fef3c7', tagBorder: '#fde68a', tagColor: '#92400e',  reviewBg: '#fffbeb', reviewBorder: '#fde68a'  },
-  Approved: { dot: <CheckCircleOutlined style={{ fontSize: 16, color: '#16a34a' }} />, border: '#86efac', tagBg: '#dcfce7', tagBorder: '#86efac', tagColor: '#15803d',  reviewBg: '#f0fdf4', reviewBorder: '#bbf7d0' },
-  Rejected: { dot: <StopOutlined        style={{ fontSize: 16, color: '#dc2626' }} />, border: '#fca5a5', tagBg: '#fee2e2', tagBorder: '#fca5a5', tagColor: '#be123c',  reviewBg: '#fff1f2', reviewBorder: '#fecdd3' },
+  Pending:  { dot: <ClockCircleOutlined style={{ fontSize: 16, color: '#f59e0b' }} />, border: 'rgba(253, 230, 138, 0.4)', tagBg: 'var(--color-status-pending-bg)', tagBorder: 'rgba(253, 230, 138, 0.4)', tagColor: '#92400e',  reviewBg: 'var(--color-status-pending-bg)', reviewBorder: 'rgba(253, 230, 138, 0.4)'  },
+  Approved: { dot: <CheckCircleOutlined style={{ fontSize: 16, color: '#16a34a' }} />, border: '#86efac', tagBg: 'var(--color-status-approved-bg)', tagBorder: '#86efac', tagColor: '#15803d',  reviewBg: 'var(--color-status-approved-bg)', reviewBorder: 'var(--color-status-approved-bg)' },
+  Rejected: { dot: <StopOutlined        style={{ fontSize: 16, color: '#dc2626' }} />, border: 'var(--color-status-rejected-bg)', tagBg: 'var(--color-status-rejected-bg)', tagBorder: 'var(--color-status-rejected-bg)', tagColor: '#be123c',  reviewBg: 'var(--color-status-rejected-bg)', reviewBorder: 'var(--color-status-rejected-bg)' },
 };
 
 const CHANGE_CFG = {
-  added:    { icon: <PlusCircleOutlined  />, bg: '#f0fdf4', border: '#bbf7d0', color: '#15803d', label: 'Added'    },
-  removed:  { icon: <MinusCircleOutlined />, bg: '#fff1f2', border: '#fecdd3', color: '#be123c', label: 'Removed'  },
-  modified: { icon: <EditOutlined        />, bg: '#fefce8', border: '#fde68a', color: '#92400e', label: 'Modified' },
+  added:    { icon: <PlusCircleOutlined  />, bg: 'var(--color-status-approved-bg)', border: 'var(--color-status-approved-bg)', color: 'var(--color-status-approved)', label: 'Added'    },
+  removed:  { icon: <MinusCircleOutlined />, bg: 'var(--color-status-rejected-bg)', border: 'var(--color-status-rejected-bg)', color: '#be123c', label: 'Removed'  },
+  modified: { icon: <EditOutlined        />, bg: 'var(--color-status-pending-bg)', border: 'rgba(253, 230, 138, 0.4)', color: '#d97706', label: 'Modified' },
 };
 
 // ── Single change diff row ────────────────────────────────────────────────────
@@ -67,15 +67,15 @@ function ChangeDiffRow({ c }: { c: KPIChangeDetail }) {
         >
           {cfg.label}
         </Tag>
-        <Text strong style={{ fontSize: 12, color: '#111827' }}>
+        <Text strong style={{ fontSize: 12, color: 'var(--color-text-primary)' }}>
           {c.subKPICode} — {c.subKPIName}
         </Text>
       </div>
 
       {/* Area */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: c.type !== 'removed' ? 6 : 0 }}>
-        <AimOutlined style={{ color: '#9ca3af', fontSize: 10 }} />
-        <Text style={{ fontSize: 11, color: '#9ca3af' }}>
+        <AimOutlined style={{ color: 'var(--color-text-disabled)', fontSize: 10 }} />
+        <Text style={{ fontSize: 11, color: 'var(--color-text-disabled)' }}>
           {c.mainKPICode} · {c.mainKPIAreaName}
         </Text>
       </div>
@@ -84,36 +84,36 @@ function ChangeDiffRow({ c }: { c: KPIChangeDetail }) {
       {c.type !== 'removed' && (
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 14 }}>
           {c.newWeight !== undefined && (
-            <span style={{ fontSize: 11, color: '#374151', display: 'flex', alignItems: 'center', gap: 4 }}>
-              <span style={{ color: '#9ca3af' }}>Weight:</span>
+            <span style={{ fontSize: 11, color: 'var(--color-text-secondary)', display: 'flex', alignItems: 'center', gap: 4 }}>
+              <span style={{ color: 'var(--color-text-disabled)' }}>Weight:</span>
               {c.type === 'modified' && c.prevWeight !== undefined && (
                 <>
-                  <span style={{ textDecoration: 'line-through', color: '#9ca3af' }}>{c.prevWeight}%</span>
-                  <SwapRightOutlined style={{ color: '#9ca3af', fontSize: 10 }} />
+                  <span style={{ textDecoration: 'line-through', color: 'var(--color-text-disabled)' }}>{c.prevWeight}%</span>
+                  <SwapRightOutlined style={{ color: 'var(--color-text-disabled)', fontSize: 10 }} />
                 </>
               )}
-              <strong style={{ color: '#0f766e' }}>{c.newWeight}%</strong>
+              <strong style={{ color: 'var(--color-primary)' }}>{c.newWeight}%</strong>
             </span>
           )}
           {c.newOperator !== undefined && (
-            <span style={{ fontSize: 11, color: '#374151', display: 'flex', alignItems: 'center', gap: 4 }}>
-              <span style={{ color: '#9ca3af' }}>Operator:</span>
+            <span style={{ fontSize: 11, color: 'var(--color-text-secondary)', display: 'flex', alignItems: 'center', gap: 4 }}>
+              <span style={{ color: 'var(--color-text-disabled)' }}>Operator:</span>
               {c.type === 'modified' && c.prevOperator !== undefined && (
                 <>
-                  <span style={{ textDecoration: 'line-through', color: '#9ca3af' }}>{c.prevOperator}</span>
-                  <SwapRightOutlined style={{ color: '#9ca3af', fontSize: 10 }} />
+                  <span style={{ textDecoration: 'line-through', color: 'var(--color-text-disabled)' }}>{c.prevOperator}</span>
+                  <SwapRightOutlined style={{ color: 'var(--color-text-disabled)', fontSize: 10 }} />
                 </>
               )}
               <strong style={{ color: '#0284c7' }}>{c.newOperator}</strong>
             </span>
           )}
           {c.newTargetValue !== undefined && (
-            <span style={{ fontSize: 11, color: '#374151', display: 'flex', alignItems: 'center', gap: 4 }}>
-              <span style={{ color: '#9ca3af' }}>Target:</span>
+            <span style={{ fontSize: 11, color: 'var(--color-text-secondary)', display: 'flex', alignItems: 'center', gap: 4 }}>
+              <span style={{ color: 'var(--color-text-disabled)' }}>Target:</span>
               {c.type === 'modified' && c.prevTargetValue !== undefined && (
                 <>
-                  <span style={{ textDecoration: 'line-through', color: '#9ca3af' }}>{c.prevTargetValue}</span>
-                  <SwapRightOutlined style={{ color: '#9ca3af', fontSize: 10 }} />
+                  <span style={{ textDecoration: 'line-through', color: 'var(--color-text-disabled)' }}>{c.prevTargetValue}</span>
+                  <SwapRightOutlined style={{ color: 'var(--color-text-disabled)', fontSize: 10 }} />
                 </>
               )}
               <strong style={{ color: '#7c3aed' }}>{c.newTargetValue}</strong>
@@ -137,7 +137,7 @@ function HistoryEntryCard({ req }: { req: KPIChangeRequest }) {
   return (
     <div
       style={{
-        background: '#fff',
+        background: 'var(--color-bg-surface)',
         border: `1.5px solid ${cfg.border}`,
         borderRadius: 10,
         overflow: 'hidden',
@@ -161,11 +161,11 @@ function HistoryEntryCard({ req }: { req: KPIChangeRequest }) {
             {req.status === 'Rejected' && <StopOutlined style={{ marginRight: 4 }} />}
             {req.status}
           </Tag>
-          <Text style={{ fontSize: 11, color: '#6b7280', display: 'flex', alignItems: 'center', gap: 4 }}>
+          <Text style={{ fontSize: 11, color: 'var(--color-text-tertiary)', display: 'flex', alignItems: 'center', gap: 4 }}>
             <CalendarOutlined style={{ fontSize: 10 }} />
             Submitted: {new Date(req.requestedAt).toLocaleString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
           </Text>
-          <Text style={{ fontSize: 11, color: '#9ca3af', display: 'flex', alignItems: 'center', gap: 4 }}>
+          <Text style={{ fontSize: 11, color: 'var(--color-text-disabled)', display: 'flex', alignItems: 'center', gap: 4 }}>
             <UserOutlined style={{ fontSize: 10 }} />
             By: {req.requestedBy}
           </Text>
@@ -177,7 +177,7 @@ function HistoryEntryCard({ req }: { req: KPIChangeRequest }) {
             <Tooltip title={`${addedCount} sub KPI(s) added`}>
               <Tag
                 icon={<PlusCircleOutlined />}
-                style={{ background: '#f0fdf4', borderColor: '#bbf7d0', color: '#15803d', borderRadius: 6, fontSize: 11, fontWeight: 600, margin: 0 }}
+                style={{ background: 'var(--color-status-approved-bg)', borderColor: 'var(--color-status-approved-bg)', color: 'var(--color-status-approved)', borderRadius: 6, fontSize: 11, fontWeight: 600, margin: 0 }}
               >
                 {addedCount} Added
               </Tag>
@@ -187,7 +187,7 @@ function HistoryEntryCard({ req }: { req: KPIChangeRequest }) {
             <Tooltip title={`${removedCount} sub KPI(s) removed`}>
               <Tag
                 icon={<MinusCircleOutlined />}
-                style={{ background: '#fff1f2', borderColor: '#fecdd3', color: '#be123c', borderRadius: 6, fontSize: 11, fontWeight: 600, margin: 0 }}
+                style={{ background: 'var(--color-status-rejected-bg)', borderColor: 'var(--color-status-rejected-bg)', color: '#be123c', borderRadius: 6, fontSize: 11, fontWeight: 600, margin: 0 }}
               >
                 {removedCount} Removed
               </Tag>
@@ -197,13 +197,13 @@ function HistoryEntryCard({ req }: { req: KPIChangeRequest }) {
             <Tooltip title={`${modifiedCount} sub KPI(s) modified`}>
               <Tag
                 icon={<EditOutlined />}
-                style={{ background: '#fefce8', borderColor: '#fde68a', color: '#92400e', borderRadius: 6, fontSize: 11, fontWeight: 600, margin: 0 }}
+                style={{ background: 'var(--color-status-pending-bg)', borderColor: 'rgba(253, 230, 138, 0.4)', color: '#d97706', borderRadius: 6, fontSize: 11, fontWeight: 600, margin: 0 }}
               >
                 {modifiedCount} Modified
               </Tag>
             </Tooltip>
           )}
-          <Text style={{ marginLeft: 'auto', fontSize: 11, color: '#9ca3af' }}>
+          <Text style={{ marginLeft: 'auto', fontSize: 11, color: 'var(--color-text-disabled)' }}>
             {req.changes.length} change{req.changes.length !== 1 ? 's' : ''} total
           </Text>
         </div>
@@ -212,10 +212,10 @@ function HistoryEntryCard({ req }: { req: KPIChangeRequest }) {
         <div
           style={{
             display: 'inline-flex', alignItems: 'center', gap: 5,
-            fontSize: 12, color: '#0f766e', cursor: 'pointer', fontWeight: 600,
+            fontSize: 12, color: 'var(--color-primary)', cursor: 'pointer', fontWeight: 600,
             padding: '3px 8px', borderRadius: 6,
-            background: expanded ? '#e6f7f4' : 'transparent',
-            border: `1px solid ${expanded ? '#a7e3d9' : 'transparent'}`,
+            background: expanded ? 'var(--color-primary-tint)' : 'transparent',
+            border: `1px solid ${expanded ? 'var(--color-border)' : 'transparent'}`,
             transition: 'all 0.15s',
           }}
           onClick={() => setExpanded(e => !e)}
@@ -227,10 +227,10 @@ function HistoryEntryCard({ req }: { req: KPIChangeRequest }) {
 
       {/* ── Expanded diff ────────────────────────────────────────────────── */}
       {expanded && (
-        <div style={{ padding: '0 14px 14px', borderTop: '1px solid #f3f4f6' }}>
+        <div style={{ padding: '0 14px 14px', borderTop: '1px solid var(--color-border)' }}>
           <Text
             style={{
-              fontSize: 10, fontWeight: 700, color: '#6b7280',
+              fontSize: 10, fontWeight: 700, color: 'var(--color-text-tertiary)',
               letterSpacing: '0.07em', textTransform: 'uppercase',
               display: 'block', margin: '12px 0 8px',
             }}
@@ -268,11 +268,11 @@ function HistoryEntryCard({ req }: { req: KPIChangeRequest }) {
                   }
                 </div>
                 <div style={{ flex: 1 }}>
-                  <Text style={{ fontSize: 12, color: '#374151', display: 'block', fontWeight: 600 }}>
+                  <Text style={{ fontSize: 12, color: 'var(--color-text-secondary)', display: 'block', fontWeight: 600 }}>
                     {req.status === 'Approved' ? 'Approved' : 'Rejected'} by {req.reviewedBy ?? 'HR Manager'}
                   </Text>
                   {req.reviewedAt && (
-                    <Text style={{ fontSize: 11, color: '#9ca3af', display: 'block' }}>
+                    <Text style={{ fontSize: 11, color: 'var(--color-text-disabled)', display: 'block' }}>
                       <CalendarOutlined style={{ marginRight: 4 }} />
                       {new Date(req.reviewedAt).toLocaleString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
                     </Text>
@@ -281,12 +281,12 @@ function HistoryEntryCard({ req }: { req: KPIChangeRequest }) {
                     <div
                       style={{
                         marginTop: 6, padding: '6px 10px',
-                        background: req.status === 'Rejected' ? '#fff1f2' : '#f0fdf4',
+                        background: req.status === 'Rejected' ? 'var(--color-status-rejected-bg)' : 'var(--color-status-approved-bg)',
                         borderLeft: `3px solid ${req.status === 'Rejected' ? '#dc2626' : '#16a34a'}`,
                         borderRadius: '0 6px 6px 0',
                       }}
                     >
-                      <Text style={{ fontSize: 11, fontWeight: 600, color: '#374151', display: 'block', marginBottom: 2 }}>
+                      <Text style={{ fontSize: 11, fontWeight: 600, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 2 }}>
                         Remarks:
                       </Text>
                       <Text
@@ -375,11 +375,11 @@ export default function KPIChangeHistoryModal({
             </div>
           )}
           <div>
-            <div style={{ fontSize: 15, fontWeight: 700, color: '#111827', lineHeight: 1.2 }}>
+            <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--color-text-primary)', lineHeight: 1.2 }}>
               KPI Change History
             </div>
             {emp && (
-              <div style={{ fontSize: 11, color: '#6b7280', fontWeight: 400, marginTop: 1 }}>
+              <div style={{ fontSize: 11, color: 'var(--color-text-tertiary)', fontWeight: 400, marginTop: 1 }}>
                 {emp.employeeName} · {emp.employeeDesignation} · {emp.employeeDepartment}
               </div>
             )}
@@ -391,7 +391,7 @@ export default function KPIChangeHistoryModal({
       styles={{
         header: {
           background: 'linear-gradient(180deg, #f8fcfc 0%, #f2fbfa 100%)',
-          borderBottom: '1px solid #e5e7eb',
+          borderBottom: '1px solid var(--color-border)',
           padding: '14px 20px',
         },
         body: { padding: '0', maxHeight: 580, overflowY: 'auto' },
@@ -400,28 +400,28 @@ export default function KPIChangeHistoryModal({
       {/* ── Summary stats bar ────────────────────────────────────────────── */}
       <div
         style={{
-          display: 'flex', gap: 0, borderBottom: '1px solid #e5e7eb',
-          background: '#fff',
+          display: 'flex', gap: 0, borderBottom: '1px solid var(--color-border)',
+          background: 'var(--color-bg-surface)',
         }}
       >
         {[
-          { label: 'Total',    count: allEmpRequests.length, color: '#374151', bg: '#f9fafb' },
-          { label: 'Pending',  count: pendingCount,          color: '#92400e', bg: '#fffbeb' },
-          { label: 'Approved', count: approvedCount,         color: '#15803d', bg: '#f0fdf4' },
-          { label: 'Rejected', count: rejectedCount,         color: '#be123c', bg: '#fff1f2' },
+          { label: 'Total',    count: allEmpRequests.length, color: 'var(--color-text-secondary)', bg: 'var(--color-bg-subtle)' },
+          { label: 'Pending',  count: pendingCount,          color: '#d97706', bg: 'var(--color-status-pending-bg)' },
+          { label: 'Approved', count: approvedCount,         color: 'var(--color-status-approved)', bg: 'var(--color-status-approved-bg)' },
+          { label: 'Rejected', count: rejectedCount,         color: '#be123c', bg: 'var(--color-status-rejected-bg)' },
         ].map((s, i) => (
           <div
             key={s.label}
             style={{
               flex: 1, padding: '10px 0', textAlign: 'center',
               background: s.bg,
-              borderRight: i < 3 ? '1px solid #e5e7eb' : undefined,
+              borderRight: i < 3 ? '1px solid var(--color-border)' : undefined,
               cursor: s.label !== 'Total' ? 'pointer' : undefined,
             }}
             onClick={() => s.label !== 'Total' && setFilterStatus(s.label as typeof filterStatus)}
           >
             <div style={{ fontSize: 18, fontWeight: 800, color: s.color, lineHeight: 1.1 }}>{s.count}</div>
-            <div style={{ fontSize: 10, color: '#9ca3af', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', marginTop: 2 }}>
+            <div style={{ fontSize: 10, color: 'var(--color-text-disabled)', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', marginTop: 2 }}>
               {s.label}
             </div>
           </div>
@@ -432,13 +432,13 @@ export default function KPIChangeHistoryModal({
       <div
         style={{
           padding: '10px 20px',
-          background: '#f9fafb',
-          borderBottom: '1px solid #e5e7eb',
+          background: 'var(--color-bg-subtle)',
+          borderBottom: '1px solid var(--color-border)',
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <Text style={{ fontSize: 12, color: '#6b7280', fontWeight: 600 }}>Filter:</Text>
+          <Text style={{ fontSize: 12, color: 'var(--color-text-tertiary)', fontWeight: 600 }}>Filter:</Text>
           <Select
             value={filterStatus}
             onChange={v => setFilterStatus(v)}
@@ -452,7 +452,7 @@ export default function KPIChangeHistoryModal({
             ]}
           />
         </div>
-        <Text style={{ fontSize: 11, color: '#9ca3af' }}>
+        <Text style={{ fontSize: 11, color: 'var(--color-text-disabled)' }}>
           {empRequests.length} record{empRequests.length !== 1 ? 's' : ''}
           {filterStatus !== 'All' ? ` · filtered by "${filterStatus}"` : ''}
         </Text>
@@ -465,7 +465,7 @@ export default function KPIChangeHistoryModal({
             image={Empty.PRESENTED_IMAGE_SIMPLE}
             style={{ padding: '24px 0' }}
             description={
-              <Text style={{ color: '#9ca3af', fontSize: 13 }}>
+              <Text style={{ color: 'var(--color-text-disabled)', fontSize: 13 }}>
                 {filterStatus === 'All'
                   ? 'No KPI change history found for this employee.'
                   : `No ${filterStatus.toLowerCase()} requests found.`}
@@ -482,21 +482,21 @@ export default function KPIChangeHistoryModal({
         <div
           style={{
             padding: '10px 20px',
-            borderTop: '1px solid #e5e7eb',
+            borderTop: '1px solid var(--color-border)',
             background: 'linear-gradient(180deg, #f8fcfc 0%, #fff 100%)',
             display: 'flex', alignItems: 'center', gap: 10,
           }}
         >
-          <Text style={{ fontSize: 11, color: '#9ca3af' }}>
+          <Text style={{ fontSize: 11, color: 'var(--color-text-disabled)' }}>
             Last activity:&nbsp;
-            <strong style={{ color: '#374151' }}>
+            <strong style={{ color: 'var(--color-text-secondary)' }}>
               {new Date(allEmpRequests[0].requestedAt).toLocaleString('en-GB', {
                 day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit',
               })}
             </strong>
           </Text>
           <Divider type="vertical" />
-          <Text style={{ fontSize: 11, color: '#9ca3af' }}>
+          <Text style={{ fontSize: 11, color: 'var(--color-text-disabled)' }}>
             All times in local timezone
           </Text>
         </div>

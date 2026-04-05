@@ -113,17 +113,17 @@ const INITIAL_ROWS: SalaryGenerationRecord[] = [
 const STATUS_STYLE: Record<SalaryGenerationStatus, CSSProperties> = {
   draft: {
     color: 'var(--color-status-pending)',
-    borderColor: '#fcd34d',
+    borderColor: 'rgba(252, 211, 77, 0.45)',
     background: 'var(--color-status-pending-bg)',
   },
   processing: {
     color: 'var(--color-status-info)',
-    borderColor: '#bfdbfe',
+    borderColor: 'rgba(59, 130, 246, 0.22)',
     background: 'var(--color-status-info-bg)',
   },
   confirmed: {
     color: 'var(--color-status-approved)',
-    borderColor: '#bbf7d0',
+    borderColor: 'var(--color-status-approved-bg)',
     background: 'var(--color-status-approved-bg)',
   },
 };

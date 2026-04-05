@@ -133,18 +133,18 @@ export function MyShiftTab() {
           padding: '14px 10px',
           textAlign: 'center',
           borderRight: '1px solid #f0f0f0',
-          background: isSelected ? '#e6fffb' : isToday ? '#f0fdfa' : '#fff',
+          background: isSelected ? 'var(--color-primary-tint)' : isToday ? 'var(--color-primary-tint)' : 'var(--color-bg-surface)',
           borderBottom: isSelected || isToday ? '3px solid #0d9488' : '3px solid transparent',
           cursor: 'pointer',
         }}
         onClick={() => setSelectedDate(dayDate)}
       >
-        <div style={{ fontSize: 11, color: '#9ca3af', marginBottom: 4 }}>{dayDate.format('ddd')}</div>
-        <div style={{ fontSize: 13, fontWeight: 600, color: isToday ? '#0d9488' : '#374151', marginBottom: 6 }}>
+        <div style={{ fontSize: 11, color: 'var(--color-text-disabled)', marginBottom: 4 }}>{dayDate.format('ddd')}</div>
+        <div style={{ fontSize: 13, fontWeight: 600, color: isToday ? 'var(--color-primary)' : 'var(--color-text-secondary)', marginBottom: 6 }}>
           {dayDate.format('DD MMM')}
         </div>
-        <div style={{ fontSize: 11, color: entry.status === 'Leave' ? '#b91c1c' : '#0d9488', fontWeight: 600, marginTop: 6 }}>{entry.shiftName}</div>
-        <div style={{ fontSize: 10, color: '#6b7280' }}>{entry.timeRange}</div>
+        <div style={{ fontSize: 11, color: entry.status === 'Leave' ? '#b91c1c' : 'var(--color-primary)', fontWeight: 600, marginTop: 6 }}>{entry.shiftName}</div>
+        <div style={{ fontSize: 10, color: 'var(--color-text-tertiary)' }}>{entry.timeRange}</div>
       </div>
     );
   });
@@ -201,9 +201,9 @@ export function MyShiftTab() {
       {/* Schedule Controls */}
       <div
         style={{
-          background: '#fff',
+          background: 'var(--color-bg-surface)',
           borderRadius: 12,
-          border: '1px solid #e5e7eb',
+          border: '1px solid var(--color-border)',
           overflow: 'hidden',
           marginBottom: 24,
         }}
@@ -220,8 +220,8 @@ export function MyShiftTab() {
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <CalendarOutlined style={{ color: '#0d9488', fontSize: 16 }} />
-            <span style={{ fontSize: 14, fontWeight: 600, color: '#111827' }}>Shift Schedule</span>
+            <CalendarOutlined style={{ color: 'var(--color-primary)', fontSize: 16 }} />
+            <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-text-primary)' }}>Shift Schedule</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
             <Segmented<ViewMode>
@@ -239,7 +239,7 @@ export function MyShiftTab() {
                     setSelectedDate(prev => prev.subtract(7, 'day'));
                   }}
                 />
-                <span style={{ fontSize: 12, fontWeight: 600, color: '#334155', minWidth: 145, textAlign: 'center' }}>
+                <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--color-text-secondary)', minWidth: 145, textAlign: 'center' }}>
                   {weekRangeLabel}
                 </span>
                 <Button
@@ -280,7 +280,7 @@ export function MyShiftTab() {
                   setMonthCursor(next);
                 }}
               />
-              <div style={{ fontSize: 22, fontWeight: 700, color: '#1f2937', minWidth: 120 }}>
+              <div style={{ fontSize: 22, fontWeight: 700, color: 'var(--color-text-secondary)', minWidth: 120 }}>
                 {monthCursor.format('MMMM')}
               </div>
               <Button
@@ -293,10 +293,10 @@ export function MyShiftTab() {
               />
             </div>
 
-            <div style={{ border: '1px solid #e5e7eb', borderRadius: 8, overflow: 'hidden', background: '#fff' }}>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, minmax(120px, 1fr))', borderBottom: '1px solid #e5e7eb' }}>
+            <div style={{ border: '1px solid var(--color-border)', borderRadius: 8, overflow: 'hidden', background: 'var(--color-bg-surface)' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, minmax(120px, 1fr))', borderBottom: '1px solid var(--color-border)' }}>
                 {WEEK_HEADERS.map(label => (
-                  <div key={label} style={{ padding: '8px 10px', fontSize: 11, color: '#6b7280', fontWeight: 600, background: '#f8fafc', textAlign: 'center' }}>
+                  <div key={label} style={{ padding: '8px 10px', fontSize: 11, color: 'var(--color-text-tertiary)', fontWeight: 600, background: 'var(--color-bg-subtle)', textAlign: 'center' }}>
                     {label}
                   </div>
                 ))}
@@ -306,7 +306,7 @@ export function MyShiftTab() {
                 {monthCells.map(cell => {
                   const isSelected = cell.date.isSame(selectedDate, 'day');
                   const isToday = cell.date.isSame(dayjs(), 'day');
-                  const textColor = cell.isCurrentMonth ? '#111827' : '#cbd5e1';
+                  const textColor = cell.isCurrentMonth ? 'var(--color-text-primary)' : 'var(--color-border)';
                   return (
                     <div
                       key={cell.date.format('YYYY-MM-DD')}
@@ -316,7 +316,7 @@ export function MyShiftTab() {
                         borderRight: '1px solid #eef2f7',
                         borderBottom: '1px solid #eef2f7',
                         padding: '6px 8px',
-                        background: isSelected ? '#e6fffb' : '#fff',
+                        background: isSelected ? 'var(--color-primary-tint)' : 'var(--color-bg-surface)',
                         cursor: 'pointer',
                       }}
                     >
@@ -329,10 +329,10 @@ export function MyShiftTab() {
                           {cell.date.format('D')}
                         </span>
                       </div>
-                      <div style={{ marginTop: 4, fontSize: 10, fontWeight: 700, color: cell.entry.status === 'Leave' ? '#b91c1c' : '#0f766e', lineHeight: 1.25 }}>
+                      <div style={{ marginTop: 4, fontSize: 10, fontWeight: 700, color: cell.entry.status === 'Leave' ? '#b91c1c' : 'var(--color-primary)', lineHeight: 1.25 }}>
                         {cell.entry.shiftName}
                       </div>
-                      <div style={{ marginTop: 1, fontSize: 10, color: '#64748b', lineHeight: 1.2 }}>
+                      <div style={{ marginTop: 1, fontSize: 10, color: 'var(--color-text-tertiary)', lineHeight: 1.2 }}>
                         {cell.entry.timeRange}
                       </div>
                     </div>
@@ -347,9 +347,9 @@ export function MyShiftTab() {
       {/* All Available Shifts */}
       <div
         style={{
-          background: '#fff',
+          background: 'var(--color-bg-surface)',
           borderRadius: 12,
-          border: '1px solid #e5e7eb',
+          border: '1px solid var(--color-border)',
           overflow: 'hidden',
         }}
       >
@@ -362,30 +362,30 @@ export function MyShiftTab() {
             gap: 8,
           }}
         >
-          <SwapOutlined style={{ color: '#0d9488', fontSize: 16 }} />
-          <span style={{ fontSize: 14, fontWeight: 600, color: '#111827' }}>Available Shift Types</span>
+          <SwapOutlined style={{ color: 'var(--color-primary)', fontSize: 16 }} />
+          <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-text-primary)' }}>Available Shift Types</span>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, padding: 20 }}>
           {AVAILABLE_SHIFTS.map(s => (
             <div
               key={s.id}
               style={{
-                border: s.id === CURRENT_EMPLOYEE_SHIFT.id ? '2px solid #0d9488' : '1px solid #e5e7eb',
+                border: s.id === CURRENT_EMPLOYEE_SHIFT.id ? '2px solid #0d9488' : '1px solid var(--color-border)',
                 borderRadius: 10,
                 padding: '14px 16px',
-                background: s.id === CURRENT_EMPLOYEE_SHIFT.id ? '#f0fdfa' : '#fafafa',
+                background: s.id === CURRENT_EMPLOYEE_SHIFT.id ? 'var(--color-primary-tint)' : 'var(--color-bg-subtle)',
                 position: 'relative',
               }}
             >
               {s.id === CURRENT_EMPLOYEE_SHIFT.id && (
-                <Tag color="teal" style={{ position: 'absolute', top: 10, right: 10, fontSize: 10, background: '#0d9488', color: '#fff', border: 'none' }}>
+                <Tag color="teal" style={{ position: 'absolute', top: 10, right: 10, fontSize: 10, background: 'var(--color-primary)', color: '#fff', border: 'none' }}>
                   Active
                 </Tag>
               )}
-              <div style={{ fontSize: 13, fontWeight: 600, color: '#111827', marginBottom: 4 }}>{s.name}</div>
-              <div style={{ fontSize: 12, color: '#0d9488', fontWeight: 500 }}>{s.timeRange}</div>
+              <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--color-text-primary)', marginBottom: 4 }}>{s.name}</div>
+              <div style={{ fontSize: 12, color: 'var(--color-primary)', fontWeight: 500 }}>{s.timeRange}</div>
               {s.policy && (
-                <div style={{ fontSize: 11, color: '#9ca3af', marginTop: 6, lineHeight: 1.5 }}>{s.policy}</div>
+                <div style={{ fontSize: 11, color: 'var(--color-text-disabled)', marginTop: 6, lineHeight: 1.5 }}>{s.policy}</div>
               )}
             </div>
           ))}

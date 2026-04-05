@@ -31,7 +31,7 @@ function FieldLabel({ children, required }: { children: React.ReactNode; require
   return (
     <div style={{
       fontSize: 10, fontWeight: 700, letterSpacing: '0.07em',
-      color: '#6b7280', textTransform: 'uppercase',
+      color: 'var(--color-text-tertiary)', textTransform: 'uppercase',
       marginBottom: 6,
     }}>
       {children}
@@ -103,16 +103,16 @@ function ModeModal({ open, onClose, onSubmit, initialValues }: ModeModalProps) {
       footer={null}
       title={
         <div style={{ paddingBottom: 4 }}>
-          <div style={{ fontSize: 15, fontWeight: 700, color: '#111827', lineHeight: 1.3 }}>
+          <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--color-text-primary)', lineHeight: 1.3 }}>
             {isEdit ? 'Edit Mode of Separation' : 'Add Mode of Separation'}
           </div>
-          <div style={{ fontSize: 12, color: '#6b7280', fontWeight: 400, marginTop: 3 }}>
+          <div style={{ fontSize: 12, color: 'var(--color-text-tertiary)', fontWeight: 400, marginTop: 3 }}>
             Configure separation type, notice period and policy rules.
           </div>
         </div>
       }
       styles={{
-        header: { borderBottom: '1px solid #e5e7eb', paddingBottom: 14, marginBottom: 0 },
+        header: { borderBottom: '1px solid var(--color-border)', paddingBottom: 14, marginBottom: 0 },
         body: { padding: '20px 24px', maxHeight: '72vh', overflowY: 'auto' },
       }}
     >
@@ -154,17 +154,17 @@ function ModeModal({ open, onClose, onSubmit, initialValues }: ModeModalProps) {
         <div style={{
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           padding: '12px 14px', borderRadius: 8,
-          background: '#f8fafc', border: '1px solid #e5e7eb',
+          background: 'var(--color-bg-subtle)', border: '1px solid var(--color-border)',
           marginBottom: 18,
         }}>
           <div>
             <div style={{
               fontSize: 10, fontWeight: 700, letterSpacing: '0.07em',
-              color: '#374151', textTransform: 'uppercase',
+              color: 'var(--color-text-secondary)', textTransform: 'uppercase',
             }}>
               Available for All Employees
             </div>
-            <div style={{ fontSize: 11, color: '#9ca3af', marginTop: 2 }}>
+            <div style={{ fontSize: 11, color: 'var(--color-text-disabled)', marginTop: 2 }}>
               When enabled, this mode is available to all employee types
             </div>
           </div>
@@ -179,7 +179,7 @@ function ModeModal({ open, onClose, onSubmit, initialValues }: ModeModalProps) {
           <FieldLabel>Notice Period by Employee Type</FieldLabel>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
             <div>
-              <div style={{ fontSize: 11, color: '#9ca3af', marginBottom: 5, fontWeight: 500 }}>
+              <div style={{ fontSize: 11, color: 'var(--color-text-disabled)', marginBottom: 5, fontWeight: 500 }}>
                 Probation (Days)
               </div>
               <Form.Item name="probationDays" noStyle>
@@ -187,7 +187,7 @@ function ModeModal({ open, onClose, onSubmit, initialValues }: ModeModalProps) {
               </Form.Item>
             </div>
             <div>
-              <div style={{ fontSize: 11, color: '#9ca3af', marginBottom: 5, fontWeight: 500 }}>
+              <div style={{ fontSize: 11, color: 'var(--color-text-disabled)', marginBottom: 5, fontWeight: 500 }}>
                 Confirmed (Days)
               </div>
               <Form.Item name="confirmedDays" noStyle>
@@ -216,7 +216,7 @@ function ModeModal({ open, onClose, onSubmit, initialValues }: ModeModalProps) {
           }}>
             <div style={{
               fontSize: 10, fontWeight: 700, letterSpacing: '0.07em',
-              color: '#6b7280', textTransform: 'uppercase',
+              color: 'var(--color-text-tertiary)', textTransform: 'uppercase',
             }}>
               Policy Rules
             </div>
@@ -226,7 +226,7 @@ function ModeModal({ open, onClose, onSubmit, initialValues }: ModeModalProps) {
               style={{
                 background: 'none', border: 'none', cursor: 'pointer',
                 display: 'flex', alignItems: 'center', gap: 4,
-                fontSize: 12, fontWeight: 600, color: '#0f766e',
+                fontSize: 12, fontWeight: 600, color: 'var(--color-primary)',
                 padding: '2px 0',
               }}
             >
@@ -250,12 +250,12 @@ function ModeModal({ open, onClose, onSubmit, initialValues }: ModeModalProps) {
                     onClick={() => handleRemoveRule(i)}
                     style={{
                       background: 'none', border: 'none', cursor: 'pointer',
-                      color: '#9ca3af', padding: 4, borderRadius: 5,
+                      color: 'var(--color-text-disabled)', padding: 4, borderRadius: 5,
                       display: 'flex', alignItems: 'center', flexShrink: 0,
                       transition: 'color 0.12s',
                     }}
                     onMouseEnter={e => (e.currentTarget.style.color = '#dc2626')}
-                    onMouseLeave={e => (e.currentTarget.style.color = '#9ca3af')}
+                    onMouseLeave={e => (e.currentTarget.style.color = 'var(--color-text-disabled)')}
                   >
                     <CloseOutlined style={{ fontSize: 12 }} />
                   </button>
@@ -271,7 +271,7 @@ function ModeModal({ open, onClose, onSubmit, initialValues }: ModeModalProps) {
       <div style={{
         display: 'flex', justifyContent: 'flex-end', gap: 10,
         paddingTop: 20, marginTop: 20,
-        borderTop: '1px solid #e5e7eb',
+        borderTop: '1px solid var(--color-border)',
       }}>
         <Button onClick={handleCancel} style={{ minWidth: 80 }}>
           Cancel

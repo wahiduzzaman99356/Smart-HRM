@@ -166,14 +166,14 @@ export default function AchievementLevelPage() {
   // ══════════════════════════════════════════════════════════════════════════
   if (view === 'list') {
     return (
-      <div style={{ padding: '16px 20px', background: '#f0faf8', minHeight: '100%' }}>
+      <div style={{ padding: '16px 20px', background: 'var(--color-primary-tint)', minHeight: '100%' }}>
 
         {/* Header */}
         <div style={{ marginBottom: 16 }}>
-          <Title level={3} style={{ margin: 0, color: '#0f766e', fontWeight: 700 }}>
+          <Title level={3} style={{ margin: 0, color: 'var(--color-primary)', fontWeight: 700 }}>
             <TrophyOutlined style={{ marginRight: 8 }} />Achievement Level
           </Title>
-          <Text style={{ color: '#6b7280', fontSize: 13, fontStyle: 'italic' }}>
+          <Text style={{ color: 'var(--color-text-tertiary)', fontSize: 13, fontStyle: 'italic' }}>
             Configure score-based achievement levels and increment percentages per designation
           </Text>
         </div>
@@ -183,7 +183,7 @@ export default function AchievementLevelPage() {
           style={{
             display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center',
             justifyContent: 'space-between', padding: '12px 16px',
-            background: '#fff', borderRadius: 12, marginBottom: 16,
+            background: 'var(--color-bg-surface)', borderRadius: 12, marginBottom: 16,
             boxShadow: '0 1px 4px rgba(0,0,0,0.07)',
           }}
         >
@@ -191,7 +191,7 @@ export default function AchievementLevelPage() {
             <Input
               value={searchQ} onChange={e => setSearchQ(e.target.value)}
               placeholder="Search..."
-              prefix={<SearchOutlined style={{ color: '#9ca3af' }} />}
+              prefix={<SearchOutlined style={{ color: 'var(--color-text-disabled)' }} />}
               style={{ width: 200, borderRadius: 8 }}
             />
             <Select
@@ -228,7 +228,7 @@ export default function AchievementLevelPage() {
           </Space>
           <Button
             type="primary" icon={<PlusOutlined />} onClick={openCreate}
-            style={{ borderRadius: 10, background: '#0f766e', borderColor: '#0f766e', paddingInline: 18 }}
+            style={{ borderRadius: 10, background: 'var(--color-primary)', borderColor: 'var(--color-primary)', paddingInline: 18 }}
           >
             + Create
           </Button>
@@ -236,7 +236,7 @@ export default function AchievementLevelPage() {
 
         {/* Config cards */}
         {filteredConfigs.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '60px 0', color: '#9ca3af', fontSize: 14 }}>
+          <div style={{ textAlign: 'center', padding: '60px 0', color: 'var(--color-text-disabled)', fontSize: 14 }}>
             No achievement level configurations found.
           </div>
         ) : (
@@ -245,7 +245,7 @@ export default function AchievementLevelPage() {
               <div
                 key={cfg.id}
                 style={{
-                  background: '#fff', borderRadius: 12, padding: '16px 20px',
+                  background: 'var(--color-bg-surface)', borderRadius: 12, padding: '16px 20px',
                   boxShadow: '0 1px 4px rgba(0,0,0,0.07)',
                   border: '1.5px solid #e5e7eb',
                 }}
@@ -254,27 +254,27 @@ export default function AchievementLevelPage() {
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 14 }}>
                   <div>
                     <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 4 }}>
-                      <Tag style={{ borderRadius: 6, background: '#e6f7f4', borderColor: '#a7e3d9', color: '#0f766e', fontWeight: 700, fontSize: 12 }}>
+                      <Tag style={{ borderRadius: 6, background: 'var(--color-primary-tint)', borderColor: 'var(--color-border)', color: 'var(--color-primary)', fontWeight: 700, fontSize: 12 }}>
                         {cfg.designation}
                       </Tag>
-                      <Text style={{ fontSize: 12, color: '#6b7280' }}>
+                      <Text style={{ fontSize: 12, color: 'var(--color-text-tertiary)' }}>
                         {cfg.department} · {cfg.section}
                       </Text>
                     </div>
-                    <Text style={{ fontSize: 11, color: '#9ca3af' }}>
+                    <Text style={{ fontSize: 11, color: 'var(--color-text-disabled)' }}>
                       {cfg.levels.length} level{cfg.levels.length !== 1 ? 's' : ''} configured
                     </Text>
                   </div>
                   <Space>
                     <Button
                       size="small" icon={<EditOutlined />} onClick={() => openEdit(cfg)}
-                      style={{ borderRadius: 8, borderColor: '#a7e3d9', color: '#0f766e', background: '#f0fdf9' }}
+                      style={{ borderRadius: 8, borderColor: 'var(--color-border)', color: 'var(--color-primary)', background: 'var(--color-primary-tint)' }}
                     >
                       Edit
                     </Button>
                     <Button
                       size="small" icon={<DeleteOutlined />} onClick={() => handleDeleteConfig(cfg.id)}
-                      style={{ borderRadius: 8, borderColor: '#fecaca', color: '#ef4444', background: '#fff5f5' }}
+                      style={{ borderRadius: 8, borderColor: 'var(--color-status-rejected-bg)', color: '#ef4444', background: 'var(--color-status-rejected-bg)' }}
                     />
                   </Space>
                 </div>
@@ -303,22 +303,22 @@ export default function AchievementLevelPage() {
                         </Text>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
                           <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
-                            <Text style={{ fontSize: 10, color: '#9ca3af' }}>Score:</Text>
-                            <Tag style={{ fontSize: 10, borderRadius: 4, margin: 0, padding: '0 5px', background: '#f1f5f9', borderColor: '#e2e8f0', color: '#475569' }}>
+                            <Text style={{ fontSize: 10, color: 'var(--color-text-disabled)' }}>Score:</Text>
+                            <Tag style={{ fontSize: 10, borderRadius: 4, margin: 0, padding: '0 5px', background: 'var(--color-bg-subtle)', borderColor: 'var(--color-border)', color: 'var(--color-text-secondary)' }}>
                               {SCORE_OP_LABELS[lv.scoreOperator]}
                             </Tag>
-                            <Text style={{ fontSize: 11, fontWeight: 600, color: '#374151' }}>
+                            <Text style={{ fontSize: 11, fontWeight: 600, color: 'var(--color-text-secondary)' }}>
                               {scoreLabel(lv)}
                             </Text>
                           </div>
                           <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
-                            <Text style={{ fontSize: 10, color: '#9ca3af' }}>Increment:</Text>
+                            <Text style={{ fontSize: 10, color: 'var(--color-text-disabled)' }}>Increment:</Text>
                             <Tag
                               style={{
                                 fontSize: 10, borderRadius: 4, margin: 0, padding: '0 5px',
                                 ...(lv.incrementType === 'no_increment'
-                                  ? { background: '#fff1f2', borderColor: '#fecdd3', color: '#be123c' }
-                                  : { background: '#f0fdf4', borderColor: '#bbf7d0', color: '#15803d' }),
+                                  ? { background: 'var(--color-status-rejected-bg)', borderColor: 'var(--color-status-rejected-bg)', color: '#be123c' }
+                                  : { background: 'var(--color-status-approved-bg)', borderColor: 'var(--color-status-approved-bg)', color: 'var(--color-status-approved)' }),
                               }}
                             >
                               {INCREMENT_TYPE_LABELS[lv.incrementType]}
@@ -348,20 +348,20 @@ export default function AchievementLevelPage() {
   const GRID = '160px 150px 200px 150px 110px 36px';
 
   return (
-    <div style={{ padding: '16px 20px', background: '#f0faf8', minHeight: '100%' }}>
+    <div style={{ padding: '16px 20px', background: 'var(--color-primary-tint)', minHeight: '100%' }}>
 
       {/* Form header */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
         <Button
           icon={<ArrowLeftOutlined />}
           onClick={() => setView('list')}
-          style={{ borderRadius: 8, borderColor: '#a7e3d9', color: '#0f766e' }}
+          style={{ borderRadius: 8, borderColor: 'var(--color-border)', color: 'var(--color-primary)' }}
         />
         <div>
-          <Title level={4} style={{ margin: 0, color: '#111827' }}>
+          <Title level={4} style={{ margin: 0, color: 'var(--color-text-primary)' }}>
             {editId ? 'Edit' : 'Create'} Achievement Level
           </Title>
-          <Text style={{ color: '#6b7280', fontSize: 12 }}>
+          <Text style={{ color: 'var(--color-text-tertiary)', fontSize: 12 }}>
             Select a designation, then configure score-based levels and increment percentages
           </Text>
         </div>
@@ -370,18 +370,18 @@ export default function AchievementLevelPage() {
       {/* ── Section 1: Target Designation ─────────────────────────────────── */}
       <div
         style={{
-          background: '#fff', borderRadius: 12, padding: '20px 24px',
+          background: 'var(--color-bg-surface)', borderRadius: 12, padding: '20px 24px',
           marginBottom: 20, boxShadow: '0 1px 4px rgba(0,0,0,0.07)',
         }}
       >
-        <Text style={{ fontSize: 13, fontWeight: 700, color: '#374151', display: 'block', marginBottom: 14 }}>
+        <Text style={{ fontSize: 13, fontWeight: 700, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 14 }}>
           Target Designation
         </Text>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 14 }}>
 
           {/* Department */}
           <div>
-            <Text style={{ fontSize: 11, color: '#6b7280', display: 'block', marginBottom: 5 }}>
+            <Text style={{ fontSize: 11, color: 'var(--color-text-tertiary)', display: 'block', marginBottom: 5 }}>
               Department <span style={{ color: '#dc2626' }}>*</span>
             </Text>
             <Select
@@ -398,7 +398,7 @@ export default function AchievementLevelPage() {
 
           {/* Section */}
           <div>
-            <Text style={{ fontSize: 11, color: '#6b7280', display: 'block', marginBottom: 5 }}>
+            <Text style={{ fontSize: 11, color: 'var(--color-text-tertiary)', display: 'block', marginBottom: 5 }}>
               Section <span style={{ color: '#dc2626' }}>*</span>
             </Text>
             <Select
@@ -416,7 +416,7 @@ export default function AchievementLevelPage() {
 
           {/* Designation */}
           <div>
-            <Text style={{ fontSize: 11, color: '#6b7280', display: 'block', marginBottom: 5 }}>
+            <Text style={{ fontSize: 11, color: 'var(--color-text-tertiary)', display: 'block', marginBottom: 5 }}>
               Designation <span style={{ color: '#dc2626' }}>*</span>
             </Text>
             <Select
@@ -437,15 +437,15 @@ export default function AchievementLevelPage() {
       {/* ── Section 2: Achievement Levels ──────────────────────────────────── */}
       <div
         style={{
-          background: '#fff', borderRadius: 12, padding: '20px 24px',
+          background: 'var(--color-bg-surface)', borderRadius: 12, padding: '20px 24px',
           marginBottom: 20, boxShadow: '0 1px 4px rgba(0,0,0,0.07)',
         }}
       >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-          <Text style={{ fontSize: 13, fontWeight: 700, color: '#374151' }}>Achievement Levels</Text>
+          <Text style={{ fontSize: 13, fontWeight: 700, color: 'var(--color-text-secondary)' }}>Achievement Levels</Text>
           <Button
             size="small" icon={<PlusOutlined />} onClick={addLevel}
-            style={{ borderRadius: 8, borderColor: '#a7e3d9', color: '#0f766e', background: '#f0fdf9' }}
+            style={{ borderRadius: 8, borderColor: 'var(--color-border)', color: 'var(--color-primary)', background: 'var(--color-primary-tint)' }}
           >
             Add Level
           </Button>
@@ -456,12 +456,12 @@ export default function AchievementLevelPage() {
           style={{
             display: 'grid', gridTemplateColumns: GRID,
             gap: 8, padding: '8px 12px',
-            background: '#f9fafb', borderRadius: 8, marginBottom: 6,
-            border: '1px solid #f3f4f6',
+            background: 'var(--color-bg-subtle)', borderRadius: 8, marginBottom: 6,
+            border: '1px solid var(--color-border)',
           }}
         >
           {['LEVEL NAME', 'SCORE OPERATOR', 'SCORE', 'INCREMENT TYPE', 'INCREMENT %', ''].map(h => (
-            <Text key={h} style={{ fontSize: 10, fontWeight: 700, color: '#6b7280', letterSpacing: 0.8 }}>
+            <Text key={h} style={{ fontSize: 10, fontWeight: 700, color: 'var(--color-text-tertiary)', letterSpacing: 0.8 }}>
               {h}
             </Text>
           ))}
@@ -469,7 +469,7 @@ export default function AchievementLevelPage() {
 
         {/* Level rows */}
         {formLevels.length === 0 ? (
-          <div style={{ padding: '30px', textAlign: 'center', color: '#9ca3af', fontSize: 13 }}>
+          <div style={{ padding: '30px', textAlign: 'center', color: 'var(--color-text-disabled)', fontSize: 13 }}>
             No levels added yet. Click "Add Level" to start.
           </div>
         ) : (
@@ -479,7 +479,7 @@ export default function AchievementLevelPage() {
               style={{
                 display: 'grid', gridTemplateColumns: GRID,
                 gap: 8, padding: '9px 12px',
-                borderBottom: idx < formLevels.length - 1 ? '1px solid #f3f4f6' : 'none',
+                borderBottom: idx < formLevels.length - 1 ? '1px solid var(--color-border)' : 'none',
                 alignItems: 'center',
               }}
             >
@@ -515,7 +515,7 @@ export default function AchievementLevelPage() {
                       style={{ width: '46%', borderRadius: 6 }}
                       placeholder="From"
                     />
-                    <Text style={{ fontSize: 12, color: '#9ca3af', flexShrink: 0 }}>–</Text>
+                    <Text style={{ fontSize: 12, color: 'var(--color-text-disabled)', flexShrink: 0 }}>–</Text>
                     <InputNumber
                       size="small" min={0} max={100}
                       value={level.scoreTo}
@@ -565,8 +565,8 @@ export default function AchievementLevelPage() {
                 size="small" icon={<CloseOutlined />}
                 onClick={() => removeLevel(level.id)}
                 style={{
-                  borderRadius: 6, borderColor: '#fecaca', color: '#dc2626',
-                  background: '#fff5f5', padding: '0 6px',
+                  borderRadius: 6, borderColor: 'var(--color-status-rejected-bg)', color: '#dc2626',
+                  background: 'var(--color-status-rejected-bg)', padding: '0 6px',
                 }}
               />
             </div>
@@ -578,7 +578,7 @@ export default function AchievementLevelPage() {
       <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
         <Button
           onClick={() => setView('list')}
-          style={{ borderRadius: 10, borderColor: '#a7e3d9', color: '#0f766e', paddingInline: 20 }}
+          style={{ borderRadius: 10, borderColor: 'var(--color-border)', color: 'var(--color-primary)', paddingInline: 20 }}
         >
           Cancel
         </Button>
@@ -586,7 +586,7 @@ export default function AchievementLevelPage() {
           type="primary" icon={<SaveOutlined />}
           disabled={!canSave}
           onClick={handleSave}
-          style={{ borderRadius: 10, background: '#0f766e', borderColor: '#0f766e', paddingInline: 24 }}
+          style={{ borderRadius: 10, background: 'var(--color-primary)', borderColor: 'var(--color-primary)', paddingInline: 24 }}
         >
           Save Configuration
         </Button>

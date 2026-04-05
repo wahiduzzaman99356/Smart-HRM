@@ -29,23 +29,23 @@ export interface DeptTheme {
 }
 
 export const DEPT_THEME: Record<DeptKey, DeptTheme> = {
-  higher_management: { border: '#0f766e', avatarBg: '#0f766e', lightBg: '#f0fdfa' },
-  flight_ops:        { border: '#0d9488', avatarBg: '#0d9488', lightBg: '#f0fdfa' },
-  safety:            { border: '#dc2626', avatarBg: '#dc2626', lightBg: '#fff5f5' },
-  corp_quality:      { border: '#0f766e', avatarBg: '#0f766e', lightBg: '#f0fdfa' },
+  higher_management: { border: 'var(--color-primary)', avatarBg: 'var(--color-primary)', lightBg: 'var(--color-primary-tint)' },
+  flight_ops:        { border: 'var(--color-primary)', avatarBg: 'var(--color-primary)', lightBg: 'var(--color-primary-tint)' },
+  safety:            { border: '#dc2626', avatarBg: '#dc2626', lightBg: 'var(--color-status-rejected-bg)' },
+  corp_quality:      { border: 'var(--color-primary)', avatarBg: 'var(--color-primary)', lightBg: 'var(--color-primary-tint)' },
   cabin_service:     { border: '#db2777', avatarBg: '#db2777', lightBg: '#fdf2f8' },
-  engineering:       { border: '#0891b2', avatarBg: '#0891b2', lightBg: '#ecfeff' },
-  quality_assurance: { border: '#d97706', avatarBg: '#d97706', lightBg: '#fffbeb' },
-  revenue_accounts:  { border: '#059669', avatarBg: '#059669', lightBg: '#f0fdf4' },
-  marketing_sales:   { border: '#65a30d', avatarBg: '#65a30d', lightBg: '#f7fee7' },
-  brand_marketing:   { border: '#14b8a6', avatarBg: '#14b8a6', lightBg: '#f0fdfa' },
-  public_relations:  { border: '#0d9488', avatarBg: '#0d9488', lightBg: '#f0fdfa' },
-  human_resources:   { border: '#e11d48', avatarBg: '#e11d48', lightBg: '#fff1f2' },
-  it:                { border: '#475569', avatarBg: '#475569', lightBg: '#f8fafc' },
-  administration:    { border: '#6b7280', avatarBg: '#6b7280', lightBg: '#f9fafb' },
-  airline_security:  { border: '#92400e', avatarBg: '#92400e', lightBg: '#fef3c7' },
-  catering:          { border: '#f59e0b', avatarBg: '#f59e0b', lightBg: '#fffbeb' },
-  ground_operations: { border: '#10b981', avatarBg: '#10b981', lightBg: '#ecfdf5' },
+  engineering:       { border: '#0891b2', avatarBg: '#0891b2', lightBg: 'rgba(6, 182, 212, 0.10)' },
+  quality_assurance: { border: '#d97706', avatarBg: '#d97706', lightBg: 'var(--color-status-pending-bg)' },
+  revenue_accounts:  { border: '#059669', avatarBg: '#059669', lightBg: 'var(--color-status-approved-bg)' },
+  marketing_sales:   { border: '#65a30d', avatarBg: '#65a30d', lightBg: 'var(--color-status-approved-bg)' },
+  brand_marketing:   { border: 'var(--color-primary)', avatarBg: 'var(--color-primary)', lightBg: 'var(--color-primary-tint)' },
+  public_relations:  { border: 'var(--color-primary)', avatarBg: 'var(--color-primary)', lightBg: 'var(--color-primary-tint)' },
+  human_resources:   { border: '#e11d48', avatarBg: '#e11d48', lightBg: 'var(--color-status-rejected-bg)' },
+  it:                { border: 'var(--color-text-secondary)', avatarBg: 'var(--color-text-secondary)', lightBg: 'var(--color-bg-subtle)' },
+  administration:    { border: 'var(--color-text-tertiary)', avatarBg: 'var(--color-text-tertiary)', lightBg: 'var(--color-bg-subtle)' },
+  airline_security:  { border: '#92400e', avatarBg: '#92400e', lightBg: 'var(--color-status-pending-bg)' },
+  catering:          { border: '#f59e0b', avatarBg: '#f59e0b', lightBg: 'var(--color-status-pending-bg)' },
+  ground_operations: { border: '#10b981', avatarBg: '#10b981', lightBg: 'var(--color-status-approved-bg)' },
 };
 
 export const DEPT_LABELS: Record<DeptKey, string> = {
@@ -143,15 +143,15 @@ export const GRADE_LABELS: Record<GradeKey, string> = {
 };
 
 export const GRADE_COLORS: Record<GradeKey, { bg: string; text: string; border: string }> = {
-  G1: { bg: '#f3f4f6', text: '#6b7280', border: '#d1d5db' },
-  G2: { bg: '#fef9c3', text: '#92400e', border: '#fde68a' },
-  G3: { bg: '#ccfbf1', text: '#0f766e', border: '#99f6e4' },
-  G4: { bg: '#dcfce7', text: '#15803d', border: '#bbf7d0' },
-  G5: { bg: '#f0fdfa', text: '#0f766e', border: '#99f6e4' },
-  G6: { bg: '#fce7f3', text: '#be185d', border: '#fbcfe8' },
-  G7: { bg: '#ffedd5', text: '#c2410c', border: '#fed7aa' },
-  G8: { bg: '#cffafe', text: '#0e7490', border: '#a5f3fc' },
-  G9: { bg: '#fef3c7', text: '#b45309', border: '#fcd34d' },
+  G1: { bg: 'var(--color-bg-subtle)', text: 'var(--color-text-tertiary)', border: 'var(--color-border)' },
+  G2: { bg: 'var(--color-status-pending-bg)', text: '#92400e', border: 'rgba(253, 230, 138, 0.4)' },
+  G3: { bg: 'var(--color-status-approved-bg)', text: 'var(--color-primary)', border: 'var(--color-status-approved-bg)' },
+  G4: { bg: 'var(--color-status-approved-bg)', text: '#15803d', border: 'var(--color-status-approved-bg)' },
+  G5: { bg: 'var(--color-primary-tint)', text: 'var(--color-primary)', border: '#99f6e4' },
+  G6: { bg: 'rgba(236, 72, 153, 0.10)', text: '#be185d', border: 'rgba(236, 72, 153, 0.15)' },
+  G7: { bg: 'rgba(249, 115, 22, 0.12)', text: '#c2410c', border: 'rgba(251, 146, 60, 0.22)' },
+  G8: { bg: '#cffafe', text: '#0e7490', border: 'rgba(6, 182, 212, 0.22)' },
+  G9: { bg: 'var(--color-status-pending-bg)', text: '#b45309', border: 'rgba(252, 211, 77, 0.45)' },
 };
 
 // ─── Master Employee List ────────────────────────────────────────────

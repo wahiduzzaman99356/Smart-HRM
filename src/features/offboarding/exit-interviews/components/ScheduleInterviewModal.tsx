@@ -39,7 +39,7 @@ function FieldLabel({ children, required }: { children: React.ReactNode; require
   return (
     <div style={{
       fontSize: 10, fontWeight: 700, letterSpacing: '0.07em',
-      color: '#6b7280', textTransform: 'uppercase', marginBottom: 6,
+      color: 'var(--color-text-tertiary)', textTransform: 'uppercase', marginBottom: 6,
     }}>
       {children}
       {required && <span style={{ color: '#dc2626', marginLeft: 2 }}>*</span>}
@@ -79,16 +79,16 @@ export function ScheduleInterviewModal({ open, onClose, onSubmit }: Props) {
       footer={null}
       title={
         <div style={{ paddingBottom: 4 }}>
-          <div style={{ fontSize: 15, fontWeight: 700, color: '#111827', lineHeight: 1.3 }}>
+          <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--color-text-primary)', lineHeight: 1.3 }}>
             Schedule Exit Interview
           </div>
-          <div style={{ fontSize: 12, color: '#6b7280', fontWeight: 400, marginTop: 3 }}>
+          <div style={{ fontSize: 12, color: 'var(--color-text-tertiary)', fontWeight: 400, marginTop: 3 }}>
             Select an employee with an active separation request
           </div>
         </div>
       }
       styles={{
-        header: { borderBottom: '1px solid #e5e7eb', paddingBottom: 14, marginBottom: 0 },
+        header: { borderBottom: '1px solid var(--color-border)', paddingBottom: 14, marginBottom: 0 },
         body: { padding: '20px 24px' },
       }}
     >
@@ -152,7 +152,7 @@ export function ScheduleInterviewModal({ open, onClose, onSubmit }: Props) {
       <div style={{
         display: 'flex', justifyContent: 'flex-end', gap: 10,
         paddingTop: 20, marginTop: 20,
-        borderTop: '1px solid #e5e7eb',
+        borderTop: '1px solid var(--color-border)',
       }}>
         <Button onClick={handleCancel} style={{ minWidth: 80 }}>
           Cancel

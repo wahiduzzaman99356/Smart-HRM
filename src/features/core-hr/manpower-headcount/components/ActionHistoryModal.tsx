@@ -10,11 +10,11 @@ import type { HCRequest, ActionHistoryEntry } from '../types/headcount.types';
 
 // ─── Action type badge config ──────────────────────────────────────────────────
 const ACTION_CONFIG: Record<ActionHistoryEntry['actionType'], { color: string; bg: string }> = {
-  Created:   { color: '#0f766e', bg: '#eff6ff' },
-  Submitted: { color: '#d97706', bg: '#fffbeb' },
-  Approved:  { color: '#059669', bg: '#f0fdf4' },
-  Rejected:  { color: '#dc2626', bg: '#fef2f2' },
-  Updated:   { color: '#7c3aed', bg: '#f5f3ff' },
+  Created:   { color: 'var(--color-primary)', bg: 'var(--color-status-info-bg)' },
+  Submitted: { color: '#d97706', bg: 'var(--color-status-pending-bg)' },
+  Approved:  { color: '#059669', bg: 'var(--color-status-approved-bg)' },
+  Rejected:  { color: '#dc2626', bg: 'var(--color-status-rejected-bg)' },
+  Updated:   { color: '#7c3aed', bg: 'rgba(124, 58, 237, 0.09)' },
 };
 
 // ─── Table columns ─────────────────────────────────────────────────────────────
@@ -24,7 +24,7 @@ const columns: ColumnsType<ActionHistoryEntry> = [
     dataIndex: 'initiatedBy',
     key: 'initiatedBy',
     render: v => (
-      <span style={{ fontSize: 13, fontWeight: 600, color: '#111827' }}>{v}</span>
+      <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--color-text-primary)' }}>{v}</span>
     ),
   },
   {
@@ -32,7 +32,7 @@ const columns: ColumnsType<ActionHistoryEntry> = [
     dataIndex: 'timestamp',
     key: 'timestamp',
     render: v => (
-      <span style={{ fontSize: 12, color: '#9ca3af' }}>{v}</span>
+      <span style={{ fontSize: 12, color: 'var(--color-text-disabled)' }}>{v}</span>
     ),
   },
   {
@@ -41,7 +41,7 @@ const columns: ColumnsType<ActionHistoryEntry> = [
     key: 'actionType',
     align: 'right',
     render: (v: ActionHistoryEntry['actionType']) => {
-      const cfg = ACTION_CONFIG[v] ?? { color: '#6b7280', bg: '#f9fafb' };
+      const cfg = ACTION_CONFIG[v] ?? { color: 'var(--color-text-tertiary)', bg: 'var(--color-bg-subtle)' };
       return (
         <span style={{
           display: 'inline-block',
@@ -81,10 +81,10 @@ export function ActionHistoryModal({ request, onClose }: Props) {
       closeIcon={
         <div style={{
           width: 28, height: 28, borderRadius: '50%',
-          background: '#f3f4f6',
+          background: 'var(--color-bg-subtle)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}>
-          <CloseOutlined style={{ color: '#6b7280', fontSize: 11 }} />
+          <CloseOutlined style={{ color: 'var(--color-text-tertiary)', fontSize: 11 }} />
         </div>
       }
       styles={{
@@ -95,24 +95,24 @@ export function ActionHistoryModal({ request, onClose }: Props) {
       {/* Header */}
       <div style={{ marginBottom: 20 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 3 }}>
-          <span style={{ fontSize: 15, fontWeight: 700, color: '#111827' }}>
+          <span style={{ fontSize: 15, fontWeight: 700, color: 'var(--color-text-primary)' }}>
             Action History
           </span>
           <span style={{
-            background: '#f3f4f6',
-            border: '1px solid #e5e7eb',
+            background: 'var(--color-bg-subtle)',
+            border: '1px solid var(--color-border)',
             borderRadius: 5,
             padding: '1px 8px',
             fontSize: 11,
             fontWeight: 600,
-            color: '#6b7280',
+            color: 'var(--color-text-tertiary)',
             fontFamily: 'monospace',
             letterSpacing: '0.02em',
           }}>
             {request.id}
           </span>
         </div>
-        <div style={{ fontSize: 12, color: '#9ca3af' }}>
+        <div style={{ fontSize: 12, color: 'var(--color-text-disabled)' }}>
           {count} event{count !== 1 ? 's' : ''}
         </div>
       </div>

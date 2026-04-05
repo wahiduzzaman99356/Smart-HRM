@@ -334,14 +334,14 @@ export default function OutstationPage() {
         const emp = getEmployeeById(row.employeeId);
         return (
           <div style={{ display: 'flex', gap: 10 }}>
-            <div style={{ width: 40, height: 40, borderRadius: 20, background: '#e0f2f1', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#0d9488', marginTop: 2 }}>
+            <div style={{ width: 40, height: 40, borderRadius: 20, background: 'var(--color-primary-tint)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-primary)', marginTop: 2 }}>
               <TeamOutlined />
             </div>
             <div>
-              <div style={{ fontSize: 14, fontWeight: 700, color: '#111827' }}>{row.employeeName}</div>
-              <div style={{ fontSize: 12, color: '#64748b' }}>ID: {row.employeeId}</div>
-              <div style={{ fontSize: 12, color: '#475569' }}>{emp?.department} | {emp?.designation}</div>
-              <div style={{ fontSize: 12, color: '#0f766e', fontWeight: 600 }}>{row.shiftLabel}</div>
+              <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--color-text-primary)' }}>{row.employeeName}</div>
+              <div style={{ fontSize: 12, color: 'var(--color-text-tertiary)' }}>ID: {row.employeeId}</div>
+              <div style={{ fontSize: 12, color: 'var(--color-text-secondary)' }}>{emp?.department} | {emp?.designation}</div>
+              <div style={{ fontSize: 12, color: 'var(--color-primary)', fontWeight: 600 }}>{row.shiftLabel}</div>
             </div>
           </div>
         );
@@ -416,15 +416,15 @@ export default function OutstationPage() {
   ];
 
   return (
-    <div style={{ height: '100%', display: 'flex', flexDirection: 'column', background: '#eef4f5' }}>
-      <div style={{ background: '#fff', borderBottom: '1px solid #e5e7eb', padding: '14px 28px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
+    <div style={{ height: '100%', display: 'flex', flexDirection: 'column', background: 'var(--color-bg-subtle)' }}>
+      <div style={{ background: 'var(--color-bg-surface)', borderBottom: '1px solid var(--color-border)', padding: '14px 28px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <div style={{ width: 34, height: 34, borderRadius: 10, background: 'linear-gradient(135deg, #0d9488 0%, #1d4ed8 100%)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <RadarChartOutlined />
           </div>
           <div>
             <div style={{ fontSize: 16, fontWeight: 700, color: '#0f172a' }}>Out Station</div>
-            <div style={{ fontSize: 12, color: '#64748b' }}>Configure geo-based station and schedule per employee</div>
+            <div style={{ fontSize: 12, color: 'var(--color-text-tertiary)' }}>Configure geo-based station and schedule per employee</div>
           </div>
         </div>
 
@@ -433,9 +433,9 @@ export default function OutstationPage() {
             onClick={() => setActiveTab('my-station')}
             style={{
               borderRadius: 8,
-              borderColor: activeTab === 'my-station' ? '#0d9488' : '#d1d5db',
-              color: activeTab === 'my-station' ? '#0f766e' : '#334155',
-              background: activeTab === 'my-station' ? '#e0f2f1' : '#fff',
+              borderColor: activeTab === 'my-station' ? 'var(--color-primary)' : 'var(--color-border)',
+              color: activeTab === 'my-station' ? 'var(--color-primary)' : 'var(--color-text-secondary)',
+              background: activeTab === 'my-station' ? 'var(--color-primary-tint)' : 'var(--color-bg-surface)',
               fontWeight: 600,
             }}
           >
@@ -445,9 +445,9 @@ export default function OutstationPage() {
             onClick={() => setActiveTab('configuration')}
             style={{
               borderRadius: 8,
-              borderColor: activeTab === 'configuration' ? '#0d9488' : '#d1d5db',
-              color: activeTab === 'configuration' ? '#0f766e' : '#334155',
-              background: activeTab === 'configuration' ? '#e0f2f1' : '#fff',
+              borderColor: activeTab === 'configuration' ? 'var(--color-primary)' : 'var(--color-border)',
+              color: activeTab === 'configuration' ? 'var(--color-primary)' : 'var(--color-text-secondary)',
+              background: activeTab === 'configuration' ? 'var(--color-primary-tint)' : 'var(--color-bg-surface)',
               fontWeight: 600,
             }}
           >
@@ -468,7 +468,7 @@ export default function OutstationPage() {
             <Card style={{ borderRadius: 12 }} bodyStyle={{ padding: 16 }}>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, minmax(130px, 1fr)) auto auto', gap: 10 }}>
                 <Input
-                  prefix={<SearchOutlined style={{ color: '#94a3b8' }} />}
+                  prefix={<SearchOutlined style={{ color: 'var(--color-text-tertiary)' }} />}
                   placeholder="Search by employee name, ID"
                   value={searchText}
                   onChange={e => setSearchText(e.target.value)}
@@ -522,7 +522,7 @@ export default function OutstationPage() {
                   type="primary"
                   icon={<PlusOutlined />}
                   onClick={openCreateForm}
-                  style={{ background: '#0d9488', borderColor: '#0d9488' }}
+                  style={{ background: 'var(--color-primary)', borderColor: 'var(--color-primary)' }}
                 >
                   Create
                 </Button>
@@ -567,11 +567,11 @@ export default function OutstationPage() {
                       const emp = getEmployeeById(empId);
                       const existing = setups.find(s => s.employeeId === empId);
                       return (
-                        <div key={empId} style={{ border: '1px solid #d1d5db', borderRadius: 10, padding: 10, display: 'flex', justifyContent: 'space-between', gap: 10 }}>
+                        <div key={empId} style={{ border: '1px solid var(--color-border)', borderRadius: 10, padding: 10, display: 'flex', justifyContent: 'space-between', gap: 10 }}>
                           <div>
                             <div style={{ fontSize: 13, fontWeight: 700 }}>{emp?.name}</div>
-                            <div style={{ fontSize: 12, color: '#64748b' }}>ID: {emp?.id}</div>
-                            <div style={{ fontSize: 12, color: '#64748b' }}>{emp?.department}</div>
+                            <div style={{ fontSize: 12, color: 'var(--color-text-tertiary)' }}>ID: {emp?.id}</div>
+                            <div style={{ fontSize: 12, color: 'var(--color-text-tertiary)' }}>{emp?.department}</div>
                             {existing && (
                               <Button type="link" icon={<EyeOutlined />} style={{ padding: 0 }} onClick={() => openDetails(existing.id)}>
                                 View details
@@ -605,7 +605,7 @@ export default function OutstationPage() {
                     onChange={e => setLocationInput(e.target.value)}
                   />
                   <Button onClick={applySearchPin} icon={<SearchOutlined />}>Search</Button>
-                  <Button type="primary" onClick={addPendingPinToTable} icon={<PlusOutlined />} style={{ background: '#0d9488', borderColor: '#0d9488' }}>
+                  <Button type="primary" onClick={addPendingPinToTable} icon={<PlusOutlined />} style={{ background: 'var(--color-primary)', borderColor: 'var(--color-primary)' }}>
                     Add point
                   </Button>
                 </div>
@@ -630,7 +630,7 @@ export default function OutstationPage() {
                   }}
                   style={{ borderRadius: 12, minHeight: 250, border: '1px solid #bfdbfe', background: 'radial-gradient(circle at 15% 10%, #dbeafe 0%, #f8fafc 55%), linear-gradient(135deg, #f0fdfa 0%, #ecfeff 100%)', position: 'relative', cursor: 'pointer' }}
                 >
-                  <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', textAlign: 'center', color: '#0f766e' }}>
+                  <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', textAlign: 'center', color: 'var(--color-primary)' }}>
                     <AimOutlined style={{ fontSize: 34 }} />
                     <div>Click map to select location</div>
                     <Text type="secondary" style={{ fontSize: 12 }}>
@@ -686,7 +686,7 @@ export default function OutstationPage() {
                   ]}
                 />
 
-                <div style={{ borderTop: '1px solid #e5e7eb', paddingTop: 12 }}>
+                <div style={{ borderTop: '1px solid var(--color-border)', paddingTop: 12 }}>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
                     <div>
                       <Title level={5} style={{ margin: 0 }}>Select Date</Title>
@@ -713,7 +713,7 @@ export default function OutstationPage() {
                   </div>
 
                   {dateMode === 'specific' && (
-                    <Card style={{ borderRadius: 10, background: '#f8fafc', marginTop: 10 }}>
+                    <Card style={{ borderRadius: 10, background: 'var(--color-bg-subtle)', marginTop: 10 }}>
                       <Calendar
                         fullscreen={false}
                         value={specificDates[0] ? dayjs(specificDates[0]) : dayjs()}
@@ -731,8 +731,8 @@ export default function OutstationPage() {
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                background: selected ? '#0d9488' : 'transparent',
-                                color: selected ? '#fff' : '#334155',
+                                background: selected ? 'var(--color-primary)' : 'transparent',
+                                color: selected ? '#fff' : 'var(--color-text-secondary)',
                                 fontWeight: selected ? 700 : 500,
                               }}
                             >
@@ -748,7 +748,7 @@ export default function OutstationPage() {
 
                 <div style={{ display: 'flex', justifyContent: 'center', gap: 10, paddingTop: 8 }}>
                   <Button onClick={resetCreateForm}>Reset</Button>
-                  <Button type="primary" onClick={handleCreateApply} style={{ background: '#0d9488', borderColor: '#0d9488' }}>
+                  <Button type="primary" onClick={handleCreateApply} style={{ background: 'var(--color-primary)', borderColor: 'var(--color-primary)' }}>
                     Apply
                   </Button>
                 </div>
@@ -763,7 +763,7 @@ export default function OutstationPage() {
             <Button
               type="link"
               icon={<ArrowLeftOutlined />}
-              style={{ padding: 0, marginBottom: 16, color: '#0d9488', fontWeight: 500, fontSize: 13 }}
+              style={{ padding: 0, marginBottom: 16, color: 'var(--color-primary)', fontWeight: 500, fontSize: 13 }}
               onClick={() => { setConfigView('list'); setDetailsSetupId(null); }}
             >
               Back to list
@@ -771,23 +771,23 @@ export default function OutstationPage() {
 
             {/* ── Employee Header Card ── */}
             <Card
-              style={{ borderRadius: 12, marginBottom: 16, border: '1px solid #e5e7eb' }}
+              style={{ borderRadius: 12, marginBottom: 16, border: '1px solid var(--color-border)' }}
               bodyStyle={{ padding: '16px 22px' }}
             >
               <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
-                <div style={{ width: 52, height: 52, borderRadius: 26, background: 'linear-gradient(135deg, #e0f2f1 0%, #ccfbf1 100%)', color: '#0d9488', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, flexShrink: 0, border: '2px solid #99f6e4' }}>
+                <div style={{ width: 52, height: 52, borderRadius: 26, background: 'linear-gradient(135deg, #e0f2f1 0%, #ccfbf1 100%)', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, flexShrink: 0, border: '2px solid #99f6e4' }}>
                   <TeamOutlined />
                 </div>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: 17, fontWeight: 700, color: '#0f172a', lineHeight: 1.2 }}>{detailsSetup.employeeName}</div>
-                  <div style={{ fontSize: 12, color: '#64748b', marginTop: 3 }}>ID: {detailsSetup.employeeId}</div>
-                  <div style={{ fontSize: 12, color: '#0f766e', fontWeight: 600, marginTop: 2 }}>{detailsSetup.shiftLabel}</div>
+                  <div style={{ fontSize: 12, color: 'var(--color-text-tertiary)', marginTop: 3 }}>ID: {detailsSetup.employeeId}</div>
+                  <div style={{ fontSize: 12, color: 'var(--color-primary)', fontWeight: 600, marginTop: 2 }}>{detailsSetup.shiftLabel}</div>
                 </div>
                 <span style={{
                   display: 'inline-block', padding: '4px 14px', borderRadius: 20, fontSize: 12, fontWeight: 600,
-                  background: detailsSetup.status === 'Active' ? '#d1fae5' : '#f1f5f9',
-                  color:      detailsSetup.status === 'Active' ? '#065f46' : '#475569',
-                  border:    `1px solid ${detailsSetup.status === 'Active' ? '#6ee7b7' : '#cbd5e1'}`,
+                  background: detailsSetup.status === 'Active' ? 'var(--color-status-approved-bg)' : 'var(--color-bg-subtle)',
+                  color:      detailsSetup.status === 'Active' ? 'var(--color-primary-dark)' : 'var(--color-text-secondary)',
+                  border:    `1px solid ${detailsSetup.status === 'Active' ? 'var(--color-status-approved-bg)' : 'var(--color-border)'}`,
                 }}>
                   {detailsSetup.status}
                 </span>
@@ -796,19 +796,19 @@ export default function OutstationPage() {
 
             {/* ── Location Table ── */}
             <Card
-              style={{ borderRadius: 12, border: '1px solid #e5e7eb', marginBottom: 20 }}
+              style={{ borderRadius: 12, border: '1px solid var(--color-border)', marginBottom: 20 }}
               bodyStyle={{ padding: 0 }}
             >
               {/* Header row */}
               <div style={{
                 display: 'grid',
                 gridTemplateColumns: '190px 1fr 340px 52px',
-                background: '#f8fafc',
+                background: 'var(--color-bg-subtle)',
                 borderBottom: '1.5px solid #e2e8f0',
                 borderRadius: '12px 12px 0 0',
               }}>
                 {['Purpose', 'Location', 'Radius*', ''].map((h, i) => (
-                  <div key={i} style={{ padding: '11px 16px', fontSize: 13, fontWeight: 700, color: '#374151' }}>{h}</div>
+                  <div key={i} style={{ padding: '11px 16px', fontSize: 13, fontWeight: 700, color: 'var(--color-text-secondary)' }}>{h}</div>
                 ))}
               </div>
 
@@ -823,7 +823,7 @@ export default function OutstationPage() {
                     style={{
                       display: 'grid',
                       gridTemplateColumns: '190px 1fr 340px 52px',
-                      borderBottom: idx < detailsSetup.locations.length - 1 ? '1px solid #e5e7eb' : 'none',
+                      borderBottom: idx < detailsSetup.locations.length - 1 ? '1px solid var(--color-border)' : 'none',
                       alignItems: 'center',
                     }}
                   >
@@ -837,7 +837,7 @@ export default function OutstationPage() {
                         fontWeight: 600,
                         background: isWfh ? '#fff7d6' : '#e8f5e9',
                         color:      isWfh ? '#92400e' : '#1b5e20',
-                        border:    `1.5px solid ${isWfh ? '#fcd34d' : '#86c98a'}`,
+                        border:    `1.5px solid ${isWfh ? 'rgba(252, 211, 77, 0.45)' : '#86c98a'}`,
                         whiteSpace: 'nowrap',
                       }}>
                         {purposeLabel}
@@ -849,10 +849,10 @@ export default function OutstationPage() {
                       <Input
                         value={loc.query}
                         readOnly
-                        style={{ marginBottom: 6, borderRadius: 8, background: '#f9fafb' }}
+                        style={{ marginBottom: 6, borderRadius: 8, background: 'var(--color-bg-subtle)' }}
                       />
-                      <div style={{ fontSize: 12, color: '#64748b', display: 'flex', alignItems: 'center', gap: 4 }}>
-                        <EnvironmentOutlined style={{ color: '#0d9488', fontSize: 11 }} />
+                      <div style={{ fontSize: 12, color: 'var(--color-text-tertiary)', display: 'flex', alignItems: 'center', gap: 4 }}>
+                        <EnvironmentOutlined style={{ color: 'var(--color-primary)', fontSize: 11 }} />
                         {loc.lat.toFixed(5)}, {loc.lng.toFixed(5)}
                       </div>
                     </div>
@@ -889,7 +889,7 @@ export default function OutstationPage() {
               })}
 
               {detailsSetup.locations.length === 0 && (
-                <div style={{ padding: '40px 0', textAlign: 'center', color: '#9ca3af', fontSize: 13 }}>
+                <div style={{ padding: '40px 0', textAlign: 'center', color: 'var(--color-text-disabled)', fontSize: 13 }}>
                   No locations configured.
                 </div>
               )}
@@ -906,7 +906,7 @@ export default function OutstationPage() {
               <Button
                 type="primary"
                 onClick={handleUpdateDetails}
-                style={{ background: '#0d9488', borderColor: '#0d9488', borderRadius: 8, minWidth: 100 }}
+                style={{ background: 'var(--color-primary)', borderColor: 'var(--color-primary)', borderRadius: 8, minWidth: 100 }}
               >
                 Update
               </Button>

@@ -23,7 +23,7 @@ interface StageType {
 }
 
 const DEFAULT_STAGES: StageType[] = [
-  { id: 'stage-1', name: 'Initial Screening', dot: '#0f766e', border: '#0f766e' },
+  { id: 'stage-1', name: 'Initial Screening', dot: 'var(--color-primary)', border: 'var(--color-primary)' },
   { id: 'stage-2', name: 'Offer Accepted',    dot: '#059669', border: '#059669' },
   { id: 'stage-3', name: 'Rejected',          dot: '#dc2626', border: '#dc2626' },
 ];
@@ -42,7 +42,7 @@ function StageCard({
     <div style={{
       width: 220,
       flexShrink: 0,
-      background: '#ffffff',
+      background: 'var(--color-bg-surface)',
       border: `1.5px solid ${stage.border}`,
       borderRadius: 10,
       padding: '14px 16px',
@@ -52,17 +52,17 @@ function StageCard({
     }}>
       {/* Header row */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-        <HolderOutlined style={{ color: '#d1d5db', fontSize: 14, cursor: 'grab' }} />
+        <HolderOutlined style={{ color: 'var(--color-text-disabled)', fontSize: 14, cursor: 'grab' }} />
         <span style={{ width: 8, height: 8, borderRadius: '50%', background: stage.dot, flexShrink: 0 }} />
-        <span style={{ fontWeight: 700, fontSize: 13, color: '#111827', flex: 1 }}>{stage.name}</span>
+        <span style={{ fontWeight: 700, fontSize: 13, color: 'var(--color-text-primary)', flex: 1 }}>{stage.name}</span>
       </div>
 
       {/* No modules */}
-      <div style={{ fontSize: 12, color: '#9ca3af' }}>No modules added</div>
+      <div style={{ fontSize: 12, color: 'var(--color-text-disabled)' }}>No modules added</div>
 
       {/* Candidates */}
       {isFirst && (
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, fontWeight: 700, color: '#6b7280', letterSpacing: '0.05em' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, fontWeight: 700, color: 'var(--color-text-tertiary)', letterSpacing: '0.05em' }}>
           <TeamOutlined style={{ fontSize: 12 }} />
           {candidates} CANDIDATES
         </div>
@@ -72,7 +72,7 @@ function StageCard({
       <button style={{
         background: 'none', border: 'none', cursor: 'pointer',
         display: 'flex', alignItems: 'center', gap: 5,
-        fontSize: 12, fontWeight: 600, color: '#0f766e',
+        fontSize: 12, fontWeight: 600, color: 'var(--color-primary)',
         padding: 0, fontFamily: 'inherit',
       }}>
         <PlusOutlined style={{ fontSize: 11 }} /> Add Modules
@@ -122,18 +122,18 @@ export default function PipelineDetailPage() {
   function handleAddStage() {
     if (!newStageName.trim()) return;
     const id = `stage-${Date.now()}`;
-    setStages(prev => [...prev, { id, name: newStageName.trim(), dot: '#0f766e', border: '#0f766e' }]);
+    setStages(prev => [...prev, { id, name: newStageName.trim(), dot: 'var(--color-primary)', border: 'var(--color-primary)' }]);
     setNewStageName('');
     setAddingStage(false);
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: '#f8fafc' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: 'var(--color-bg-subtle)' }}>
 
       {/* ── Top header bar ─────────────────────────────────────────────────── */}
       <div style={{
-        background: '#ffffff',
-        borderBottom: '1px solid #e2e8f0',
+        background: 'var(--color-bg-surface)',
+        borderBottom: '1px solid var(--color-border)',
         padding: '10px 20px',
         display: 'flex',
         alignItems: 'center',
@@ -146,13 +146,13 @@ export default function PipelineDetailPage() {
             type="text"
             icon={<ArrowLeftOutlined />}
             onClick={() => navigate(-1)}
-            style={{ color: '#6b7280', padding: '0 6px', height: 28, flexShrink: 0 }}
+            style={{ color: 'var(--color-text-tertiary)', padding: '0 6px', height: 28, flexShrink: 0 }}
           />
           <div style={{ minWidth: 0 }}>
-            <div style={{ fontWeight: 800, fontSize: 16, color: '#111827', lineHeight: 1.2 }}>
+            <div style={{ fontWeight: 800, fontSize: 16, color: 'var(--color-text-primary)', lineHeight: 1.2 }}>
               {pipelineName}
             </div>
-            <div style={{ fontSize: 12, color: '#6b7280', marginTop: 1 }}>
+            <div style={{ fontSize: 12, color: 'var(--color-text-tertiary)', marginTop: 1 }}>
               {position} · {stages.length} stages · {candidates} candidates
             </div>
           </div>
@@ -161,7 +161,7 @@ export default function PipelineDetailPage() {
         {/* Action buttons */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
           {/* List / Pipeline toggle */}
-          <div style={{ display: 'flex', border: '1px solid #e2e8f0', borderRadius: 8, overflow: 'hidden' }}>
+          <div style={{ display: 'flex', border: '1px solid var(--color-border)', borderRadius: 8, overflow: 'hidden' }}>
             <button
               onClick={() => navigate(`/recruitment/pipelines/${id}/candidates`, {
                 state: { pipelineName, position, candidates },
@@ -169,7 +169,7 @@ export default function PipelineDetailPage() {
               style={{
                 display: 'inline-flex', alignItems: 'center', gap: 5,
                 padding: '5px 12px', border: 'none', cursor: 'pointer',
-                background: '#ffffff', color: '#6b7280',
+                background: 'var(--color-bg-surface)', color: 'var(--color-text-tertiary)',
                 fontSize: 12, fontWeight: 600, fontFamily: 'inherit',
                 transition: 'background 0.15s, color 0.15s',
               }}
@@ -181,7 +181,7 @@ export default function PipelineDetailPage() {
                 display: 'inline-flex', alignItems: 'center', gap: 5,
                 padding: '5px 12px', border: 'none', cursor: 'default',
                 background: 'linear-gradient(135deg, #0f766e 0%, #0d9488 100%)',
-                color: '#ffffff',
+                color: 'var(--color-bg-surface)',
                 fontSize: 12, fontWeight: 600, fontFamily: 'inherit',
               }}
             >
@@ -194,7 +194,7 @@ export default function PipelineDetailPage() {
             <button style={{
               display: 'inline-flex', alignItems: 'center', gap: 5,
               padding: '5px 12px', border: '1px solid #fde68a',
-              borderRadius: 8, background: '#fffbeb',
+              borderRadius: 8, background: 'var(--color-status-pending-bg)',
               color: '#d97706', fontSize: 12, fontWeight: 600,
               cursor: 'pointer', fontFamily: 'inherit',
             }}>
@@ -211,8 +211,8 @@ export default function PipelineDetailPage() {
 
       {/* ── Stats bar ──────────────────────────────────────────────────────── */}
       <div style={{
-        background: '#ffffff',
-        borderBottom: '1px solid #e2e8f0',
+        background: 'var(--color-bg-surface)',
+        borderBottom: '1px solid var(--color-border)',
         padding: '8px 20px',
         display: 'flex',
         alignItems: 'center',
@@ -221,9 +221,9 @@ export default function PipelineDetailPage() {
         flexShrink: 0,
       }}>
         <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-          <TeamOutlined style={{ color: '#9ca3af' }} />
-          <span style={{ fontWeight: 700, color: '#111827' }}>{stats.total}</span>
-          <span style={{ color: '#6b7280' }}>Total</span>
+          <TeamOutlined style={{ color: 'var(--color-text-disabled)' }} />
+          <span style={{ fontWeight: 700, color: 'var(--color-text-primary)' }}>{stats.total}</span>
+          <span style={{ color: 'var(--color-text-tertiary)' }}>Total</span>
         </span>
         <StatPill label="Active"    value={stats.active}   color="#0f766e" />
         <StatPill label="On Hold"   value={stats.onHold}   color="#d97706" />
@@ -252,18 +252,18 @@ export default function PipelineDetailPage() {
                 style={{
                   width: 28, height: 28, margin: '0 6px',
                   border: '1.5px dashed #cbd5e1', borderRadius: '50%',
-                  background: '#ffffff', cursor: 'pointer',
+                  background: 'var(--color-bg-surface)', cursor: 'pointer',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  color: '#9ca3af', fontSize: 14, flexShrink: 0,
+                  color: 'var(--color-text-disabled)', fontSize: 14, flexShrink: 0,
                   transition: 'border-color 0.15s, color 0.15s',
                 }}
                 onMouseEnter={e => {
-                  (e.currentTarget as HTMLElement).style.borderColor = '#0f766e';
-                  (e.currentTarget as HTMLElement).style.color = '#0f766e';
+                  (e.currentTarget as HTMLElement).style.borderColor = 'var(--color-primary)';
+                  (e.currentTarget as HTMLElement).style.color = 'var(--color-primary)';
                 }}
                 onMouseLeave={e => {
-                  (e.currentTarget as HTMLElement).style.borderColor = '#cbd5e1';
-                  (e.currentTarget as HTMLElement).style.color = '#9ca3af';
+                  (e.currentTarget as HTMLElement).style.borderColor = 'var(--color-border)';
+                  (e.currentTarget as HTMLElement).style.color = 'var(--color-text-disabled)';
                 }}
               >
                 <PlusOutlined style={{ fontSize: 12 }} />
@@ -276,7 +276,7 @@ export default function PipelineDetailPage() {
         {addingStage && (
           <div style={{
             width: 200, flexShrink: 0,
-            background: '#ffffff', border: '1.5px dashed #0f766e',
+            background: 'var(--color-bg-surface)', border: '1.5px dashed #0f766e',
             borderRadius: 10, padding: '12px 14px',
             display: 'flex', flexDirection: 'column', gap: 8,
           }}>
@@ -304,7 +304,7 @@ function StatPill({ label, value, color }: { label: string; value: number; color
   return (
     <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}>
       <span style={{ fontWeight: 700, color }}>{value}</span>
-      <span style={{ color: '#6b7280' }}>{label}</span>
+      <span style={{ color: 'var(--color-text-tertiary)' }}>{label}</span>
     </span>
   );
 }

@@ -68,7 +68,7 @@ function FieldLabel({ children, required }: { children: React.ReactNode; require
   return (
     <div style={{
       fontSize: 10, fontWeight: 700, letterSpacing: '0.07em',
-      color: '#6b7280', textTransform: 'uppercase', marginBottom: 6,
+      color: 'var(--color-text-tertiary)', textTransform: 'uppercase', marginBottom: 6,
     }}>
       {children}
       {required && <span style={{ color: '#dc2626', marginLeft: 2 }}>*</span>}
@@ -98,8 +98,8 @@ function TypeTag({
         fontWeight: selected ? 600 : 500,
         cursor: 'pointer',
         border: selected ? '1.5px solid #0f766e' : '1.5px solid #e2e8f0',
-        background: selected ? '#f0fdfa' : '#ffffff',
-        color: selected ? '#0f766e' : '#374151',
+        background: selected ? 'var(--color-primary-tint)' : 'var(--color-bg-surface)',
+        color: selected ? 'var(--color-primary)' : 'var(--color-text-secondary)',
         transition: 'all 0.12s',
         lineHeight: 1.4,
       }}
@@ -191,16 +191,16 @@ function DeptModal({ open, onClose, onSubmit, initialValues }: ClearanceDeptModa
       footer={null}
       title={
         <div style={{ paddingBottom: 4 }}>
-          <div style={{ fontSize: 15, fontWeight: 700, color: '#111827', lineHeight: 1.3 }}>
+          <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--color-text-primary)', lineHeight: 1.3 }}>
             {isEdit ? 'Edit Clearance Department' : 'Add Clearance Department'}
           </div>
-          <div style={{ fontSize: 12, color: '#6b7280', fontWeight: 400, marginTop: 3 }}>
+          <div style={{ fontSize: 12, color: 'var(--color-text-tertiary)', fontWeight: 400, marginTop: 3 }}>
             Configure the department clearance requirements for handover.
           </div>
         </div>
       }
       styles={{
-        header: { borderBottom: '1px solid #e5e7eb', paddingBottom: 14, marginBottom: 0 },
+        header: { borderBottom: '1px solid var(--color-border)', paddingBottom: 14, marginBottom: 0 },
         body: { padding: '20px 24px', maxHeight: '72vh', overflowY: 'auto' },
       }}
     >
@@ -301,7 +301,7 @@ function DeptModal({ open, onClose, onSubmit, initialValues }: ClearanceDeptModa
             padding: '12px 14px',
             border: typeError ? '1.5px solid #fca5a5' : '1.5px solid #e5e7eb',
             borderRadius: 8,
-            background: '#fafafa',
+            background: 'var(--color-bg-subtle)',
             marginBottom: 10,
           }}>
             {allTypes.map(type => (
@@ -340,7 +340,7 @@ function DeptModal({ open, onClose, onSubmit, initialValues }: ClearanceDeptModa
       <div style={{
         display: 'flex', justifyContent: 'flex-end', gap: 10,
         paddingTop: 20, marginTop: 20,
-        borderTop: '1px solid #e5e7eb',
+        borderTop: '1px solid var(--color-border)',
       }}>
         <Button onClick={handleCancel} style={{ minWidth: 80 }}>
           Cancel

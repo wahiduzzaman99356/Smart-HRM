@@ -49,14 +49,14 @@ export function PFMyRequestListView({ requests, onCreateNew, onView, onCancel }:
       dataIndex: 'initiateDate',
       key: 'initiateDate',
       width: 140,
-      render: v => <span style={{ fontSize: 13, color: '#374151' }}>{v}</span>,
+      render: v => <span style={{ fontSize: 13, color: 'var(--color-text-secondary)' }}>{v}</span>,
     },
     {
       title: 'Loan Amount',
       dataIndex: 'loanAmount',
       key: 'loanAmount',
       width: 150,
-      render: v => <span style={{ fontSize: 13, color: '#111827', fontWeight: 500 }}>{v.toLocaleString()} BDT</span>,
+      render: v => <span style={{ fontSize: 13, color: 'var(--color-text-primary)', fontWeight: 500 }}>{v.toLocaleString()} BDT</span>,
     },
     {
       title: 'Status',
@@ -104,7 +104,7 @@ export function PFMyRequestListView({ requests, onCreateNew, onView, onCancel }:
     <div className="page-shell">
       {/* Page Header */}
       <div className="page-header-row">
-        <h1 style={{ fontSize: 16, fontWeight: 700, color: '#111827', margin: 0 }}>Provident Fund</h1>
+        <h1 style={{ fontSize: 16, fontWeight: 700, color: 'var(--color-text-primary)', margin: 0 }}>Provident Fund</h1>
         <Button type="primary" icon={<PlusOutlined />} onClick={onCreateNew}>
           Loan Request
         </Button>
@@ -113,25 +113,25 @@ export function PFMyRequestListView({ requests, onCreateNew, onView, onCancel }:
       {/* Balance Card */}
       <div className="card-surface" style={{ display: 'flex', alignItems: 'center', gap: 32, padding: '20px 28px', marginBottom: 20 }}>
         <div>
-          <div style={{ fontSize: 12, color: '#6b7280', marginBottom: 4 }}>Current Balance</div>
-          <div style={{ fontSize: 36, fontWeight: 700, color: '#111827', lineHeight: 1 }}>
+          <div style={{ fontSize: 12, color: 'var(--color-text-tertiary)', marginBottom: 4 }}>Current Balance</div>
+          <div style={{ fontSize: 36, fontWeight: 700, color: 'var(--color-text-primary)', lineHeight: 1 }}>
             {bal.currentBalance.toLocaleString()}
-            <span style={{ fontSize: 14, fontWeight: 500, color: '#6b7280', marginLeft: 4 }}>BDT</span>
+            <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-text-tertiary)', marginLeft: 4 }}>BDT</span>
           </div>
         </div>
         <div style={{ border: '1.5px solid #d1d5db', borderRadius: 8, padding: '10px 18px', minWidth: 260 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 6, paddingBottom: 6, borderBottom: '1px solid #e5e7eb' }}>
-            <span style={{ fontSize: 12, color: '#6b7280' }}>Employee Contribution</span>
-            <span style={{ fontSize: 22, fontWeight: 700, color: '#111827' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 6, paddingBottom: 6, borderBottom: '1px solid var(--color-border)' }}>
+            <span style={{ fontSize: 12, color: 'var(--color-text-tertiary)' }}>Employee Contribution</span>
+            <span style={{ fontSize: 22, fontWeight: 700, color: 'var(--color-text-primary)' }}>
               {bal.employeeContribution.toLocaleString()}
-              <span style={{ fontSize: 11, color: '#6b7280', marginLeft: 3 }}>BDT</span>
+              <span style={{ fontSize: 11, color: 'var(--color-text-tertiary)', marginLeft: 3 }}>BDT</span>
             </span>
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-            <span style={{ fontSize: 12, color: '#6b7280' }}>Employer Contribution</span>
-            <span style={{ fontSize: 22, fontWeight: 700, color: '#111827' }}>
+            <span style={{ fontSize: 12, color: 'var(--color-text-tertiary)' }}>Employer Contribution</span>
+            <span style={{ fontSize: 22, fontWeight: 700, color: 'var(--color-text-primary)' }}>
               {bal.employerContribution.toLocaleString()}
-              <span style={{ fontSize: 11, color: '#6b7280', marginLeft: 3 }}>BDT</span>
+              <span style={{ fontSize: 11, color: 'var(--color-text-tertiary)', marginLeft: 3 }}>BDT</span>
             </span>
           </div>
         </div>
@@ -156,7 +156,7 @@ export function PFMyRequestListView({ requests, onCreateNew, onView, onCancel }:
           <Button type="primary" onClick={handleSearch}>Search</Button>
           <Button onClick={handleReset}>Reset</Button>
           <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ fontSize: 12, color: '#6b7280' }}>Sort by</span>
+            <span style={{ fontSize: 12, color: 'var(--color-text-tertiary)' }}>Sort by</span>
             <Select value={sortBy} onChange={setSortBy} style={{ width: 150 }} options={SORT_OPTIONS} />
           </div>
         </div>
@@ -169,7 +169,7 @@ export function PFMyRequestListView({ requests, onCreateNew, onView, onCancel }:
           dataSource={filtered}
           columns={columns}
           pagination={{ pageSize: 10, showTotal: t => `Total ${t} records`, size: 'small' }}
-          locale={{ emptyText: <div style={{ padding: '40px 0', color: '#9ca3af', fontSize: 13 }}>No loan requests found</div> }}
+          locale={{ emptyText: <div style={{ padding: '40px 0', color: 'var(--color-text-disabled)', fontSize: 13 }}>No loan requests found</div> }}
           size="middle"
         />
       </div>

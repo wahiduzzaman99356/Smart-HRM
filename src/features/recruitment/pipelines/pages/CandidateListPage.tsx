@@ -117,23 +117,23 @@ function matchColor(score: number): string {
 }
 
 function matchTrack(score: number): string {
-  if (score >= 85) return '#d1fae5';
-  if (score >= 70) return '#fef3c7';
-  if (score >= 50) return '#ffedd5';
-  return '#fee2e2';
+  if (score >= 85) return 'var(--color-status-approved-bg)';
+  if (score >= 70) return 'var(--color-status-pending-bg)';
+  if (score >= 50) return 'rgba(249, 115, 22, 0.12)';
+  return 'var(--color-status-rejected-bg)';
 }
 
 const STAGE_STYLE: Record<string, { bg: string; color: string; border: string }> = {
-  'Initial Screening':   { bg: '#f0fdfa', color: '#0f766e', border: '#5eead4' },
-  'Culture Fit':         { bg: '#f0fdf4', color: '#15803d', border: '#86efac' },
-  'Code Assessment':     { bg: '#faf5ff', color: '#7c3aed', border: '#d8b4fe' },
-  'Technical Interview': { bg: '#fff7ed', color: '#c2410c', border: '#fdba74' },
-  'Offer Accepted':      { bg: '#f0fdf4', color: '#059669', border: '#6ee7b7' },
-  'Rejected':            { bg: '#fef2f2', color: '#dc2626', border: '#fca5a5' },
+  'Initial Screening':   { bg: 'var(--color-primary-tint)', color: 'var(--color-primary)', border: '#5eead4' },
+  'Culture Fit':         { bg: 'var(--color-status-approved-bg)', color: 'var(--color-status-approved)', border: '#86efac' },
+  'Code Assessment':     { bg: 'var(--color-status-info-bg)', color: '#7c3aed', border: '#d8b4fe' },
+  'Technical Interview': { bg: 'rgba(249, 115, 22, 0.10)', color: '#c2410c', border: '#fdba74' },
+  'Offer Accepted':      { bg: 'var(--color-status-approved-bg)', color: '#059669', border: 'var(--color-status-approved-bg)' },
+  'Rejected':            { bg: 'var(--color-status-rejected-bg)', color: '#dc2626', border: 'var(--color-status-rejected-bg)' },
 };
 
 function StageBadge({ stage }: { stage: string }) {
-  const s = STAGE_STYLE[stage] ?? { bg: '#f1f5f9', color: '#475569', border: '#cbd5e1' };
+  const s = STAGE_STYLE[stage] ?? { bg: 'var(--color-bg-subtle)', color: 'var(--color-text-secondary)', border: 'var(--color-border)' };
   return (
     <span style={{
       display: 'inline-flex', alignItems: 'center',
@@ -154,8 +154,8 @@ function StatCard({ label, value, color, accentColor, icon }: {
 }) {
   return (
     <div style={{
-      flex: 1, background: '#ffffff',
-      border: '1px solid #e2e8f0',
+      flex: 1, background: 'var(--color-bg-surface)',
+      border: '1px solid var(--color-border)',
       borderLeft: `3px solid ${accentColor}`,
       borderRadius: 10, padding: '14px 18px',
       display: 'flex', flexDirection: 'column', gap: 8,
@@ -169,7 +169,7 @@ function StatCard({ label, value, color, accentColor, icon }: {
         }}>
           {icon}
         </span>
-        <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.08em', color: '#94a3b8', textTransform: 'uppercase' }}>
+        <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.08em', color: 'var(--color-text-tertiary)', textTransform: 'uppercase' }}>
           {label}
         </span>
       </div>
@@ -261,7 +261,7 @@ export default function CandidateListPage() {
   // ─── Columns ────────────────────────────────────────────────────────────────
   const columns: ColumnsType<Candidate> = [
     {
-      title: <span style={{ fontSize: 11, color: '#9ca3af', fontWeight: 700, letterSpacing: '0.06em' }}>CANDIDATE NAME</span>,
+      title: <span style={{ fontSize: 11, color: 'var(--color-text-disabled)', fontWeight: 700, letterSpacing: '0.06em' }}>CANDIDATE NAME</span>,
       key: 'name',
       width: 230,
       render: (_, c) => (
@@ -270,16 +270,16 @@ export default function CandidateListPage() {
             width: 34, height: 34, borderRadius: '50%', flexShrink: 0,
             background: c.avatarColor,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: 11, fontWeight: 800, color: '#ffffff', letterSpacing: '0.05em',
+            fontSize: 11, fontWeight: 800, color: 'var(--color-bg-surface)', letterSpacing: '0.05em',
             boxShadow: `0 0 0 2px ${c.avatarColor}33`,
           }}>
             {c.initials}
           </div>
           <div style={{ minWidth: 0 }}>
-            <div style={{ fontWeight: 700, fontSize: 13, color: '#111827', lineHeight: 1.3, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+            <div style={{ fontWeight: 700, fontSize: 13, color: 'var(--color-text-primary)', lineHeight: 1.3, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
               {c.name}
             </div>
-            <div style={{ fontSize: 11, color: '#94a3b8', marginTop: 1 }}>
+            <div style={{ fontSize: 11, color: 'var(--color-text-tertiary)', marginTop: 1 }}>
               {c.company} · {c.degree}
             </div>
           </div>
@@ -287,7 +287,7 @@ export default function CandidateListPage() {
       ),
     },
     {
-      title: <span style={{ fontSize: 11, color: '#9ca3af', fontWeight: 700, letterSpacing: '0.06em' }}>AI MATCH ANALYSIS</span>,
+      title: <span style={{ fontSize: 11, color: 'var(--color-text-disabled)', fontWeight: 700, letterSpacing: '0.06em' }}>AI MATCH ANALYSIS</span>,
       key: 'match',
       render: (_, c) => {
         const mc    = matchColor(c.matchScore);
@@ -296,7 +296,7 @@ export default function CandidateListPage() {
           <div style={{ paddingRight: 8 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 5 }}>
               <span style={{ fontWeight: 800, fontSize: 13, color: mc }}>{c.matchScore}%</span>
-              <span style={{ fontSize: 11, fontWeight: 600, color: '#6b7280' }}>Match</span>
+              <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--color-text-tertiary)' }}>Match</span>
             </div>
             <div style={{ height: 5, borderRadius: 3, background: track, overflow: 'hidden', marginBottom: 6 }}>
               <div style={{ height: '100%', width: `${c.matchScore}%`, background: mc, borderRadius: 3 }} />
@@ -305,14 +305,14 @@ export default function CandidateListPage() {
               {c.matchedSkills.map(s => (
                 <span key={s} style={{
                   fontSize: 10, fontWeight: 600, padding: '1px 7px', borderRadius: 4,
-                  background: '#f0fdfa', color: '#0f766e', border: '1px solid #99f6e4',
+                  background: 'var(--color-primary-tint)', color: 'var(--color-primary)', border: '1px solid #99f6e4',
                 }}>
                   {s}
                 </span>
               ))}
               {c.missingSkills.length > 0 && (
                 <span style={{ fontSize: 10, fontWeight: 700, color: '#dc2626', display: 'inline-flex', alignItems: 'center', gap: 3 }}>
-                  <span style={{ color: '#fca5a5' }}>●</span>
+                  <span style={{ color: 'var(--color-status-rejected-bg)' }}>●</span>
                   Missing: {c.missingSkills.join(', ')}
                 </span>
               )}
@@ -322,47 +322,47 @@ export default function CandidateListPage() {
       },
     },
     {
-      title: <span style={{ fontSize: 11, color: '#9ca3af', fontWeight: 700, letterSpacing: '0.06em' }}>CURRENT STAGE</span>,
+      title: <span style={{ fontSize: 11, color: 'var(--color-text-disabled)', fontWeight: 700, letterSpacing: '0.06em' }}>CURRENT STAGE</span>,
       key: 'stage',
       width: 180,
       render: (_, c) => <StageBadge stage={c.currentStage} />,
     },
     {
-      title: <span style={{ fontSize: 11, color: '#9ca3af', fontWeight: 700, letterSpacing: '0.06em' }}>EXPERIENCE</span>,
+      title: <span style={{ fontSize: 11, color: 'var(--color-text-disabled)', fontWeight: 700, letterSpacing: '0.06em' }}>EXPERIENCE</span>,
       key: 'experience',
       width: 110,
       render: (_, c) => (
         <span>
-          <span style={{ fontSize: 13, fontWeight: 700, color: '#374151' }}>{c.experience}</span>
-          <span style={{ fontSize: 11, color: '#9ca3af', marginLeft: 3 }}>{c.experience === 1 ? 'yr' : 'yrs'}</span>
+          <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--color-text-secondary)' }}>{c.experience}</span>
+          <span style={{ fontSize: 11, color: 'var(--color-text-disabled)', marginLeft: 3 }}>{c.experience === 1 ? 'yr' : 'yrs'}</span>
         </span>
       ),
     },
     {
-      title: <span style={{ fontSize: 11, color: '#9ca3af', fontWeight: 700, letterSpacing: '0.06em' }}>APPLIED</span>,
+      title: <span style={{ fontSize: 11, color: 'var(--color-text-disabled)', fontWeight: 700, letterSpacing: '0.06em' }}>APPLIED</span>,
       key: 'applied',
       width: 90,
       render: (_, c) => (
-        <span style={{ fontSize: 12, color: '#94a3b8', fontWeight: 500 }}>{c.appliedAgo}</span>
+        <span style={{ fontSize: 12, color: 'var(--color-text-tertiary)', fontWeight: 500 }}>{c.appliedAgo}</span>
       ),
     },
     {
-      title: <span style={{ fontSize: 11, color: '#9ca3af', fontWeight: 700, letterSpacing: '0.06em' }}>CV</span>,
+      title: <span style={{ fontSize: 11, color: 'var(--color-text-disabled)', fontWeight: 700, letterSpacing: '0.06em' }}>CV</span>,
       key: 'cv',
       width: 56,
       render: (_, c) => c.hasCV ? (
         <Tooltip title="Download CV">
-          <FileTextOutlined style={{ fontSize: 16, color: '#9ca3af', cursor: 'pointer', transition: 'color 0.15s' }}
-            onMouseEnter={e => ((e.currentTarget as HTMLElement).style.color = '#0f766e')}
-            onMouseLeave={e => ((e.currentTarget as HTMLElement).style.color = '#9ca3af')}
+          <FileTextOutlined style={{ fontSize: 16, color: 'var(--color-text-disabled)', cursor: 'pointer', transition: 'color 0.15s' }}
+            onMouseEnter={e => ((e.currentTarget as HTMLElement).style.color = 'var(--color-primary)')}
+            onMouseLeave={e => ((e.currentTarget as HTMLElement).style.color = 'var(--color-text-disabled)')}
           />
         </Tooltip>
       ) : (
-        <span style={{ color: '#d1d5db', fontSize: 14, fontWeight: 700 }}>—</span>
+        <span style={{ color: 'var(--color-text-disabled)', fontSize: 14, fontWeight: 700 }}>—</span>
       ),
     },
     {
-      title: <span style={{ fontSize: 11, color: '#9ca3af', fontWeight: 700, letterSpacing: '0.06em' }}>ACTIONS</span>,
+      title: <span style={{ fontSize: 11, color: 'var(--color-text-disabled)', fontWeight: 700, letterSpacing: '0.06em' }}>ACTIONS</span>,
       key: 'actions',
       width: 64,
       align: 'center',
@@ -374,15 +374,15 @@ export default function CandidateListPage() {
               width: 28, height: 28, border: 'none', cursor: 'pointer',
               borderRadius: 7, background: 'transparent',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              color: '#9ca3af', transition: 'background 0.15s, color 0.15s',
+              color: 'var(--color-text-disabled)', transition: 'background 0.15s, color 0.15s',
             }}
             onMouseEnter={e => {
-              (e.currentTarget as HTMLElement).style.background = '#f1f5f9';
-              (e.currentTarget as HTMLElement).style.color = '#374151';
+              (e.currentTarget as HTMLElement).style.background = 'var(--color-bg-subtle)';
+              (e.currentTarget as HTMLElement).style.color = 'var(--color-text-secondary)';
             }}
             onMouseLeave={e => {
               (e.currentTarget as HTMLElement).style.background = 'transparent';
-              (e.currentTarget as HTMLElement).style.color = '#9ca3af';
+              (e.currentTarget as HTMLElement).style.color = 'var(--color-text-disabled)';
             }}
           >
             <MoreOutlined style={{ fontSize: 16 }} />
@@ -393,11 +393,11 @@ export default function CandidateListPage() {
   ];
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: '#f8fafc' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: 'var(--color-bg-subtle)' }}>
 
       {/* ── Top bar ──────────────────────────────────────────────────────────── */}
       <div style={{
-        background: '#ffffff', borderBottom: '1px solid #e2e8f0',
+        background: 'var(--color-bg-surface)', borderBottom: '1px solid var(--color-border)',
         padding: '0 20px', height: 52,
         display: 'flex', alignItems: 'center', gap: 14, flexShrink: 0,
       }}>
@@ -405,22 +405,22 @@ export default function CandidateListPage() {
           type="text"
           icon={<ArrowLeftOutlined />}
           onClick={() => navigate(-1)}
-          style={{ color: '#6b7280', padding: '0 6px', height: 28, flexShrink: 0 }}
+          style={{ color: 'var(--color-text-tertiary)', padding: '0 6px', height: 28, flexShrink: 0 }}
         />
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontSize: 11, color: '#94a3b8', lineHeight: 1, marginBottom: 3 }}>
+          <div style={{ fontSize: 11, color: 'var(--color-text-tertiary)', lineHeight: 1, marginBottom: 3 }}>
             <span
               onClick={() => navigate('/recruitment/job-postings')}
-              style={{ cursor: 'pointer', color: '#6b7280', transition: 'color 0.15s' }}
-              onMouseEnter={e => ((e.currentTarget as HTMLElement).style.color = '#0f766e')}
-              onMouseLeave={e => ((e.currentTarget as HTMLElement).style.color = '#6b7280')}
+              style={{ cursor: 'pointer', color: 'var(--color-text-tertiary)', transition: 'color 0.15s' }}
+              onMouseEnter={e => ((e.currentTarget as HTMLElement).style.color = 'var(--color-primary)')}
+              onMouseLeave={e => ((e.currentTarget as HTMLElement).style.color = 'var(--color-text-tertiary)')}
             >
               Jobs
             </span>
-            <span style={{ margin: '0 5px', color: '#cbd5e1' }}>›</span>
+            <span style={{ margin: '0 5px', color: 'var(--color-border)' }}>›</span>
             <span>{position}</span>
           </div>
-          <div style={{ fontWeight: 800, fontSize: 15, color: '#111827', lineHeight: 1 }}>
+          <div style={{ fontWeight: 800, fontSize: 15, color: 'var(--color-text-primary)', lineHeight: 1 }}>
             {pipelineName}
           </div>
         </div>
@@ -431,7 +431,7 @@ export default function CandidateListPage() {
               display: 'inline-flex', alignItems: 'center', gap: 5,
               padding: '5px 13px', border: 'none', cursor: 'default',
               background: 'linear-gradient(135deg, #0f766e 0%, #0d9488 100%)',
-              color: '#ffffff', fontSize: 12, fontWeight: 700, fontFamily: 'inherit',
+              color: 'var(--color-bg-surface)', fontSize: 12, fontWeight: 700, fontFamily: 'inherit',
             }}>
               <UnorderedListOutlined style={{ fontSize: 12 }} /> List
             </button>
@@ -442,17 +442,17 @@ export default function CandidateListPage() {
               style={{
                 display: 'inline-flex', alignItems: 'center', gap: 5,
                 padding: '5px 13px', border: 'none', cursor: 'pointer',
-                background: '#ffffff', color: '#6b7280',
+                background: 'var(--color-bg-surface)', color: 'var(--color-text-tertiary)',
                 fontSize: 12, fontWeight: 600, fontFamily: 'inherit',
                 borderLeft: '1.5px solid #d8e7e5', transition: 'background 0.15s, color 0.15s',
               }}
               onMouseEnter={e => {
-                (e.currentTarget as HTMLElement).style.background = '#f0fdfa';
-                (e.currentTarget as HTMLElement).style.color = '#0f766e';
+                (e.currentTarget as HTMLElement).style.background = 'var(--color-primary-tint)';
+                (e.currentTarget as HTMLElement).style.color = 'var(--color-primary)';
               }}
               onMouseLeave={e => {
-                (e.currentTarget as HTMLElement).style.background = '#ffffff';
-                (e.currentTarget as HTMLElement).style.color = '#6b7280';
+                (e.currentTarget as HTMLElement).style.background = 'var(--color-bg-surface)';
+                (e.currentTarget as HTMLElement).style.color = 'var(--color-text-tertiary)';
               }}
             >
               <AppstoreOutlined style={{ fontSize: 12 }} /> Pipeline
@@ -483,11 +483,11 @@ export default function CandidateListPage() {
 
         {/* Filter bar */}
         <div style={{
-          background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: 10,
+          background: 'var(--color-bg-surface)', border: '1px solid var(--color-border)', borderRadius: 10,
           padding: '10px 14px', display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap',
         }}>
           <Input
-            prefix={<SearchOutlined style={{ color: '#9ca3af', fontSize: 13 }} />}
+            prefix={<SearchOutlined style={{ color: 'var(--color-text-disabled)', fontSize: 13 }} />}
             placeholder="Search by name or skills..."
             value={search}
             onChange={e => setSearch(e.target.value)}
@@ -495,7 +495,7 @@ export default function CandidateListPage() {
             style={{ width: 240, borderRadius: 7 }}
             size="small"
           />
-          <div style={{ width: 1, height: 22, background: '#e2e8f0' }} />
+          <div style={{ width: 1, height: 22, background: 'var(--color-border)' }} />
           <Select
             placeholder={<span style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}><FilterOutlined style={{ fontSize: 11 }} /> All Status</span>}
             style={{ width: 140 }}
@@ -523,7 +523,7 @@ export default function CandidateListPage() {
               style={{
                 display: 'inline-flex', alignItems: 'center', gap: 4,
                 background: 'none', border: 'none', cursor: 'pointer',
-                fontSize: 11, fontWeight: 600, color: '#94a3b8',
+                fontSize: 11, fontWeight: 600, color: 'var(--color-text-tertiary)',
                 padding: '0 4px', fontFamily: 'inherit',
               }}
             >
@@ -531,7 +531,7 @@ export default function CandidateListPage() {
             </button>
           )}
           <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 7 }}>
-            <span style={{ fontSize: 11, color: '#9ca3af', fontWeight: 600, whiteSpace: 'nowrap', letterSpacing: '0.04em' }}>SORT BY</span>
+            <span style={{ fontSize: 11, color: 'var(--color-text-disabled)', fontWeight: 600, whiteSpace: 'nowrap', letterSpacing: '0.04em' }}>SORT BY</span>
             <Select
               value={sortBy}
               onChange={v => setSortBy(v)}
@@ -549,10 +549,10 @@ export default function CandidateListPage() {
         {/* Bulk action bar */}
         {selectedKeys.length > 0 && (
           <div style={{
-            background: '#f0fdfa', border: '1px solid #ccfbf1', borderRadius: 8,
+            background: 'var(--color-primary-tint)', border: '1px solid #ccfbf1', borderRadius: 8,
             padding: '8px 14px', display: 'flex', alignItems: 'center', gap: 12,
           }}>
-            <span style={{ fontSize: 12, fontWeight: 700, color: '#0f766e' }}>
+            <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--color-primary)' }}>
               {selectedKeys.length} candidate{selectedKeys.length > 1 ? 's' : ''} selected
             </span>
             <Button size="small" icon={<SwapOutlined />} style={{ fontSize: 11 }}>Move Stage</Button>
@@ -561,7 +561,7 @@ export default function CandidateListPage() {
         )}
 
         {/* Table */}
-        <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: 10 }}>
+        <div style={{ background: 'var(--color-bg-surface)', border: '1px solid var(--color-border)', borderRadius: 10 }}>
           <Table<Candidate>
             rowKey="id"
             dataSource={filtered}
@@ -579,8 +579,8 @@ export default function CandidateListPage() {
               pageSizeOptions: [10, 20, 50],
               showQuickJumper: false,
               showTotal: (total, range) => (
-                <span style={{ fontSize: 12, color: '#6b7280' }}>
-                  {range[0]}–{range[1]} of <strong style={{ color: '#374151' }}>{total}</strong> candidates
+                <span style={{ fontSize: 12, color: 'var(--color-text-tertiary)' }}>
+                  {range[0]}–{range[1]} of <strong style={{ color: 'var(--color-text-secondary)' }}>{total}</strong> candidates
                 </span>
               ),
               position: ['bottomRight'],

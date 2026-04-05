@@ -26,10 +26,10 @@ type DateRange = RangePickerProps['value'];
 
 // ─── Status badge ─────────────────────────────────────────────────────────────
 const STATUS_PROPS: Record<HCStatus, { color: string; bg: string; border: string }> = {
-  Draft:    { color: '#6b7280', bg: '#f3f4f6', border: '#d1d5db' },
-  Pending:  { color: '#d97706', bg: '#fffbeb', border: '#fcd34d' },
-  Approved: { color: '#059669', bg: '#ecfdf5', border: '#6ee7b7' },
-  Rejected: { color: '#dc2626', bg: '#fef2f2', border: '#fca5a5' },
+  Draft:    { color: 'var(--color-status-draft)',    bg: 'var(--color-status-draft-bg)',    border: 'var(--color-border)' },
+  Pending:  { color: 'var(--color-status-pending)',  bg: 'var(--color-status-pending-bg)',  border: 'var(--color-border-strong)' },
+  Approved: { color: 'var(--color-status-approved)', bg: 'var(--color-status-approved-bg)', border: 'var(--color-border-strong)' },
+  Rejected: { color: 'var(--color-status-rejected)', bg: 'var(--color-status-rejected-bg)', border: 'var(--color-border-strong)' },
 };
 
 function StatusBadge({ status }: { status: HCStatus }) {
@@ -95,52 +95,52 @@ export function HeadcountListView({ requests, onCreate, onViewRequest, onTakeAct
   // ── Columns ───────────────────────────────────────────────────────────────────
   const columns: ColumnsType<HCRequest> = [
     {
-      title: <span style={{ fontSize: 11, color: '#9ca3af', fontWeight: 600, letterSpacing: '0.04em' }}>INITIATION DETAILS</span>,
+      title: <span style={{ fontSize: 11, color: 'var(--color-text-disabled)', fontWeight: 600, letterSpacing: '0.04em' }}>INITIATION DETAILS</span>,
       key: 'details',
       render: (_, r) => (
         <div
           onClick={() => onViewRequest(r)}
           style={{ cursor: 'pointer' }}
         >
-          <div style={{ fontWeight: 700, fontSize: 13, color: '#0f766e', textDecoration: 'underline', textDecorationStyle: 'dotted' }}>{r.id}</div>
-          <div style={{ fontSize: 12, color: '#6b7280', marginTop: 2 }}>
+          <div style={{ fontWeight: 700, fontSize: 13, color: 'var(--color-primary)', textDecoration: 'underline', textDecorationStyle: 'dotted' }}>{r.id}</div>
+          <div style={{ fontSize: 12, color: 'var(--color-text-tertiary)', marginTop: 2 }}>
             HC Initiation &bull; {r.initiationDate}
           </div>
-          <div style={{ fontSize: 11, color: '#9ca3af', marginTop: 1 }}>
+          <div style={{ fontSize: 11, color: 'var(--color-text-disabled)', marginTop: 1 }}>
             Plan Year: {r.planYear.replace('FY ', '').replace(' (Jan - Dec)', ' Jan-Dec')}
           </div>
         </div>
       ),
     },
     {
-      title: <span style={{ fontSize: 11, color: '#9ca3af', fontWeight: 600, letterSpacing: '0.04em' }}>REQ. HC</span>,
+      title: <span style={{ fontSize: 11, color: 'var(--color-text-disabled)', fontWeight: 600, letterSpacing: '0.04em' }}>REQ. HC</span>,
       key: 'reqHC',
       align: 'center',
       width: 90,
       render: (_, r) => (
-        <span style={{ fontSize: 14, fontWeight: 700, color: '#374151' }}>{r.totalReqHC}</span>
+        <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--color-text-primary)' }}>{r.totalReqHC}</span>
       ),
     },
     {
-      title: <span style={{ fontSize: 11, color: '#9ca3af', fontWeight: 600, letterSpacing: '0.04em' }}>APPR. HC</span>,
+      title: <span style={{ fontSize: 11, color: 'var(--color-text-disabled)', fontWeight: 600, letterSpacing: '0.04em' }}>APPR. HC</span>,
       key: 'apprHC',
       align: 'center',
       width: 90,
       render: (_, r) => (
         r.totalApprHC !== null
-          ? <span style={{ fontSize: 14, fontWeight: 700, color: '#0f766e' }}>{r.totalApprHC}</span>
-          : <span style={{ color: '#d1d5db', fontWeight: 600 }}>--</span>
+          ? <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--color-primary)' }}>{r.totalApprHC}</span>
+          : <span style={{ color: 'var(--color-text-disabled)', fontWeight: 600 }}>--</span>
       ),
     },
     {
-      title: <span style={{ fontSize: 11, color: '#9ca3af', fontWeight: 600, letterSpacing: '0.04em' }}>REQUEST STATUS</span>,
+      title: <span style={{ fontSize: 11, color: 'var(--color-text-disabled)', fontWeight: 600, letterSpacing: '0.04em' }}>REQUEST STATUS</span>,
       key: 'status',
       align: 'center',
       width: 140,
       render: (_, r) => <StatusBadge status={r.status} />,
     },
     {
-      title: <span style={{ fontSize: 11, color: '#9ca3af', fontWeight: 600, letterSpacing: '0.04em' }}>ACTION</span>,
+      title: <span style={{ fontSize: 11, color: 'var(--color-text-disabled)', fontWeight: 600, letterSpacing: '0.04em' }}>ACTION</span>,
       key: 'actions',
       align: 'center',
       width: 48,
@@ -170,7 +170,7 @@ export function HeadcountListView({ requests, onCreate, onViewRequest, onTakeAct
             size="small"
             icon={<MoreOutlined style={{ fontSize: 18 }} />}
             style={{
-              color: '#9ca3af',
+              color: 'var(--color-text-disabled)',
               borderRadius: 6,
               width: 32,
               height: 32,

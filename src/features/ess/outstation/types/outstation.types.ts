@@ -19,10 +19,10 @@ export interface AttendanceRecord {
 }
 
 export const ATTENDANCE_STATUS_STYLE: Record<AttendanceStatus, { color: string; bg: string; border: string }> = {
-  'Present':     { color: '#065f46', bg: '#d1fae5', border: '#6ee7b7' },
-  'Late':        { color: '#92400e', bg: '#fef3c7', border: '#fcd34d' },
-  'Early Leave': { color: '#1e40af', bg: '#dbeafe', border: '#93c5fd' },
-  'Absent':      { color: '#991b1b', bg: '#fee2e2', border: '#fca5a5' },
+  'Present':     { color: 'var(--color-primary-dark)', bg: 'var(--color-status-approved-bg)', border: 'var(--color-status-approved-bg)' },
+  'Late':        { color: '#d97706', bg: 'var(--color-status-pending-bg)', border: 'rgba(252, 211, 77, 0.45)' },
+  'Early Leave': { color: '#1e40af', bg: 'var(--color-status-info-bg)', border: '#93c5fd' },
+  'Absent':      { color: '#991b1b', bg: 'var(--color-status-rejected-bg)', border: 'var(--color-status-rejected-bg)' },
 };
 
 export const INITIAL_ATTENDANCE: Record<string, AttendanceRecord[]> = {

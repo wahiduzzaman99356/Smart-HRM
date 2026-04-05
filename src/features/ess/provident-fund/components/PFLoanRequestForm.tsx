@@ -103,7 +103,7 @@ export function PFLoanRequestForm({ mode, request, onBack, onSubmit, onApprove, 
           >
             <ArrowLeftOutlined /> Back
           </button>
-          <h1 style={{ fontSize: 20, fontWeight: 700, color: '#111827', margin: 0 }}>
+          <h1 style={{ fontSize: 20, fontWeight: 700, color: 'var(--color-text-primary)', margin: 0 }}>
             Provident Fund Loan Request
           </h1>
           {(mode === 'view-only' || mode === 'view-approve') && request && (
@@ -115,28 +115,28 @@ export function PFLoanRequestForm({ mode, request, onBack, onSubmit, onApprove, 
           {/* ── Left Panel ─────────────────────────────────────────────────── */}
           <div style={{ flex: 1 }}>
             {/* Balance Card */}
-            <div style={{ background: '#fff', border: '1px solid var(--color-border)', borderRadius: 10, padding: '18px 22px', marginBottom: 20 }}>
+            <div style={{ background: 'var(--color-bg-surface)', border: '1px solid var(--color-border)', borderRadius: 10, padding: '18px 22px', marginBottom: 20 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 28 }}>
                 <div>
-                  <div style={{ fontSize: 12, color: '#6b7280', marginBottom: 2 }}>Current Balance</div>
-                  <div style={{ fontSize: 32, fontWeight: 700, color: '#111827', lineHeight: 1 }}>
+                  <div style={{ fontSize: 12, color: 'var(--color-text-tertiary)', marginBottom: 2 }}>Current Balance</div>
+                  <div style={{ fontSize: 32, fontWeight: 700, color: 'var(--color-text-primary)', lineHeight: 1 }}>
                     {bal.currentBalance.toLocaleString()}
-                    <span style={{ fontSize: 13, fontWeight: 500, color: '#6b7280', marginLeft: 4 }}>BDT</span>
+                    <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--color-text-tertiary)', marginLeft: 4 }}>BDT</span>
                   </div>
                 </div>
                 <div style={{ border: '1.5px solid #d1d5db', borderRadius: 8, padding: '8px 16px', minWidth: 240 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 4, paddingBottom: 4, borderBottom: '1px solid #e5e7eb' }}>
-                    <span style={{ fontSize: 12, color: '#6b7280' }}>Employee Contribution</span>
-                    <span style={{ fontSize: 20, fontWeight: 700, color: '#111827' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 4, paddingBottom: 4, borderBottom: '1px solid var(--color-border)' }}>
+                    <span style={{ fontSize: 12, color: 'var(--color-text-tertiary)' }}>Employee Contribution</span>
+                    <span style={{ fontSize: 20, fontWeight: 700, color: 'var(--color-text-primary)' }}>
                       {bal.employeeContribution.toLocaleString()}
-                      <span style={{ fontSize: 11, color: '#6b7280', marginLeft: 3 }}>BDT</span>
+                      <span style={{ fontSize: 11, color: 'var(--color-text-tertiary)', marginLeft: 3 }}>BDT</span>
                     </span>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-                    <span style={{ fontSize: 12, color: '#6b7280' }}>Employer Contribution</span>
-                    <span style={{ fontSize: 20, fontWeight: 700, color: '#111827' }}>
+                    <span style={{ fontSize: 12, color: 'var(--color-text-tertiary)' }}>Employer Contribution</span>
+                    <span style={{ fontSize: 20, fontWeight: 700, color: 'var(--color-text-primary)' }}>
                       {bal.employerContribution.toLocaleString()}
-                      <span style={{ fontSize: 11, color: '#6b7280', marginLeft: 3 }}>BDT</span>
+                      <span style={{ fontSize: 11, color: 'var(--color-text-tertiary)', marginLeft: 3 }}>BDT</span>
                     </span>
                   </div>
                 </div>
@@ -144,11 +144,11 @@ export function PFLoanRequestForm({ mode, request, onBack, onSubmit, onApprove, 
             </div>
 
             {/* Form Fields */}
-            <div style={{ background: '#fff', border: '1px solid var(--color-border)', borderRadius: 10, padding: '22px 24px' }}>
+            <div style={{ background: 'var(--color-bg-surface)', border: '1px solid var(--color-border)', borderRadius: 10, padding: '22px 24px' }}>
               <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap', marginBottom: 18 }}>
                 {/* Loan Amount */}
                 <div style={{ flex: '0 0 220px' }}>
-                  <label style={{ fontSize: 13, color: '#374151', fontWeight: 500, display: 'block', marginBottom: 6 }}>
+                  <label style={{ fontSize: 13, color: 'var(--color-text-secondary)', fontWeight: 500, display: 'block', marginBottom: 6 }}>
                     Loan Amount<span style={{ color: '#dc2626' }}> *</span>
                   </label>
                   <Input
@@ -157,7 +157,7 @@ export function PFLoanRequestForm({ mode, request, onBack, onSubmit, onApprove, 
                     value={loanAmount}
                     onChange={e => setLoanAmount(e.target.value)}
                     readOnly={isReadOnly}
-                    suffix={<span style={{ fontSize: 12, color: '#9ca3af' }}>BDT</span>}
+                    suffix={<span style={{ fontSize: 12, color: 'var(--color-text-disabled)' }}>BDT</span>}
                     style={{ borderRadius: 8 }}
                   />
                 </div>
@@ -168,7 +168,7 @@ export function PFLoanRequestForm({ mode, request, onBack, onSubmit, onApprove, 
                     Guarantor Employee <span style={{ color: '#dc2626' }}>*</span>
                   </label>
                   {isReadOnly ? (
-                    <div style={{ padding: '6px 12px', background: '#f9fafb', border: '1px solid #e5e7eb', borderRadius: 8, fontSize: 13, color: '#374151' }}>
+                    <div style={{ padding: '6px 12px', background: 'var(--color-bg-subtle)', border: '1px solid var(--color-border)', borderRadius: 8, fontSize: 13, color: 'var(--color-text-secondary)' }}>
                       {request?.guarantorEmployeeName}
                     </div>
                   ) : (
@@ -185,7 +185,7 @@ export function PFLoanRequestForm({ mode, request, onBack, onSubmit, onApprove, 
 
               {/* Reason */}
               <div style={{ marginBottom: 18 }}>
-                <label style={{ fontSize: 13, color: '#374151', fontWeight: 500, display: 'block', marginBottom: 6 }}>
+                <label style={{ fontSize: 13, color: 'var(--color-text-secondary)', fontWeight: 500, display: 'block', marginBottom: 6 }}>
                   Reason<span style={{ color: '#dc2626' }}> *</span>
                 </label>
                 <Input.TextArea
@@ -200,23 +200,23 @@ export function PFLoanRequestForm({ mode, request, onBack, onSubmit, onApprove, 
 
               {/* Attachment */}
               <div style={{ marginBottom: mode === 'create' ? 24 : 18 }}>
-                <label style={{ fontSize: 13, color: '#374151', fontWeight: 500, display: 'block', marginBottom: 6 }}>
-                  Attachment <span style={{ fontSize: 12, color: '#9ca3af', fontWeight: 400 }}>(Optional)</span>
+                <label style={{ fontSize: 13, color: 'var(--color-text-secondary)', fontWeight: 500, display: 'block', marginBottom: 6 }}>
+                  Attachment <span style={{ fontSize: 12, color: 'var(--color-text-disabled)', fontWeight: 400 }}>(Optional)</span>
                 </label>
                 {isReadOnly ? (
                   <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                     {request?.attachmentName ? (
                       <>
-                        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '6px 14px', border: '1px solid #e5e7eb', borderRadius: 8, background: '#f9fafb', fontSize: 13, color: '#374151' }}>
-                          <PaperClipOutlined style={{ color: '#0d9488' }} />
+                        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '6px 14px', border: '1px solid var(--color-border)', borderRadius: 8, background: 'var(--color-bg-subtle)', fontSize: 13, color: 'var(--color-text-secondary)' }}>
+                          <PaperClipOutlined style={{ color: 'var(--color-primary)' }} />
                           {request.attachmentName}
                         </div>
-                        <button style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 13, color: '#0d9488', fontWeight: 500, textDecoration: 'underline', display: 'flex', alignItems: 'center', gap: 4 }}>
+                        <button style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 13, color: 'var(--color-primary)', fontWeight: 500, textDecoration: 'underline', display: 'flex', alignItems: 'center', gap: 4 }}>
                           <EyeOutlined /> View
                         </button>
                       </>
                     ) : (
-                      <span style={{ fontSize: 13, color: '#9ca3af' }}>No attachment</span>
+                      <span style={{ fontSize: 13, color: 'var(--color-text-disabled)' }}>No attachment</span>
                     )}
                   </div>
                 ) : (
@@ -228,7 +228,7 @@ export function PFLoanRequestForm({ mode, request, onBack, onSubmit, onApprove, 
                       fileList={attachName ? [{ uid: '-1', name: attachName, status: 'done' }] : []}
                     >
                       <Button icon={<UploadOutlined />} style={{ borderRadius: 8, padding: '20px 28px', borderStyle: 'dashed', display: 'flex', alignItems: 'center', gap: 8, height: 'auto' }}>
-                        <UploadOutlined style={{ fontSize: 20, color: '#0d9488' }} />
+                        <UploadOutlined style={{ fontSize: 20, color: 'var(--color-primary)' }} />
                       </Button>
                     </Upload>
                   </div>
@@ -238,7 +238,7 @@ export function PFLoanRequestForm({ mode, request, onBack, onSubmit, onApprove, 
               {/* Approver Remarks (view-approve) */}
               {mode === 'view-approve' && (
                 <div style={{ marginBottom: 24 }}>
-                  <label style={{ fontSize: 13, color: '#374151', fontWeight: 500, display: 'block', marginBottom: 6 }}>
+                  <label style={{ fontSize: 13, color: 'var(--color-text-secondary)', fontWeight: 500, display: 'block', marginBottom: 6 }}>
                     Remarks
                   </label>
                   <Input.TextArea
@@ -253,9 +253,9 @@ export function PFLoanRequestForm({ mode, request, onBack, onSubmit, onApprove, 
 
               {/* Previous Remarks (view-only after decision) */}
               {mode === 'view-only' && request?.remarks && (
-                <div style={{ marginBottom: 18, padding: '12px 16px', background: '#f0fdfa', border: '1px solid #99f6e4', borderRadius: 8 }}>
-                  <div style={{ fontSize: 12, color: '#0f766e', fontWeight: 600, marginBottom: 4 }}>Approver Remarks</div>
-                  <div style={{ fontSize: 13, color: '#374151' }}>{request.remarks}</div>
+                <div style={{ marginBottom: 18, padding: '12px 16px', background: 'var(--color-primary-tint)', border: '1px solid #99f6e4', borderRadius: 8 }}>
+                  <div style={{ fontSize: 12, color: 'var(--color-primary)', fontWeight: 600, marginBottom: 4 }}>Approver Remarks</div>
+                  <div style={{ fontSize: 13, color: 'var(--color-text-secondary)' }}>{request.remarks}</div>
                 </div>
               )}
 
@@ -264,13 +264,13 @@ export function PFLoanRequestForm({ mode, request, onBack, onSubmit, onApprove, 
                 {mode === 'create' && (
                   <>
                     <Button onClick={handleReset} style={{ borderRadius: 8, padding: '6px 28px', height: 'auto' }}>Reset</Button>
-                    <Button type="primary" onClick={handleApply} style={{ background: '#0d9488', borderColor: '#0d9488', borderRadius: 8, padding: '6px 28px', height: 'auto' }}>Apply</Button>
+                    <Button type="primary" onClick={handleApply} style={{ background: 'var(--color-primary)', borderColor: 'var(--color-primary)', borderRadius: 8, padding: '6px 28px', height: 'auto' }}>Apply</Button>
                   </>
                 )}
                 {mode === 'view-approve' && (
                   <>
                     <Button danger onClick={handleReject} style={{ borderRadius: 8, padding: '6px 28px', height: 'auto' }}>Reject</Button>
-                    <Button type="primary" onClick={handleApprove} style={{ background: '#0d9488', borderColor: '#0d9488', borderRadius: 8, padding: '6px 28px', height: 'auto' }}>Approve</Button>
+                    <Button type="primary" onClick={handleApprove} style={{ background: 'var(--color-primary)', borderColor: 'var(--color-primary)', borderRadius: 8, padding: '6px 28px', height: 'auto' }}>Approve</Button>
                   </>
                 )}
               </div>
@@ -279,11 +279,11 @@ export function PFLoanRequestForm({ mode, request, onBack, onSubmit, onApprove, 
 
           {/* ── Right Panel: Note ───────────────────────────────────────────── */}
           <div style={{ width: 320, flexShrink: 0 }}>
-            <div style={{ background: '#fff', border: '1.5px solid #e5e7eb', borderRadius: 16, padding: '24px 22px' }}>
-              <h3 style={{ fontSize: 18, fontWeight: 700, color: '#111827', textAlign: 'center', marginBottom: 16 }}>Note</h3>
+            <div style={{ background: 'var(--color-bg-surface)', border: '1.5px solid #e5e7eb', borderRadius: 16, padding: '24px 22px' }}>
+              <h3 style={{ fontSize: 18, fontWeight: 700, color: 'var(--color-text-primary)', textAlign: 'center', marginBottom: 16 }}>Note</h3>
               <ul style={{ paddingLeft: 18, margin: 0 }}>
                 {PF_POLICY_NOTES.map((note, i) => (
-                  <li key={i} style={{ fontSize: 13, color: '#374151', marginBottom: 8, lineHeight: 1.5 }}>{note}</li>
+                  <li key={i} style={{ fontSize: 13, color: 'var(--color-text-secondary)', marginBottom: 8, lineHeight: 1.5 }}>{note}</li>
                 ))}
               </ul>
             </div>

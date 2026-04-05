@@ -81,8 +81,8 @@ const PRIMARY_REASONS = [
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 const AVATAR_COLORS = [
-  '#0d9488', '#3b82f6', '#f59e0b', '#8b5cf6',
-  '#10b981', '#64748b', '#ef4444', '#ec4899',
+  'var(--color-primary)', '#3b82f6', '#f59e0b', '#8b5cf6',
+  '#10b981', 'var(--color-text-tertiary)', '#ef4444', '#ec4899',
 ];
 function avatarColor(name: string) {
   let h = 0;
@@ -105,7 +105,7 @@ function calcTenure(joinedDate: string): string {
 function SectionHead({ children }: { children: React.ReactNode }) {
   return (
     <div style={{
-      fontSize: 11, fontWeight: 700, color: '#6b7280',
+      fontSize: 11, fontWeight: 700, color: 'var(--color-text-tertiary)',
       letterSpacing: '0.07em', textTransform: 'uppercase',
       marginBottom: 10,
     }}>
@@ -137,11 +137,11 @@ function StepProgress({ current }: { current: number }) {
               {/* Circle */}
               <div style={{
                 width: 30, height: 30, borderRadius: '50%', flexShrink: 0,
-                background: isDone ? '#059669' : isActive ? '#0f766e' : '#f1f5f9',
+                background: isDone ? '#059669' : isActive ? 'var(--color-primary)' : 'var(--color-bg-subtle)',
                 border: isDone || isActive ? 'none' : '1.5px solid #cbd5e1',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 fontSize: 12, fontWeight: 700,
-                color: isDone || isActive ? '#ffffff' : '#94a3b8',
+                color: isDone || isActive ? 'var(--color-bg-surface)' : 'var(--color-text-tertiary)',
               }}>
                 {isDone ? <CheckOutlined style={{ fontSize: 12 }} /> : num}
               </div>
@@ -150,14 +150,14 @@ function StepProgress({ current }: { current: number }) {
                 {step.label.split('\n').map((line, li) => (
                   <div key={li} style={{
                     fontSize: 11, fontWeight: isActive ? 700 : 500,
-                    color: isActive ? '#111827' : isDone ? '#374151' : '#6b7280',
+                    color: isActive ? 'var(--color-text-primary)' : isDone ? 'var(--color-text-secondary)' : 'var(--color-text-tertiary)',
                     whiteSpace: 'nowrap', lineHeight: 1.3,
                   }}>
                     {line}
                   </div>
                 ))}
                 {isActive && (
-                  <div style={{ fontSize: 10, color: '#9ca3af', marginTop: 2, whiteSpace: 'nowrap' }}>
+                  <div style={{ fontSize: 10, color: 'var(--color-text-disabled)', marginTop: 2, whiteSpace: 'nowrap' }}>
                     {step.desc}
                   </div>
                 )}
@@ -168,7 +168,7 @@ function StepProgress({ current }: { current: number }) {
             {i < STEPS.length - 1 && (
               <div style={{
                 flex: 1, height: 2, marginTop: 14, marginInline: 6,
-                background: isDone ? '#059669' : '#e2e8f0',
+                background: isDone ? '#059669' : 'var(--color-border)',
                 borderRadius: 1,
               }} />
             )}
@@ -234,7 +234,7 @@ function Step1({
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
       <Input
-        prefix={<UserOutlined style={{ color: '#9ca3af' }} />}
+        prefix={<UserOutlined style={{ color: 'var(--color-text-disabled)' }} />}
         placeholder="Search employee by name, ID, or department..."
         value={search}
         onChange={e => setSearch(e.target.value)}
@@ -252,7 +252,7 @@ function Step1({
                 display: 'flex', alignItems: 'center', gap: 12,
                 padding: '12px 14px', borderRadius: 10, cursor: 'pointer',
                 border: isSelected ? '1.5px solid #0f766e' : '1.5px solid #e5e7eb',
-                background: isSelected ? '#f0fdfa' : '#ffffff',
+                background: isSelected ? 'var(--color-primary-tint)' : 'var(--color-bg-surface)',
                 position: 'relative',
                 transition: 'border-color 0.15s, background 0.15s',
               }}
@@ -261,17 +261,17 @@ function Step1({
                 {initials(emp.name)}
               </Avatar>
               <div style={{ minWidth: 0 }}>
-                <div style={{ fontWeight: 600, fontSize: 13, color: '#111827' }}>{emp.name}</div>
-                <div style={{ fontSize: 12, color: '#6b7280', marginTop: 1 }}>
+                <div style={{ fontWeight: 600, fontSize: 13, color: 'var(--color-text-primary)' }}>{emp.name}</div>
+                <div style={{ fontSize: 12, color: 'var(--color-text-tertiary)', marginTop: 1 }}>
                   {emp.designation} &middot; {emp.department}
                 </div>
-                <div style={{ fontSize: 11, color: '#9ca3af', marginTop: 1 }}>{emp.empId}</div>
+                <div style={{ fontSize: 11, color: 'var(--color-text-disabled)', marginTop: 1 }}>{emp.empId}</div>
               </div>
               {isSelected && (
                 <div style={{
                   position: 'absolute', top: 8, right: 10,
                   width: 18, height: 18, borderRadius: '50%',
-                  background: '#0f766e',
+                  background: 'var(--color-primary)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                 }}>
                   <CheckOutlined style={{ fontSize: 10, color: '#fff' }} />
@@ -286,23 +286,23 @@ function Step1({
         <div style={{
           display: 'flex', alignItems: 'center', gap: 12,
           padding: '12px 16px', borderRadius: 8,
-          background: '#f8fafc', border: '1px solid #e5e7eb',
+          background: 'var(--color-bg-subtle)', border: '1px solid var(--color-border)',
         }}>
           <div style={{
-            width: 36, height: 36, borderRadius: '50%', background: '#e5e7eb',
+            width: 36, height: 36, borderRadius: '50%', background: 'var(--color-bg-subtle)',
             display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
           }}>
-            <UserOutlined style={{ color: '#6b7280', fontSize: 16 }} />
+            <UserOutlined style={{ color: 'var(--color-text-tertiary)', fontSize: 16 }} />
           </div>
           <div>
-            <div style={{ fontWeight: 600, fontSize: 13, color: '#111827' }}>{form.employee.name}</div>
-            <div style={{ fontSize: 12, color: '#6b7280', marginTop: 1 }}>
+            <div style={{ fontWeight: 600, fontSize: 13, color: 'var(--color-text-primary)' }}>{form.employee.name}</div>
+            <div style={{ fontSize: 12, color: 'var(--color-text-tertiary)', marginTop: 1 }}>
               {form.employee.designation} &middot; {form.employee.department}
             </div>
           </div>
           <div style={{ marginLeft: 'auto', textAlign: 'right' }}>
-            <div style={{ fontSize: 11, color: '#9ca3af' }}>Joined {form.employee.joinedDate}</div>
-            <div style={{ fontSize: 12, fontWeight: 700, color: '#374151', marginTop: 2 }}>
+            <div style={{ fontSize: 11, color: 'var(--color-text-disabled)' }}>Joined {form.employee.joinedDate}</div>
+            <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--color-text-secondary)', marginTop: 2 }}>
               Tenure: {calcTenure(form.employee.joinedDate)}
             </div>
           </div>
@@ -335,16 +335,16 @@ function Step2({
                 onClick={() => selectType(t)}
                 style={{
                   padding: '12px 14px', borderRadius: 8, cursor: 'pointer',
-                  border: isSelected ? '1.5px solid #0f766e' : '1px solid #e5e7eb',
-                  background: isSelected ? '#f0fdfa' : '#ffffff',
+                  border: isSelected ? '1.5px solid #0f766e' : '1px solid var(--color-border)',
+                  background: isSelected ? 'var(--color-primary-tint)' : 'var(--color-bg-surface)',
                   transition: 'border-color 0.15s, background 0.15s',
                 }}
               >
-                <div style={{ fontWeight: 600, fontSize: 13, color: '#111827' }}>{t.label}</div>
-                <div style={{ fontSize: 12, color: '#6b7280', marginTop: 3, lineHeight: 1.4 }}>
+                <div style={{ fontWeight: 600, fontSize: 13, color: 'var(--color-text-primary)' }}>{t.label}</div>
+                <div style={{ fontSize: 12, color: 'var(--color-text-tertiary)', marginTop: 3, lineHeight: 1.4 }}>
                   {t.description}
                 </div>
-                <div style={{ fontSize: 11, fontWeight: 600, color: '#0f766e', marginTop: 6 }}>
+                <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--color-primary)', marginTop: 6 }}>
                   {t.noticeDays} {t.noticeDays === 1 ? 'day' : 'days'} notice
                 </div>
               </div>
@@ -370,13 +370,13 @@ function Step2({
               checked={form.confidential}
               onChange={e => setForm(p => ({ ...p, confidential: e.target.checked }))}
             >
-              <span style={{ fontSize: 13, color: '#374151' }}>Confidential</span>
+              <span style={{ fontSize: 13, color: 'var(--color-text-secondary)' }}>Confidential</span>
             </Checkbox>
             <Checkbox
               checked={form.eligibleForRehire}
               onChange={e => setForm(p => ({ ...p, eligibleForRehire: e.target.checked }))}
             >
-              <span style={{ fontSize: 13, color: '#374151' }}>Eligible for Rehire</span>
+              <span style={{ fontSize: 13, color: 'var(--color-text-secondary)' }}>Eligible for Rehire</span>
             </Checkbox>
           </div>
         </div>
@@ -454,7 +454,7 @@ function Step3({
             onChange={e => handleNoticeDaysChange(Math.max(0, Number(e.target.value)))}
             style={{ width: '100%' }}
           />
-          <div style={{ fontSize: 11, color: '#6b7280', marginTop: 5 }}>
+          <div style={{ fontSize: 11, color: 'var(--color-text-tertiary)', marginTop: 5 }}>
             Standard for {form.separationType || '—'}: {standardDays} days
           </div>
         </div>
@@ -471,7 +471,7 @@ function Step3({
               setForm(p => ({ ...p, dateOfSeparation: date ? date.format('YYYY-MM-DD') : '' }))
             }
           />
-          <div style={{ fontSize: 11, color: '#6b7280', marginTop: 5 }}>
+          <div style={{ fontSize: 11, color: 'var(--color-text-tertiary)', marginTop: 5 }}>
             Auto-calculated: {autoCalcDisplay}
           </div>
         </div>
@@ -480,7 +480,7 @@ function Step3({
       {/* ── Separation Timeline ── */}
       <div style={{
         padding: '16px 20px', borderRadius: 8,
-        background: '#f8fafc', border: '1px solid #e5e7eb',
+        background: 'var(--color-bg-subtle)', border: '1px solid var(--color-border)',
       }}>
         <SectionHead>Separation Timeline</SectionHead>
         <div style={{ display: 'flex', alignItems: 'flex-start' }}>
@@ -490,19 +490,19 @@ function Step3({
               width: 14, height: 14, borderRadius: '50%',
               background: '#1e3a5f',
             }} />
-            <div style={{ fontSize: 11, color: '#6b7280', marginTop: 6, fontWeight: 500 }}>Today</div>
-            <div style={{ fontSize: 11, fontWeight: 600, color: '#374151', marginTop: 1 }}>{TODAY_STR}</div>
+            <div style={{ fontSize: 11, color: 'var(--color-text-tertiary)', marginTop: 6, fontWeight: 500 }}>Today</div>
+            <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--color-text-secondary)', marginTop: 1 }}>{TODAY_STR}</div>
           </div>
 
           {/* Connector line + badge */}
           <div style={{ flex: 1, position: 'relative', marginTop: 6, marginInline: 0 }}>
-            <div style={{ height: 2, background: '#cbd5e1', borderRadius: 1 }} />
+            <div style={{ height: 2, background: 'var(--color-border)', borderRadius: 1 }} />
             <div style={{
               position: 'absolute', top: '50%', left: '50%',
               transform: 'translate(-50%, -50%)',
-              background: '#f1f5f9', border: '1px solid #d1d5db',
+              background: 'var(--color-bg-subtle)', border: '1px solid var(--color-border)',
               borderRadius: 20, padding: '2px 10px',
-              fontSize: 11, fontWeight: 600, color: '#374151',
+              fontSize: 11, fontWeight: 600, color: 'var(--color-text-secondary)',
               whiteSpace: 'nowrap',
             }}>
               {form.noticeDays} days
@@ -515,8 +515,8 @@ function Step3({
               width: 14, height: 14, borderRadius: '50%',
               background: '#f59e0b',
             }} />
-            <div style={{ fontSize: 11, color: '#6b7280', marginTop: 6, fontWeight: 500 }}>LWD</div>
-            <div style={{ fontSize: 11, fontWeight: 600, color: '#374151', marginTop: 1 }}>
+            <div style={{ fontSize: 11, color: 'var(--color-text-tertiary)', marginTop: 6, fontWeight: 500 }}>LWD</div>
+            <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--color-text-secondary)', marginTop: 1 }}>
               {form.dateOfSeparation || autoCalcDisplay}
             </div>
           </div>
@@ -528,7 +528,7 @@ function Step3({
         checked={form.earlyRelease}
         onChange={e => setForm(p => ({ ...p, earlyRelease: e.target.checked }))}
       >
-        <span style={{ fontSize: 13, color: '#374151', fontWeight: 500 }}>
+        <span style={{ fontSize: 13, color: 'var(--color-text-secondary)', fontWeight: 500 }}>
           Request early release from notice period
         </span>
       </Checkbox>
@@ -562,7 +562,7 @@ function getExtColor(ext: string) {
   if (ext === 'pdf')                    return '#ef4444';
   if (ext === 'doc' || ext === 'docx')  return '#3b82f6';
   if (ext === 'xls' || ext === 'xlsx')  return '#22c55e';
-  return '#6b7280';
+  return 'var(--color-text-tertiary)';
 }
 function formatFileSize(bytes: number) {
   if (bytes < 1024)             return `${bytes} B`;
@@ -612,8 +612,8 @@ function Step4({
             <polyline points="17 8 12 3 7 8" />
             <line x1="12" y1="3" x2="12" y2="15" />
           </svg>
-          <div style={{ fontSize: 14, fontWeight: 600, color: '#111827' }}>Click to upload documents</div>
-          <div style={{ fontSize: 12, color: '#6b7280' }}>PDF, DOC, DOCX, XLS, XLSX up to 10MB</div>
+          <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-text-primary)' }}>Click to upload documents</div>
+          <div style={{ fontSize: 12, color: 'var(--color-text-tertiary)' }}>PDF, DOC, DOCX, XLS, XLSX up to 10MB</div>
         </div>
       </Upload.Dragger>
 
@@ -627,7 +627,7 @@ function Step4({
               <div key={idx} style={{
                 display: 'flex', alignItems: 'center', gap: 10,
                 padding: '9px 12px', borderRadius: 8,
-                border: '1px solid #e5e7eb', background: '#fafafa',
+                border: '1px solid var(--color-border)', background: 'var(--color-bg-subtle)',
               }}>
                 {/* Extension badge */}
                 <div style={{
@@ -644,12 +644,12 @@ function Step4({
                 {/* Name + size */}
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{
-                    fontSize: 13, fontWeight: 500, color: '#111827',
+                    fontSize: 13, fontWeight: 500, color: 'var(--color-text-primary)',
                     overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                   }}>
                     {file.name}
                   </div>
-                  <div style={{ fontSize: 11, color: '#9ca3af', marginTop: 1 }}>
+                  <div style={{ fontSize: 11, color: 'var(--color-text-disabled)', marginTop: 1 }}>
                     {formatFileSize(file.size)}
                   </div>
                 </div>
@@ -660,14 +660,14 @@ function Step4({
                     size="small" type="text"
                     icon={<EyeOutlined style={{ fontSize: 13 }} />}
                     title="Preview"
-                    style={{ color: '#6b7280' }}
+                    style={{ color: 'var(--color-text-tertiary)' }}
                     onClick={() => handlePreview(file)}
                   />
                   <Button
                     size="small" type="text"
                     icon={<DownloadOutlined style={{ fontSize: 13 }} />}
                     title="Download"
-                    style={{ color: '#6b7280' }}
+                    style={{ color: 'var(--color-text-tertiary)' }}
                     onClick={() => handleDownload(file)}
                   />
                   <Button
@@ -687,7 +687,7 @@ function Step4({
       <div style={{
         display: 'flex', gap: 10,
         padding: '12px 14px', borderRadius: 8,
-        background: '#eff6ff', border: '1px solid #bfdbfe',
+        background: 'var(--color-status-info-bg)', border: '1px solid #bfdbfe',
       }}>
         <InfoCircleOutlined style={{ color: '#3b82f6', fontSize: 15, marginTop: 1, flexShrink: 0 }} />
         <div>
@@ -701,7 +701,7 @@ function Step4({
               'NDA / Non-compete acknowledgment',
               'Knowledge transfer / handover notes',
             ].map(item => (
-              <li key={item} style={{ fontSize: 13, color: '#374151' }}>{item}</li>
+              <li key={item} style={{ fontSize: 13, color: 'var(--color-text-secondary)' }}>{item}</li>
             ))}
           </ul>
         </div>
@@ -714,14 +714,14 @@ function Step4({
 // ─── Step 5 — Review & Submit ─────────────────────────────────────────────────
 function SummaryCell({ label, value }: { label: string; value: React.ReactNode }) {
   return (
-    <div style={{ padding: '14px 18px', borderRight: '1px solid #f3f4f6' }}>
+    <div style={{ padding: '14px 18px', borderRight: '1px solid var(--color-border)' }}>
       <div style={{
-        fontSize: 10, fontWeight: 700, color: '#9ca3af',
+        fontSize: 10, fontWeight: 700, color: 'var(--color-text-disabled)',
         letterSpacing: '0.07em', textTransform: 'uppercase', marginBottom: 5,
       }}>
         {label}
       </div>
-      <div style={{ fontSize: 14, fontWeight: 500, color: '#111827' }}>{value || '—'}</div>
+      <div style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-text-primary)' }}>{value || '—'}</div>
     </div>
   );
 }
@@ -746,7 +746,7 @@ function Step5({
                   display: 'flex', alignItems: 'center', gap: 10,
                   padding: '10px 12px', borderRadius: 8, cursor: 'pointer',
                   border: isSelected ? '1.5px solid #0f766e' : '1.5px solid #e5e7eb',
-                  background: isSelected ? '#f0fdfa' : '#ffffff',
+                  background: isSelected ? 'var(--color-primary-tint)' : 'var(--color-bg-surface)',
                   transition: 'border-color 0.15s, background 0.15s',
                   position: 'relative',
                 }}
@@ -755,15 +755,15 @@ function Step5({
                   {initials(ap.name)}
                 </Avatar>
                 <div style={{ minWidth: 0 }}>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: '#111827' }}>{ap.name}</div>
-                  <div style={{ fontSize: 11, color: '#6b7280', marginTop: 1 }}>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--color-text-primary)' }}>{ap.name}</div>
+                  <div style={{ fontSize: 11, color: 'var(--color-text-tertiary)', marginTop: 1 }}>
                     {ap.designation} &middot; {ap.department}
                   </div>
                 </div>
                 {isSelected && (
                   <CheckOutlined style={{
                     position: 'absolute', right: 12,
-                    fontSize: 13, color: '#0f766e', fontWeight: 700,
+                    fontSize: 13, color: 'var(--color-primary)', fontWeight: 700,
                   }} />
                 )}
               </div>
@@ -775,24 +775,24 @@ function Step5({
       {/* ── Request Summary ── */}
       <div>
         <SectionHead>Request Summary</SectionHead>
-        <div style={{ border: '1px solid #e5e7eb', borderRadius: 8, overflow: 'hidden' }}>
+        <div style={{ border: '1px solid var(--color-border)', borderRadius: 8, overflow: 'hidden' }}>
           {/* Row 1 */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', borderBottom: '1px solid #f3f4f6' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', borderBottom: '1px solid var(--color-border)' }}>
             <SummaryCell label="Employee"       value={form.employee?.name} />
             <SummaryCell label="Employee ID"    value={form.employee?.empId} />
           </div>
           {/* Row 2 */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', borderBottom: '1px solid #f3f4f6' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', borderBottom: '1px solid var(--color-border)' }}>
             <SummaryCell label="Separation Type" value={form.separationType} />
             <SummaryCell label="Reason"          value={form.primaryReason} />
           </div>
           {/* Row 3 */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', borderBottom: '1px solid #f3f4f6' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', borderBottom: '1px solid var(--color-border)' }}>
             <SummaryCell label="Notice Period"   value={`${form.noticeDays} days`} />
             <SummaryCell label="Duration"        value={form.duration} />
           </div>
           {/* Row 3b */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', borderBottom: '1px solid #f3f4f6' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', borderBottom: '1px solid var(--color-border)' }}>
             <SummaryCell label="Last Working Day" value={form.dateOfSeparation} />
             <SummaryCell label="Documents"        value={form.documents.length ? `${form.documents.length} attached` : '0 attached'} />
           </div>
@@ -898,8 +898,8 @@ export function NewSeparationModal({ open, onClose, onSubmit, initialEmployee, i
       destroyOnClose
       title={
         <div>
-          <div style={{ fontSize: 16, fontWeight: 700, color: '#111827' }}>New Separation Request</div>
-          <div style={{ fontSize: 13, color: '#6b7280', fontWeight: 400, marginTop: 2 }}>
+          <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--color-text-primary)' }}>New Separation Request</div>
+          <div style={{ fontSize: 13, color: 'var(--color-text-tertiary)', fontWeight: 400, marginTop: 2 }}>
             Complete all steps to submit a separation request
           </div>
         </div>
@@ -921,7 +921,7 @@ export function NewSeparationModal({ open, onClose, onSubmit, initialEmployee, i
         <div style={{
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           marginTop: 20, paddingTop: 16,
-          borderTop: '1px solid #f3f4f6',
+          borderTop: '1px solid var(--color-border)',
         }}>
           <Button
             icon={<ArrowLeftOutlined />}
@@ -931,7 +931,7 @@ export function NewSeparationModal({ open, onClose, onSubmit, initialEmployee, i
             Previous
           </Button>
 
-          <span style={{ fontSize: 12, color: '#9ca3af', fontWeight: 500 }}>
+          <span style={{ fontSize: 12, color: 'var(--color-text-disabled)', fontWeight: 500 }}>
             Step {step} of {STEPS.length}
           </span>
 

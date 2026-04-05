@@ -10,6 +10,25 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   </head>
   <body>
+    <!-- Inline script: apply persisted theme/topbar BEFORE React renders to prevent flash of unstyled content -->
+    <script>
+      try {
+        var stored = JSON.parse(localStorage.getItem('zyrova-theme-v1') || '{}');
+        var s = stored.state || {};
+        var mode = s.mode || 'light';
+        var osIsDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        var isDark = mode === 'dark' || (mode === 'system' && osIsDark);
+        document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-topbar', s.topbarStyle || 'gradient');
+        /* Apply stored primary color CSS vars immediately so gradients don't flash */
+        if (s.primaryColor) {
+          var r = document.documentElement;
+          r.style.setProperty('--color-primary', s.primaryColor);
+          if (s.primaryDark) r.style.setProperty('--color-primary-dark', s.primaryDark);
+          if (s.primaryLight) r.style.setProperty('--color-primary-light', s.primaryLight);
+        }
+      } catch(e) {}
+    </script>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

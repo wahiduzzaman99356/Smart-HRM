@@ -65,29 +65,29 @@ const RESIGNATION_POLICY_RULES = [
 // ─── Colors ───────────────────────────────────────────────────────────────────
 
 const C = {
-  primary: '#0f766e',
-  primaryDark: '#115e59',
-  primaryLight: '#f0fdfa',
+  primary: 'var(--color-primary)',
+  primaryDark: 'var(--color-primary-dark)',
+  primaryLight: 'var(--color-primary-tint)',
   navy: '#1e3a5f',
   navyDark: '#152d4a',
-  border: '#d8e7e5',
-  surface: '#ffffff',
-  surfaceMuted: '#f8fafc',
-  text: '#111827',
-  textSecondary: '#374151',
-  textMuted: '#6b7280',
-  textSoft: '#9ca3af',
+  border: 'var(--color-border)',
+  surface: 'var(--color-bg-surface)',
+  surfaceMuted: 'var(--color-bg-subtle)',
+  text: 'var(--color-text-primary)',
+  textSecondary: 'var(--color-text-secondary)',
+  textMuted: 'var(--color-text-tertiary)',
+  textSoft: 'var(--color-text-disabled)',
   warning: '#d97706',
-  warningBg: '#fffbeb',
-  warningBorder: '#fde68a',
+  warningBg: 'var(--color-status-pending-bg)',
+  warningBorder: 'rgba(253, 230, 138, 0.4)',
   success: '#059669',
-  successBg: '#f0fdf4',
-  successBorder: '#bbf7d0',
+  successBg: 'var(--color-status-approved-bg)',
+  successBorder: 'var(--color-status-approved-bg)',
   danger: '#dc2626',
-  dangerBg: '#fef2f2',
-  dangerBorder: '#fecaca',
+  dangerBg: 'var(--color-status-rejected-bg)',
+  dangerBorder: 'var(--color-status-rejected-bg)',
   info: '#0284c7',
-  infoBg: '#f0f9ff',
+  infoBg: 'var(--color-status-info-bg)',
 };
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -233,7 +233,7 @@ function ProgressTracker({ stage, status }: { stage: string; status: string }) {
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
               <div style={{
                 width: isCurrent ? 40 : 32, height: isCurrent ? 40 : 32,
-                borderRadius: '50%', background: isActive ? accent : '#e5e7eb',
+                borderRadius: '50%', background: isActive ? accent : 'var(--color-border)',
                 color: isActive ? '#fff' : C.textSoft,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 fontSize: isCurrent ? 15 : 12, fontWeight: 700,
@@ -247,7 +247,7 @@ function ProgressTracker({ stage, status }: { stage: string; status: string }) {
               </div>
             </div>
             {idx < SEPARATION_PROGRESS_STEPS.length - 1 && (
-              <div style={{ flex: 1, height: 2, background: isDone ? accent : '#e5e7eb', marginBottom: 30 }} />
+              <div style={{ flex: 1, height: 2, background: isDone ? accent : 'var(--color-border)', marginBottom: 30 }} />
             )}
           </div>
         );
@@ -412,7 +412,7 @@ function ResignationForm({ onSubmit }: {
       <Modal open={confirmOpen} onCancel={() => setConfirmOpen(false)} footer={null} width={480} centered
         styles={{ body: { padding: '28px 28px 24px' } }}>
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: 6, marginBottom: 24 }}>
-          <div style={{ width: 52, height: 52, borderRadius: '50%', background: '#fef3c7', border: '2px solid #fde68a', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 4 }}>
+          <div style={{ width: 52, height: 52, borderRadius: '50%', background: 'var(--color-status-pending-bg)', border: '2px solid #fde68a', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 4 }}>
             <ExclamationCircleOutlined style={{ fontSize: 24, color: C.warning }} />
           </div>
           <div style={{ fontSize: 16, fontWeight: 800, color: C.text }}>Confirm Resignation</div>
@@ -494,13 +494,13 @@ function ResignationStatus({
           border: `1px solid ${C.dangerBorder}`, borderRadius: 12,
           boxShadow: '0 2px 8px rgba(15,23,42,0.04)',
         }}>
-          <div style={{ width: 36, height: 36, borderRadius: '50%', background: '#fee2e2', color: C.danger, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+          <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'var(--color-status-rejected-bg)', color: C.danger, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
             <CloseCircleOutlined style={{ fontSize: 16 }} />
           </div>
           <div style={{ flex: 1 }}>
             <div style={{ fontSize: 14, fontWeight: 700, color: C.danger, marginBottom: 4 }}>Resignation Rejected by HR</div>
             {record.rejectionRemarks && (
-              <div style={{ fontSize: 13, color: C.textSecondary, background: '#fff', border: `1px solid ${C.dangerBorder}`, borderRadius: 8, padding: '10px 12px', marginBottom: 12 }}>
+              <div style={{ fontSize: 13, color: C.textSecondary, background: 'var(--color-bg-surface)', border: `1px solid ${C.dangerBorder}`, borderRadius: 8, padding: '10px 12px', marginBottom: 12 }}>
                 <span style={{ fontSize: 10, fontWeight: 700, color: C.danger, textTransform: 'uppercase', letterSpacing: '0.07em', display: 'block', marginBottom: 4 }}>HR Remarks</span>
                 {record.rejectionRemarks}
               </div>
@@ -545,7 +545,7 @@ function ResignationStatus({
 
         {/* HR-edited notice warning */}
         {(record.noticePeriodOverride || record.dateOfSeparationOverride) && (
-          <div style={{ padding: '10px 24px', background: '#fffbeb', borderBottom: `1px solid ${C.warningBorder}`, display: 'flex', alignItems: 'center', gap: 8 }}>
+          <div style={{ padding: '10px 24px', background: 'var(--color-status-pending-bg)', borderBottom: `1px solid ${C.warningBorder}`, display: 'flex', alignItems: 'center', gap: 8 }}>
             <WarningOutlined style={{ color: C.warning, fontSize: 13 }} />
             <span style={{ fontSize: 12, color: C.warning, fontWeight: 600 }}>
               HR has updated your notice period or last working day. Please review below.

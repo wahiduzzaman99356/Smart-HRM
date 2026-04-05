@@ -14,15 +14,15 @@ import {
 } from '@ant-design/icons';
 import type { ActionRequiredItem, ActionRequiredStatus } from '../types/separation.types';
 
-// ─── Design tokens ────────────────────────────────────────────────────────────
-const CLR_PRIMARY = '#0f766e';
-const CLR_BORDER = '#a7e3d9';
-const CLR_BG = '#eef5f4';
+// ─── Design tokens (CSS custom properties used via inline style vars) ────────────────────
+const CLR_PRIMARY = 'var(--color-primary)';
+const CLR_BORDER = 'var(--color-border)';
+const CLR_BG = 'var(--color-bg-subtle)';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 const AVATAR_COLORS = [
-  '#0d9488', '#3b82f6', '#f59e0b', '#8b5cf6',
-  '#10b981', '#64748b', '#ef4444', '#ec4899',
+  'var(--color-primary)', '#3b82f6', '#f59e0b', '#8b5cf6',
+  '#10b981', 'var(--color-text-tertiary)', '#ef4444', '#ec4899',
 ];
 
 function avatarColor(name: string) {
@@ -37,9 +37,9 @@ function initials(name: string) {
 
 // ─── Status badge ─────────────────────────────────────────────────────────────
 const STATUS_CFG: Record<ActionRequiredStatus, { bg: string; text: string; dot: string }> = {
-  'Pending':   { bg: '#fef3c7', text: '#d97706', dot: '#f59e0b' },
-  'Processed': { bg: '#f0fdf4', text: '#059669', dot: '#22c55e' },
-  'Cancelled': { bg: '#fef2f2', text: '#b91c1c', dot: '#ef4444' },
+  'Pending':   { bg: 'var(--color-status-pending-bg)',  text: '#d97706', dot: '#f59e0b' },
+  'Processed': { bg: 'var(--color-status-approved-bg)', text: '#059669', dot: '#22c55e' },
+  'Cancelled': { bg: 'var(--color-status-rejected-bg)', text: '#b91c1c', dot: '#ef4444' },
 };
 
 function StatusBadge({ status }: { status: ActionRequiredStatus }) {
@@ -66,7 +66,7 @@ interface ActionRequiredSectionProps {
 
 function colHead(label: string) {
   return (
-    <span style={{ fontSize: 11, fontWeight: 600, color: '#9ca3af', letterSpacing: '0.05em' }}>
+    <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--color-text-disabled)', letterSpacing: '0.05em' }}>
       {label}
     </span>
   );
@@ -96,21 +96,21 @@ export function ActionRequiredSection({
 
   return (
     <>
-      <div style={{ border: '1px solid #fed7aa', borderRadius: 10, overflow: 'hidden', marginBottom: 20, boxShadow: '0 1px 2px rgba(0,0,0,0.04)' }}>
+      <div style={{ border: '1px solid rgba(251, 146, 60, 0.35)', borderRadius: 10, overflow: 'hidden', marginBottom: 20, boxShadow: '0 1px 2px rgba(0,0,0,0.04)' }}>
         {/* ── Banner Header ─────────────────────────────────────────────────── */}
         <button
           onClick={() => setExpanded((prev) => !prev)}
           style={{
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
             width: '100%',
-            padding: '12px 16px', background: '#fff7ed', borderBottom: expanded ? '1px solid #fed7aa' : 'none',
+            padding: '12px 16px', background: 'rgba(251, 191, 36, 0.12)', borderBottom: expanded ? '1px solid rgba(251, 146, 60, 0.25)' : 'none',
             border: 'none',
             cursor: 'pointer',
             transition: 'background 0.2s ease',
           }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <WarningFilled style={{ color: '#ea580c', fontSize: 14 }} />
-            <span style={{ fontWeight: 700, fontSize: 13, color: '#92400e' }}>
+            <span style={{ fontWeight: 700, fontSize: 13, color: '#d97706' }}>
               ACTION REQUIRED ({total})
             </span>
           </div>
@@ -118,9 +118,9 @@ export function ActionRequiredSection({
             <span style={{
               fontSize: 11,
               fontWeight: 700,
-              color: '#b45309',
-              background: '#ffedd5',
-              border: '1px solid #fdba74',
+              color: '#d97706',
+              background: 'rgba(251, 191, 36, 0.16)',
+              border: '1px solid rgba(251, 146, 60, 0.30)',
               borderRadius: 999,
               padding: '2px 8px',
               letterSpacing: '0.03em',
@@ -131,18 +131,18 @@ export function ActionRequiredSection({
               fontSize: 11,
               fontWeight: 700,
               color: '#047857',
-              background: '#ecfdf5',
-              border: '1px solid #a7f3d0',
+              background: 'var(--color-status-approved-bg)',
+              border: '1px solid rgba(5, 150, 105, 0.25)',
               borderRadius: 999,
               padding: '2px 8px',
               letterSpacing: '0.03em',
             }}>
               {processedCount} Processed
             </span>
-            <span style={{ fontSize: 12, color: '#b45309' }}>
+            <span style={{ fontSize: 12, color: '#d97706' }}>
               From performance appraisal decisions
             </span>
-            {expanded ? <UpOutlined style={{ color: '#b45309', fontSize: 12 }} /> : <DownOutlined style={{ color: '#b45309', fontSize: 12 }} />}
+            {expanded ? <UpOutlined style={{ color: '#d97706', fontSize: 12 }} /> : <DownOutlined style={{ color: '#d97706', fontSize: 12 }} />}
           </div>
         </button>
 
@@ -150,7 +150,7 @@ export function ActionRequiredSection({
           <>
         {/* ── Pending Items ─────────────────────────────────────────────────── */}
         {pendingItems.map((item) => (
-          <div key={`pending-${item.id}`} style={{ padding: '12px 16px', background: '#fffbf5', borderBottom: '1px solid #fef3c7' }}>
+          <div key={`pending-${item.id}`} style={{ padding: '12px 16px', background: 'var(--color-bg-surface)', borderBottom: '1px solid var(--color-border)' }}>
             <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
               <div style={{ display: 'flex', gap: 10, flex: 1 }}>
                 <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#f59e0b', display: 'inline-block', marginTop: 4, flexShrink: 0 }} />
@@ -164,17 +164,17 @@ export function ActionRequiredSection({
                       {initials(item.empName)}
                     </div>
                     <div>
-                      <div style={{ fontSize: 13, fontWeight: 700, color: '#111827' }}>{item.empName}</div>
-                      <div style={{ fontSize: 11, color: '#6b7280' }}>
+                      <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--color-text-primary)' }}>{item.empName}</div>
+                      <div style={{ fontSize: 11, color: 'var(--color-text-tertiary)' }}>
                         {item.designation} • {item.department}
                       </div>
                     </div>
                   </div>
-                  <div style={{ fontSize: 12, color: '#6b7280', marginTop: 4, marginLeft: 40 }}>
+                  <div style={{ fontSize: 12, color: 'var(--color-text-tertiary)', marginTop: 4, marginLeft: 40 }}>
                     <strong>Appraisal Period:</strong> {item.appraisalPeriodLabel} | <strong>Decision:</strong> {item.decisionDetails.decision}
                   </div>
                   {item.decisionDetails.remarks && (
-                    <div style={{ fontSize: 12, color: '#6b7280', marginTop: 4, marginLeft: 40 }}>
+                    <div style={{ fontSize: 12, color: 'var(--color-text-tertiary)', marginTop: 4, marginLeft: 40 }}>
                       <strong>Remarks:</strong> {item.decisionDetails.remarks}
                     </div>
                   )}
@@ -203,7 +203,7 @@ export function ActionRequiredSection({
                 </div>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0, marginLeft: 16 }}>
-                <span style={{ fontSize: 12, color: '#9ca3af', fontFamily: 'monospace' }}>#{item.empId}</span>
+                <span style={{ fontSize: 12, color: 'var(--color-text-disabled)', fontFamily: 'monospace' }}>#{item.empId}</span>
               </div>
             </div>
           </div>
@@ -214,15 +214,15 @@ export function ActionRequiredSection({
           <>
             {pendingItems.length > 0 && (
               <div style={{
-                padding: '8px 16px', background: '#f0fdfc', textAlign: 'center',
-                fontSize: 11, fontWeight: 700, color: '#115e59', letterSpacing: '0.05em',
-                borderBottom: '1px solid #a7e3d9',
+                padding: '8px 16px', background: 'var(--color-primary-tint)', textAlign: 'center',
+                fontSize: 11, fontWeight: 700, color: 'var(--color-primary-dark)', letterSpacing: '0.05em',
+                borderBottom: '1px solid var(--color-border)',
               }}>
                 PROCESSED ACTIONS ({processedItems.length})
               </div>
             )}
             {processedItems.map((item) => (
-              <div key={`processed-${item.id}`} style={{ padding: '12px 16px', background: '#f0fdfc', borderBottom: '1px solid #cffafe' }}>
+              <div key={`processed-${item.id}`} style={{ padding: '12px 16px', background: 'var(--color-bg-subtle)', borderBottom: '1px solid var(--color-border)' }}>
                 <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', opacity: 0.7 }}>
                   <div style={{ display: 'flex', gap: 10, flex: 1 }}>
                     <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#22c55e', display: 'inline-block', marginTop: 4, flexShrink: 0 }} />
@@ -236,13 +236,13 @@ export function ActionRequiredSection({
                           {initials(item.empName)}
                         </div>
                         <div>
-                          <div style={{ fontSize: 13, fontWeight: 700, color: '#111827' }}>{item.empName}</div>
-                          <div style={{ fontSize: 11, color: '#6b7280' }}>
+                          <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--color-text-primary)' }}>{item.empName}</div>
+                          <div style={{ fontSize: 11, color: 'var(--color-text-tertiary)' }}>
                             {item.designation} • {item.department}
                           </div>
                         </div>
                       </div>
-                      <div style={{ fontSize: 12, color: '#6b7280', marginTop: 4, marginLeft: 40 }}>
+                      <div style={{ fontSize: 12, color: 'var(--color-text-tertiary)', marginTop: 4, marginLeft: 40 }}>
                         <strong>Appraisal Period:</strong> {item.appraisalPeriodLabel}
                       </div>
                     </div>
@@ -252,7 +252,7 @@ export function ActionRequiredSection({
                       display: 'inline-flex', alignItems: 'center', gap: 4,
                       padding: '2px 8px', borderRadius: 4,
                       fontSize: 11, fontWeight: 700, color: '#059669',
-                      background: '#f0fdf4', border: '1px solid #bbf7d0', letterSpacing: '0.04em',
+                      background: 'var(--color-status-approved-bg)', border: '1px solid rgba(5, 150, 105, 0.25)', letterSpacing: '0.04em',
                     }}>
                       <CheckOutlined style={{ fontSize: 10 }} /> Done
                     </span>
@@ -315,7 +315,7 @@ function ActionDetailDrawer({ item, onClose, onTakeAction }: ActionDetailDrawerP
           width: '90%',
           maxWidth: 600,
           height: '100%',
-          background: '#fff',
+          background: 'var(--color-bg-surface)',
           display: 'flex',
           flexDirection: 'column',
           overflow: 'hidden',
@@ -324,14 +324,14 @@ function ActionDetailDrawer({ item, onClose, onTakeAction }: ActionDetailDrawerP
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div style={{ padding: '16px 20px', borderBottom: '1px solid #e5e7eb', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--color-border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             <div style={{ width: 36, height: 36, borderRadius: 10, background: CLR_BG, border: `1px solid ${CLR_BORDER}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <ExclamationCircleOutlined style={{ color: CLR_PRIMARY, fontSize: 17 }} />
             </div>
             <div>
-              <div style={{ fontWeight: 700, fontSize: 15, color: '#111827' }}>Action Required</div>
-              <div style={{ fontSize: 11, color: '#9ca3af', fontWeight: 400 }}>{item.empName}</div>
+              <div style={{ fontWeight: 700, fontSize: 15, color: 'var(--color-text-primary)' }}>Action Required</div>
+              <div style={{ fontSize: 11, color: 'var(--color-text-disabled)', fontWeight: 400 }}>{item.empName}</div>
             </div>
           </div>
           <Button type="text" onClick={onClose}>✕</Button>
@@ -340,7 +340,7 @@ function ActionDetailDrawer({ item, onClose, onTakeAction }: ActionDetailDrawerP
         {/* Content */}
         <div style={{ flex: 1, overflowY: 'auto', padding: '20px' }}>
           {/* Employee card */}
-          <div style={{ background: '#fff', border: `1px solid ${CLR_BORDER}`, borderRadius: 12, padding: 16, marginBottom: 16 }}>
+          <div style={{ background: 'var(--color-bg-surface)', border: `1px solid ${CLR_BORDER}`, borderRadius: 12, padding: 16, marginBottom: 16 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
               <div style={{
                 width: 48, height: 48, borderRadius: 8,
@@ -350,57 +350,57 @@ function ActionDetailDrawer({ item, onClose, onTakeAction }: ActionDetailDrawerP
                 {initials(item.empName)}
               </div>
               <div>
-                <div style={{ fontSize: 14, fontWeight: 700, color: '#111827' }}>{item.empName}</div>
-                <div style={{ fontSize: 12, color: '#6b7280' }}>{item.empCode}</div>
+                <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--color-text-primary)' }}>{item.empName}</div>
+                <div style={{ fontSize: 12, color: 'var(--color-text-tertiary)' }}>{item.empCode}</div>
               </div>
             </div>
 
             <Row gutter={[12, 12]}>
               <Col xs={24} sm={12}>
-                <div style={{ fontSize: 10, color: '#9ca3af', fontWeight: 700, marginBottom: 4 }}>DESIGNATION</div>
-                <div style={{ fontSize: 13, fontWeight: 600, color: '#374151' }}>{item.designation}</div>
+                <div style={{ fontSize: 10, color: 'var(--color-text-disabled)', fontWeight: 700, marginBottom: 4 }}>DESIGNATION</div>
+                <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--color-text-secondary)' }}>{item.designation}</div>
               </Col>
               <Col xs={24} sm={12}>
-                <div style={{ fontSize: 10, color: '#9ca3af', fontWeight: 700, marginBottom: 4 }}>DEPARTMENT</div>
-                <div style={{ fontSize: 13, fontWeight: 600, color: '#374151' }}>{item.department}</div>
+                <div style={{ fontSize: 10, color: 'var(--color-text-disabled)', fontWeight: 700, marginBottom: 4 }}>DEPARTMENT</div>
+                <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--color-text-secondary)' }}>{item.department}</div>
               </Col>
               <Col xs={24} sm={12}>
-                <div style={{ fontSize: 10, color: '#9ca3af', fontWeight: 700, marginBottom: 4 }}>DATE OF JOINING</div>
-                <div style={{ fontSize: 13, fontWeight: 600, color: '#374151' }}>{item.dateOfJoining}</div>
+                <div style={{ fontSize: 10, color: 'var(--color-text-disabled)', fontWeight: 700, marginBottom: 4 }}>DATE OF JOINING</div>
+                <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--color-text-secondary)' }}>{item.dateOfJoining}</div>
               </Col>
               <Col xs={24} sm={12}>
-                <div style={{ fontSize: 10, color: '#9ca3af', fontWeight: 700, marginBottom: 4 }}>EMPLOYMENT STATUS</div>
+                <div style={{ fontSize: 10, color: 'var(--color-text-disabled)', fontWeight: 700, marginBottom: 4 }}>EMPLOYMENT STATUS</div>
                 <Tag style={{ borderRadius: 6, fontSize: 11, fontWeight: 600 }}>{item.employmentStatus}</Tag>
               </Col>
             </Row>
           </div>
 
           {/* Decision Info */}
-          <div style={{ background: '#fff', border: `1px solid #fde68a`, borderRadius: 12, overflow: 'hidden', marginBottom: 16 }}>
-            <div style={{ background: '#fffbeb', padding: '12px 16px', borderBottom: '1px solid #fde68a' }}>
+          <div style={{ background: 'var(--color-bg-surface)', border: `1px solid rgba(253, 230, 138, 0.45)`, borderRadius: 12, overflow: 'hidden', marginBottom: 16 }}>
+            <div style={{ background: 'var(--color-status-pending-bg)', padding: '12px 16px', borderBottom: '1px solid rgba(253, 230, 138, 0.35)' }}>
               <div style={{ fontSize: 12, fontWeight: 700, color: '#d97706', display: 'flex', alignItems: 'center', gap: 6 }}>
                 <ExclamationCircleOutlined /> Appraisal Decision
               </div>
             </div>
             <div style={{ padding: 16 }}>
               <div style={{ marginBottom: 12 }}>
-                <div style={{ fontSize: 10, color: '#9ca3af', fontWeight: 700, marginBottom: 4 }}>APPRAISAL PERIOD</div>
-                <div style={{ fontSize: 13, fontWeight: 600, color: '#111827' }}>{item.appraisalPeriodLabel}</div>
+                <div style={{ fontSize: 10, color: 'var(--color-text-disabled)', fontWeight: 700, marginBottom: 4 }}>APPRAISAL PERIOD</div>
+                <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--color-text-primary)' }}>{item.appraisalPeriodLabel}</div>
               </div>
               <div style={{ marginBottom: 12 }}>
-                <div style={{ fontSize: 10, color: '#9ca3af', fontWeight: 700, marginBottom: 4 }}>DECISION TYPE</div>
-                <Tag style={{ background: '#fed7aa', color: '#d97706', fontWeight: 700, borderRadius: 6, border: 'none' }}>
+                <div style={{ fontSize: 10, color: 'var(--color-text-disabled)', fontWeight: 700, marginBottom: 4 }}>DECISION TYPE</div>
+                <Tag style={{ background: 'var(--color-status-pending-bg)', color: '#d97706', fontWeight: 700, borderRadius: 6, border: 'none' }}>
                   {item.decisionDetails.decision}
                 </Tag>
               </div>
               <div style={{ marginBottom: 12 }}>
-                <div style={{ fontSize: 10, color: '#9ca3af', fontWeight: 700, marginBottom: 4 }}>EFFECTIVE DATE</div>
-                <div style={{ fontSize: 13, fontWeight: 600, color: '#111827' }}>{item.decisionDetails.effectiveDate}</div>
+                <div style={{ fontSize: 10, color: 'var(--color-text-disabled)', fontWeight: 700, marginBottom: 4 }}>EFFECTIVE DATE</div>
+                <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--color-text-primary)' }}>{item.decisionDetails.effectiveDate}</div>
               </div>
               {item.decisionDetails.remarks && (
                 <div>
-                  <div style={{ fontSize: 10, color: '#9ca3af', fontWeight: 700, marginBottom: 4 }}>REMARKS</div>
-                  <div style={{ fontSize: 12, color: '#374151', background: '#f9fafb', padding: '8px 10px', borderRadius: 6, borderLeft: '2px solid #fde68a' }}>
+                  <div style={{ fontSize: 10, color: 'var(--color-text-disabled)', fontWeight: 700, marginBottom: 4 }}>REMARKS</div>
+                  <div style={{ fontSize: 12, color: 'var(--color-text-secondary)', background: 'var(--color-bg-subtle)', padding: '8px 10px', borderRadius: 6, borderLeft: '2px solid rgba(253, 230, 138, 0.7)' }}>
                     {item.decisionDetails.remarks}
                   </div>
                 </div>
@@ -409,22 +409,22 @@ function ActionDetailDrawer({ item, onClose, onTakeAction }: ActionDetailDrawerP
           </div>
 
           {/* Timeline */}
-          <div style={{ background: '#fff', border: `1px solid ${CLR_BORDER}`, borderRadius: 12, padding: 16 }}>
-            <div style={{ fontSize: 10, color: '#9ca3af', fontWeight: 700, marginBottom: 8, letterSpacing: '0.05em' }}>ACTION CREATED</div>
+          <div style={{ background: 'var(--color-bg-surface)', border: `1px solid ${CLR_BORDER}`, borderRadius: 12, padding: 16 }}>
+            <div style={{ fontSize: 10, color: 'var(--color-text-disabled)', fontWeight: 700, marginBottom: 8, letterSpacing: '0.05em' }}>ACTION CREATED</div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <div style={{ width: 28, height: 28, borderRadius: '50%', background: '#f3f4f6', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12 }}>
-                <span style={{ color: '#6b7280', fontWeight: 700 }}>✓</span>
+              <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'var(--color-bg-base)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12 }}>
+                <span style={{ color: 'var(--color-text-tertiary)', fontWeight: 700 }}>✓</span>
               </div>
               <div>
-                <div style={{ fontSize: 12, fontWeight: 600, color: '#111827' }}>Action triggered by Performance Appraisal</div>
-                <div style={{ fontSize: 11, color: '#9ca3af', marginTop: 2 }}>{item.createdAt}</div>
+                <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--color-text-primary)' }}>Action triggered by Performance Appraisal</div>
+                <div style={{ fontSize: 11, color: 'var(--color-text-disabled)', marginTop: 2 }}>{item.createdAt}</div>
               </div>
             </div>
           </div>
         </div>
 
         {/* Footer */}
-        <div style={{ padding: '16px 20px', borderTop: '1px solid #e5e7eb', display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
+        <div style={{ padding: '16px 20px', borderTop: '1px solid var(--color-border)', display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
           <Button onClick={onClose} style={{ borderRadius: 8 }}>Cancel</Button>
           <Button
             type="primary"

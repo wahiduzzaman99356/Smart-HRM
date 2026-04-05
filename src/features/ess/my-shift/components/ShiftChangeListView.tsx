@@ -51,15 +51,15 @@ export function ShiftChangeListView({ requests, onCreateNew, onView, onCancel }:
   };
 
   const columns: TableColumnsType<ShiftChangeRequest> = [
-    { title: 'Date', dataIndex: 'date', key: 'date', width: 130, render: v => <span style={{ fontSize: 13, color: '#374151' }}>{v}</span> },
+    { title: 'Date', dataIndex: 'date', key: 'date', width: 130, render: v => <span style={{ fontSize: 13, color: 'var(--color-text-secondary)' }}>{v}</span> },
     {
       title: 'From Shift',
       dataIndex: 'fromShift',
       key: 'fromShift',
       render: (s) => (
         <div>
-          <div style={{ fontWeight: 500, fontSize: 13, color: '#111827' }}>{s.name}</div>
-          <div style={{ fontSize: 12, color: '#6b7280' }}>{s.timeRange}</div>
+          <div style={{ fontWeight: 500, fontSize: 13, color: 'var(--color-text-primary)' }}>{s.name}</div>
+          <div style={{ fontSize: 12, color: 'var(--color-text-tertiary)' }}>{s.timeRange}</div>
         </div>
       ),
     },
@@ -69,12 +69,12 @@ export function ShiftChangeListView({ requests, onCreateNew, onView, onCancel }:
       key: 'toShift',
       render: (s) => (
         <div>
-          <div style={{ fontWeight: 500, fontSize: 13, color: '#111827' }}>{s.name}</div>
-          <div style={{ fontSize: 12, color: '#6b7280' }}>{s.timeRange}</div>
+          <div style={{ fontWeight: 500, fontSize: 13, color: 'var(--color-text-primary)' }}>{s.name}</div>
+          <div style={{ fontSize: 12, color: 'var(--color-text-tertiary)' }}>{s.timeRange}</div>
         </div>
       ),
     },
-    { title: 'Type', dataIndex: 'requestType', key: 'requestType', width: 90, render: v => <span style={{ fontSize: 12, color: '#6b7280' }}>{v}</span> },
+    { title: 'Type', dataIndex: 'requestType', key: 'requestType', width: 90, render: v => <span style={{ fontSize: 12, color: 'var(--color-text-tertiary)' }}>{v}</span> },
     {
       title: 'Status',
       dataIndex: 'status',
@@ -176,7 +176,7 @@ export function ShiftChangeListView({ requests, onCreateNew, onView, onCancel }:
           <Button type="primary" onClick={handleSearch}>Search</Button>
           <Button onClick={handleReset}>Reset</Button>
           <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ fontSize: 12, color: '#6b7280' }}>Sort by</span>
+            <span style={{ fontSize: 12, color: 'var(--color-text-tertiary)' }}>Sort by</span>
             <Select value={sortBy} onChange={setSortBy} style={{ width: 150 }} options={SORT_OPTIONS} />
           </div>
         </div>
@@ -190,7 +190,7 @@ export function ShiftChangeListView({ requests, onCreateNew, onView, onCancel }:
           columns={columns}
           pagination={{ pageSize: 10, showTotal: (t) => `Total ${t} records`, size: 'small' }}
           rowSelection={{ selectedRowKeys, onChange: setSelectedRowKeys }}
-          locale={{ emptyText: <div style={{ padding: '40px 0', color: '#9ca3af', fontSize: 13 }}>No requests found</div> }}
+          locale={{ emptyText: <div style={{ padding: '40px 0', color: 'var(--color-text-disabled)', fontSize: 13 }}>No requests found</div> }}
           size="middle"
         />
       </div>
